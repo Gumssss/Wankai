@@ -103,7 +103,7 @@ function App() {
 
   useEffect(() => {
     Object.defineProperty(window, '__arena', { configurable: true, value: Object.freeze({
-      snapshot: () => JSON.parse(JSON.stringify({ state: session.state, practice: session.practice, time: session.world.time, winner: session.world.winner, players: session.world.players, lastHit: session.world.lastHit })),
+      snapshot: () => JSON.parse(JSON.stringify({ state: session.state, mode: session.mode, practice: session.practice, time: session.world.time, winner: session.world.winner, players: session.world.players, lastHit: session.world.lastHit })),
       rendererInfo: () => session.renderer ? ({ geometries: session.renderer.info.memory.geometries, textures: session.renderer.info.memory.textures, calls: session.renderer.info.render.calls }) : null,
     }) });
     return () => { delete window.__arena; };
@@ -113,6 +113,7 @@ function App() {
   const resultTitle = winner === -1 ? '平分秋色' : `${winner === 0 ? '赤丸' : '青丸'}获胜`;
   const resultDetail = `本局 ${game.seconds} 秒。${winner === -1 ? '两位棍客同时力竭，再来一局。' : `胜者剩余 ${game.health[winner] ?? 0} 点体力。下一棍，谁说了算？`}`;
   const elapsed = `${String(Math.floor(game.seconds / 60)).padStart(2, '0')}:${String(game.seconds % 60).padStart(2, '0')}`;
+  const solo = game.mode === 'solo';
 
   return <>
     <header className="topbar">
@@ -126,35 +127,35 @@ function App() {
       </nav>
     </header>
 
-    <main id="game-shell">
-      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas session={session} onReady={() => setReady(true)} /></CanvasBoundary></div>
-      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>一方圆台，两位棍客。</span></div>
-      <div className="arena-coordinate" aria-hidden="true">N ↑<br/><span>35° / FIXED VIEW</span></div>
-      <section className="scoreboard" aria-label="对战血量">
+    <main id="game-shell" className={solo ? 'solo-mode' : ''}>
+      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={solo ? 'solo' : 'shared'} session={session} mode={solo ? 'solo' : 'duel'} onReady={() => setReady(true)} /></CanvasBoundary></div>
+      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '一方圆台，两位棍客。'}</span></div>
+      <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
+      <section className="scoreboard" aria-label={solo ? '单人状态' : '对战血量'}>
         <FighterScore id={0} health={game.health[0]} practice={game.practice} />
-        <div className="match-center"><span>{game.practice ? '自由练习' : '自由对决'}</span><b>VS</b><div>{elapsed}</div></div>
-        <FighterScore id={1} health={game.health[1]} practice={game.practice} />
+        <div className="match-center"><span>{solo ? '自由视角' : game.practice ? '自由练习' : '自由对决'}</span>{!solo && <b>VS</b>}<div>{elapsed}</div></div>
+        {!solo && <FighterScore id={1} health={game.health[1]} practice={game.practice} />}
       </section>
       <div id="player-label-0" className="player-label red">P1<span>赤丸</span></div>
-      <div id="player-label-1" className="player-label blue">P2<span>{game.practice ? '木桩' : '青丸'}</span></div>
+      {!solo && <div id="player-label-1" className="player-label blue">P2<span>{game.practice ? '木桩' : '青丸'}</span></div>}
       <div id="effects" aria-hidden="true">{game.effects.map(effect => <div key={effect.id} id={`effect-${effect.id}`} className="damage-number">{effect.damage >= 22 && <span className="impact-word">重 击 !</span>}−{effect.damage}</div>)}</div>
       <div key={game.countdownText} id="countdown" className={/^[1-9]$/.test(game.countdownText) ? 'pop' : ''} style={game.countdownText === '抡起来' ? { fontSize: 56 } : undefined} aria-live="polite">{game.countdownText}</div>
       <div className={`hit-readout${game.readout ? ' visible' : ''}`}><span>{game.readout?.label ?? '有效命中'}</span><strong>−{game.readout?.damage ?? 0}</strong><small>{game.readout?.detail ?? ''}</small></div>
 
       {game.state === 'lobby' && <section className="welcome-panel">
         <div className="welcome-copy"><div className="eyebrow">LESS BUTTONS. MORE BONK.</div><h1>一棍定胜负<span>。</span></h1><p><br/></p></div>
-        <div className="welcome-actions"><button className="primary-button" onClick={() => session.startRound(false)}>开始双人对战 <span>↗</span></button><button className="secondary-button" onClick={() => session.startRound(true)}>单人练习 <span>→</span></button><small>同屏双人 · 共用一块键盘</small></div>
+        <div className="welcome-actions"><button className="primary-button" onClick={() => session.startRound('duel')}>开始双人对战 <span>↗</span></button><button className="secondary-button" onClick={() => session.startRound('practice')}>木桩练习 <span>→</span></button><button className="secondary-button" onClick={() => session.startRound('solo')}>单人自由视角 <span>→</span></button><small>双人共用键盘 · 单人可拖动视角</small></div>
       </section>}
       {active && <div className="match-tools"><button className="pill-button" onClick={() => session.pause()}>Ⅱ 暂停 <kbd>ESC</kbd></button><button className="pill-button" onClick={() => session.startRound()} title="重新开始当前对局">↻ 重开</button><button className="pill-button" onClick={() => session.goHome()} title="回到主菜单">返回</button></div>}
-      {active && <div className="live-tip"><span className="status-dot"></span><span>{game.practice ? '练习模式 · 青丸不主动出招，停止受击后恢复血量' : ''}</span></div>}
+      {active && <div className="live-tip"><span className="status-dot"></span><span>{solo ? 'A / D 转动武器 · 拖动鼠标转动视角 · 滚轮调远近' : game.practice ? '练习模式 · 青丸不主动出招，停止受击后恢复血量' : ''}</span></div>}
       {!ready && !game.error && <div className="loading"><span className="loader"></span><p>正在布置角斗场…</p></div>}
       {game.error && <div className="error-panel"><h2>角斗场暂时无法载入</h2><p>{game.error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载 ↗</button></div>}
     </main>
 
-    <footer className="controls-bar">
+    <footer className={`controls-bar${solo ? ' solo-controls' : ''}`}>
       <div className="control-block"><span className="player-chip red">P1</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>赤丸的棍法</b><span>W / S 上甩·下砸 <i>·</i> A / D 左右扫转</span></div></div>
       <div className="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br/><b>棍子才是主角</b></span></div>
-      <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的棍法</b><span>↑ / ↓ 上甩·下砸 <i>·</i> ← / → 左右扫转</span></div></div>
+      {solo ? <div className="control-copy solo-view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div> : <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的棍法</b><span>↑ / ↓ 上甩·下砸 <i>·</i> ← / → 左右扫转</span></div></div>}
     </footer>
 
     {helpOpen && <Modal onCancel={closeHelp}><HelpContent close={closeHelp}/></Modal>}

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CONFIG, staffFrame, clamp } from './physics.js';
+import { CONFIG, SOLO_ARENA_SCALE, staffFrame, clamp } from './physics.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const PALETTE = [0xc4684f, 0x568d92];
@@ -10,19 +10,32 @@ const vec = p => new THREE.Vector3(p.x, p.y, p.z);
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, ...extra });
 
 export class ArenaView {
-  constructor(renderer, camera) {
+  constructor(renderer, camera, mode = 'duel') {
     // R3F owns the renderer, camera, frame loop and canvas. These groups keep
     // the existing meshes and their appearance while R3F manages each layer.
     this.arena = new THREE.Group();
+    this.arenaGeometry = new THREE.Group();
+    this.arena.add(this.arenaGeometry);
     this.actors = new THREE.Group();
     this.effectsRoot = new THREE.Group();
-    this.meshRoot = this.arena;
+    this.meshRoot = this.arenaGeometry;
     this.renderer = renderer;
     this.camera = camera;
+    this.solo = mode === 'solo';
+    if (this.solo) this.arenaGeometry.scale.set(SOLO_ARENA_SCALE, 1, SOLO_ARENA_SCALE);
     this.cameraBase = new THREE.Vector3(0, 15.4, 21);
     this.target = new THREE.Vector3(0, 0, -0.3);
-    this.camera.position.copy(this.cameraBase);
+    this.camera.position.copy(this.solo ? new THREE.Vector3(-4, 3, -4) : this.cameraBase);
     this.camera.lookAt(this.target);
+    this.cameraYaw = 0;
+    this.cameraPitch = 0.26;
+    this.cameraDistance = 5.8;
+    this.mouseYaw = 0;
+    this.mousePitch = 0;
+    this.mouseIdle = 0;
+    this.cameraInitialized = false;
+    this.cameraFocus = new THREE.Vector3();
+    this.cameraDesired = new THREE.Vector3();
     this.particles = [];
     this.rings = [];
     this.trailTime = 0;
@@ -31,7 +44,7 @@ export class ArenaView {
     this.makeLighting();
     this.makeArena();
     this.meshRoot = this.actors;
-    this.players = [this.makeFighter(0), this.makeFighter(1)];
+    this.players = this.solo ? [this.makeFighter(0)] : [this.makeFighter(0), this.makeFighter(1)];
   }
 
   mesh(geometry, mat, parent = this.meshRoot) {
@@ -45,10 +58,11 @@ export class ArenaView {
   makeLighting() {
     this.arena.add(new THREE.HemisphereLight(0xfff9e9, 0x849079, 3));
     const sun = new THREE.DirectionalLight(0xffedcd, 3.4);
-    sun.position.set(-8, 15, 8);
+    sun.position.set(this.solo ? -20 : -8, this.solo ? 30 : 15, this.solo ? 20 : 8);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
-    Object.assign(sun.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: 1, far: 45 });
+    const shadowExtent = this.solo ? 25 : 11;
+    Object.assign(sun.shadow.camera, { left: -shadowExtent, right: shadowExtent, top: shadowExtent, bottom: -shadowExtent, near: 1, far: this.solo ? 85 : 45 });
     sun.shadow.normalBias = 0.035;
     sun.shadow.bias = -0.0003;
     sun.shadow.radius = 4;
@@ -130,7 +144,7 @@ export class ArenaView {
       block.rotation.y = angle;
     }
     // Inlaid starting marks.
-    for (const [x, color] of [[-2.2, PALETTE[0]], [2.2, PALETTE[1]]]) {
+    for (const [x, color] of this.solo ? [] : [[-2.2, PALETTE[0]], [2.2, PALETTE[1]]]) {
       const mark = this.mesh(new THREE.RingGeometry(0.58, 0.62, 48), material(color, { transparent: true, opacity: 0.42 }));
       mark.rotation.x = -Math.PI / 2; mark.position.set(x, 0.014, 0); mark.castShadow = false;
       const dash = this.mesh(new THREE.BoxGeometry(0.14, 0.01, 0.6), material(color, { transparent: true, opacity: 0.35 }));
@@ -243,6 +257,11 @@ export class ArenaView {
     this.width = width;
     this.height = height;
     const aspect = this.width / Math.max(1, this.height);
+    if (this.solo) {
+      this.camera.aspect = aspect;
+      this.camera.updateProjectionMatrix();
+      return;
+    }
     const halfHeight = Math.max(5.5, 8.9 / aspect);
     this.camera.left = -halfHeight * aspect;
     this.camera.right = halfHeight * aspect;
@@ -251,7 +270,7 @@ export class ArenaView {
     this.camera.updateProjectionMatrix();
   }
 
-  update(players, dt, active = false) {
+  update(players, dt, active = false, cameraDt = dt) {
     this.trailTime += dt;
     const recordTrail = this.trailTime > 1 / 90;
     if (recordTrail) this.trailTime = 0;
@@ -297,12 +316,69 @@ export class ArenaView {
       if (r.life <= 0) { this.effectsRoot.remove(r.mesh); r.mesh.geometry.dispose(); r.mesh.material.dispose(); this.rings.splice(i, 1); }
     }
     this.shake *= Math.exp(-16 * dt);
-    this.camera.position.copy(this.cameraBase);
+    if (this.solo && players[0]) this.updateSoloCamera(players[0], cameraDt);
+    else this.camera.position.copy(this.cameraBase);
     if (!this.reducedMotion && this.shake > 0.003) {
       this.camera.position.x += (Math.random() - 0.5) * this.shake;
       this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
     }
-    this.camera.lookAt(this.target);
+    this.camera.lookAt(this.solo ? this.cameraFocus : this.target);
+  }
+
+  resetCamera() {
+    this.cameraInitialized = false;
+    this.mouseYaw = 0;
+    this.mousePitch = 0;
+    this.mouseIdle = 0;
+  }
+
+  orbit(dx, dy) {
+    if (!this.solo) return;
+    this.mouseYaw -= dx * 0.006;
+    this.mousePitch = clamp(this.mousePitch + dy * 0.004, -0.2, 0.7);
+    this.mouseIdle = 0;
+  }
+
+  zoom(delta) {
+    if (!this.solo) return;
+    this.cameraDistance = clamp(this.cameraDistance * Math.exp(delta * 0.001), 3.8, 10);
+    this.mouseIdle = 0;
+  }
+
+  updateSoloCamera(player, dt) {
+    const aim = staffFrame(player, CONFIG.staffLength * 0.55).point;
+    const wantedYaw = player.phi;
+    const firstFrame = !this.cameraInitialized;
+    if (firstFrame) {
+      // Start from the side so the polearm's length is visible, not foreshortened.
+      this.cameraYaw = wantedYaw + Math.PI / 2;
+      this.cameraInitialized = true;
+    }
+    // Keep the horizontal camera direction stable while A/D steer the staff.
+    // The weapon is followed within the frame; mouse drag alone orbits the view.
+    this.mouseIdle += dt;
+    if (this.mouseIdle > 1.5) {
+      const settle = Math.exp(-0.8 * dt);
+      this.mouseYaw *= settle;
+      this.mousePitch *= settle;
+    }
+    const yaw = this.cameraYaw + this.mouseYaw;
+    const pitch = clamp(this.cameraPitch + this.mousePitch, 0.06, 0.9);
+    const focus = this.cameraDesired.set(
+      player.p.x * 0.75 + aim.x * 0.25,
+      clamp(player.p.y * 0.6 + aim.y * 0.4, 0.45, 2.6),
+      player.p.z * 0.75 + aim.z * 0.25,
+    );
+    if (firstFrame) this.cameraFocus.copy(focus);
+    else this.cameraFocus.lerp(focus, 1 - Math.exp(-5 * dt));
+    const horizontal = Math.cos(pitch) * this.cameraDistance;
+    this.cameraDesired.set(
+      player.p.x - Math.cos(yaw) * horizontal,
+      player.p.y + Math.sin(pitch) * this.cameraDistance + 1.2,
+      player.p.z - Math.sin(yaw) * horizontal,
+    );
+    if (firstFrame) this.camera.position.copy(this.cameraDesired);
+    else this.camera.position.lerp(this.cameraDesired, 1 - Math.exp(-5 * dt));
   }
 
   impact(event) {

@@ -8,9 +8,9 @@ function ArenaEnvironment({ group }) { return <primitive object={group} dispose=
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
 function ImpactEffects({ group }) { return <primitive object={group} dispose={null} />; }
 
-function ArenaScene({ session }) {
+function ArenaScene({ session, mode }) {
   const { gl, camera, size } = useThree();
-  const view = useMemo(() => new ArenaView(gl, camera), [gl, camera]);
+  const view = useMemo(() => new ArenaView(gl, camera, mode), [gl, camera, mode]);
   const revision = useRef(session.visualRevision);
   const point = useMemo(() => new Vector3(), []);
 
@@ -46,15 +46,49 @@ function ArenaScene({ session }) {
     };
   }, [gl, session, view]);
 
+  useEffect(() => {
+    if (mode !== 'solo') return;
+    const canvas = gl.domElement;
+    let dragging = false;
+    const down = event => {
+      if (event.button !== 0) return;
+      dragging = true;
+      canvas.setPointerCapture(event.pointerId);
+      canvas.style.cursor = 'grabbing';
+    };
+    const move = event => { if (dragging) view.orbit(event.movementX, event.movementY); };
+    const up = event => {
+      dragging = false;
+      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+      canvas.style.cursor = 'grab';
+    };
+    const wheel = event => { event.preventDefault(); view.zoom(event.deltaY); };
+    canvas.style.cursor = 'grab';
+    canvas.addEventListener('pointerdown', down);
+    canvas.addEventListener('pointermove', move);
+    canvas.addEventListener('pointerup', up);
+    canvas.addEventListener('pointercancel', up);
+    canvas.addEventListener('wheel', wheel, { passive: false });
+    return () => {
+      canvas.style.cursor = '';
+      canvas.removeEventListener('pointerdown', down);
+      canvas.removeEventListener('pointermove', move);
+      canvas.removeEventListener('pointerup', up);
+      canvas.removeEventListener('pointercancel', up);
+      canvas.removeEventListener('wheel', wheel);
+    };
+  }, [gl, mode, view]);
+
   useFrame((_, delta) => {
     const impacts = session.tick(delta);
     if (revision.current !== session.visualRevision) {
       view.clearEffects();
+      view.resetCamera();
       revision.current = session.visualRevision;
     }
     for (const event of impacts) view.impact(event);
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
-    view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending');
+    view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending', Math.min(delta, 0.06));
 
     for (const player of session.world.players) {
       const label = document.getElementById(`player-label-${player.id}`);
@@ -79,25 +113,25 @@ function ArenaScene({ session }) {
   </>;
 }
 
-export function ArenaCanvas({ session, onReady }) {
+export function ArenaCanvas({ session, mode, onReady }) {
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={{ position: [0, 15.4, 21], near: 0.1, far: 120 }}
-      orthographic
+      camera={mode === 'solo' ? { position: [-4, 3, -4], fov: 55, near: 0.1, far: 120 } : { position: [0, 15.4, 21], near: 0.1, far: 120 }}
+      orthographic={mode !== 'solo'}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => {
         session.renderer = gl;
         gl.shadowMap.type = PCFShadowMap;
         gl.toneMapping = ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.28;
-        gl.domElement.setAttribute('aria-label', '赤丸与青丸的三维圆形角斗场');
+        gl.domElement.setAttribute('aria-label', mode === 'solo' ? '赤丸的可旋转三维视角' : '赤丸与青丸的三维圆形角斗场');
         onReady();
       }}
     >
       <color attach="background" args={[0xebe9dc]} />
-      <ArenaScene session={session} />
+      <ArenaScene session={session} mode={mode} />
     </Canvas>
   );
 }

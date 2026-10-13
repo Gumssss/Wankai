@@ -96,6 +96,10 @@ The first generation may have an unclear rear surface or a broken shaft because 
 
 Use playtest findings to tune controls and feedback. If friends struggle to control the staff deliberately, consider lowering the execution difficulty while preserving the staff-based movement and combat concept. Consider two player-specific camera views within the same Electron window and a guided tutorial. Refine weapon art and collision design only after the first visual integration shows what is needed.
 
+### Solo camera experiment
+
+A separate local prototype offers one fighter with the existing staff movement rules, no opponent, and a circular arena with three times the duel radius. The view starts from the weapon's side, softly keeps it in frame, and follows the fighter's position. A / D still rotate the staff; mouse drag changes the camera angle and the wheel changes distance. This mode is for exploring movement and camera feel and does not replace the first demo's two-player playtest criteria. Its camera and arena size remain open to hands-on tuning.
+
 ### Open dependencies
 
 - The first Tripo GLB is available locally. A two-player playtest is needed to judge its visibility, collision mismatch, and performance.

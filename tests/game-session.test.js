@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { GameSession } from '../src/game-session.js';
+import { CONFIG, SOLO_ARENA_SCALE } from '../src/physics.js';
 
 function createSession() {
   const session = new GameSession();
@@ -47,6 +48,34 @@ test('practice uses an idle second player and rematches reset transient state', 
   assert.deepEqual(session.getSnapshot().pressed, []);
   session.goHome();
   assert.equal(session.state, 'lobby');
+});
+
+test('solo keeps the staff physics with one fighter and survives rematch and return home', () => {
+  const session = createSession();
+  session.startRound('solo');
+  assert.equal(session.world.players.length, 1);
+  assert.equal(session.world.players[0].p.x, 0);
+  session.world.players[0].p.x = 12;
+  session.world.step([{ theta: 0, phi: 0 }]);
+  assert.ok(session.world.players[0].p.x > 10, 'solo fighter can move beyond the duel boundary');
+  session.world.players[0].p.x = 30;
+  session.world.step([{ theta: 0, phi: 0 }]);
+  assert.ok(session.world.players[0].p.x <= CONFIG.arenaRadius * SOLO_ARENA_SCALE - CONFIG.bodyRadius + 1e-6);
+  session.world.reset(false, true);
+  advance(session, 2.5);
+  session.keyDown('ArrowDown');
+  assert.deepEqual(session.getSnapshot().pressed, []);
+  session.keyDown('KeyS');
+  advance(session, 1);
+  assert.ok(session.world.time > 0);
+  assert.ok(Number.isFinite(session.world.players[0].p.x));
+  assert.equal(session.world.winner, null);
+  session.startRound();
+  assert.equal(session.getSnapshot().mode, 'solo');
+  assert.equal(session.world.players.length, 1);
+  session.goHome();
+  assert.equal(session.getSnapshot().mode, 'duel');
+  assert.equal(session.world.players.length, 2);
 });
 
 test('subscribers receive changed snapshots and can detach', () => {

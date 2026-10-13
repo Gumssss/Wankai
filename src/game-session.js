@@ -15,6 +15,7 @@ export class GameSession {
     this.state = 'lobby';
     this.previousState = 'playing';
     this.practice = false;
+    this.mode = 'duel';
     this.accumulator = 0;
     this.freeze = 0;
     this.countdown = 0;
@@ -40,6 +41,7 @@ export class GameSession {
     return {
       state: this.state,
       practice: this.practice,
+      mode: this.mode,
       pressed: [...this.keys],
       health: this.world.players.map(player => player.health),
       seconds: Math.floor(this.world.time),
@@ -62,8 +64,10 @@ export class GameSession {
   }
 
   getInputs() {
+    const first = { theta: Number(this.keys.has('KeyS')) - Number(this.keys.has('KeyW')), phi: Number(this.keys.has('KeyA')) - Number(this.keys.has('KeyD')) };
+    if (this.mode === 'solo') return [first];
     return [
-      { theta: Number(this.keys.has('KeyS')) - Number(this.keys.has('KeyW')), phi: Number(this.keys.has('KeyA')) - Number(this.keys.has('KeyD')) },
+      first,
       this.practice ? { theta: 0, phi: 0 } : {
         theta: Number(this.keys.has('ArrowDown')) - Number(this.keys.has('ArrowUp')),
         phi: Number(this.keys.has('ArrowLeft')) - Number(this.keys.has('ArrowRight')),
@@ -77,6 +81,7 @@ export class GameSession {
 
   keyDown(code) {
     if (!CONTROL_KEYS.has(code) || (this.state !== 'playing' && this.state !== 'countdown')) return;
+    if (this.mode === 'solo' && code.startsWith('Arrow')) return;
     if (this.keys.has(code)) return;
     this.keys.add(code);
     this.syncPolarInputs();
@@ -96,12 +101,14 @@ export class GameSession {
     this.publish();
   }
 
-  startRound(practice = this.practice) {
-    this.practice = practice;
+  startRound(mode = this.mode) {
+    this.mode = typeof mode === 'boolean' ? (mode ? 'practice' : 'duel') : mode;
+    if (!['duel', 'practice', 'solo'].includes(this.mode)) throw new Error(`Unknown game mode: ${this.mode}`);
+    this.practice = this.mode === 'practice';
     void this.sound.unlock();
     this.sound.lastWhoosh = [0, 0];
     this.clearKeys();
-    this.world.reset(practice);
+    this.world.reset(this.practice, this.mode === 'solo');
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -118,6 +125,8 @@ export class GameSession {
   goHome() {
     this.state = 'lobby';
     this.clearKeys();
+    this.mode = 'duel';
+    this.practice = false;
     this.world.reset();
     this.visualRevision++;
     this.effects = [];

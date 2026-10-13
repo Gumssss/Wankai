@@ -25,6 +25,7 @@ export const CONFIG = Object.freeze({
   grip: 1.28,
   maxHealth: 100,
 });
+export const SOLO_ARENA_SCALE = 3;
 
 export const v3 = (x = 0, y = 0, z = 0) => ({ x, y, z });
 const add = (a, b) => v3(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -187,13 +188,16 @@ export class ArenaPhysics {
     player.polarInput = direction;
   }
 
-  reset(practice = false) {
-    this.players = [makePlayer(0), makePlayer(1)];
+  reset(practice = false, solo = false) {
+    this.players = solo ? [makePlayer(0)] : [makePlayer(0), makePlayer(1)];
+    if (solo) this.players[0].p.x = 0;
     this.time = 0;
     this.events = [];
     this.winner = null;
     this.practice = practice;
-    this.contacts = [{ separated: 1 }, { separated: 1 }];
+    this.solo = solo;
+    this.arenaRadius = CONFIG.arenaRadius * (solo ? SOLO_ARENA_SCALE : 1);
+    this.contacts = this.players.map(() => ({ separated: 1 }));
     this.lastClash = -1;
     this.lastHit = null;
     if (practice) {
@@ -246,11 +250,13 @@ export class ArenaPhysics {
         this.solveStaffGround(p, dt);
         this.solveWall(p, dt);
       }
-      this.solveBodies();
+      if (!this.solo) this.solveBodies();
     }
-    this.solveStaffClash(dt);
-    this.solveAttack(this.players[0], this.players[1], dt);
-    this.solveAttack(this.players[1], this.players[0], dt);
+    if (!this.solo) {
+      this.solveStaffClash(dt);
+      this.solveAttack(this.players[0], this.players[1], dt);
+      this.solveAttack(this.players[1], this.players[0], dt);
+    }
     for (const p of this.players) {
       const speed = length(p.v);
       if (speed > 15) p.v = mul(p.v, 15 / speed);
@@ -258,7 +264,7 @@ export class ArenaPhysics {
       p.wp = clamp(p.wp, -12, 12);
       if (this.practice && p.id === 1 && this.time - p.lastHitAt > 2.5) p.health = CONFIG.maxHealth;
     }
-    if (!this.practice) {
+    if (!this.practice && !this.solo) {
       const dead = this.players.map(p => p.health <= 0);
       if (dead[0] || dead[1]) this.winner = dead[0] && dead[1] ? -1 : dead[0] ? 1 : 0;
     }
@@ -297,7 +303,7 @@ export class ArenaPhysics {
   }
 
   solveWall(p, dt) {
-    const bodyLimit = CONFIG.arenaRadius - CONFIG.bodyRadius;
+    const bodyLimit = this.arenaRadius - CONFIG.bodyRadius;
     const distance = Math.hypot(p.p.x, p.p.z);
     if (distance > bodyLimit) {
       const n = v3(p.p.x / distance, 0, p.p.z / distance);
@@ -309,9 +315,9 @@ export class ArenaPhysics {
     // The rim is waist-high: elevated weapons may pass above it.
     const f = staffFrame(p);
     const r = Math.hypot(f.point.x, f.point.z);
-    if (f.point.y < 0.48 && r > CONFIG.arenaRadius - CONFIG.staffRadius) {
+    if (f.point.y < 0.48 && r > this.arenaRadius - CONFIG.staffRadius) {
       const n = v3(-f.point.x / r, 0, -f.point.z / r);
-      const bias = Math.min(4, (r - CONFIG.arenaRadius + CONFIG.staffRadius) * 0.15 / dt);
+      const bias = Math.min(4, (r - this.arenaRadius + CONFIG.staffRadius) * 0.15 / dt);
       const j = Math.max(0, (bias - dot(f.velocity, n)) / effectiveMass(p, f, n));
       impulse(p, f, mul(n, j));
     }
