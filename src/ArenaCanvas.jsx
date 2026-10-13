@@ -8,9 +8,9 @@ function ArenaEnvironment({ group }) { return <primitive object={group} dispose=
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
 function ImpactEffects({ group }) { return <primitive object={group} dispose={null} />; }
 
-function ArenaScene({ session, mode }) {
+function ArenaScene({ session, mode, weapon }) {
   const { gl, camera, size } = useThree();
-  const view = useMemo(() => new ArenaView(gl, camera, mode), [gl, camera, mode]);
+  const view = useMemo(() => new ArenaView(gl, camera, mode, weapon), [gl, camera, mode, weapon]);
   const revision = useRef(session.visualRevision);
   const point = useMemo(() => new Vector3(), []);
   const headingForward = useMemo(() => new Vector3(), []);
@@ -22,22 +22,34 @@ function ArenaScene({ session, mode }) {
 
   useEffect(() => {
     let cancelled = false;
-    const weaponUrl = `${import.meta.env.BASE_URL}models/polearm.glb`;
-    new GLTFLoader().load(weaponUrl, gltf => {
-      if (cancelled) {
-        gltf.scene.traverse(object => {
-          object.geometry?.dispose();
-          object.material?.dispose();
-        });
-        return;
-      }
-      try { view.setWeaponModel(gltf.scene); }
-      catch (error) { console.warn('Could not attach the Tripo weapon; using the original staff.', error); }
-    }, undefined, error => {
-      if (!cancelled) console.warn('Could not load the Tripo weapon; using the original staff.', error);
-    });
+    const types = mode === 'solo' ? [weapon] : weapon === 'sword' ? ['sword', 'polearm'] : ['polearm'];
+    for (const type of types) {
+      const weaponUrl = `${import.meta.env.BASE_URL}models/${type}.glb`;
+      new GLTFLoader().load(weaponUrl, gltf => {
+        if (cancelled) {
+          gltf.scene.traverse(object => {
+            object.geometry?.dispose();
+            const materials = Array.isArray(object.material) ? object.material : [object.material];
+            for (const material of materials) if (material) {
+              for (const value of Object.values(material)) if (value?.isTexture) value.dispose();
+              material.dispose();
+            }
+          });
+          return;
+        }
+        try {
+          view.setWeaponModel(gltf.scene, type);
+          gltf.scene.traverse(object => {
+            const materials = Array.isArray(object.material) ? object.material : [object.material];
+            for (const material of materials) material?.dispose();
+          });
+        } catch (error) { console.warn(`Could not attach the ${type} model; using the original shape.`, error); }
+      }, undefined, error => {
+        if (!cancelled) console.warn(`Could not load the ${type} model; using the original shape.`, error);
+      });
+    }
     return () => { cancelled = true; };
-  }, [view]);
+  }, [view, mode, weapon]);
 
   useEffect(() => {
     const onContextLost = event => { event.preventDefault(); session.contextLost(); };
@@ -127,7 +139,7 @@ function ArenaScene({ session, mode }) {
   </>;
 }
 
-export function ArenaCanvas({ session, mode, onReady }) {
+export function ArenaCanvas({ session, mode, weapon, onReady }) {
   return (
     <Canvas
       shadows
@@ -145,7 +157,7 @@ export function ArenaCanvas({ session, mode, onReady }) {
       }}
     >
       <color attach="background" args={[0xebe9dc]} />
-      <ArenaScene session={session} mode={mode} />
+      <ArenaScene session={session} mode={mode} weapon={weapon} />
     </Canvas>
   );
 }

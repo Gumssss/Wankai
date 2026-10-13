@@ -27,6 +27,17 @@ export const CONFIG = Object.freeze({
 });
 export const SOLO_ARENA_SCALE = 3;
 
+export const WEAPONS = Object.freeze({
+  polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius,
+    inertia: CONFIG.inertia, motorAcceleration: CONFIG.motorAcceleration,
+    brakeAcceleration: CONFIG.polarBrakeAcceleration, maxAngularSpeed: CONFIG.maxAngularSpeed }),
+  sword: Object.freeze({ length: 1.45, offset: 1.2, radius: 0.09,
+    inertia: 2.8, motorAcceleration: 38,
+    brakeAcceleration: 48, maxAngularSpeed: 12.2 }),
+});
+
+export const weaponStats = player => WEAPONS[player.weapon] || WEAPONS.polearm;
+
 export const v3 = (x = 0, y = 0, z = 0) => ({ x, y, z });
 const add = (a, b) => v3(a.x + b.x, a.y + b.y, a.z + b.z);
 const sub = (a, b) => v3(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -37,18 +48,19 @@ export const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const unit = (a, fallback = v3(1, 0, 0)) => length(a) > 1e-8 ? mul(a, 1 / length(a)) : fallback;
 const invMass = 1 / CONFIG.mass;
 
-export function makePlayer(id) {
+export function makePlayer(id, weapon = 'polearm') {
   return {
     id,
+    weapon,
     p: v3(id === 0 ? -2.2 : 2.2, CONFIG.bodyFloor, 0),
     v: v3(),
-    theta: 1.32,
+    theta: weapon === 'sword' ? Math.PI / 2 : 1.32,
     thetaTarget: null,
     polarInput: 0,
     lastUpPole: null,
     upwardSwingSign: 0,
     followThrough: null,
-    phi: id === 0 ? 0.95 : Math.PI - 0.95,
+    phi: id === 0 ? (weapon === 'sword' ? 0 : 0.95) : Math.PI - 0.95,
     wt: 0,
     wp: 0,
     driveT: 0,
@@ -67,8 +79,8 @@ export function makePlayer(id) {
 
 // distance is measured along the solid staff, from its floating inner end.
 // The invisible constraint still transmits contact impulses to the body pivot.
-export function staffFrame(player, distance = CONFIG.staffLength) {
-  const radius = CONFIG.staffOffset + distance;
+export function staffFrame(player, distance = weaponStats(player).length) {
+  const radius = weaponStats(player).offset + distance;
   const st = Math.sin(player.theta), ct = Math.cos(player.theta);
   const sp = Math.sin(player.phi), cp = Math.cos(player.phi);
   const r = v3(radius * st * cp, radius * ct, radius * st * sp);
@@ -82,26 +94,27 @@ export function staffFrame(player, distance = CONFIG.staffLength) {
 }
 
 function phiInertia(p) {
-  return CONFIG.inertia * Math.max(0.15, Math.sin(p.theta) ** 2);
+  return weaponStats(p).inertia * Math.max(0.15, Math.sin(p.theta) ** 2);
 }
 
 function effectiveMass(p, frame, n) {
-  return invMass + dot(frame.jt, n) ** 2 / CONFIG.inertia + dot(frame.jp, n) ** 2 / phiInertia(p);
+  return invMass + dot(frame.jt, n) ** 2 / weaponStats(p).inertia + dot(frame.jp, n) ** 2 / phiInertia(p);
 }
 
 function impulse(p, frame, force) {
   p.v = add(p.v, mul(force, invMass));
-  p.wt += dot(frame.jt, force) / CONFIG.inertia;
+  p.wt += dot(frame.jt, force) / weaponStats(p).inertia;
   p.wp += dot(frame.jp, force) / phiInertia(p);
 }
 
 function drivePolarAngle(p, dt) {
+  const weapon = weaponStats(p);
   const returning = p.followThrough?.returning;
   const target = p.thetaTarget ?? (returning ? p.followThrough.pole : null);
   if (target === null) {
     // Uniform floating rod: gravity torque / inertia about the body pivot.
-    const center = CONFIG.staffOffset + CONFIG.staffLength / 2;
-    const radiusSquared = center ** 2 + CONFIG.staffLength ** 2 / 12;
+    const center = weapon.offset + weapon.length / 2;
+    const radiusSquared = center ** 2 + weapon.length ** 2 / 12;
     const gravityAcceleration = CONFIG.gravity * center / radiusSquared * Math.sin(p.theta);
     p.wt = (p.wt + gravityAcceleration * dt) * Math.exp(-CONFIG.damping * dt);
     return;
@@ -115,11 +128,11 @@ function drivePolarAngle(p, dt) {
   }
   // Choose a speed we can brake to zero within the remaining angle. Reserve
   // one integration step of travel so discrete updates don't overshoot.
-  const brakeStep = CONFIG.polarBrakeAcceleration * dt;
-  const stoppingSpeed = Math.sqrt(brakeStep ** 2 + 2 * CONFIG.polarBrakeAcceleration * Math.abs(error)) - brakeStep;
-  const desiredSpeed = Math.sign(error) * Math.min(CONFIG.maxAngularSpeed, stoppingSpeed);
+  const brakeStep = weapon.brakeAcceleration * dt;
+  const stoppingSpeed = Math.sqrt(brakeStep ** 2 + 2 * weapon.brakeAcceleration * Math.abs(error)) - brakeStep;
+  const desiredSpeed = Math.sign(error) * Math.min(weapon.maxAngularSpeed, stoppingSpeed);
   const braking = p.wt * error < 0 || Math.abs(p.wt) > Math.abs(desiredSpeed);
-  const acceleration = braking ? CONFIG.polarBrakeAcceleration : CONFIG.motorAcceleration;
+  const acceleration = braking ? weapon.brakeAcceleration : weapon.motorAcceleration;
   p.wt += clamp(desiredSpeed - p.wt, -acceleration * dt, acceleration * dt);
 }
 
@@ -188,8 +201,9 @@ export class ArenaPhysics {
     player.polarInput = direction;
   }
 
-  reset(practice = false, solo = false) {
-    this.players = solo ? [makePlayer(0)] : [makePlayer(0), makePlayer(1)];
+  reset(practice = false, solo = false, firstWeapon = 'polearm') {
+    if (!WEAPONS[firstWeapon]) throw new Error(`Unknown weapon: ${firstWeapon}`);
+    this.players = solo ? [makePlayer(0, firstWeapon)] : [makePlayer(0, firstWeapon), makePlayer(1)];
     if (solo) this.players[0].p.x = 0;
     this.time = 0;
     this.events = [];
@@ -212,13 +226,14 @@ export class ArenaPhysics {
     this.time += dt;
     this.events.length = 0;
     for (const p of this.players) {
+      const weapon = weaponStats(p);
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
-      const motorP = clamp(input.phi || 0, -1, 1) * CONFIG.motorAcceleration;
+      const motorP = clamp(input.phi || 0, -1, 1) * weapon.motorAcceleration;
       const previousT = p.wt, previousP = p.wp;
       const damp = Math.exp(-CONFIG.damping * dt);
       drivePolarAngle(p, dt);
-      p.wp = clamp((p.wp + motorP * dt) * damp, -CONFIG.maxAngularSpeed, CONFIG.maxAngularSpeed);
+      p.wp = clamp((p.wp + motorP * dt) * damp, -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
       p.theta += p.wt * dt;
       if (p.followThrough && !p.followThrough.returning &&
           (p.theta - p.followThrough.pole) * p.followThrough.sign >= CONFIG.upFollowThrough) {
@@ -260,8 +275,9 @@ export class ArenaPhysics {
     for (const p of this.players) {
       const speed = length(p.v);
       if (speed > 15) p.v = mul(p.v, 15 / speed);
-      p.wt = clamp(p.wt, -12, 12);
-      p.wp = clamp(p.wp, -12, 12);
+      const limit = Math.max(12, weaponStats(p).maxAngularSpeed);
+      p.wt = clamp(p.wt, -limit, limit);
+      p.wp = clamp(p.wp, -limit, limit);
       if (this.practice && p.id === 1 && this.time - p.lastHitAt > 2.5) p.health = CONFIG.maxHealth;
     }
     if (!this.practice && !this.solo) {
@@ -285,7 +301,7 @@ export class ArenaPhysics {
 
   solveStaffGround(p, dt) {
     let f = staffFrame(p);
-    const penetration = CONFIG.staffRadius - f.point.y;
+    const penetration = weaponStats(p).radius - f.point.y;
     if (penetration < -0.008) return;
     p.staffGrounded = true;
     const n = v3(0, 1, 0);
@@ -315,9 +331,9 @@ export class ArenaPhysics {
     // The rim is waist-high: elevated weapons may pass above it.
     const f = staffFrame(p);
     const r = Math.hypot(f.point.x, f.point.z);
-    if (f.point.y < 0.48 && r > this.arenaRadius - CONFIG.staffRadius) {
+    if (f.point.y < 0.48 && r > this.arenaRadius - weaponStats(p).radius) {
       const n = v3(-f.point.x / r, 0, -f.point.z / r);
-      const bias = Math.min(4, (r - this.arenaRadius + CONFIG.staffRadius) * 0.15 / dt);
+      const bias = Math.min(4, (r - this.arenaRadius + weaponStats(p).radius) * 0.15 / dt);
       const j = Math.max(0, (bias - dot(f.velocity, n)) / effectiveMass(p, f, n));
       impulse(p, f, mul(n, j));
     }
@@ -344,10 +360,10 @@ export class ArenaPhysics {
     const baseA = staffFrame(a, 0).point, baseB = staffFrame(b, 0).point;
     const tipA = staffFrame(a).point, tipB = staffFrame(b).point;
     const c = closestSegments(baseA, tipA, baseB, tipB);
-    const depth = CONFIG.staffRadius * 2 - c.distance;
+    const depth = weaponStats(a).radius + weaponStats(b).radius - c.distance;
     if (depth <= 0) return;
     const n = unit(sub(c.a, c.b), v3(0, 1, 0));
-    const fa = staffFrame(a, CONFIG.staffLength * c.s), fb = staffFrame(b, CONFIG.staffLength * c.t);
+    const fa = staffFrame(a, weaponStats(a).length * c.s), fb = staffFrame(b, weaponStats(b).length * c.t);
     const closing = -dot(sub(fa.velocity, fb.velocity), n);
     const j = Math.max(0, (closing * 1.35 + depth * 0.13 / dt) / (effectiveMass(a, fa, n) + effectiveMass(b, fb, n)));
     impulse(a, fa, mul(n, j));
@@ -366,11 +382,11 @@ export class ArenaPhysics {
     const headPoint = add(target.p, v3(0, 0.76, 0));
     const head = closestSegments(base, tip, headPoint, headPoint);
     const c = torso.distance <= head.distance ? torso : head;
-    const depth = CONFIG.bodyRadius + CONFIG.staffRadius - c.distance;
+    const depth = CONFIG.bodyRadius + weaponStats(attacker).radius - c.distance;
     const contact = this.contacts[attacker.id];
     if (depth <= 0) { contact.separated += dt; return; }
     const n = unit(sub(c.a, c.b));
-    const f = staffFrame(attacker, CONFIG.staffLength * c.s);
+    const f = staffFrame(attacker, weaponStats(attacker).length * c.s);
     const relative = sub(f.velocity, target.v);
     const closing = -dot(relative, n);
     const driving = add(mul(f.jt, attacker.driveT), mul(f.jp, attacker.driveP));

@@ -43,12 +43,12 @@ function KeyGrid({ codes, labels, pressed }) {
 function HelpContent({ close }) {
   return <>
     <button className="modal-close" onClick={close} aria-label="关闭玩法说明">×</button>
-    <span className="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，一身棍法。</h2>
-    <p className="modal-intro">你控制的是悬空棍子的转动力。棍子与身体保持间距，绕身体旋转；身体始终直立，由撑地或碰撞带动。</p>
+    <span className="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，转动武器。</h2>
+    <p className="modal-intro">你控制的是悬空武器的转动力。武器与身体保持间距，绕身体旋转；身体始终直立，由撑地或碰撞带动。</p>
     <div className="guide-steps">
-      <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D（← / →）把棍子伸向想去的方向，再按 S（↓）压棍。棍端抓地，身体会被撑起并靠近落点。按 W（↑）收棍落地，再来一次。</p></div></article>
+      <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D（← / →）把武器伸向想去的方向，再按 S（↓）向下压。武器触地，身体会被撑起并靠近落点。按 W（↑）收回武器，再来一次。</p></div></article>
       <article><span>02</span><div><h3>松手，自然下落</h3><p>按住 W（↑）向上甩，按住 S（↓）向下砸；松手后保留惯性并受重力下落，可越过竖直方向继续摆动，再由阻尼逐渐减速。按住时仍向 0° / 180° 运动并主动减速。A / D（← / →）左右扫转仍保留惯性与阻尼。</p></div></article>
-      <article><span>03</span><div><h3>挥起来，才打得疼</h3><p>棍子撞中头部或躯干都会扣血，伤害相同。撞得越快、命中前加速越充分，伤害越高；贴着不动不会持续扣血。武器之间可以互相格挡。</p></div></article>
+      <article><span>03</span><div><h3>挥起来，才打得疼</h3><p>武器撞中头部或躯干都会扣血，伤害相同。撞得越快、命中前加速越充分，伤害越高；贴着不动不会持续扣血。武器之间可以互相格挡。</p></div></article>
     </div>
     <div className="guide-note"><b>100 HP · 血量归零判负</b><span>圆台有边界，不会掉落。练习木桩会在受击停止后恢复血量。</span></div>
     <button className="primary-button" onClick={close}>明白了，抡起来 <span>↗</span></button>
@@ -111,7 +111,7 @@ function App() {
 
   const winner = game.winner;
   const resultTitle = winner === -1 ? '平分秋色' : `${winner === 0 ? '赤丸' : '青丸'}获胜`;
-  const resultDetail = `本局 ${game.seconds} 秒。${winner === -1 ? '两位棍客同时力竭，再来一局。' : `胜者剩余 ${game.health[winner] ?? 0} 点体力。下一棍，谁说了算？`}`;
+  const resultDetail = `本局 ${game.seconds} 秒。${winner === -1 ? '双方同时力竭，再来一局。' : `胜者剩余 ${game.health[winner] ?? 0} 点体力。下一局，谁说了算？`}`;
   const elapsed = `${String(Math.floor(game.seconds / 60)).padStart(2, '0')}:${String(game.seconds % 60).padStart(2, '0')}`;
   const solo = game.mode === 'solo';
 
@@ -128,13 +128,13 @@ function App() {
     </header>
 
     <main id="game-shell" className={solo ? 'solo-mode' : ''}>
-      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={solo ? 'solo' : 'shared'} session={session} mode={solo ? 'solo' : 'duel'} onReady={() => setReady(true)} /></CanvasBoundary></div>
-      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '一方圆台，两位棍客。'}</span></div>
+      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : 'shared'}-${game.weapon}`} session={session} mode={solo ? 'solo' : 'duel'} weapon={game.weapon} onReady={() => setReady(true)} /></CanvasBoundary></div>
+      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{game.weapon === 'sword' ? '短剑试验 · 近身快挥。' : solo ? '只有你、武器与圆台。' : '一方圆台，两位棍客。'}</span></div>
       <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
       {solo && active && <div className="heading-guide" aria-label="武器水平朝向，相对当前视角。A 和 D 旋转武器。"><strong>武器朝向</strong><span>相对当前视角</span><div className="heading-dial"><div id="staff-heading-arrow" className="heading-arrow">↑</div></div><small>A / D 绕身旋转</small></div>}
       <section className="scoreboard" aria-label={solo ? '单人状态' : '对战血量'}>
         <FighterScore id={0} health={game.health[0]} practice={game.practice} />
-        <div className="match-center"><span>{solo ? '自由视角' : game.practice ? '自由练习' : '自由对决'}</span>{!solo && <b>VS</b>}<div>{elapsed}</div></div>
+        <div className="match-center"><span>{game.weapon === 'sword' ? '短剑试验' : solo ? '自由视角' : game.practice ? '自由练习' : '自由对决'}</span>{!solo && <b>VS</b>}<div>{elapsed}</div></div>
         {!solo && <FighterScore id={1} health={game.health[1]} practice={game.practice} />}
       </section>
       <div id="player-label-0" className="player-label red">P1<span>赤丸</span></div>
@@ -145,18 +145,18 @@ function App() {
 
       {game.state === 'lobby' && <section className="welcome-panel">
         <div className="welcome-copy"><div className="eyebrow">LESS BUTTONS. MORE BONK.</div><h1>一棍定胜负<span>。</span></h1><p><br/></p></div>
-        <div className="welcome-actions"><button className="primary-button" onClick={() => session.startRound('duel')}>开始双人对战 <span>↗</span></button><button className="secondary-button" onClick={() => session.startRound('practice')}>木桩练习 <span>→</span></button><button className="secondary-button" onClick={() => session.startRound('solo')}>单人自由视角 <span>→</span></button><small>双人共用键盘 · 单人可拖动视角</small></div>
+        <div className="welcome-actions"><div className="weapon-choice" role="group" aria-label="赤丸武器"><span>赤丸武器</span><button type="button" aria-pressed={game.weapon === 'polearm'} onClick={() => session.setWeapon('polearm')}>长柄刀</button><button type="button" aria-pressed={game.weapon === 'sword'} onClick={() => session.setWeapon('sword')}>短剑 · 快挥</button></div><button className="primary-button" onClick={() => session.startRound('duel')}>开始双人对战 <span>↗</span></button><button className="secondary-button" onClick={() => session.startRound('practice')}>木桩练习 <span>→</span></button><button className="secondary-button" onClick={() => session.startRound('solo')}>单人自由视角 <span>→</span></button><small>默认：赤丸短剑 · 青丸长柄刀 · 双人共用键盘</small></div>
       </section>}
       {active && <div className="match-tools"><button className="pill-button" onClick={() => session.pause()}>Ⅱ 暂停 <kbd>ESC</kbd></button><button className="pill-button" onClick={() => session.startRound()} title="重新开始当前对局">↻ 重开</button><button className="pill-button" onClick={() => session.goHome()} title="回到主菜单">返回</button></div>}
-      {active && <div className="live-tip"><span className="status-dot"></span><span>{solo ? 'A / D 转动武器 · 拖动鼠标转动视角 · 滚轮调远近' : game.practice ? '练习模式 · 青丸不主动出招，停止受击后恢复血量' : ''}</span></div>}
+      {active && <div className="live-tip"><span className="status-dot"></span><span>{solo ? 'A / D 转动武器 · 拖动鼠标转动视角 · 滚轮调远近' : game.practice ? '练习模式 · 青丸不主动出招，停止受击后恢复血量' : game.weapon === 'sword' ? '赤丸短剑：距离更近，挥动更快' : ''}</span></div>}
       {!ready && !game.error && <div className="loading"><span className="loader"></span><p>正在布置角斗场…</p></div>}
       {game.error && <div className="error-panel"><h2>角斗场暂时无法载入</h2><p>{game.error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载 ↗</button></div>}
     </main>
 
     <footer className={`controls-bar${solo ? ' solo-controls' : ''}`}>
-      <div className="control-block"><span className="player-chip red">P1</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>赤丸的棍法</b><span>W / S 上甩·下砸 <i>·</i> A / D 左右扫转</span></div></div>
-      <div className="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br/><b>棍子才是主角</b></span></div>
-      {solo ? <div className="control-copy solo-view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div> : <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的棍法</b><span>↑ / ↓ 上甩·下砸 <i>·</i> ← / → 左右扫转</span></div></div>}
+      <div className="control-block"><span className="player-chip red">P1</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>{game.weapon === 'sword' ? '赤丸的短剑' : '赤丸的棍法'}</b><span>W / S 上甩·下砸 <i>·</i> A / D 左右扫转</span></div></div>
+      <div className="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br/><b>武器才是主角</b></span></div>
+      {solo ? <div className="control-copy solo-view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div> : <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的长柄刀</b><span>↑ / ↓ 上甩·下砸 <i>·</i> ← / → 左右扫转</span></div></div>}
     </footer>
 
     {helpOpen && <Modal onCancel={closeHelp}><HelpContent close={closeHelp}/></Modal>}

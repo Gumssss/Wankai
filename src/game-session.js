@@ -1,4 +1,4 @@
-import { ArenaPhysics, CONFIG } from './physics.js';
+import { ArenaPhysics, CONFIG, WEAPONS } from './physics.js';
 import { GameAudio } from './audio.js';
 
 export const CONTROL_KEYS = new Set([
@@ -16,6 +16,8 @@ export class GameSession {
     this.previousState = 'playing';
     this.practice = false;
     this.mode = 'duel';
+    this.weapon = 'sword';
+    this.world.reset(false, false, this.weapon);
     this.accumulator = 0;
     this.freeze = 0;
     this.countdown = 0;
@@ -42,6 +44,7 @@ export class GameSession {
       state: this.state,
       practice: this.practice,
       mode: this.mode,
+      weapon: this.weapon,
       pressed: [...this.keys],
       health: this.world.players.map(player => player.health),
       seconds: Math.floor(this.world.time),
@@ -101,6 +104,14 @@ export class GameSession {
     this.publish();
   }
 
+  setWeapon(weapon) {
+    if (this.state !== 'lobby' || !WEAPONS[weapon] || this.weapon === weapon) return;
+    this.weapon = weapon;
+    this.world.reset(false, false, weapon);
+    this.visualRevision++;
+    this.publish();
+  }
+
   startRound(mode = this.mode) {
     this.mode = typeof mode === 'boolean' ? (mode ? 'practice' : 'duel') : mode;
     if (!['duel', 'practice', 'solo'].includes(this.mode)) throw new Error(`Unknown game mode: ${this.mode}`);
@@ -108,7 +119,7 @@ export class GameSession {
     void this.sound.unlock();
     this.sound.lastWhoosh = [0, 0];
     this.clearKeys();
-    this.world.reset(this.practice, this.mode === 'solo');
+    this.world.reset(this.practice, this.mode === 'solo', this.weapon);
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -127,7 +138,7 @@ export class GameSession {
     this.clearKeys();
     this.mode = 'duel';
     this.practice = false;
-    this.world.reset();
+    this.world.reset(false, false, this.weapon);
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -171,7 +182,7 @@ export class GameSession {
     this.freeze = Math.max(this.freeze, 0.028 + event.strength * 0.055);
     this.effects.push({ id: ++this.nextEffectId, point: { ...event.point }, damage: event.damage, life: 0.95, maxLife: 0.95 });
     this.readout = {
-      label: event.damage >= 22 ? '漂亮的一棍' : '有效命中',
+      label: event.damage >= 22 ? '漂亮的一击' : '有效命中',
       damage: event.damage,
       detail: `${event.speed.toFixed(1)} m/s · 发力加成 ${Math.round(30 * Math.min(event.acceleration / 48, 1))}%`,
     };

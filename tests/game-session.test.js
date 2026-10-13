@@ -78,6 +78,22 @@ test('solo keeps the staff physics with one fighter and survives rematch and ret
   assert.equal(session.world.players.length, 2);
 });
 
+test('sword selection applies to player one and survives a rematch', () => {
+  const session = createSession();
+  assert.equal(session.world.players[0].weapon, 'sword');
+  assert.equal(session.world.players[1].weapon, 'polearm');
+  assert.equal(session.getSnapshot().weapon, 'sword');
+  session.startRound('practice');
+  assert.equal(session.world.players[0].weapon, 'sword');
+  assert.equal(session.world.players[1].weapon, 'polearm');
+  session.startRound();
+  assert.equal(session.world.players[0].weapon, 'sword');
+  session.goHome();
+  assert.equal(session.getSnapshot().weapon, 'sword');
+  session.setWeapon('polearm');
+  assert.equal(session.world.players[0].weapon, 'polearm');
+});
+
 test('subscribers receive changed snapshots and can detach', () => {
   const session = createSession();
   let updates = 0;

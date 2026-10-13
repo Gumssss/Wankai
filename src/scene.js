@@ -1,16 +1,20 @@
 import * as THREE from 'three';
-import { CONFIG, SOLO_ARENA_SCALE, staffFrame, clamp } from './physics.js';
+import { CONFIG, SOLO_ARENA_SCALE, WEAPONS, weaponStats, staffFrame, clamp } from './physics.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
+const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const PALETTE = [0xc4684f, 0x568d92];
 // Measured on the first Tripo export: from the shaft's butt toward the blade.
 const WEAPON_AXIS = new THREE.Vector3(0.556405, 0.627597, -0.544551).normalize();
 const WEAPON_BUTT = new THREE.Vector3(-0.391, 0.014, 0.418);
+// The public sword GLB stores the blade diagonally; align hilt-to-tip with the physics segment.
+const SWORD_AXIS = new THREE.Vector3(-0.703801, -0.710392, -0.002717).normalize();
+const SWORD_BUTT = new THREE.Vector3(0.485, 0.977, 0);
 const vec = p => new THREE.Vector3(p.x, p.y, p.z);
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, ...extra });
 
 export class ArenaView {
-  constructor(renderer, camera, mode = 'duel') {
+  constructor(renderer, camera, mode = 'duel', weapon = 'polearm') {
     // R3F owns the renderer, camera, frame loop and canvas. These groups keep
     // the existing meshes and their appearance while R3F manages each layer.
     this.arena = new THREE.Group();
@@ -22,6 +26,9 @@ export class ArenaView {
     this.renderer = renderer;
     this.camera = camera;
     this.solo = mode === 'solo';
+    this.weapon = weapon;
+    this.swordPitch = new THREE.Quaternion();
+    this.weaponLoaded = new Set();
     if (this.solo) this.arenaGeometry.scale.set(SOLO_ARENA_SCALE, 1, SOLO_ARENA_SCALE);
     this.cameraBase = new THREE.Vector3(0, 15.4, 21);
     this.target = new THREE.Vector3(0, 0, -0.3);
@@ -186,6 +193,8 @@ export class ArenaView {
   }
 
   makeFighter(id) {
+    const weaponType = id === 0 ? this.weapon : 'polearm';
+    const weapon = WEAPONS[weaponType];
     const root = new THREE.Group();
     this.actors.add(root);
     const bodyMat = material(PALETTE[id]);
@@ -197,14 +206,14 @@ export class ArenaView {
     head.position.y = 0.76;
     const staff = new THREE.Group();
     this.actors.add(staff);
-    const rod = this.mesh(new THREE.CylinderGeometry(CONFIG.staffRadius * 0.83, CONFIG.staffRadius, CONFIG.staffLength, 12), material(0x775339), staff);
-    rod.position.y = CONFIG.staffLength / 2;
+    const rod = this.mesh(new THREE.CylinderGeometry(weapon.radius * 0.83, weapon.radius, weapon.length, 12), material(0x775339), staff);
+    rod.position.y = weapon.length / 2;
     const grip = this.mesh(new THREE.CylinderGeometry(0.099, 0.099, 0.38, 12), material(PALETTE[id]), staff);
     grip.position.y = 0.43;
     const cap = this.mesh(new THREE.CylinderGeometry(0.115, 0.096, 0.22, 12), material(0xd6c6a0, { metalness: 0.3, roughness: 0.55 }), staff);
-    cap.position.y = CONFIG.staffLength - 0.08;
+    cap.position.y = weapon.length - 0.08;
     const tip = this.mesh(new THREE.SphereGeometry(0.107, 12, 10), material(0xd6c6a0), staff);
-    tip.position.y = CONFIG.staffLength;
+    tip.position.y = weapon.length;
     const marker = this.mesh(new THREE.RingGeometry(0.47, 0.51, 40), new THREE.MeshBasicMaterial({ color: PALETTE[id], transparent: true, opacity: 0.48, depthWrite: false }));
     marker.rotation.x = -Math.PI / 2; marker.castShadow = false;
     const contact = this.mesh(new THREE.RingGeometry(0.12, 0.155, 24), new THREE.MeshBasicMaterial({ color: 0xf5efd6, transparent: true, opacity: 0.75, depthWrite: false }));
@@ -216,41 +225,47 @@ export class ArenaView {
     const indices = [];
     for (let i = 0; i < maxTrail - 1; i++) { const j = i * 2; indices.push(j, j + 1, j + 2, j + 1, j + 3, j + 2); }
     trailGeometry.setIndex(indices);
-    const trail = new THREE.Mesh(trailGeometry, new THREE.MeshBasicMaterial({ color: PALETTE[id], transparent: true, opacity: 0.11, side: THREE.DoubleSide, depthWrite: false }));
+    const trail = new THREE.Mesh(trailGeometry, new THREE.MeshBasicMaterial({ color: weaponType === 'sword' ? 0xffa256 : PALETTE[id], transparent: true, opacity: 0.11, side: THREE.DoubleSide, depthWrite: false }));
     trail.frustumCulled = false;
     this.actors.add(trail);
-    return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, marker, contact, trail, positions, trailHistory: [], maxTrail, baseColor: new THREE.Color(PALETTE[id]) };
+    return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, marker, contact, trail, positions, trailHistory: [], maxTrail, weaponType, baseColor: new THREE.Color(PALETTE[id]) };
   }
 
-  setWeaponModel(source) {
-    if (this.disposed || this.weaponLoaded) return;
+  setWeaponModel(source, type = 'polearm') {
+    if (this.disposed || this.weaponLoaded.has(type)) return;
     for (const [id, fighter] of this.players.entries()) {
+      if (fighter.weaponType !== type) continue;
       const weapon = source.clone(true);
-      weapon.quaternion.setFromUnitVectors(WEAPON_AXIS, UP);
+      const axis = type === 'sword' ? SWORD_AXIS : WEAPON_AXIS;
+      const sourceButt = type === 'sword' ? SWORD_BUTT : WEAPON_BUTT;
+      weapon.quaternion.setFromUnitVectors(axis, UP);
       weapon.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(weapon);
       const height = bounds.max.y - bounds.min.y;
-      if (!Number.isFinite(height) || height <= 0) throw new Error('Tripo weapon has invalid bounds');
-      const scale = CONFIG.staffLength / height;
-      const butt = WEAPON_BUTT.clone().applyQuaternion(weapon.quaternion).multiplyScalar(scale);
+      if (!Number.isFinite(height) || height <= 0) throw new Error('Weapon model has invalid bounds');
+      const scale = WEAPONS[type].length / height;
       weapon.scale.setScalar(scale);
+      const butt = sourceButt.clone().applyQuaternion(weapon.quaternion).multiplyScalar(scale);
       weapon.position.copy(butt.multiplyScalar(-1));
       weapon.traverse(object => {
         if (!object.isMesh) return;
         object.castShadow = true;
         object.receiveShadow = true;
         object.material = object.material.clone();
-        object.material.color.set(0x626a70).lerp(fighter.baseColor, 0.18);
-        object.material.metalness = 0.24;
-        object.material.roughness = 0.62;
+        if (type === 'polearm') {
+          object.material.color.set(0x626a70).lerp(fighter.baseColor, 0.18);
+          object.material.metalness = 0.24;
+          object.material.roughness = 0.62;
+        }
       });
       fighter.staff.add(weapon);
       fighter.rod.visible = false;
       fighter.cap.visible = false;
       fighter.tip.visible = false;
+      if (type === 'sword') fighter.grip.visible = false;
       // Keep the existing colored grip so each player can identify their weapon.
     }
-    this.weaponLoaded = true;
+    this.weaponLoaded.add(type);
   }
 
   resize(width, height) {
@@ -282,13 +297,20 @@ export class ArenaView {
       model.skinMat.color.set(0xe7c199).lerp(new THREE.Color(0xffffff), p.hitFlash * 0.8);
       const frame = staffFrame(p);
       model.staff.position.copy(vec(staffFrame(p, 0).point));
-      model.staff.quaternion.setFromUnitVectors(UP, vec(frame.r).normalize());
+      if (model.weaponType === 'sword') {
+        // Yaw then pitch gives the flat blade a stable roll, including when it
+        // points straight down and supports the fighter.
+        model.staff.quaternion.setFromAxisAngle(UP, -p.phi)
+          .multiply(this.swordPitch.setFromAxisAngle(Z_AXIS, -p.theta));
+      } else {
+        model.staff.quaternion.setFromUnitVectors(UP, vec(frame.r).normalize());
+      }
       model.marker.position.set(p.p.x, 0.02, p.p.z);
       model.marker.material.opacity = clamp(0.5 - (p.p.y - CONFIG.bodyFloor) * 0.09, 0.16, 0.5);
       model.contact.visible = p.staffGrounded;
       model.contact.position.set(frame.point.x, 0.023, frame.point.z);
       if (recordTrail) {
-        const near = staffFrame(p, CONFIG.staffLength * 0.72).point;
+        const near = staffFrame(p, weaponStats(p).length * 0.72).point;
         model.trailHistory.unshift([vec(near), vec(frame.point)]);
         if (model.trailHistory.length > model.maxTrail) model.trailHistory.pop();
       }
@@ -346,7 +368,7 @@ export class ArenaView {
   }
 
   updateSoloCamera(player, dt) {
-    const aim = staffFrame(player, CONFIG.staffLength * 0.55).point;
+    const aim = staffFrame(player, weaponStats(player).length * 0.55).point;
     const wantedYaw = player.phi;
     const firstFrame = !this.cameraInitialized;
     if (firstFrame) {
@@ -421,7 +443,7 @@ export class ArenaView {
       const objectMaterials = Array.isArray(object.material) ? object.material : [object.material];
       for (const mat of objectMaterials) if (mat) {
         materials.add(mat);
-        if (mat.map) textures.add(mat.map);
+        for (const value of Object.values(mat)) if (value?.isTexture) textures.add(value);
       }
     });
     for (const geometry of geometries) geometry.dispose();
