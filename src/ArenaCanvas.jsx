@@ -13,6 +13,8 @@ function ArenaScene({ session, mode }) {
   const view = useMemo(() => new ArenaView(gl, camera, mode), [gl, camera, mode]);
   const revision = useRef(session.visualRevision);
   const point = useMemo(() => new Vector3(), []);
+  const headingForward = useMemo(() => new Vector3(), []);
+  const headingRight = useMemo(() => new Vector3(), []);
 
   useEffect(() => {
     view.resize(size.width, size.height);
@@ -89,6 +91,18 @@ function ArenaScene({ session, mode }) {
     for (const event of impacts) view.impact(event);
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
     view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending', Math.min(delta, 0.06));
+
+    if (mode === 'solo' && session.world.players[0]) {
+      const arrow = document.getElementById('staff-heading-arrow');
+      if (arrow) {
+        headingForward.set(0, 0, -1).applyQuaternion(camera.quaternion).setY(0).normalize();
+        headingRight.set(1, 0, 0).applyQuaternion(camera.quaternion).setY(0).normalize();
+        const phi = session.world.players[0].phi;
+        const x = Math.cos(phi), z = Math.sin(phi);
+        const angle = Math.atan2(x * headingRight.x + z * headingRight.z, x * headingForward.x + z * headingForward.z);
+        arrow.style.transform = `rotate(${angle}rad)`;
+      }
+    }
 
     for (const player of session.world.players) {
       const label = document.getElementById(`player-label-${player.id}`);

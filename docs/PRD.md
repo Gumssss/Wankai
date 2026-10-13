@@ -98,7 +98,7 @@ Use playtest findings to tune controls and feedback. If friends struggle to cont
 
 ### Solo camera experiment
 
-A separate local prototype offers one fighter with the existing staff movement rules, no opponent, and a circular arena with three times the duel radius. The view starts from the weapon's side, softly keeps it in frame, and follows the fighter's position. A / D still rotate the staff; mouse drag changes the camera angle and the wheel changes distance. This mode is for exploring movement and camera feel and does not replace the first demo's two-player playtest criteria. Its camera and arena size remain open to hands-on tuning.
+A separate local prototype offers one fighter with the existing staff movement rules, no opponent, and a circular arena with three times the duel radius. The raised view starts from the weapon's side, softly keeps it in frame, and follows the fighter's position. A / D still rotate the staff; mouse drag changes the camera angle and the wheel changes distance. A small dial shows the staff's horizontal direction relative to the current camera, since the fighter has no fixed facing direction. This mode is for exploring movement and camera feel and does not replace the first demo's two-player playtest criteria. Its camera and arena size remain open to hands-on tuning.
 
 ### Open dependencies
 

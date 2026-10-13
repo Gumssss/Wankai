@@ -28,8 +28,8 @@ export class ArenaView {
     this.camera.position.copy(this.solo ? new THREE.Vector3(-4, 3, -4) : this.cameraBase);
     this.camera.lookAt(this.target);
     this.cameraYaw = 0;
-    this.cameraPitch = 0.26;
-    this.cameraDistance = 5.8;
+    this.cameraPitch = 0.52;
+    this.cameraDistance = 6.2;
     this.mouseYaw = 0;
     this.mousePitch = 0;
     this.mouseIdle = 0;

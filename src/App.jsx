@@ -131,6 +131,7 @@ function App() {
       <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={solo ? 'solo' : 'shared'} session={session} mode={solo ? 'solo' : 'duel'} onReady={() => setReady(true)} /></CanvasBoundary></div>
       <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '一方圆台，两位棍客。'}</span></div>
       <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
+      {solo && active && <div className="heading-guide" aria-label="武器水平朝向，相对当前视角。A 和 D 旋转武器。"><strong>武器朝向</strong><span>相对当前视角</span><div className="heading-dial"><div id="staff-heading-arrow" className="heading-arrow">↑</div></div><small>A / D 绕身旋转</small></div>}
       <section className="scoreboard" aria-label={solo ? '单人状态' : '对战血量'}>
         <FighterScore id={0} health={game.health[0]} practice={game.practice} />
         <div className="match-center"><span>{solo ? '自由视角' : game.practice ? '自由练习' : '自由对决'}</span>{!solo && <b>VS</b>}<div>{elapsed}</div></div>
