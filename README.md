@@ -1,18 +1,19 @@
 # 丸棍竞技场
 
-一个可以离线运行的浏览器 3D 双人物理对战原型。使用本地 Three.js 渲染，固定时间步的自定义约束物理计算撑地、挥棍与碰撞。
+一个可以离线运行的 Electron 3D 双人物理对战原型。界面使用 React，角斗场由 React Three Fiber 和 Three.js 渲染，固定时间步的自定义约束物理计算撑地、挥棍与碰撞。
 
 ## 启动
 
-在此目录打开终端，运行：
+需要 macOS 和 Node.js 22.12 或更新版本。首次安装依赖后，在此目录运行：
 
 ```sh
-python3 scripts/serve.py
+npm install
+npm run dev
 ```
 
-然后打开 **http://localhost:8000**。macOS 也可以双击 `start.command` 启动服务器。关闭服务器时，在终端按 `Ctrl+C`。
+Vite 会在 `127.0.0.1:5173` 启动本地开发服务器，Electron 会自动打开游戏窗口。修改 React 或场景代码会热更新。关闭开发环境时，在终端按 `Ctrl+C`。安装依赖需要联网；安装后，游戏运行不需要联网。
 
-需要 Python 3 和支持 WebGL 2 的现代浏览器。不需要 Node.js、npm 安装或网络连接。若端口被占用，可以运行 `python3 scripts/serve.py --port 8001`。
+运行 `npm test` 检查物理规则，运行 `npm run build` 验证渲染器构建。本阶段提供可玩的开发应用，不生成安装包。
 
 ## 操作
 
@@ -25,7 +26,7 @@ python3 scripts/serve.py
 | 暂停 / 继续 | Esc | Esc |
 | 重新开始 | R | R |
 
-按住 W / S（↑ / ↓）向上甩至 0° / 向下砸至 180°，与方位角无关，接近目标时主动减速。松手后撤去控制力，保留转动惯性，棍子受重力自然下落，可以越过竖直方向继续摆动（overshoot），再由阻尼逐渐减速；接触地面或对手时仍会发生碰撞。同时按住上下键也视为松手。暂停、失焦会按松键处理。
+按住 W / S（↑ / ↓）向上甩至 0° / 向下砸至 180°，与方位角无关，接近目标时主动减速。上甩仍在运动时松手，棍子可越过竖直方向最多约 10°，随后回到顶点；在顶点按下砸会沿原来的上甩方向继续转动。停稳后松手不会凭空产生转速。其他自由摆动仍受重力和阻尼影响，接触地面或对手时仍会发生碰撞。同时按住上下键也视为松手。暂停、失焦会按松键处理。
 
 A / D（← / →）保持方位角的惯性控制：按住施加转动力，松手靠阻尼逐渐减速，反向按键先刹车。头、身体固定为一个始终直立的整体，主体没有独立移动操作。通过压棍触地、收棍与调整方位来移动；空中挥棍不能凭空推动角色。
 
@@ -47,17 +48,23 @@ A / D（← / →）保持方位角的惯性控制：按住施加转动力，松
 ## 文件
 
 - `src/physics.js`：与渲染无关的固定步长物理、约束冲量、伤害。
-- `src/scene.js`：3D 场景、角色、武器、拖尾、粒子。
-- `src/main.js`：键盘输入、对局状态、HUD、暂停和结算。
+- `src/scene.js` 和 `src/ArenaCanvas.jsx`：角斗场、角色、武器、拖尾、粒子与 React Three Fiber 渲染循环。
+- `src/game-session.js`：对局状态、键盘输入和固定步长物理循环。
+- `src/App.jsx`：React 菜单、HUD、暂停和结算。
 - `src/audio.js`：Web Audio 合成音效，无外部音频资源。
 - `src/style.css`：界面布局与窄屏适配。
+- `public/models/polearm.glb`：从 Tripo 导出的武器模型压缩后的游戏用副本；原始文件保存在 `assets/source/`。
+- `electron/main.cjs`：沙盒化 Electron 开发窗口，不开放 Node.js 或 IPC 给渲染器。
 - `tests/physics.test.js`：物理规则与稳定性回归测试。
-- `vendor/`：Three.js 0.180.0，本地保存；授权见 `THREE-LICENSE.txt`。
 
-如果已安装 Node.js 18 或更新版本，可运行 `npm test` 或 `node --test tests/physics.test.js`。
-
-浏览器控制台可通过 `window.__arena.snapshot()` 只读检查当前对局，通过 `window.__arena.rendererInfo()` 查看渲染资源计数。
+开发者工具控制台可通过 `window.__arena.snapshot()` 只读检查当前对局，通过 `window.__arena.rendererInfo()` 查看渲染资源计数。
 
 ## 原型边界
 
 当前是同屏键盘原型，没有联网、AI 对手或手柄控制。物理采用专门为“直立身体 + 两自由度棍子”构建的简化模型，角色碰撞使用胶囊近似。质量、阻尼、摩擦、驱动力等参数集中在 `CONFIG`，可在实玩后继续调校。部分键盘有多键冲突，可以先在练习模式验证操作。
+
+## 设计文档
+
+- [双人演示版 PRD](docs/PRD.md)
+- [游戏术语](GLOSSARY.md)
+- [首次 Tripo 武器模型实验指南](docs/TRIPO_WEAPON_TRIAL.md)

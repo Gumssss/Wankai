@@ -20,6 +20,7 @@ export const CONFIG = Object.freeze({
   polarBrakeAcceleration: 30,
   polarAngleTolerance: 0.0005,
   polarSpeedTolerance: 0.08,
+  upFollowThrough: Math.PI / 18,
   maxAngularSpeed: 8.5,
   grip: 1.28,
   maxHealth: 100,
@@ -43,6 +44,9 @@ export function makePlayer(id) {
     theta: 1.32,
     thetaTarget: null,
     polarInput: 0,
+    lastUpPole: null,
+    upwardSwingSign: 0,
+    followThrough: null,
     phi: id === 0 ? 0.95 : Math.PI - 0.95,
     wt: 0,
     wp: 0,
@@ -91,7 +95,9 @@ function impulse(p, frame, force) {
 }
 
 function drivePolarAngle(p, dt) {
-  if (p.thetaTarget === null) {
+  const returning = p.followThrough?.returning;
+  const target = p.thetaTarget ?? (returning ? p.followThrough.pole : null);
+  if (target === null) {
     // Uniform floating rod: gravity torque / inertia about the body pivot.
     const center = CONFIG.staffOffset + CONFIG.staffLength / 2;
     const radiusSquared = center ** 2 + CONFIG.staffLength ** 2 / 12;
@@ -99,10 +105,11 @@ function drivePolarAngle(p, dt) {
     p.wt = (p.wt + gravityAcceleration * dt) * Math.exp(-CONFIG.damping * dt);
     return;
   }
-  const error = p.thetaTarget - p.theta;
+  const error = target - p.theta;
   if (Math.abs(error) <= CONFIG.polarAngleTolerance && Math.abs(p.wt) <= CONFIG.polarSpeedTolerance) {
-    p.theta = p.thetaTarget;
+    p.theta = target;
     p.wt = 0;
+    if (returning) p.followThrough = null;
     return;
   }
   // Choose a speed we can brake to zero within the remaining angle. Reserve
@@ -152,13 +159,30 @@ export class ArenaPhysics {
     if (!player) return;
     direction = Math.sign(direction || 0);
     if (direction === 0) {
-      // Releasing the motor preserves angular momentum and frees the pendulum.
+      // A moving Up swing can coast briefly past vertical. If it reaches the
+      // ten-degree limit, the controller settles it back to straight up.
+      if (player.polarInput === -1 && player.thetaTarget !== null) {
+        const sign = player.upwardSwingSign || Math.sign(player.wt) || -1;
+        if (player.wt * sign > 0) {
+          player.followThrough = { pole: player.thetaTarget, sign, returning: false };
+        }
+      }
       player.thetaTarget = null;
     } else if (direction !== player.polarInput) {
       const pole = direction < 0 ? 0 : Math.PI;
-      // After a free swing past a pole, choose its nearest equivalent so W
-      // always raises the rod and S lowers it, on either side of the body.
-      player.thetaTarget = pole + Math.round((player.theta - pole) / (2 * Math.PI)) * 2 * Math.PI;
+      const nearPreviousTop = direction > 0 && player.lastUpPole !== null &&
+        Math.abs(player.theta - player.lastUpPole) <= CONFIG.upFollowThrough + 1e-6;
+      // At the top the two downward targets are equally near. Continue the
+      // previous upward rotation, including when Up stopped exactly at 90°.
+      player.thetaTarget = nearPreviousTop ? player.lastUpPole + player.upwardSwingSign * Math.PI :
+        pole + Math.round((player.theta - pole) / (2 * Math.PI)) * 2 * Math.PI;
+      player.followThrough = null;
+      if (direction < 0) {
+        player.lastUpPole = player.thetaTarget;
+        player.upwardSwingSign = Math.sign(player.thetaTarget - player.theta) || Math.sign(player.wt) || -1;
+      } else {
+        player.lastUpPole = null;
+      }
     }
     player.polarInput = direction;
   }
@@ -192,6 +216,12 @@ export class ArenaPhysics {
       drivePolarAngle(p, dt);
       p.wp = clamp((p.wp + motorP * dt) * damp, -CONFIG.maxAngularSpeed, CONFIG.maxAngularSpeed);
       p.theta += p.wt * dt;
+      if (p.followThrough && !p.followThrough.returning &&
+          (p.theta - p.followThrough.pole) * p.followThrough.sign >= CONFIG.upFollowThrough) {
+        p.theta = p.followThrough.pole + p.followThrough.sign * CONFIG.upFollowThrough;
+        p.wt = 0;
+        p.followThrough.returning = true;
+      }
       // Net angular acceleration before contact, including damping/speed limits.
       // Holding an already-max-speed motor does not award an acceleration bonus.
       const smooth = 1 - Math.exp(-dt / 0.09);

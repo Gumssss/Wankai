@@ -161,6 +161,31 @@ export const cases = [
     w.setPolarInput(0, 0); run(w, 0.1);
     assert(p.theta < 0 && p.wt < 0, 'upper pole must not clamp free motion');
   }],
+  ['上甩松手最多越过顶点十度，停稳后松手不产生运动', () => {
+    const w = isolated(); const p = w.players[0]; p.p.y = 100;
+    p.theta = 0.02; p.wt = -2; p.polarInput = -1; p.thetaTarget = 0;
+    w.setPolarInput(0, 0);
+    let furthest = 0;
+    for (let i = 0; i < 180; i++) {
+      w.step(idle); furthest = Math.min(furthest, p.theta);
+    }
+    assert(furthest < 0 && furthest >= -CONFIG.upFollowThrough - 1e-8, 'release exceeded ten degrees');
+    const stopped = isolated(); const top = stopped.players[0]; top.p.y = 100;
+    top.theta = 0; top.wt = 0; top.thetaTarget = 0; top.polarInput = -1;
+    stopped.setPolarInput(0, 0); run(stopped, 0.2);
+    near(top.theta, 0); near(top.wt, 0);
+  }],
+  ['在顶点按下砸延续上甩方向，不反转', () => {
+    for (const [start, sign] of [[0.6, -1], [-0.6, 1]]) {
+      const w = isolated(); const p = w.players[0]; p.p.y = 100; p.theta = start;
+      run(w, 2, [{ theta: -1 }, {}]);
+      near(p.theta, 0); near(p.wt, 0);
+      w.setPolarInput(0, 1);
+      near(p.thetaTarget, sign * Math.PI);
+      run(w, 0.1, [{ theta: 1 }, {}]);
+      assert(sign * p.theta > 0, 'down input reversed at the top');
+    }
+  }],
   ['越过极点后重新按键仍正确向上或向下', () => {
     for (const angle of [-0.4, Math.PI + 0.4, 2 * Math.PI + 0.4]) {
       for (const direction of [-1, 1]) {

@@ -4,90 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f2eee5" />
-    <meta name="description" content="" />
     <title>丸棍竞技场 · 一棍定胜负</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23282e29'/%3E%3Cellipse cx='32' cy='41' rx='12' ry='14' fill='%23e99570'/%3E%3Ccircle cx='32' cy='19' r='10' fill='%23f1d1a6'/%3E%3Cpath d='M17 49L50 15' stroke='%23fff6df' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
-    <header class="topbar">
-      <a class="brand" href="./" aria-label="丸棍竞技场首页">
-        <span class="brand-mark"><i></i><b></b></span>
-        <span>丸棍<span class="brand-light">竞技场</span><small>WAN GUN / ARENA</small></span>
-      </a>
-      <div class="header-center"><span class="status-dot"></span> 双人 · 物理 · 对战 <span class="version">VOL. 001</span></div>
-      <nav aria-label="游戏选项">
-        <button id="sound" class="icon-button" aria-label="关闭声音" title="声音" aria-pressed="true">
-          <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path class="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>
-        </button>
-        <button id="help" class="text-button"><span class="help-icon">?</span> 玩法说明</button>
-      </nav>
-    </header>
-
-    <main id="game-shell">
-      <div id="viewport" aria-label="3D 圆形角斗场"></div>
-      <div class="arena-caption"><span class="eyebrow">THE PIT / 01</span><span>一方圆台，两位棍客。</span></div>
-      <div class="arena-coordinate" aria-hidden="true">N ↑<br><span>35° / FIXED VIEW</span></div>
-
-      <section class="scoreboard" aria-label="对战血量">
-        <div class="fighter fighter-one">
-          <div class="fighter-avatar"><span></span><i></i></div>
-          <div class="fighter-info"><div class="fighter-heading"><span><b>赤丸</b> <small>PLAYER 01</small></span><strong id="health-one">100<small>/100</small></strong></div><div class="health-track"><div class="health-ghost" id="ghost-one"></div><div class="health-fill" id="bar-one"></div></div></div>
-        </div>
-        <div class="match-center"><span id="round-label">自由对决</span><b>VS</b><div id="elapsed">00:00</div></div>
-        <div class="fighter fighter-two">
-          <div class="fighter-avatar"><span></span><i></i></div>
-          <div class="fighter-info"><div class="fighter-heading"><span><b id="name-two">青丸</b> <small id="label-two">PLAYER 02</small></span><strong id="health-two">100<small>/100</small></strong></div><div class="health-track"><div class="health-ghost" id="ghost-two"></div><div class="health-fill" id="bar-two"></div></div></div>
-        </div>
-      </section>
-
-      <div id="player-label-one" class="player-label red">P1<span>赤丸</span></div>
-      <div id="player-label-two" class="player-label blue">P2<span>青丸</span></div>
-      <div id="effects" aria-hidden="true"></div>
-      <div id="countdown" aria-live="polite"></div>
-      <div id="hit-readout" class="hit-readout"><span>有效命中</span><strong>−0</strong><small></small></div>
-
-      <section id="welcome" class="welcome-panel">
-        <div class="welcome-copy"><div class="eyebrow">LESS BUTTONS. MORE BONK.</div><h1>一棍定胜负<span>。</span></h1><p><br></p></div>
-        <div class="welcome-actions"><button id="start" class="primary-button">开始双人对战 <span>↗</span></button><button id="practice" class="secondary-button">单人练习 <span>→</span></button><small>同屏双人 · 共用一块键盘</small></div>
-      </section>
-
-      <div id="match-tools" class="match-tools" hidden><button id="pause" class="pill-button">Ⅱ 暂停 <kbd>ESC</kbd></button><button id="restart" class="pill-button" title="重新开始当前对局">↻ 重开</button><button id="home" class="pill-button" title="回到主菜单">返回</button></div>
-      <div id="live-tip" class="live-tip" hidden><span class="status-dot"></span><span></span></div>
-
-      <div id="loading" class="loading"><span class="loader"></span><p>正在布置角斗场…</p></div>
-      <div id="error" class="error-panel" hidden><h2>角斗场暂时无法载入</h2><p id="error-message"></p><button class="primary-button" onclick="location.reload()">重新加载 ↗</button></div>
-    </main>
-
-    <footer class="controls-bar">
-      <div class="control-block"><span class="player-chip red">P1</span><div class="key-grid"><kbd data-key="KeyW">W</kbd><kbd data-key="KeyA">A</kbd><kbd data-key="KeyS">S</kbd><kbd data-key="KeyD">D</kbd></div><div class="control-copy"><b>赤丸的棍法</b><span>W / S 上甩·下砸 <i>·</i> A / D 左右扫转</span></div></div>
-      <div class="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br><b>棍子才是主角</b></span></div>
-      <div class="control-block"><span class="player-chip blue">P2</span><div class="key-grid"><kbd data-key="ArrowUp">↑</kbd><kbd data-key="ArrowLeft">←</kbd><kbd data-key="ArrowDown">↓</kbd><kbd data-key="ArrowRight">→</kbd></div><div class="control-copy"><b>青丸的棍法</b><span>↑ / ↓ 上甩·下砸 <i>·</i> ← / → 左右扫转</span></div></div>
-    </footer>
-
-    <dialog id="help-dialog" class="modal">
-      <button class="modal-close" data-close="help-dialog" aria-label="关闭玩法说明">×</button>
-      <span class="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，一身棍法。</h2>
-      <p class="modal-intro">你控制的是悬空棍子的转动力。棍子与身体保持间距，绕身体旋转；身体始终直立，由撑地或碰撞带动。</p>
-      <div class="guide-steps">
-        <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D（← / →）把棍子伸向想去的方向，再按 S（↓）压棍。棍端抓地，身体会被撑起并靠近落点。按 W（↑）收棍落地，再来一次。</p></div></article>
-        <article><span>02</span><div><h3>松手，自然下落</h3><p>按住 W（↑）向上甩，按住 S（↓）向下砸；松手后保留惯性并受重力下落，可越过竖直方向继续摆动，再由阻尼逐渐减速。按住时仍向 0° / 180° 运动并主动减速。A / D（← / →）左右扫转仍保留惯性与阻尼。</p></div></article>
-        <article><span>03</span><div><h3>挥起来，才打得疼</h3><p>棍子撞中头部或躯干都会扣血，伤害相同。撞得越快、命中前加速越充分，伤害越高；贴着不动不会持续扣血。武器之间可以互相格挡。</p></div></article>
-      </div>
-      <div class="guide-note"><b>100 HP · 血量归零判负</b><span>圆台有边界，不会掉落。练习木桩会在受击停止后恢复血量。</span></div>
-      <button class="primary-button" data-close="help-dialog">明白了，抡起来 <span>↗</span></button>
-    </dialog>
-
-    <dialog id="pause-dialog" class="modal compact-modal"><span class="eyebrow">TAKE A BREATH</span><h2>歇一棍。</h2><p>对局已暂停，准备好再继续。</p><button id="resume" class="primary-button">继续对战 <span>↗</span></button><button id="pause-home" class="secondary-button">回到主菜单</button></dialog>
-    <dialog id="result-dialog" class="modal compact-modal"><span class="eyebrow">A GOOD BONK, WELL PLAYED.</span><div id="winner-icon" class="winner-icon">赤</div><h2 id="result-title">赤丸获胜</h2><p id="result-detail"></p><button id="rematch" class="primary-button">再战一局 <span>↗</span></button><button id="result-home" class="secondary-button">回到主菜单</button></dialog>
+    <div id="root"></div>
     <noscript><div class="error-panel">请开启 JavaScript 来运行这个 3D 游戏。</div></noscript>
-    <script>
-      if (location.protocol === 'file:') {
-        document.getElementById('loading').hidden = true;
-        document.getElementById('error').hidden = false;
-        document.getElementById('error-message').textContent = '请在项目目录运行 python3 scripts/serve.py，然后打开 http://localhost:8000。也可以双击 start.command 启动服务器。';
-      }
-    </script>
-    <script type="module" src="./src/main.js"></script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

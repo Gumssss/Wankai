@@ -1,25 +1,24 @@
-import * as THREE from '../vendor/three.module.js';
+import * as THREE from 'three';
 import { CONFIG, staffFrame, clamp } from './physics.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const PALETTE = [0xc4684f, 0x568d92];
+// Measured on the first Tripo export: from the shaft's butt toward the blade.
+const WEAPON_AXIS = new THREE.Vector3(0.556405, 0.627597, -0.544551).normalize();
+const WEAPON_BUTT = new THREE.Vector3(-0.391, 0.014, 0.418);
 const vec = p => new THREE.Vector3(p.x, p.y, p.z);
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, ...extra });
 
 export class ArenaView {
-  constructor(container) {
-    this.container = container;
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xebe9dc);
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.28;
-    this.container.appendChild(this.renderer.domElement);
-    this.renderer.domElement.setAttribute('aria-label', '赤丸与青丸的三维圆形角斗场');
-    this.camera = new THREE.OrthographicCamera(-10, 10, 6, -6, 0.1, 120);
+  constructor(renderer, camera) {
+    // R3F owns the renderer, camera, frame loop and canvas. These groups keep
+    // the existing meshes and their appearance while R3F manages each layer.
+    this.arena = new THREE.Group();
+    this.actors = new THREE.Group();
+    this.effectsRoot = new THREE.Group();
+    this.meshRoot = this.arena;
+    this.renderer = renderer;
+    this.camera = camera;
     this.cameraBase = new THREE.Vector3(0, 15.4, 21);
     this.target = new THREE.Vector3(0, 0, -0.3);
     this.camera.position.copy(this.cameraBase);
@@ -31,13 +30,11 @@ export class ArenaView {
     this.reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.makeLighting();
     this.makeArena();
+    this.meshRoot = this.actors;
     this.players = [this.makeFighter(0), this.makeFighter(1)];
-    this.resizeObserver = new ResizeObserver(() => this.resize());
-    this.resizeObserver.observe(container);
-    this.resize();
   }
 
-  mesh(geometry, mat, parent = this.scene) {
+  mesh(geometry, mat, parent = this.meshRoot) {
     const object = new THREE.Mesh(geometry, mat);
     object.castShadow = true;
     object.receiveShadow = true;
@@ -46,7 +43,7 @@ export class ArenaView {
   }
 
   makeLighting() {
-    this.scene.add(new THREE.HemisphereLight(0xfff9e9, 0x849079, 3));
+    this.arena.add(new THREE.HemisphereLight(0xfff9e9, 0x849079, 3));
     const sun = new THREE.DirectionalLight(0xffedcd, 3.4);
     sun.position.set(-8, 15, 8);
     sun.castShadow = true;
@@ -55,10 +52,10 @@ export class ArenaView {
     sun.shadow.normalBias = 0.035;
     sun.shadow.bias = -0.0003;
     sun.shadow.radius = 4;
-    this.scene.add(sun);
+    this.arena.add(sun);
     const fill = new THREE.DirectionalLight(0xffffff, 0.45);
     fill.position.set(7, 5, -8);
-    this.scene.add(fill);
+    this.arena.add(fill);
   }
 
   floorTexture() {
@@ -176,7 +173,7 @@ export class ArenaView {
 
   makeFighter(id) {
     const root = new THREE.Group();
-    this.scene.add(root);
+    this.actors.add(root);
     const bodyMat = material(PALETTE[id]);
     const skinMat = material(0xe7c199);
     const body = this.mesh(new THREE.SphereGeometry(1, 32, 24), bodyMat, root);
@@ -185,7 +182,7 @@ export class ArenaView {
     head.scale.set(0.37, 0.4, 0.335);
     head.position.y = 0.76;
     const staff = new THREE.Group();
-    this.scene.add(staff);
+    this.actors.add(staff);
     const rod = this.mesh(new THREE.CylinderGeometry(CONFIG.staffRadius * 0.83, CONFIG.staffRadius, CONFIG.staffLength, 12), material(0x775339), staff);
     rod.position.y = CONFIG.staffLength / 2;
     const grip = this.mesh(new THREE.CylinderGeometry(0.099, 0.099, 0.38, 12), material(PALETTE[id]), staff);
@@ -207,13 +204,44 @@ export class ArenaView {
     trailGeometry.setIndex(indices);
     const trail = new THREE.Mesh(trailGeometry, new THREE.MeshBasicMaterial({ color: PALETTE[id], transparent: true, opacity: 0.11, side: THREE.DoubleSide, depthWrite: false }));
     trail.frustumCulled = false;
-    this.scene.add(trail);
-    return { root, body, head, bodyMat, skinMat, staff, marker, contact, trail, positions, trailHistory: [], maxTrail, baseColor: new THREE.Color(PALETTE[id]) };
+    this.actors.add(trail);
+    return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, marker, contact, trail, positions, trailHistory: [], maxTrail, baseColor: new THREE.Color(PALETTE[id]) };
   }
 
-  resize() {
-    this.width = this.container.clientWidth;
-    this.height = this.container.clientHeight;
+  setWeaponModel(source) {
+    if (this.disposed || this.weaponLoaded) return;
+    for (const [id, fighter] of this.players.entries()) {
+      const weapon = source.clone(true);
+      weapon.quaternion.setFromUnitVectors(WEAPON_AXIS, UP);
+      weapon.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(weapon);
+      const height = bounds.max.y - bounds.min.y;
+      if (!Number.isFinite(height) || height <= 0) throw new Error('Tripo weapon has invalid bounds');
+      const scale = CONFIG.staffLength / height;
+      const butt = WEAPON_BUTT.clone().applyQuaternion(weapon.quaternion).multiplyScalar(scale);
+      weapon.scale.setScalar(scale);
+      weapon.position.copy(butt.multiplyScalar(-1));
+      weapon.traverse(object => {
+        if (!object.isMesh) return;
+        object.castShadow = true;
+        object.receiveShadow = true;
+        object.material = object.material.clone();
+        object.material.color.set(0x626a70).lerp(fighter.baseColor, 0.18);
+        object.material.metalness = 0.24;
+        object.material.roughness = 0.62;
+      });
+      fighter.staff.add(weapon);
+      fighter.rod.visible = false;
+      fighter.cap.visible = false;
+      fighter.tip.visible = false;
+      // Keep the existing colored grip so each player can identify their weapon.
+    }
+    this.weaponLoaded = true;
+  }
+
+  resize(width, height) {
+    this.width = width;
+    this.height = height;
     const aspect = this.width / Math.max(1, this.height);
     const halfHeight = Math.max(5.5, 8.9 / aspect);
     this.camera.left = -halfHeight * aspect;
@@ -221,7 +249,6 @@ export class ArenaView {
     this.camera.top = halfHeight;
     this.camera.bottom = -halfHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.width, this.height);
   }
 
   update(players, dt, active = false) {
@@ -261,13 +288,13 @@ export class ArenaView {
       p.velocity.y -= 9 * dt;
       p.mesh.scale.setScalar(Math.max(0, p.life / p.maxLife));
       if (p.mesh.position.y < 0.025) { p.mesh.position.y = 0.025; p.velocity.y *= -0.3; }
-      if (p.life <= 0) { this.scene.remove(p.mesh); p.mesh.geometry.dispose(); p.mesh.material.dispose(); this.particles.splice(i, 1); }
+      if (p.life <= 0) { this.effectsRoot.remove(p.mesh); p.mesh.geometry.dispose(); p.mesh.material.dispose(); this.particles.splice(i, 1); }
     }
     for (let i = this.rings.length - 1; i >= 0; i--) {
       const r = this.rings[i]; r.life -= dt;
       r.mesh.scale.setScalar(1 + (1 - r.life / 0.3) * 3);
       r.mesh.material.opacity = Math.max(0, r.life / 0.3 * 0.8);
-      if (r.life <= 0) { this.scene.remove(r.mesh); r.mesh.geometry.dispose(); r.mesh.material.dispose(); this.rings.splice(i, 1); }
+      if (r.life <= 0) { this.effectsRoot.remove(r.mesh); r.mesh.geometry.dispose(); r.mesh.material.dispose(); this.rings.splice(i, 1); }
     }
     this.shake *= Math.exp(-16 * dt);
     this.camera.position.copy(this.cameraBase);
@@ -286,7 +313,7 @@ export class ArenaView {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.055 + Math.random() * 0.07, 0.055),
         new THREE.MeshBasicMaterial({ color: i % 3 === 0 && isHit ? PALETTE[event.target] : i % 2 === 0 ? 0xfff9de : 0xd4a458 }));
       mesh.position.copy(vec(event.point)); mesh.rotation.set(Math.random() * 3, Math.random() * 3, 0);
-      this.scene.add(mesh);
+      this.effectsRoot.add(mesh);
       const normal = event.normal || { x: 0, y: 0.5, z: 0 };
       const velocity = new THREE.Vector3((Math.random() - 0.5) * 5 + normal.x * 2, Math.random() * 4 + 1, (Math.random() - 0.5) * 5 + normal.z * 2);
       const life = 0.3 + Math.random() * 0.35;
@@ -295,7 +322,7 @@ export class ArenaView {
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.14, 0.17, 32),
       new THREE.MeshBasicMaterial({ color: 0xfff8df, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }));
     ring.position.copy(vec(event.point)); ring.quaternion.copy(this.camera.quaternion);
-    this.scene.add(ring); this.rings.push({ mesh: ring, life: 0.3 });
+    this.effectsRoot.add(ring); this.rings.push({ mesh: ring, life: 0.3 });
   }
 
   project(point) {
@@ -304,10 +331,25 @@ export class ArenaView {
   }
 
   clearEffects() {
-    for (const p of [...this.particles, ...this.rings]) { this.scene.remove(p.mesh); p.mesh.geometry.dispose(); p.mesh.material.dispose(); }
+    for (const p of [...this.particles, ...this.rings]) { this.effectsRoot.remove(p.mesh); p.mesh.geometry.dispose(); p.mesh.material.dispose(); }
     this.particles = []; this.rings = []; this.shake = 0;
     for (const p of this.players) p.trailHistory.length = 0;
   }
 
-  render() { this.renderer.render(this.scene, this.camera); }
+  dispose() {
+    this.disposed = true;
+    this.clearEffects();
+    const geometries = new Set(), materials = new Set(), textures = new Set();
+    for (const root of [this.arena, this.actors, this.effectsRoot]) root.traverse(object => {
+      if (object.geometry) geometries.add(object.geometry);
+      const objectMaterials = Array.isArray(object.material) ? object.material : [object.material];
+      for (const mat of objectMaterials) if (mat) {
+        materials.add(mat);
+        if (mat.map) textures.add(mat.map);
+      }
+    });
+    for (const geometry of geometries) geometry.dispose();
+    for (const material of materials) material.dispose();
+    for (const texture of textures) texture.dispose();
+  }
 }
