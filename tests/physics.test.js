@@ -59,6 +59,8 @@ test('each fighter starts facing the opponent and weapon pitch cannot flip camer
   const [first, second] = world.players;
   assert.ok(Math.abs(fighterHeading(first)) < 1e-8);
   assert.ok(Math.abs(fighterHeading(second) - Math.PI) < 1e-8);
+  assert.equal(first.phi, fighterHeading(first), 'player one swings in the direction they face');
+  assert.equal(second.phi, fighterHeading(second), 'player two swings in the direction they face');
   const heading = duelCameraTarget(first).heading;
   first.theta = 0;
   const raised = duelCameraTarget(first);

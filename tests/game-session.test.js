@@ -127,3 +127,20 @@ test('left and right keys steer each weapon relative to its own facing view', ()
     { theta: 0, phi: 1 },
   ]);
 });
+
+test('front or back swing combines with horizontal steering for both players', () => {
+  const session = createSession();
+  session.startRound('duel');
+  advance(session, 2.5);
+  for (const key of ['KeyW', 'KeyA', 'ArrowDown', 'ArrowRight']) session.keyDown(key);
+  assert.deepEqual(session.getInputs(), [
+    { theta: 1, phi: -1 },
+    { theta: -1, phi: 1 },
+  ]);
+  session.keyDown('KeyS');
+  session.keyDown('ArrowUp');
+  assert.deepEqual(session.getInputs(), [
+    { theta: 0, phi: -1 },
+    { theta: 0, phi: 1 },
+  ], 'opposite swing keys cancel without cancelling horizontal steering');
+});

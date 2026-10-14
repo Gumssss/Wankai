@@ -98,47 +98,27 @@ export const cases = [
     w.step([{ phi: -1 }, {}]); assert(p.wp > 0 && p.wp < 5, 'should not reverse instantly');
     run(w, 0.35, [{ phi: -1 }, {}]); assert(p.wp < 0, 'should eventually reverse');
   }],
-  ['双方在不同方位按住上下键都能到达边界并提前减速', () => {
+  ['双方从头顶可向前或向后挥，越过地面方向继续旋转', () => {
     for (const id of [0, 1]) for (const direction of [-1, 1]) {
-      for (const phi of [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI]) {
-        const w = isolated(); const p = w.players[id]; p.p.y = 100; p.phi = phi;
-        const target = direction < 0 ? 0 : Math.PI;
-        const inputs = [{}, {}]; inputs[id] = { theta: direction };
-        let peak = 0, braked = false;
-        for (let i = 0; i < 360; i++) {
-          const before = p.theta, speed = Math.abs(p.wt);
-          w.step(inputs);
-          assert(p.theta >= 0 && p.theta <= Math.PI, 'overshot pole');
-          assert(direction * (p.theta - before) >= -1e-10, 'bounced');
-          peak = Math.max(peak, Math.abs(p.wt));
-          if (speed > 0.2 && Math.abs(p.wt) < speed) braked = true;
-          if (before !== target && p.theta === target) assert(speed < 0.2, 'did not brake before endpoint');
-        }
-        near(p.theta, target); near(p.wt, 0);
-        assert(peak > 1 && braked, 'missing acceleration/braking');
-      }
+      const w = isolated(); const p = w.players[id]; p.p.y = 1000; p.theta = 0; p.wt = 0;
+      const inputs = [{}, {}]; inputs[id] = { theta: direction };
+      run(w, 1, inputs);
+      assert(direction * p.theta > Math.PI, 'held input must pass the downward pole');
+      assert(direction * p.wt > 0, 'angular velocity must follow the chosen side');
     }
   }],
-  ['双方松手保留瞬时角速度，并在重力作用下改变转速', () => {
-    for (const id of [0, 1]) for (const direction of [-1, 1]) {
-      const w = isolated(); const p = w.players[id]; p.p.y = 100;
-      const input = [{}, {}]; input[id] = { theta: direction };
-      run(w, 0.1, input); const angle = p.theta, speed = p.wt;
-      w.setPolarInput(id, 0);
-      near(p.theta, angle); near(p.wt, speed);
-      assert(p.thetaTarget === null, 'release must remove motor target');
-      w.step(idle);
-      assert(p.theta !== angle && p.wt !== 0, 'release must not freeze motion');
-      assert(p.wt > speed, 'gravity must accelerate toward lower pose');
-    }
-  }],
-  ['松手后再次按键继续转动，也能反方向调整', () => {
-    const w = isolated(); const p = w.players[0]; p.p.y = 100; p.theta = Math.PI / 2;
-    run(w, 0.15, [{ theta: -1 }, {}]); w.step(idle); const stopped = p.theta;
-    run(w, 0.1, [{ theta: -1 }, {}]); assert(p.theta < stopped, 'resume should move up');
-    const speed = p.wt; w.step([{ theta: 1 }, {}]);
-    assert(p.wt < 0 && p.wt > speed, 'reversing held input should brake first');
-    run(w, 2, [{ theta: 1 }, {}]); near(p.theta, Math.PI); near(p.wt, 0);
+  ['松手保留角速度，反向按键先刹车再反转', () => {
+    const w = isolated(); const p = w.players[0]; p.p.y = 1000; p.theta = 0; p.wt = 0;
+    run(w, 0.12, [{ theta: 1 }, {}]); const angle = p.theta, speed = p.wt;
+    w.setPolarInput(0, 0);
+    near(p.theta, angle); near(p.wt, speed);
+    w.step(idle);
+    assert(p.theta > angle && p.wt > 0, 'release must preserve motion');
+    const beforeReverse = p.wt;
+    w.step([{ theta: -1 }, {}]);
+    assert(p.wt > 0 && p.wt < beforeReverse, 'opposite input should brake before reversing');
+    run(w, 0.35, [{ theta: -1 }, {}]);
+    assert(p.wt < 0 && p.theta < angle, 'reverse input should carry the weapon back');
   }],
   ['自由摆动会越过 180 度、回摆并通过阻尼耗能', () => {
     const w = isolated(); const p = w.players[0]; p.p.y = 10000;
@@ -155,58 +135,27 @@ export const cases = [
     assert(crossed && returned, 'must overshoot and swing back');
     assert(energy() < initialEnergy * 0.01, 'damping must dissipate swing energy');
   }],
-  ['上甩松手可越过 0 度，不被边界截停', () => {
-    const w = isolated(); const p = w.players[0]; p.p.y = 100;
-    p.theta = 0.02; p.wt = -2; p.polarInput = -1; p.thetaTarget = 0;
-    w.setPolarInput(0, 0); run(w, 0.1);
-    assert(p.theta < 0 && p.wt < 0, 'upper pole must not clamp free motion');
-  }],
-  ['上甩松手最多越过顶点十度，停稳后松手不产生运动', () => {
-    const w = isolated(); const p = w.players[0]; p.p.y = 100;
-    p.theta = 0.02; p.wt = -2; p.polarInput = -1; p.thetaTarget = 0;
-    w.setPolarInput(0, 0);
-    let furthest = 0;
-    for (let i = 0; i < 180; i++) {
-      w.step(idle); furthest = Math.min(furthest, p.theta);
-    }
-    assert(furthest < 0 && furthest >= -CONFIG.upFollowThrough - 1e-8, 'release exceeded ten degrees');
-    const stopped = isolated(); const top = stopped.players[0]; top.p.y = 100;
-    top.theta = 0; top.wt = 0; top.thetaTarget = 0; top.polarInput = -1;
-    stopped.setPolarInput(0, 0); run(stopped, 0.2);
-    near(top.theta, 0); near(top.wt, 0);
-  }],
-  ['在顶点下砸固定从背侧落下，不依赖之前的上甩方向', () => {
-    for (const start of [0.6, -0.6]) {
-      const w = isolated(); const p = w.players[0]; p.p.y = 100; p.theta = start;
-      run(w, 2, [{ theta: -1 }, {}]);
-      near(p.theta, 0); near(p.wt, 0);
-      w.setPolarInput(0, 1);
-      near(p.thetaTarget, -Math.PI);
-      run(w, 0.1, [{ theta: 1 }, {}]);
-      assert(p.theta < 0, 'down input did not choose the back side');
+  ['从头顶同时挥动和水平转向，两种输入都生效', () => {
+    for (const [theta, phi] of [[1, -1], [-1, 1]]) {
+      const w = isolated(); const p = w.players[0]; p.p.y = 1000; p.theta = 0; p.wt = 0;
+      const startPhi = p.phi;
+      run(w, 0.3, [{ theta, phi }, {}]);
+      assert(theta * p.theta > 0.1, 'vertical-plane swing did not respond');
+      assert(phi * (p.phi - startPhi) > 0.1, 'horizontal turn did not respond');
     }
   }],
-  ['越过极点后重新按键仍正确向上或向下', () => {
-    for (const angle of [-0.4, Math.PI + 0.4, 2 * Math.PI + 0.4]) {
-      for (const direction of [-1, 1]) {
-        const w = isolated(); const p = w.players[0]; p.p.y = 100;
-        p.theta = angle; const height = Math.cos(angle);
-        run(w, 0.1, [{ theta: direction }, {}]);
-        assert(direction * (Math.cos(p.theta) - height) < 0, 'wrong vertical direction after pole crossing');
-        run(w, 2, [{ theta: direction }, {}]);
-        near(Math.cos(p.theta), direction < 0 ? 1 : -1); near(p.wt, 0);
+  ['向前或向后持续挥动都能撑地并越过向下姿态', () => {
+    for (const weapon of ['polearm', 'sword']) for (const direction of [-1, 1]) {
+      const w = new ArenaPhysics(); w.reset(false, true, weapon);
+      const p = w.players[0]; p.theta = 0; p.phi = 0;
+      const startX = p.p.x; let highest = p.p.y;
+      for (let i = 0; i < 270; i++) {
+        w.step([{ theta: direction }]); highest = Math.max(highest, p.p.y);
+        assert(staffFrame(p).point.y > -0.1, 'weapon penetrated floor');
       }
+      assert(direction * p.theta > Math.PI + 0.3, 'weapon stopped below the fighter');
+      assert(direction * (p.p.x - startX) > 0.5 && highest > CONFIG.bodyFloor + 0.8, 'ground propulsion lost');
     }
-  }],
-  ['持续下砸仍能撑地并停在 180 度', () => {
-    const w = isolated(); const p = w.players[0]; p.phi = 0;
-    const startX = p.p.x; let highest = p.p.y;
-    for (let i = 0; i < 900; i++) {
-      w.step([{ theta: 1 }, {}]); highest = Math.max(highest, p.p.y);
-      assert(staffFrame(p).point.y > -0.1, 'staff penetrated floor');
-    }
-    assert(p.p.x > startX + 0.5 && highest > CONFIG.bodyFloor + 0.8, 'ground propulsion lost');
-    near(p.theta, Math.PI); near(p.wt, 0);
   }],
   ['达到转速上限后不会持续获得加速度加成', () => {
     const w = isolated(); const p = w.players[0]; p.theta = 0.8; p.p.y = 100;
@@ -260,7 +209,7 @@ export const cases = [
     assert(w.winner === 0, 'P1 should win'); assert(w.players[1].health === 0, 'health should clamp at zero');
     const t = w.time; w.step([{ phi: 1 }, { theta: 1 }]); near(w.time, t);
     w.reset(); assert(w.winner === null && w.time === 0 && w.events.length === 0, 'reset round state');
-    assert(w.players.every(p => p.health === 100 && p.wp === 0 && p.wt === 0 && p.thetaTarget === null), 'reset players and polar targets');
+    assert(w.players.every(p => p.health === 100 && p.wp === 0 && p.wt === 0 && p.polarInput === 0), 'reset players and inputs');
   }],
   ['练习模式不会结束，木桩在停止受击后回血', () => {
     const w = attackSetup(); w.practice = true; w.players[1].health = 1;

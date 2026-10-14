@@ -18,9 +18,6 @@ export const CONFIG = Object.freeze({
   damping: 1.15,
   motorAcceleration: 24,
   polarBrakeAcceleration: 30,
-  polarAngleTolerance: 0.0005,
-  polarSpeedTolerance: 0.08,
-  upFollowThrough: Math.PI / 18,
   maxAngularSpeed: 8.5,
   grip: 1.28,
   maxHealth: 100,
@@ -49,22 +46,19 @@ const unit = (a, fallback = v3(1, 0, 0)) => length(a) > 1e-8 ? mul(a, 1 / length
 const invMass = 1 / CONFIG.mass;
 
 export function makePlayer(id, weapon = 'polearm') {
-  const phi = id === 0 ? (weapon === 'sword' ? 0 : 0.95) : Math.PI - 0.95;
+  const phi = id === 0 ? 0 : Math.PI;
   return {
     id,
     weapon,
     p: v3(id === 0 ? -2.2 : 2.2, CONFIG.bodyFloor, 0),
     v: v3(),
-    theta: weapon === 'sword' ? Math.PI / 2 : 1.32,
-    thetaTarget: null,
+    // The long polearm starts raised so two fighters can face each other
+    // without their weapons overlapping before either player acts.
+    theta: weapon === 'sword' ? Math.PI / 2 : 0.4,
     polarInput: 0,
-    lastUpPole: null,
-    upwardSwingSign: 0,
-    followThrough: null,
     phi,
-    // Both fighters face each other at the start. Their visual/camera heading
-    // then follows the weapon's azimuth without altering contact physics.
-    facingOffset: (id === 0 ? 0 : Math.PI) - phi,
+    // The fighter's face and camera follow the weapon's horizontal direction.
+    facingOffset: 0,
     wt: 0,
     wp: 0,
     driveT: 0,
@@ -115,31 +109,16 @@ function impulse(p, frame, force) {
 
 function drivePolarAngle(p, dt) {
   const weapon = weaponStats(p);
-  const returning = p.followThrough?.returning;
-  const target = p.thetaTarget ?? (returning ? p.followThrough.pole : null);
-  if (target === null) {
-    // Uniform floating rod: gravity torque / inertia about the body pivot.
-    const center = weapon.offset + weapon.length / 2;
-    const radiusSquared = center ** 2 + weapon.length ** 2 / 12;
-    const gravityAcceleration = CONFIG.gravity * center / radiusSquared * Math.sin(p.theta);
-    p.wt = (p.wt + gravityAcceleration * dt) * Math.exp(-CONFIG.damping * dt);
-    return;
-  }
-  const error = target - p.theta;
-  if (Math.abs(error) <= CONFIG.polarAngleTolerance && Math.abs(p.wt) <= CONFIG.polarSpeedTolerance) {
-    p.theta = target;
-    p.wt = 0;
-    if (returning) p.followThrough = null;
-    return;
-  }
-  // Choose a speed we can brake to zero within the remaining angle. Reserve
-  // one integration step of travel so discrete updates don't overshoot.
-  const brakeStep = weapon.brakeAcceleration * dt;
-  const stoppingSpeed = Math.sqrt(brakeStep ** 2 + 2 * weapon.brakeAcceleration * Math.abs(error)) - brakeStep;
-  const desiredSpeed = Math.sign(error) * Math.min(weapon.maxAngularSpeed, stoppingSpeed);
-  const braking = p.wt * error < 0 || Math.abs(p.wt) > Math.abs(desiredSpeed);
-  const acceleration = braking ? weapon.brakeAcceleration : weapon.motorAcceleration;
-  p.wt += clamp(desiredSpeed - p.wt, -acceleration * dt, acceleration * dt);
+  // W and S drive opposite rotations in the fighter's vertical facing plane.
+  // There is no pole target: the same input can carry the weapon past the floor
+  // and lift the fighter through contact, while release preserves free motion.
+  const center = weapon.offset + weapon.length / 2;
+  const radiusSquared = center ** 2 + weapon.length ** 2 / 12;
+  const gravityAcceleration = CONFIG.gravity * center / radiusSquared * Math.sin(p.theta);
+  const reversing = p.polarInput !== 0 && p.wt * p.polarInput < 0;
+  const motorAcceleration = p.polarInput * (reversing ? weapon.brakeAcceleration : weapon.motorAcceleration);
+  p.wt = clamp((p.wt + (gravityAcceleration + motorAcceleration) * dt) * Math.exp(-CONFIG.damping * dt),
+    -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
 }
 
 // The gain only counts motor acceleration along the pre-impact swing velocity.
@@ -177,35 +156,7 @@ export class ArenaPhysics {
   setPolarInput(playerId, direction) {
     const player = this.players[playerId];
     if (!player) return;
-    direction = Math.sign(direction || 0);
-    if (direction === 0) {
-      // A moving Up swing can coast briefly past vertical. If it reaches the
-      // ten-degree limit, the controller settles it back to straight up.
-      if (player.polarInput === -1 && player.thetaTarget !== null) {
-        const sign = player.upwardSwingSign || Math.sign(player.wt) || -1;
-        if (player.wt * sign > 0) {
-          player.followThrough = { pole: player.thetaTarget, sign, returning: false };
-        }
-      }
-      player.thetaTarget = null;
-    } else if (direction !== player.polarInput) {
-      const pole = direction < 0 ? 0 : Math.PI;
-      const nearestTop = Math.round(player.theta / (2 * Math.PI)) * 2 * Math.PI;
-      const nearTop = direction > 0 &&
-        Math.abs(player.theta - nearestTop) <= CONFIG.upFollowThrough + 1e-6;
-      // At upright, Down always chooses the back side of the stored heading.
-      // Away from upright it lowers on the side the weapon is already on.
-      player.thetaTarget = nearTop ? nearestTop - Math.PI :
-        pole + Math.round((player.theta - pole) / (2 * Math.PI)) * 2 * Math.PI;
-      player.followThrough = null;
-      if (direction < 0) {
-        player.lastUpPole = player.thetaTarget;
-        player.upwardSwingSign = Math.sign(player.thetaTarget - player.theta) || Math.sign(player.wt) || -1;
-      } else {
-        player.lastUpPole = null;
-      }
-    }
-    player.polarInput = direction;
+    player.polarInput = Math.sign(direction || 0);
   }
 
   reset(practice = false, solo = false, firstWeapon = 'polearm') {
@@ -242,12 +193,6 @@ export class ArenaPhysics {
       drivePolarAngle(p, dt);
       p.wp = clamp((p.wp + motorP * dt) * damp, -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
       p.theta += p.wt * dt;
-      if (p.followThrough && !p.followThrough.returning &&
-          (p.theta - p.followThrough.pole) * p.followThrough.sign >= CONFIG.upFollowThrough) {
-        p.theta = p.followThrough.pole + p.followThrough.sign * CONFIG.upFollowThrough;
-        p.wt = 0;
-        p.followThrough.returning = true;
-      }
       // Net angular acceleration before contact, including damping/speed limits.
       // Holding an already-max-speed motor does not award an acceleration bonus.
       const smooth = 1 - Math.exp(-dt / 0.09);

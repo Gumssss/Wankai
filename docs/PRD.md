@@ -23,7 +23,7 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 1. In a playtest with two people who have not played Wankai before, likely friends of the creator, both start and complete a local match using the on-screen controls and help panel without live instruction. Record where either player needs help; this is a proposed first-playtest check, not a claim already validated.
 2. Each player can choose and repeat a staff movement or swing on purpose during the playtest. Record whether they can aim and land hits deliberately; merely finishing a match through accidental movement and contact does not count as success.
 3. Each selected weapon looks and behaves consistently through a match and rematch. Two first-time players can notice the sword's shorter reach and faster swing response compared with the polearm. The original same-polearm trial remains available by selecting the polearm for player one.
-4. At upright, Down consistently lowers the weapon toward the fighter's back; players can predict the descent and its ground contact in a hands-on playtest. Each view follows its own fighter without doubling simulation speed.
+4. From overhead, Forward and Back choose opposite descent paths; continued input can carry the weapon through ground support and around the other side. Horizontal steering works at the same time. Each view follows its own fighter without doubling simulation speed.
 5. The app launches and plays with local assets while offline; repeated rematches do not accumulate listeners or 3D resources.
 
 ## 2. User experience and functionality
@@ -49,12 +49,13 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 - HUD, hit effects, sound, pause/resume, rematch, and focus-loss behavior work in both relevant modes.
 - The first playtest records whether two new players can start, repeat an intended movement or swing, attempt a targeted hit, and finish a match without guidance. Accidental match completion alone does not satisfy the learning goal.
 
-**Player controlling a staff:** As a player, I want Down to choose a predictable side at upright so I can aim where the weapon will land.
+**Player controlling a staff:** As a player, I want to choose which side of my facing direction the weapon swings toward, so I can predict its path and ground contact.
 
-- Holding Up aims to straight up and stops there.
-- Releasing Up while the staff is still moving may allow up to about ten degrees of follow-through under ordinary, unimpeded motion. Releasing after it stops adds no motion.
-- Pressing Down at upright chooses the back side of the fighter's stored horizontal heading, regardless of the previous upward swing. Away from upright, Down lowers the weapon on its current side.
-- W / S (↑ / ↓) change weapon height without changing horizontal heading. A / D (← / →) steer the weapon toward the player's left or right in their own view; the fighter has no separate walking control.
+- W / S (↑ / ↓) drive continuous, opposite rotation in the fighter's vertical facing plane. From overhead, W swings toward the front and S toward the back; neither key has a fixed up or down angle target.
+- Holding the chosen key can carry the weapon past straight down. Ground contact can support and move the fighter as the weapon continues; the visible weapon must not pass through the floor.
+- A / D (← / →) turn only the horizontal heading and can be pressed together with W or S. The fighter has no separate walking control.
+- Releasing a key preserves angular momentum under gravity and damping. Reversing input brakes before changing swing direction.
+- The [approved control animation](control-concept-combinations.mp4) illustrates the intended motion; playtesting is still needed to assess its feel in the game.
 - Collisions can still alter the swing as they do today. Playtesting informs final tuning.
 
 **Two local players:** As a player, I want my own view of the shared fight so I can judge my weapon direction and ground contact.
