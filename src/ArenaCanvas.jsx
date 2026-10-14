@@ -9,7 +9,7 @@ function FighterModels({ group }) { return <primitive object={group} dispose={nu
 function ImpactEffects({ group }) { return <primitive object={group} dispose={null} />; }
 
 function ArenaScene({ session, mode, weapon }) {
-  const { gl, camera, size } = useThree();
+  const { gl, camera, scene, size } = useThree();
   const view = useMemo(() => new ArenaView(gl, camera, mode, weapon), [gl, camera, mode, weapon]);
   const revision = useRef(session.visualRevision);
   const point = useMemo(() => new Vector3(), []);
@@ -95,6 +95,7 @@ function ArenaScene({ session, mode, weapon }) {
 
   useFrame((_, delta) => {
     const impacts = session.tick(delta);
+    const splitView = mode === 'duel' && session.state !== 'lobby';
     if (revision.current !== session.visualRevision) {
       view.clearEffects();
       view.resetCamera();
@@ -102,7 +103,29 @@ function ArenaScene({ session, mode, weapon }) {
     }
     for (const event of impacts) view.impact(event);
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
-    view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending', Math.min(delta, 0.06));
+    view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending', Math.min(delta, 0.06), splitView);
+
+    // Advance the one match once, then draw that same scene through both cameras.
+    if (splitView) {
+      const leftWidth = size.width / 2;
+      const shadowAutoUpdate = gl.shadowMap.autoUpdate;
+      gl.setScissorTest(true);
+      for (let id = 0; id < 2; id++) {
+        const x = id === 0 ? 0 : leftWidth;
+        const width = id === 0 ? leftWidth : size.width - leftWidth;
+        gl.setViewport(x, 0, width, size.height);
+        gl.setScissor(x, 0, width, size.height);
+        if (id === 1) gl.shadowMap.autoUpdate = false;
+        gl.render(scene, view.duelCameras[id].camera);
+      }
+      gl.shadowMap.autoUpdate = shadowAutoUpdate;
+      gl.setScissorTest(false);
+    } else {
+      gl.setScissorTest(false);
+      gl.setViewport(0, 0, size.width, size.height);
+      gl.render(scene, camera);
+    }
+    gl.setViewport(0, 0, size.width, size.height);
 
     if (mode === 'solo' && session.world.players[0]) {
       const arrow = document.getElementById('staff-heading-arrow');
@@ -116,21 +139,29 @@ function ArenaScene({ session, mode, weapon }) {
       }
     }
 
-    for (const player of session.world.players) {
-      const label = document.getElementById(`player-label-${player.id}`);
-      if (!label) continue;
-      const screen = view.project({ x: player.p.x, y: player.p.y + 1.53, z: player.p.z });
-      label.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-100%)`;
+    const panes = splitView ? [
+      { id: 0, camera: view.duelCameras[0].camera, viewport: { x: 0, width: size.width / 2, height: size.height } },
+      { id: 1, camera: view.duelCameras[1].camera, viewport: { x: size.width / 2, width: size.width / 2, height: size.height } },
+    ] : [{ id: 0, camera, viewport: { x: 0, width: size.width, height: size.height } }];
+    for (const pane of panes) {
+      for (const player of session.world.players) {
+        const label = document.getElementById(`player-label-${pane.id}-${player.id}`);
+        if (!label) continue;
+        const screen = view.project({ x: player.p.x, y: player.p.y + 1.53, z: player.p.z }, pane.camera, pane.viewport);
+        label.style.visibility = screen.visible ? 'visible' : 'hidden';
+        label.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-100%)`;
+      }
+      for (const effect of session.effects) {
+        const element = document.getElementById(`effect-${pane.id}-${effect.id}`);
+        if (!element) continue;
+        point.set(effect.point.x, effect.point.y + 0.5 + (effect.maxLife - effect.life) * 1.4, effect.point.z);
+        const screen = view.project(point, pane.camera, pane.viewport);
+        element.style.visibility = screen.visible ? 'visible' : 'hidden';
+        element.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-50%)`;
+        element.style.opacity = String(Math.min(1, effect.life * 3));
+      }
     }
-    for (const effect of session.effects) {
-      const element = document.getElementById(`effect-${effect.id}`);
-      if (!element) continue;
-      point.set(effect.point.x, effect.point.y + 0.5 + (effect.maxLife - effect.life) * 1.4, effect.point.z);
-      point.project(camera);
-      element.style.transform = `translate(${(point.x * 0.5 + 0.5) * size.width}px,${(-point.y * 0.5 + 0.5) * size.height}px) translate(-50%,-50%)`;
-      element.style.opacity = String(Math.min(1, effect.life * 3));
-    }
-  });
+  }, 1);
 
   return <>
     <ArenaEnvironment group={view.arena} />

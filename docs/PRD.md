@@ -10,7 +10,7 @@ Wankai has an unusual combat rule: a fighter with no feet uses a floating weapon
 
 ### Proposed solution
 
-Build a small local two-player demo on one Mac, using the existing Electron, React, React Three Fiber, Three.js, and custom physics project. Keep the weapon-based movement and current controls, improve the Up-to-Down swing, and test generated 3D weapons in real matches. The current local build defaults to player one's shorter, faster sword against player two's curved polearm. The long-term game plan is a roster of weapons with meaningfully different behavior and effects; the sword is one example, not the final set.
+Build a small local two-player demo on one Mac, using the existing Electron, React, React Three Fiber, Three.js, and custom physics project. Keep movement driven by weapon contact, give each player a view in the same Electron window, make weapon steering readable from that view, and test generated 3D weapons in real matches. The current local build defaults to player one's shorter, faster sword against player two's curved polearm. The long-term game plan is a roster of weapons with meaningfully different behavior and effects; the sword is one example, not the final set.
 
 ### Product direction and staged scope
 
@@ -23,7 +23,7 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 1. In a playtest with two people who have not played Wankai before, likely friends of the creator, both start and complete a local match using the on-screen controls and help panel without live instruction. Record where either player needs help; this is a proposed first-playtest check, not a claim already validated.
 2. Each player can choose and repeat a staff movement or swing on purpose during the playtest. Record whether they can aim and land hits deliberately; merely finishing a match through accidental movement and contact does not count as success.
 3. Each selected weapon looks and behaves consistently through a match and rematch. Two first-time players can notice the sword's shorter reach and faster swing response compared with the polearm. The original same-polearm trial remains available by selecting the polearm for player one.
-4. The Up-to-Down transition meets the swing acceptance checks below in an unimpeded case and feels continuous in a hands-on playtest.
+4. At upright, Down consistently lowers the weapon toward the fighter's back; players can predict the descent and its ground contact in a hands-on playtest. Each view follows its own fighter without doubling simulation speed.
 5. The app launches and plays with local assets while offline; repeated rematches do not accumulate listeners or 3D resources.
 
 ## 2. User experience and functionality
@@ -37,7 +37,7 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 ### User flow
 
 1. Open the Electron development app, choose player one's available weapon, and choose a two-player match or practice mode. The current default is sword versus polearm; solo exploration is also available.
-2. Read the visible controls or help panel. Both players use the same keyboard and the current shared elevated camera.
+2. Read the visible controls or help panel. Both players use the same keyboard and see separate views of the same match inside one Electron window.
 3. Push against the ground, swing, strike, and block with the staff. The HUD shows health and match time; hits produce the current visual and sound feedback.
 4. Pause, resume, or rematch as needed. The app pauses and clears input on focus loss.
 
@@ -49,12 +49,20 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 - HUD, hit effects, sound, pause/resume, rematch, and focus-loss behavior work in both relevant modes.
 - The first playtest records whether two new players can start, repeat an intended movement or swing, attempt a targeted hit, and finish a match without guidance. Accidental match completion alone does not satisfy the learning goal.
 
-**Player controlling a staff:** As a player, I want an upward swing to flow into a downward swing so the staff does not unexpectedly reverse at vertical.
+**Player controlling a staff:** As a player, I want Down to choose a predictable side at upright so I can aim where the weapon will land.
 
 - Holding Up aims to straight up and stops there.
 - Releasing Up while the staff is still moving may allow up to about ten degrees of follow-through under ordinary, unimpeded motion. Releasing after it stops adds no motion.
-- Pressing Down at straight up continues the direction of the preceding upward swing, even if Up was held until the staff stopped.
+- Pressing Down at upright chooses the back side of the fighter's stored horizontal heading, regardless of the previous upward swing. Away from upright, Down lowers the weapon on its current side.
+- W / S (↑ / ↓) change weapon height without changing horizontal heading. A / D (← / →) steer the weapon toward the player's left or right in their own view; the fighter has no separate walking control.
 - Collisions can still alter the swing as they do today. Playtesting informs final tuning.
+
+**Two local players:** As a player, I want my own view of the shared fight so I can judge my weapon direction and ground contact.
+
+- The duel is divided into two labeled views inside one Electron window, with player one on the left and player two on the right. Both views show the same world, hits, and health state; the fixed-step match advances once per frame.
+- Each camera begins behind its fighter facing the opponent. Horizontal weapon steering turns that camera smoothly; raising or lowering the weapon changes camera height while its viewing pitch stays fixed. Camera lag keeps the weapon's turning visible.
+- When the weapon points vertically, the stored horizontal heading stays defined so neither camera flips. The visible fighter face follows this heading, while body collision physics remains unchanged.
+- Practice retains the shared arena camera. Solo mode retains its mouse orbit and larger arena.
 
 **Player trying different weapons:** As a player, I want each weapon to have a recognizable strength, limitation, and effect on play so choosing one changes my approach.
 
@@ -72,7 +80,6 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 
 ### Non-goals for the first demo
 
-- Two player-specific views in one window; the first demo keeps one shared camera.
 - A guided tutorial; use the controls, help panel, and practice mode first.
 - A complete weapon roster, final balance, final weapon art, character model replacement, AI opponents, online play, new arenas, progression, or a packaged macOS app. A roster is a planned direction, but the first playable demo only needs a small, testable set.
 
@@ -87,14 +94,14 @@ Evaluate the first model by checking that its shaft and blade are recognizable f
 ### Architecture and integration
 
 - `src/physics.js` owns fixed-step movement, weapon profiles, collision shapes, and damage rules. Rendering must not change those calculations. Future weapon-specific effects belong in explicit gameplay rules, with visuals following those rules.
-- React owns menus, HUD, dialogs, and input indicators. React Three Fiber and Three.js render the arena, fighters, staffs, camera, trails, and effects in Electron's sandboxed renderer.
+- React owns menus, HUD, dialogs, and input indicators. React Three Fiber and Three.js render the arena, fighters, staffs, cameras, trails, and effects in Electron's sandboxed renderer. One Canvas renders the same 3D scene into two scissored duel viewports; its frame loop calls the game session once before drawing both views.
 - Load the exported GLB as a local asset, attach a visual copy to each existing moving staff group, and align its grip end, orientation, and approximate length. Retain the procedural staff as a fallback.
 - Keep the renderer isolated from Node.js and IPC. The running game needs no Tripo account, API key, or network connection. Generation and export happen outside the game in the creator's Tripo account.
 
 ### Verification
 
 - Run the existing physics regression suite and a production renderer build.
-- In Electron, check two-player and practice matches, the swing transition, hits and blocks, sound, pause/resume, rematch, window resizing, focus loss, and offline operation.
+- In Electron, check both duel views, two-player and practice matches, the swing transition, hits and blocks, sound, pause/resume, rematch, window resizing, focus loss, and offline operation.
 - Check that importing or removing the model does not change collision or damage outcomes, and that rematches do not duplicate listeners or 3D resources.
 
 ## 5. Risks and roadmap
@@ -107,11 +114,11 @@ The first generation may have an unclear rear surface or a broken shaft because 
 
 ### Later iterations
 
-Use playtest findings to tune controls and feedback. If friends struggle to control the weapon deliberately, consider lowering the execution difficulty while preserving weapon-based movement and combat. Design further weapons with distinct effects, including how their visuals, reach, swing response, ground support, and collision behavior fit together; exact effects are still open. Consider two player-specific camera views within the same Electron window and a guided tutorial. Refine weapon art and collision design as the weapon set grows.
+Use playtest findings to tune controls and feedback. If friends struggle to control the weapon deliberately, consider lowering the execution difficulty while preserving weapon-based movement and combat. Design further weapons with distinct effects, including how their visuals, reach, swing response, ground support, and collision behavior fit together; exact effects are still open. Consider a guided tutorial. Refine weapon art and collision design as the weapon set grows.
 
 ### Solo camera experiment
 
-A separate local prototype offers one fighter with the existing staff movement rules, no opponent, and a circular arena with three times the duel radius. The raised view starts from the weapon's side, softly keeps it in frame, and follows the fighter's position. A / D still rotate the staff; mouse drag changes the camera angle and the wheel changes distance. A small dial shows the staff's horizontal direction relative to the current camera, since the fighter has no fixed facing direction. This mode is for exploring movement and camera feel and does not replace the first demo's two-player playtest criteria. Its camera and arena size remain open to hands-on tuning.
+A separate local prototype offers one fighter with the same weapon movement rules, no opponent, and a circular arena with three times the duel radius. The raised view starts from the weapon's side, softly keeps it in frame, and follows the fighter's position. A / D still rotate the staff; mouse drag changes the camera angle and the wheel changes distance. A small dial shows the staff's horizontal direction relative to the independent solo camera. This mode is for exploring movement and camera feel and does not replace the two-player playtest criteria. Its camera and arena size remain open to hands-on tuning.
 
 ### Short sword experiment
 

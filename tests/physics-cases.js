@@ -175,15 +175,15 @@ export const cases = [
     stopped.setPolarInput(0, 0); run(stopped, 0.2);
     near(top.theta, 0); near(top.wt, 0);
   }],
-  ['在顶点按下砸延续上甩方向，不反转', () => {
-    for (const [start, sign] of [[0.6, -1], [-0.6, 1]]) {
+  ['在顶点下砸固定从背侧落下，不依赖之前的上甩方向', () => {
+    for (const start of [0.6, -0.6]) {
       const w = isolated(); const p = w.players[0]; p.p.y = 100; p.theta = start;
       run(w, 2, [{ theta: -1 }, {}]);
       near(p.theta, 0); near(p.wt, 0);
       w.setPolarInput(0, 1);
-      near(p.thetaTarget, sign * Math.PI);
+      near(p.thetaTarget, -Math.PI);
       run(w, 0.1, [{ theta: 1 }, {}]);
-      assert(sign * p.theta > 0, 'down input reversed at the top');
+      assert(p.theta < 0, 'down input did not choose the back side');
     }
   }],
   ['越过极点后重新按键仍正确向上或向下', () => {

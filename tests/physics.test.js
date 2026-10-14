@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cases } from './physics-cases.js';
-import { ArenaPhysics, CONFIG, WEAPONS, staffFrame } from '../src/physics.js';
+import { ArenaPhysics, CONFIG, WEAPONS, fighterHeading, staffFrame } from '../src/physics.js';
+import { duelCameraTarget, shortestAngle } from '../src/scene.js';
 
 for (const [name, run] of cases) test(name, run);
 
@@ -51,4 +52,26 @@ test('sword cannot make a body contact that the longer polearm can reach', () =>
   }
   assert.equal(polearm.contacts[0].separated, 0, 'polearm reaches the target');
   assert.ok(sword.contacts[0].separated > 0, 'sword leaves a gap');
+});
+
+test('each fighter starts facing the opponent and weapon pitch cannot flip camera heading', () => {
+  const world = new ArenaPhysics();
+  const [first, second] = world.players;
+  assert.ok(Math.abs(fighterHeading(first)) < 1e-8);
+  assert.ok(Math.abs(fighterHeading(second) - Math.PI) < 1e-8);
+  const heading = duelCameraTarget(first).heading;
+  first.theta = 0;
+  const raised = duelCameraTarget(first);
+  first.theta = Math.PI / 2;
+  const level = duelCameraTarget(first);
+  first.theta = -Math.PI;
+  const lowered = duelCameraTarget(first);
+  assert.equal(raised.heading, heading);
+  assert.equal(level.heading, heading);
+  assert.equal(lowered.heading, heading);
+  assert.ok(raised.height > level.height);
+  assert.ok(level.height > lowered.height);
+  first.phi += 0.4;
+  assert.ok(Math.abs(duelCameraTarget(first).heading - heading - 0.4) < 1e-8);
+  assert.ok(Math.abs(shortestAngle(Math.PI - 0.1, -Math.PI + 0.1) - 0.2) < 1e-8);
 });

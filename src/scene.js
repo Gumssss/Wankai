@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CONFIG, SOLO_ARENA_SCALE, WEAPONS, weaponStats, staffFrame, clamp } from './physics.js';
+import { CONFIG, SOLO_ARENA_SCALE, WEAPONS, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
@@ -12,6 +12,21 @@ const SWORD_AXIS = new THREE.Vector3(-0.703801, -0.710392, -0.002717).normalize(
 const SWORD_BUTT = new THREE.Vector3(0.485, 0.977, 0);
 const vec = p => new THREE.Vector3(p.x, p.y, p.z);
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, ...extra });
+
+export const shortestAngle = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
+
+export function duelCameraTarget(player) {
+  const heading = fighterHeading(player);
+  const weaponY = staffFrame(player, weaponStats(player).length * 0.65).point.y;
+  const height = player.p.y + 2.65 + clamp((weaponY - player.p.y) * 0.2, -0.45, 0.7);
+  const distance = 6.2;
+  return {
+    heading,
+    height,
+    x: player.p.x - Math.cos(heading) * distance,
+    z: player.p.z - Math.sin(heading) * distance,
+  };
+}
 
 export class ArenaView {
   constructor(renderer, camera, mode = 'duel', weapon = 'polearm') {
@@ -26,6 +41,7 @@ export class ArenaView {
     this.renderer = renderer;
     this.camera = camera;
     this.solo = mode === 'solo';
+    this.duel = mode === 'duel';
     this.weapon = weapon;
     this.swordPitch = new THREE.Quaternion();
     this.weaponLoaded = new Set();
@@ -43,6 +59,11 @@ export class ArenaView {
     this.cameraInitialized = false;
     this.cameraFocus = new THREE.Vector3();
     this.cameraDesired = new THREE.Vector3();
+    this.duelCameras = this.solo ? [] : [0, 1].map(() => ({
+      camera: new THREE.PerspectiveCamera(62, 1, 0.1, 120),
+      yaw: null,
+      target: new THREE.Vector3(),
+    }));
     this.particles = [];
     this.rings = [];
     this.trailTime = 0;
@@ -157,6 +178,8 @@ export class ArenaView {
       const dash = this.mesh(new THREE.BoxGeometry(0.14, 0.01, 0.6), material(color, { transparent: true, opacity: 0.35 }));
       dash.position.set(x < 0 ? -3.1 : 3.1, 0.015, 0); dash.castShadow = false;
     }
+    this.banners = new THREE.Group();
+    this.arenaGeometry.add(this.banners);
     this.makeBanner(-7.4, -1.7, PALETTE[0], -1);
     this.makeBanner(7.4, -1.7, PALETTE[1], 1);
     // Quiet vegetation and scattered stones give the ring a sense of place.
@@ -177,18 +200,18 @@ export class ArenaView {
   }
 
   makeBanner(x, z, color, side) {
-    const pole = this.mesh(new THREE.CylinderGeometry(0.042, 0.055, 3.5, 8), material(0x726d50));
+    const pole = this.mesh(new THREE.CylinderGeometry(0.042, 0.055, 3.5, 8), material(0x726d50), this.banners);
     pole.position.set(x, 1.0, z);
-    const foot = this.mesh(new THREE.BoxGeometry(0.64, 0.2, 0.6), material(0xa3a68c));
+    const foot = this.mesh(new THREE.BoxGeometry(0.64, 0.2, 0.6), material(0xa3a68c), this.banners);
     foot.position.set(x, -0.66, z);
-    const finial = this.mesh(new THREE.SphereGeometry(0.08, 12, 8), material(0xc9b78a));
+    const finial = this.mesh(new THREE.SphereGeometry(0.08, 12, 8), material(0xc9b78a), this.banners);
     finial.position.set(x, 2.78, z);
     const shape = new THREE.Shape();
     shape.moveTo(0, 0); shape.lineTo(side * 0.8, 0); shape.lineTo(side * 0.82, -1.27);
     shape.lineTo(side * 0.4, -1.03); shape.lineTo(side * 0.02, -1.28); shape.closePath();
-    const cloth = this.mesh(new THREE.ShapeGeometry(shape), material(color, { side: THREE.DoubleSide }));
+    const cloth = this.mesh(new THREE.ShapeGeometry(shape), material(color, { side: THREE.DoubleSide }), this.banners);
     cloth.position.set(x, 2.6, z);
-    const badge = this.mesh(new THREE.RingGeometry(0.15, 0.18, 32), material(0xe4d8b4, { side: THREE.DoubleSide }));
+    const badge = this.mesh(new THREE.RingGeometry(0.15, 0.18, 32), material(0xe4d8b4, { side: THREE.DoubleSide }), this.banners);
     badge.position.set(x + side * 0.4, 2.13, z + 0.007);
   }
 
@@ -204,6 +227,12 @@ export class ArenaView {
     const head = this.mesh(new THREE.SphereGeometry(1, 32, 24), skinMat, root);
     head.scale.set(0.37, 0.4, 0.335);
     head.position.y = 0.76;
+    const eyeMat = material(0x343a32);
+    for (const side of [-1, 1]) {
+      const eye = this.mesh(new THREE.SphereGeometry(0.037, 8, 8), eyeMat, root);
+      eye.position.set(0.325, 0.83, side * 0.13);
+      eye.castShadow = false;
+    }
     const staff = new THREE.Group();
     this.actors.add(staff);
     const rod = this.mesh(new THREE.CylinderGeometry(weapon.radius * 0.83, weapon.radius, weapon.length, 12), material(0x775339), staff);
@@ -272,6 +301,10 @@ export class ArenaView {
     this.width = width;
     this.height = height;
     const aspect = this.width / Math.max(1, this.height);
+    for (const rig of this.duelCameras) {
+      rig.camera.aspect = Math.max(1, this.width / 2) / Math.max(1, this.height);
+      rig.camera.updateProjectionMatrix();
+    }
     if (this.solo) {
       this.camera.aspect = aspect;
       this.camera.updateProjectionMatrix();
@@ -285,14 +318,16 @@ export class ArenaView {
     this.camera.updateProjectionMatrix();
   }
 
-  update(players, dt, active = false, cameraDt = dt) {
+  update(players, dt, active = false, cameraDt = dt, splitView = false) {
+    this.banners.visible = !splitView;
     this.trailTime += dt;
     const recordTrail = this.trailTime > 1 / 90;
     if (recordTrail) this.trailTime = 0;
     for (const p of players) {
       const model = this.players[p.id];
       model.root.position.copy(vec(p.p));
-      // No root rotation, ever. Bodies remain upright even under large impulses.
+      // Only the visible face turns. Contact physics still treats the body as a sphere.
+      model.root.rotation.y = -fighterHeading(p);
       model.bodyMat.color.copy(model.baseColor).lerp(new THREE.Color(0xffefd6), p.hitFlash * 0.8);
       model.skinMat.color.set(0xe7c199).lerp(new THREE.Color(0xffffff), p.hitFlash * 0.8);
       const frame = staffFrame(p);
@@ -345,6 +380,7 @@ export class ArenaView {
       this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
     }
     this.camera.lookAt(this.solo ? this.cameraFocus : this.target);
+    if (splitView && this.duel) this.updateDuelCameras(players, cameraDt);
   }
 
   resetCamera() {
@@ -352,6 +388,37 @@ export class ArenaView {
     this.mouseYaw = 0;
     this.mousePitch = 0;
     this.mouseIdle = 0;
+    for (const rig of this.duelCameras) rig.yaw = null;
+  }
+
+  updateDuelCameras(players, dt) {
+    for (const player of players) {
+      const rig = this.duelCameras[player.id];
+      if (!rig) continue;
+      const wanted = duelCameraTarget(player);
+      const firstFrame = rig.yaw === null;
+      rig.yaw = firstFrame ? wanted.heading : rig.yaw + shortestAngle(rig.yaw, wanted.heading) * (1 - Math.exp(-8 * dt));
+      const position = this.cameraDesired.set(
+        player.p.x - Math.cos(rig.yaw) * 6.2,
+        wanted.height,
+        player.p.z - Math.sin(rig.yaw) * 6.2,
+      );
+      if (firstFrame) rig.camera.position.copy(position);
+      else rig.camera.position.lerp(position, 1 - Math.exp(-5 * dt));
+      if (!this.reducedMotion && this.shake > 0.003) {
+        rig.camera.position.x += (Math.random() - 0.5) * this.shake;
+        rig.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
+      }
+      rig.target.set(
+        rig.camera.position.x + Math.cos(rig.yaw) * 10,
+        // Keep a fixed, gentle downward pitch so the arena stays visible as
+        // the camera rises with the weapon; W/S do not tilt the view.
+        rig.camera.position.y - 2.5,
+        rig.camera.position.z + Math.sin(rig.yaw) * 10,
+      );
+      rig.camera.lookAt(rig.target);
+      rig.camera.updateMatrixWorld();
+    }
   }
 
   orbit(dx, dy) {
@@ -417,15 +484,20 @@ export class ArenaView {
       const life = 0.3 + Math.random() * 0.35;
       this.particles.push({ mesh, velocity, life, maxLife: life });
     }
-    const ring = new THREE.Mesh(new THREE.RingGeometry(0.14, 0.17, 32),
-      new THREE.MeshBasicMaterial({ color: 0xfff8df, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }));
-    ring.position.copy(vec(event.point)); ring.quaternion.copy(this.camera.quaternion);
+    // A spherical flash reads from both cameras without facing only one view.
+    const ring = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 8),
+      new THREE.MeshBasicMaterial({ color: 0xfff8df, transparent: true, opacity: 0.8, wireframe: true, depthWrite: false }));
+    ring.position.copy(vec(event.point));
     this.effectsRoot.add(ring); this.rings.push({ mesh: ring, life: 0.3 });
   }
 
-  project(point) {
-    const p = vec(point).project(this.camera);
-    return { x: (p.x * 0.5 + 0.5) * this.width, y: (-p.y * 0.5 + 0.5) * this.height };
+  project(point, camera = this.camera, viewport = { x: 0, width: this.width, height: this.height }) {
+    const p = vec(point).project(camera);
+    return {
+      x: viewport.x + (p.x * 0.5 + 0.5) * viewport.width,
+      y: (-p.y * 0.5 + 0.5) * viewport.height,
+      visible: p.z >= -1 && p.z <= 1 && Math.abs(p.x) < 1.05 && Math.abs(p.y) < 1.05,
+    };
   }
 
   clearEffects() {

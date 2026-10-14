@@ -67,13 +67,13 @@ export class GameSession {
   }
 
   getInputs() {
-    const first = { theta: Number(this.keys.has('KeyS')) - Number(this.keys.has('KeyW')), phi: Number(this.keys.has('KeyA')) - Number(this.keys.has('KeyD')) };
+    const first = { theta: Number(this.keys.has('KeyS')) - Number(this.keys.has('KeyW')), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
     if (this.mode === 'solo') return [first];
     return [
       first,
       this.practice ? { theta: 0, phi: 0 } : {
         theta: Number(this.keys.has('ArrowDown')) - Number(this.keys.has('ArrowUp')),
-        phi: Number(this.keys.has('ArrowLeft')) - Number(this.keys.has('ArrowRight')),
+        phi: Number(this.keys.has('ArrowRight')) - Number(this.keys.has('ArrowLeft')),
       },
     ];
   }

@@ -49,6 +49,7 @@ const unit = (a, fallback = v3(1, 0, 0)) => length(a) > 1e-8 ? mul(a, 1 / length
 const invMass = 1 / CONFIG.mass;
 
 export function makePlayer(id, weapon = 'polearm') {
+  const phi = id === 0 ? (weapon === 'sword' ? 0 : 0.95) : Math.PI - 0.95;
   return {
     id,
     weapon,
@@ -60,7 +61,10 @@ export function makePlayer(id, weapon = 'polearm') {
     lastUpPole: null,
     upwardSwingSign: 0,
     followThrough: null,
-    phi: id === 0 ? (weapon === 'sword' ? 0 : 0.95) : Math.PI - 0.95,
+    phi,
+    // Both fighters face each other at the start. Their visual/camera heading
+    // then follows the weapon's azimuth without altering contact physics.
+    facingOffset: (id === 0 ? 0 : Math.PI) - phi,
     wt: 0,
     wp: 0,
     driveT: 0,
@@ -76,6 +80,8 @@ export function makePlayer(id, weapon = 'polearm') {
     totalDamage: 0,
   };
 }
+
+export const fighterHeading = player => player.phi + player.facingOffset;
 
 // distance is measured along the solid staff, from its floating inner end.
 // The invisible constraint still transmits contact impulses to the body pivot.
@@ -184,11 +190,12 @@ export class ArenaPhysics {
       player.thetaTarget = null;
     } else if (direction !== player.polarInput) {
       const pole = direction < 0 ? 0 : Math.PI;
-      const nearPreviousTop = direction > 0 && player.lastUpPole !== null &&
-        Math.abs(player.theta - player.lastUpPole) <= CONFIG.upFollowThrough + 1e-6;
-      // At the top the two downward targets are equally near. Continue the
-      // previous upward rotation, including when Up stopped exactly at 90°.
-      player.thetaTarget = nearPreviousTop ? player.lastUpPole + player.upwardSwingSign * Math.PI :
+      const nearestTop = Math.round(player.theta / (2 * Math.PI)) * 2 * Math.PI;
+      const nearTop = direction > 0 &&
+        Math.abs(player.theta - nearestTop) <= CONFIG.upFollowThrough + 1e-6;
+      // At upright, Down always chooses the back side of the stored heading.
+      // Away from upright it lowers on the side the weapon is already on.
+      player.thetaTarget = nearTop ? nearestTop - Math.PI :
         pole + Math.round((player.theta - pole) / (2 * Math.PI)) * 2 * Math.PI;
       player.followThrough = null;
       if (direction < 0) {

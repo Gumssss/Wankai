@@ -108,3 +108,22 @@ test('subscribers receive changed snapshots and can detach', () => {
   session.goHome();
   assert.equal(updates, before);
 });
+
+test('left and right keys steer each weapon relative to its own facing view', () => {
+  const session = createSession();
+  session.startRound('duel');
+  advance(session, 2.5);
+  session.keyDown('KeyA');
+  session.keyDown('ArrowLeft');
+  assert.deepEqual(session.getInputs(), [
+    { theta: 0, phi: -1 },
+    { theta: 0, phi: -1 },
+  ]);
+  session.clearKeys();
+  session.keyDown('KeyD');
+  session.keyDown('ArrowRight');
+  assert.deepEqual(session.getInputs(), [
+    { theta: 0, phi: 1 },
+    { theta: 0, phi: 1 },
+  ]);
+});

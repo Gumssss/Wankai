@@ -24,7 +24,7 @@ Test the first weapon in a planned roster with a clear tradeoff: less reach than
 
 The same straight-segment collision approximation is used for both weapons. The fiery blade is wider than that collision segment, so visible edge contact may not always count as a hit. Damage still depends on actual contact speed and acceleration; it has no sword-specific multiplier. These values are starting points for hands-on tuning, not a claim that either weapon is balanced.
 
-The sword begins level and points toward player two, so its initial pose reads horizontally from the shared camera. Its hilt-to-tip axis is aligned with the collision segment. A visual rotation change was made to keep the flat blade's facing continuous through the downward support pose. This has **not** settled the creator's report that the sword or movement changes direction unexpectedly when standing on it; reproduce and compare with the polearm before further tuning.
+The sword begins level and points toward player two. The duel now uses separate player cameras rather than the earlier shared camera. Its hilt-to-tip axis is aligned with the collision segment. A visual rotation change was made to keep the flat blade's facing continuous through the downward support pose. This has **not** settled the creator's report that the sword or movement changes direction unexpectedly when standing on it; reproduce and compare with the polearm before further tuning.
 
 ## Checks
 
