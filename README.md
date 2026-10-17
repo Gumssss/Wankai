@@ -2,18 +2,52 @@
 
 一个可以离线运行的 Electron 3D 物理对战原型。界面使用 React，角斗场由 React Three Fiber 和 Three.js 渲染，固定时间步的自定义约束物理计算撑地、挥棍与碰撞。菜单提供分屏双人对战、固定视角双人对战、木桩练习和单人自由视角。
 
-## 启动
+## 最新更新 / Latest update — 2026-10-17
 
-需要 macOS 和 Node.js 22.12 或更新版本。首次安装依赖后，在此目录运行：
+- 当前源码已合并到默认的 `main` 分支，包含三武器兵器库、双方独立选择、扩大后的分屏圆台和已确认的后方镜头。
+- 新增独立耐力条与力竭弱控；纯水平转动命中伤害为同等条件下竖直挥击的 50%。数值仍待实玩调校。
+- 源码检查通过 63 项测试和生产构建。下载与更新方法见下方；完整改动和未完成事项见[更新记录](CHANGELOG.md)。
+
+## 下载、更新与游玩 / Download and play
+
+目前提供可运行的源码版本，已验证的环境是 **macOS + Node.js 22.12 或更新版本**。安装 Node.js 时会附带 npm；使用下面的克隆和更新命令还需要 Git。当前没有可直接双击安装的应用包，Windows / Linux 尚未验证。
+
+### 第一次下载 / First-time setup
+
+在终端依次运行，默认下载 GitHub 的 `main` 分支：
 
 ```sh
-npm install
-npm run dev
+git clone https://github.com/Gumssss/Wankai.git
+cd Wankai
+npm ci
+npm start
 ```
 
-Vite 会在 `127.0.0.1:5173` 启动本地开发服务器，Electron 会自动打开游戏窗口。修改 React 或场景代码会热更新。关闭开发环境时，在终端按 `Ctrl+C`。安装依赖需要联网；安装后，游戏运行不需要联网。
+`npm ci` 按仓库中的锁文件安装依赖；首次安装需要联网，并会下载 Electron。`npm start` 会启动本地服务并自动打开游戏窗口。两位玩家共用一块键盘，在兵器库各自选好武器后即可开始；按键见下方「操作」。三个武器模型都已包含在仓库里，游玩不需要 Tripo 账号、API 密钥或重新导出模型。
 
-运行 `npm test` 检查物理规则，运行 `npm run build` 验证渲染器构建。本阶段提供可玩的开发应用，不生成安装包。
+### 更新已有副本 / Pull the latest version
+
+先在运行游戏的终端按 `Ctrl+C` 停止游戏，再进入之前下载的项目目录：
+
+```sh
+cd Wankai
+git switch main
+git pull --ff-only origin main
+npm ci
+npm start
+```
+
+如果当前终端已经在 `Wankai` 目录中，跳过 `cd Wankai`。自己修改过代码时，请先提交或备份修改，再切换分支和更新。`--ff-only` 在分支历史分叉时会停止，避免意外生成合并提交。
+
+### 不使用 Git / Download ZIP
+
+也可以在 [GitHub 仓库](https://github.com/Gumssss/Wankai) 选择 `main`，点击 **Code → Download ZIP**。解压后，在包含 `package.json` 的文件夹中打开终端，运行 `npm ci`，然后运行 `npm start`。ZIP 副本不能使用 `git pull`；需要更新时重新下载即可。
+
+### 运行说明
+
+Vite 使用 `http://127.0.0.1:5173/`，Electron 会自动打开游戏窗口；不能通过双击 `index.html` 启动游戏。启动提示 5173 端口被占用时，先关闭之前启动的游戏或开发服务。结束游玩时在启动终端按 `Ctrl+C`。依赖安装完成后，启动和游玩不需要联网。
+
+`npm run dev` 与 `npm start` 等价，修改 React 或场景代码会热更新。开发验证可运行 `npm test` 检查物理与对局规则，运行 `npm run build` 验证渲染器构建；普通游玩不需要先构建。
 
 ## 操作
 
@@ -81,6 +115,7 @@ A / D（← / →）只改变武器的水平朝向，可以与 W 或 S 同时按
 
 ## 设计文档
 
+- [更新记录 / Changelog](CHANGELOG.md)
 - [当前进度、验证结果与下一步](docs/PROJECT_STATUS.md)
 - [双人演示版 PRD](docs/PRD.md)
 - [游戏术语](GLOSSARY.md)

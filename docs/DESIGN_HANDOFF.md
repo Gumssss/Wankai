@@ -2,7 +2,7 @@
 
 Status: local prototype with two player views, continuous front/back swing controls, and a three-weapon armory. The short sword's direction while supporting the fighter is **not yet accepted as solved**.
 
-The creator requested a GitHub checkpoint on 17 October 2026. See [current project review](PROJECT_STATUS.md) for the implemented scope, fresh validation, and recommended next work.
+The creator requested a GitHub checkpoint on 17 October 2026 and then approved merging it into the default `main` branch. The README now explains cloning, pulling updates, ZIP downloads, and launching the source game. See the [changelog](../CHANGELOG.md) for dated changes and the [current project review](PROJECT_STATUS.md) for validation and next work.
 
 ## What the demo is for
 
@@ -42,4 +42,4 @@ The fourth, control-focused weapon is recorded as a **deferred side project**, a
 
 Play the split-view duel with two people. Check W versus S from overhead, continued motion after ground contact, simultaneous swing and horizontal turn, Q / E and period / slash camera turning, angle retention and direction cues, hits, and whether each player can judge weapon contact. Reproduce the sword support-direction issue: mode, camera angle, keys held, sword position before contact, and expected versus actual movement. Compare the same sequence using the polearm. Then decide whether further visual, input, or physics changes are needed.
 
-The public gallery sword and hammer models' reuse terms remain unverified. The creator's 17 October 2026 request authorizes pushing the current project checkpoint to the existing GitHub repository and supersedes the earlier local-only instruction. Asset redistribution permission remains an open item; no release or installer publication was requested.
+The public gallery sword and hammer models' reuse terms remain unverified. The creator's 17 October 2026 request authorized pushing the source checkpoint and merging it into `main`, superseding the earlier local-only instruction. Asset redistribution permission remains an open item; no packaged release or installer has been published.
