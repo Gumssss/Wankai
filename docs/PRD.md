@@ -1,6 +1,6 @@
 # Wankai Weapon Duel PRD
 
-Status: Draft for review, updated 15 October 2026. The first playable demo remains small; a growing set of weapons with distinct gameplay effects is the longer-term product direction. Unresolved decisions are recorded in the [design handoff](DESIGN_HANDOFF.md).
+Status: Draft for review, updated 17 October 2026. The first playable demo remains small; a growing set of weapons with distinct gameplay effects is the longer-term product direction. Unresolved decisions are recorded in the [design handoff](DESIGN_HANDOFF.md).
 
 ## 1. Executive summary
 
@@ -38,7 +38,7 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 
 1. Open the Electron development app and browse the armory's actual model previews, descriptions, strengths, and tradeoffs. Choosing a two-player, practice, or solo mode opens weapon selection before starting. Both players choose independently and may equip the same weapon; solo shows only player one's choice. The default remains sword versus polearm.
 2. Read the visible controls or help panel. Both players use the same keyboard and choose either separate following views or one fixed, elevated shared view of the match inside one Electron window.
-3. Push against the ground, swing, strike, and block with the staff. The HUD shows health and match time; hits produce the current visual and sound feedback.
+3. Push against the ground, swing, strike, and block with the staff. The HUD shows health, stamina, and match time; hits produce the current visual and sound feedback. Weapon input spends stamina, resting restores it, and low stamina weakens powered control while preserving movement and defense.
 4. Pause, resume, or rematch as needed. The app pauses and clears input on focus loss.
 
 ### User stories and acceptance criteria
@@ -74,6 +74,13 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 - The sword uses the same contact-driven movement system. It does not grant an unrelated running-speed bonus.
 - The visible weapon direction and collision path should agree well enough that players can predict support, blocks, and hits. The sword's downward support direction remains an open issue.
 - Later weapons require a short design specification and playtest for each proposed effect before implementation. No particular special ability is approved by this PRD.
+
+**Player managing combat effort:** As a player, I want sustained swinging to create a reason to rest while retaining enough control to reposition and defend.
+
+- Start at 100 stamina. Front/back input drains 20/s and horizontal steering drains 8/s, with additive costs. Begin recovering 30/s after 0.5 seconds without either weapon input. Passive motion and camera input are free; continued input at zero does not recover stamina.
+- Below 25 stamina, progressively reduce powered strength and driven speed toward 40% of normal at zero. Preserve reverse braking and normal released inertia. All modes use the same initial stamina rules and show separately labeled health and stamina bars; rematches refill stamina.
+- At matched impact speed, acceleration, and contact surface, pure horizontal-turn hits deal 50% of vertical-swing damage before final rounding. Mixed hits blend by actual incoming yaw/pitch/body motion rather than current keys; physical blocking and collision impulse calculations remain unchanged. The hammer head bonus still applies.
+- Verify deliberate ground-supported movement and defense at exhaustion during hands-on playtesting; the initial stamina costs and damage multiplier remain tunable.
 
 **Player viewing the weapon:** As a player, I want the generated weapon to follow its collision path and make each fighter easy to identify during a fight.
 

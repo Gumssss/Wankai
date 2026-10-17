@@ -11,6 +11,18 @@ The [approved motion video](control-concept-combinations.mp4) shows the intended
 
 W or S can be held with A or D. Swinging does not stop at an up or down angle target; the weapon can continue past the floor-facing pose while ground contact pushes the fighter. Opposite swing inputs brake before reversing. Releasing keys removes motor input but preserves momentum under gravity, damping, and collision. Pressing both opposite keys on the same axis cancels that axis's input.
 
+## Stamina and directional damage
+
+Each fighter has 100 stamina, independent of health. Effective front/back input costs 20 points per simulation second, horizontal steering costs 8, and simultaneous inputs add their costs. Held input still costs stamina when blocked or braking. Opposite keys cancel their axis before charging; camera controls, passive motion, and collisions are free. After both weapon axes are released for 0.5 seconds, stamina recovers at 30 points per second. Continued input at zero prevents recovery.
+
+Below 25 stamina, powered acceleration and the driven speed target decrease linearly toward 40% of each weapon's normal values at zero. Existing reverse braking strength is preserved. When driving in the current direction above the tired speed target, the motor brakes progressively using that weapon's braking acceleration; releasing input retains normal coasting. Gravity, ground support, and collision impulses continue to act. These rules apply to all weapons and modes. Countdown, pause, hit pause, and results freeze stamina with physics; rematches reset it.
+
+At equal closing speed, acceleration, and contact surface, a pure yaw/turning hit has a 0.5 damage multiplier and a pure pitch/vertical swing retains full damage. Mixed hits blend the multiplier using the positive closing contributions of yaw, pitch, and relative body translation at the actual contact point. Body translation is neutral; motion tangential to the contact does not affect the blend. This uses pre-impact motion rather than held keys, so coasting turns remain weaker. The multiplier composes with the hammer head bonus and is rounded once after the base integer damage. Collision and blocking impulses retain their physical calculation; damage-related feedback and the additional hit knockback follow the final damage.
+
+The HUD shows a separate numeric stamina bar, with text for low stamina and exhaustion. Tuning lives in `STAMINA` and `CONFIG.turnDamageScale` in `src/physics.js`. Automated coverage is in `tests/combat-stamina.test.js`; final pacing and exhausted movement still need hands-on acceptance.
+
+## Camera behavior
+
 Each fighter starts facing the opponent. The polearm begins raised to avoid initial weapon overlap, while the sword begins level. Horizontal weapon heading and the visible fighter face turn together. Each split-screen camera starts behind its fighter with a small 15° sideways offset and smooth weapon composition; A / D and the arrow keys do not orbit the view. P1 holds Q / E to turn their own camera left / right. P2 holds period / slash (the ? key, without Shift) for the same camera actions. Releasing keeps the selected angle, and rematching resets both views. Opposite camera keys cancel, and pausing or losing focus clears held camera input. Weapon inputs still work simultaneously.
 
 The duel camera has no mouse controls. Solo mode retains its mouse orbit, idle return, and wheel zoom. The physics simulation and its collision segments determine movement and hits, so the animation is a design reference rather than a promise of a scripted path.
