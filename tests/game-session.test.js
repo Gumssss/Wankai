@@ -50,6 +50,33 @@ test('practice uses an idle second player and rematches reset transient state', 
   assert.equal(session.state, 'lobby');
 });
 
+test('fixed-camera duel keeps both players active, matches physics away from the boundary, and retains its mode on rematch', () => {
+  const split = createSession();
+  const fixed = createSession();
+  split.startRound('duel');
+  fixed.startRound('duel-fixed');
+  assert.equal(fixed.getSnapshot().mode, 'duel-fixed');
+  assert.equal(fixed.world.players.length, 2);
+  assert.equal(fixed.practice, false);
+  assert.equal(fixed.world.arenaRadius, CONFIG.arenaRadius);
+  assert.equal(split.world.arenaRadius, CONFIG.arenaRadius * SOLO_ARENA_SCALE);
+  for (const session of [split, fixed]) {
+    advance(session, 2.5);
+    for (const key of ['KeyW', 'KeyA', 'ArrowDown', 'ArrowRight']) session.keyDown(key);
+    assert.deepEqual(session.getInputs(), [{ theta: 1, phi: -1 }, { theta: -1, phi: 1 }]);
+    advance(session, 0.5);
+  }
+  assert.deepEqual(fixed.world.players, split.world.players, 'camera mode must not change simulation or input');
+  fixed.pause();
+  assert.deepEqual(fixed.getSnapshot().pressed, []);
+  fixed.resume();
+  fixed.startRound();
+  assert.equal(fixed.getSnapshot().mode, 'duel-fixed');
+  assert.equal(fixed.world.time, 0);
+  fixed.goHome();
+  assert.equal(fixed.getSnapshot().mode, 'duel');
+});
+
 test('solo keeps the staff physics with one fighter and survives rematch and return home', () => {
   const session = createSession();
   session.startRound('solo');
@@ -143,4 +170,65 @@ test('front or back swing combines with horizontal steering for both players', (
     { theta: 0, phi: -1 },
     { theta: 0, phi: 1 },
   ], 'opposite swing keys cancel without cancelling horizontal steering');
+});
+
+test('Q/E and period/slash steer separate cameras without changing weapon inputs or physics', () => {
+  const session = createSession();
+  const baseline = createSession();
+  for (const game of [session, baseline]) {
+    game.startRound('duel');
+    advance(game, 2.5);
+    game.keyDown('KeyW');
+    game.keyDown('ArrowLeft');
+  }
+  session.keyDown('KeyQ');
+  session.keyDown('Slash');
+  assert.deepEqual(session.getCameraInputs(), [-1, 1]);
+  assert.deepEqual(session.getInputs(), baseline.getInputs());
+  for (const game of [session, baseline]) advance(game, 0.5);
+  assert.deepEqual(session.world.players, baseline.world.players);
+  session.keyDown('KeyE');
+  session.keyDown('Period');
+  assert.deepEqual(session.getCameraInputs(), [0, 0], 'opposite camera keys cancel');
+  session.keyUp('KeyQ');
+  session.keyUp('Slash');
+  assert.deepEqual(session.getCameraInputs(), [1, -1]);
+  session.pause();
+  assert.deepEqual(session.getCameraInputs(), [0, 0]);
+  session.resume();
+  session.keyDown('KeyE');
+  session.startRound();
+  assert.deepEqual(session.getCameraInputs(), [0, 0], 'rematch clears held camera keys');
+  for (const mode of ['duel-fixed', 'practice', 'solo']) {
+    session.startRound(mode);
+    session.keyDown('KeyQ');
+    session.keyDown('Slash');
+    assert.deepEqual(session.getSnapshot().pressed, []);
+    assert.deepEqual(session.getCameraInputs(), [0, 0]);
+  }
+});
+
+test('split-screen uses the solo-sized physical arena and retains its boundary on rematch', () => {
+  const session = createSession();
+  session.startRound('duel');
+  const radius = CONFIG.arenaRadius * SOLO_ARENA_SCALE;
+  assert.equal(session.world.players.length, 2);
+  assert.equal(session.world.arenaRadius, radius);
+  const [first, second] = session.world.players;
+  first.p.x = 12;
+  second.p.x = -12;
+  session.world.step([{ theta: 0, phi: 0 }, { theta: 0, phi: 0 }]);
+  assert.ok(first.p.x > 10 && second.p.x < -10, 'both fighters can use ground beyond the old rim');
+  first.p.x = 30;
+  second.p.x = -30;
+  session.world.step([{ theta: 0, phi: 0 }, { theta: 0, phi: 0 }]);
+  for (const player of session.world.players) {
+    assert.ok(Math.hypot(player.p.x, player.p.z) <= radius - CONFIG.bodyRadius + 1e-6);
+  }
+  session.startRound();
+  assert.equal(session.world.arenaRadius, radius);
+  for (const mode of ['duel-fixed', 'practice', 'solo', 'duel']) {
+    session.startRound(mode);
+    assert.equal(session.world.arenaRadius, ['duel', 'solo'].includes(mode) ? radius : CONFIG.arenaRadius);
+  }
 });

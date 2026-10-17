@@ -1,6 +1,9 @@
 import { Component, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ArenaCanvas } from './ArenaCanvas.jsx';
 import { CONTROL_KEYS, GameSession } from './game-session.js';
+import { Armory } from './Armory.jsx';
+import { weaponName } from './weapon-catalog.js';
+import { STAMINA } from './physics.js';
 import './style.css';
 
 const session = new GameSession();
@@ -25,13 +28,19 @@ function Modal({ children, onCancel, className = '' }) {
   return <dialog ref={ref} className={`modal ${className}`} onCancel={event => { event.preventDefault(); onCancel?.(); }}>{children}</dialog>;
 }
 
-function FighterScore({ id, health, practice }) {
+function FighterScore({ id, health, stamina, practice }) {
   const isSecond = id === 1;
+  const staminaState = stamina <= 1e-8 ? 'empty' : stamina < STAMINA.lowThreshold ? 'low' : 'ready';
+  const staminaLabel = staminaState === 'empty' ? '力竭 · 弱控' : staminaState === 'low' ? '耐力不足' : '耐力';
   return <div className={`fighter fighter-${isSecond ? 'two' : 'one'}`}>
     <div className="fighter-avatar"><span></span><i></i></div>
     <div className="fighter-info">
-      <div className="fighter-heading"><span><b>{isSecond ? (practice ? '木桩' : '青丸') : '赤丸'}</b> <small>{isSecond ? (practice ? 'TRAINING' : 'PLAYER 02') : 'PLAYER 01'}</small></span><strong>{health}<small>/100</small></strong></div>
-      <div className="health-track"><div className="health-ghost" style={{ transform: `scaleX(${health / 100})` }}></div><div className="health-fill" style={{ transform: `scaleX(${health / 100})` }}></div></div>
+      <div className="fighter-heading"><span><b>{isSecond ? (practice ? '木桩' : '青丸') : '赤丸'}</b> <small>{isSecond ? (practice ? 'TRAINING' : 'PLAYER 02') : 'PLAYER 01'}</small></span><strong aria-label={`生命 ${health} / 100`}>{health}<small>/100</small></strong></div>
+      <div className="health-track" role="progressbar" aria-label={`P${id + 1} 生命`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={health}><div className="health-ghost" style={{ transform: `scaleX(${health / 100})` }}></div><div className="health-fill" style={{ transform: `scaleX(${health / 100})` }}></div></div>
+      <div className={`stamina-meter stamina-${staminaState}`}>
+        <div className="stamina-heading"><span>{staminaLabel}</span><span>{Math.ceil(stamina - 1e-8)} / {STAMINA.max}</span></div>
+        <div className="stamina-track" role="progressbar" aria-label={`P${id + 1} 耐力`} aria-valuemin={0} aria-valuemax={STAMINA.max} aria-valuenow={Math.round(stamina)} aria-valuetext={`${Math.round(stamina)} / ${STAMINA.max}，${staminaLabel}`}><div className="stamina-fill" style={{ transform: `scaleX(${stamina / STAMINA.max})` }}></div></div>
+      </div>
     </div>
   </div>;
 }
@@ -40,15 +49,24 @@ function KeyGrid({ codes, labels, pressed }) {
   return <div className="key-grid">{codes.map((code, i) => <kbd key={code} data-key={code} className={pressed.includes(code) ? 'pressed' : ''}>{labels[i]}</kbd>)}</div>;
 }
 
+function HeadingGuide({ id, split }) {
+  return <div className={`heading-guide${split ? ` pane-heading pane-heading-${id}` : ''}`} aria-label={`P${id + 1} 角色面向与武器挥动平面，相对自己的视角。`}>
+    <strong>{split ? `P${id + 1} · 角色面向` : '角色面向'}</strong><span>相对当前视角</span>
+    <div className="heading-dial"><div id={`staff-heading-arrow-${id}`} className="heading-arrow">↑</div></div>
+    <small>{id === 0 ? 'A / D 转动武器' : '← / → 转动武器'}</small>{split && <small>{id === 0 ? 'Q / E 转动视角' : '. / ? 转动视角'}</small>}
+  </div>;
+}
+
 function HelpContent({ close }) {
   return <>
     <button className="modal-close" onClick={close} aria-label="关闭玩法说明">×</button>
     <span className="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，转动武器。</h2>
-    <p className="modal-intro">你控制的是悬空武器的转动力。武器与身体保持间距，绕身体旋转；身体始终直立，由撑地或碰撞带动。双人对战时左右画面分别跟随两位玩家。</p>
+    <p className="modal-intro">你控制的是悬空武器的转动力。武器与身体保持间距，绕身体旋转；身体始终直立，由撑地或碰撞带动。双人对战可选各自独立的分屏自由视角，或两人共用的固定视角。分屏中 Q / E 转动赤丸视角，句号 / 问号键转动青丸视角（无需 Shift）；松开保持角度。水平转动武器不会带着镜头转向。</p>
     <div className="guide-steps">
-      <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D（← / →）把武器伸向想去的方向，再按 S（↓）向下压。武器触地，身体会被撑起并靠近落点。按 W（↑）收回武器，再来一次。</p></div></article>
+      <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D（← / →）调整水平方向，再用 W 或 S（↑ 或 ↓）选择挥动方向。武器触地后，继续挥动可撑起并带动身体；角色没有独立行走按键。</p></div></article>
       <article><span>02</span><div><h3>选择挥动方向</h3><p>W（↑）让武器向角色正面旋转，S（↓）向背面旋转；在头顶可以选前后，触地后继续按住可撑起身体并转到另一侧。A / D（← / →）只改变水平方向，也可与 W 或 S 同时按。松手后保留惯性，并受重力和阻尼影响。</p></div></article>
-      <article><span>03</span><div><h3>挥起来，才打得疼</h3><p>武器撞中头部或躯干都会扣血，伤害相同。撞得越快、命中前加速越充分，伤害越高；贴着不动不会持续扣血。武器之间可以互相格挡。</p></div></article>
+      <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>武器撞中头部或躯干都会扣血，伤害相同。相同碰撞速度与发力下，纯横转命中伤害为竖挥的一半；组合挥动按实际碰撞方向混合计算。松手后的惯性命中也遵循此规则。武器之间可以互相格挡。</p></div></article>
+      <article><span>04</span><div><h3>留些耐力，再挥下一棍</h3><p>每人 100 耐力。竖挥每秒消耗 20，横转每秒消耗 8，同时操作叠加。放开武器操作半秒后，每秒恢复 30。耐力低于 25 时逐渐变慢；耗尽仍可弱控、撑地与格挡，反向刹车保持灵敏。转动镜头不耗耐力。</p></div></article>
     </div>
     <div className="guide-note"><b>100 HP · 血量归零判负</b><span>圆台有边界，不会掉落。练习木桩会在受击停止后恢复血量。</span></div>
     <button className="primary-button" onClick={close}>明白了，抡起来 <span>↗</span></button>
@@ -58,6 +76,7 @@ function HelpContent({ close }) {
 function App() {
   const game = useSyncExternalStore(session.subscribe, session.getSnapshot);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [armoryMode, setArmoryMode] = useState(null);
   const [ready, setReady] = useState(false);
   const helpResume = useRef(false);
   const active = game.state !== 'lobby';
@@ -75,6 +94,7 @@ function App() {
 
   useEffect(() => {
     const onKeyDown = event => {
+      if (armoryMode !== null) return;
       if (CONTROL_KEYS.has(event.code)) {
         event.preventDefault();
         if (!helpOpen) session.keyDown(event.code);
@@ -83,7 +103,7 @@ function App() {
       if (event.code === 'Escape') { event.preventDefault(); session.pause(); }
       if (event.code === 'KeyR' && session.state === 'playing') session.startRound();
       if (event.code === 'Enter' && session.state === 'lobby' && event.target.tagName !== 'BUTTON') {
-        event.preventDefault(); session.startRound(false);
+        event.preventDefault(); setArmoryMode('duel');
       }
     };
     const onKeyUp = event => session.keyUp(event.code);
@@ -99,11 +119,11 @@ function App() {
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [helpOpen]);
+  }, [helpOpen, armoryMode]);
 
   useEffect(() => {
     Object.defineProperty(window, '__arena', { configurable: true, value: Object.freeze({
-      snapshot: () => JSON.parse(JSON.stringify({ state: session.state, mode: session.mode, practice: session.practice, time: session.world.time, winner: session.world.winner, players: session.world.players, lastHit: session.world.lastHit })),
+      snapshot: () => JSON.parse(JSON.stringify({ state: session.state, mode: session.mode, practice: session.practice, weapons: [session.weapon, session.secondWeapon], time: session.world.time, winner: session.world.winner, players: session.world.players, lastHit: session.world.lastHit })),
       rendererInfo: () => session.renderer ? ({ geometries: session.renderer.info.memory.geometries, textures: session.renderer.info.memory.textures, calls: session.renderer.info.render.calls }) : null,
     }) });
     return () => { delete window.__arena; };
@@ -111,9 +131,10 @@ function App() {
 
   const winner = game.winner;
   const resultTitle = winner === -1 ? '平分秋色' : `${winner === 0 ? '赤丸' : '青丸'}获胜`;
-  const resultDetail = `本局 ${game.seconds} 秒。${winner === -1 ? '双方同时力竭，再来一局。' : `胜者剩余 ${game.health[winner] ?? 0} 点体力。下一局，谁说了算？`}`;
+  const resultDetail = `本局 ${game.seconds} 秒。${winner === -1 ? '双方同时倒下，再来一局。' : `胜者剩余 ${game.health[winner] ?? 0} 点生命。下一局，谁说了算？`}`;
   const elapsed = `${String(Math.floor(game.seconds / 60)).padStart(2, '0')}:${String(game.seconds % 60).padStart(2, '0')}`;
   const solo = game.mode === 'solo';
+  const fixedDuel = game.mode === 'duel-fixed';
   const splitView = game.mode === 'duel' && active;
   const viewIds = splitView ? [0, 1] : [0];
 
@@ -122,6 +143,7 @@ function App() {
       <a className="brand" href="./" aria-label="丸棍竞技场首页" onClick={event => { event.preventDefault(); session.goHome(); }}><span className="brand-mark"><i></i><b></b></span><span>丸棍<span className="brand-light">竞技场</span><small>WAN GUN / ARENA</small></span></a>
       <div className="header-center"><span className="status-dot"></span> 双人 · 物理 · 对战 <span className="version">VOL. 001</span></div>
       <nav aria-label="游戏选项">
+        {!active && <button className="text-button" onClick={() => setArmoryMode('browse')}>兵器库</button>}
         <button className="icon-button" onClick={() => session.toggleSound()} aria-label={game.soundEnabled ? '关闭声音' : '开启声音'} title="声音" aria-pressed={game.soundEnabled}>
           <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path className="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>
         </button>
@@ -130,15 +152,15 @@ function App() {
     </header>
 
     <main id="game-shell" className={`${solo ? 'solo-mode' : ''} ${splitView ? 'split-mode' : ''}`}>
-      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : 'shared'}-${game.weapon}`} session={session} mode={game.mode} weapon={game.weapon} onReady={() => setReady(true)} /></CanvasBoundary></div>
-      {splitView && <><div className="view-divider" aria-hidden="true"></div><div className="view-name view-one">P1 · 赤丸视角</div><div className="view-name view-two">P2 · 青丸视角</div></>}
-      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{game.weapon === 'sword' ? '短剑试验 · 近身快挥。' : solo ? '只有你、武器与圆台。' : '一方圆台，两位棍客。'}</span></div>
+      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : 'shared'}-${game.weapons.join('-')}`} session={session} mode={game.mode} weapon={game.weapon} secondWeapon={game.weapons[1]} onReady={() => setReady(true)} /></CanvasBoundary></div>
+      {splitView && <><div className="view-divider" aria-hidden="true"></div><div className="view-name view-one">P1 · 赤丸自由视角</div><div className="view-name view-two">P2 · 青丸自由视角</div></>}
+      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '三种兵器，各有所长。'}</span></div>
       <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
-      {solo && active && <div className="heading-guide" aria-label="角色面向与武器挥动平面，相对当前视角。A 和 D 改变水平方向。"><strong>角色面向</strong><span>相对当前视角</span><div className="heading-dial"><div id="staff-heading-arrow" className="heading-arrow">↑</div></div><small>A / D 水平转向</small></div>}
+      {active && (solo || splitView) && viewIds.map(id => <HeadingGuide key={id} id={id} split={splitView} />)}
       <section className="scoreboard" aria-label={solo ? '单人状态' : '对战血量'}>
-        <FighterScore id={0} health={game.health[0]} practice={game.practice} />
-        <div className="match-center"><span>{game.weapon === 'sword' ? '短剑试验' : solo ? '自由视角' : game.practice ? '自由练习' : '自由对决'}</span>{!solo && <b>VS</b>}<div>{elapsed}</div></div>
-        {!solo && <FighterScore id={1} health={game.health[1]} practice={game.practice} />}
+        <FighterScore id={0} health={game.health[0]} stamina={game.stamina[0]} practice={game.practice} />
+        <div className="match-center"><span>{solo ? '自由视角' : game.practice ? '自由练习' : fixedDuel ? '固定视角' : '分屏对战'}</span>{!solo && <b>VS</b>}<div>{elapsed}</div></div>
+        {!solo && <FighterScore id={1} health={game.health[1]} stamina={game.stamina[1]} practice={game.practice} />}
       </section>
       {viewIds.flatMap(viewId => (solo ? [0] : [0, 1]).map(playerId => <div key={`${viewId}-${playerId}`} id={`player-label-${viewId}-${playerId}`} className={`player-label ${playerId === 0 ? 'red' : 'blue'}`}>P{playerId + 1}<span>{playerId === 0 ? '赤丸' : game.practice ? '木桩' : '青丸'}</span></div>))}
       <div id="effects" aria-hidden="true">{viewIds.flatMap(viewId => game.effects.map(effect => <div key={`${viewId}-${effect.id}`} id={`effect-${viewId}-${effect.id}`} className="damage-number">{effect.damage >= 22 && <span className="impact-word">重 击 !</span>}−{effect.damage}</div>))}</div>
@@ -147,21 +169,22 @@ function App() {
 
       {game.state === 'lobby' && <section className="welcome-panel">
         <div className="welcome-copy"><div className="eyebrow">LESS BUTTONS. MORE BONK.</div><h1>一棍定胜负<span>。</span></h1><p><br/></p></div>
-        <div className="welcome-actions"><div className="weapon-choice" role="group" aria-label="赤丸武器"><span>赤丸武器</span><button type="button" aria-pressed={game.weapon === 'polearm'} onClick={() => session.setWeapon('polearm')}>长柄刀</button><button type="button" aria-pressed={game.weapon === 'sword'} onClick={() => session.setWeapon('sword')}>短剑 · 快挥</button></div><button className="primary-button" onClick={() => session.startRound('duel')}>开始双人对战 <span>↗</span></button><button className="secondary-button" onClick={() => session.startRound('practice')}>木桩练习 <span>→</span></button><button className="secondary-button" onClick={() => session.startRound('solo')}>单人自由视角 <span>→</span></button><small>默认：赤丸短剑 · 青丸长柄刀 · 双人共用键盘</small></div>
+        <div className="welcome-actions"><button className="armory-menu-button" onClick={() => setArmoryMode('browse')}><span>兵器库 · 查看与选择</span><small>赤丸 {weaponName(game.weapons[0])} / 青丸 {weaponName(game.weapons[1])}</small></button><button className="primary-button" onClick={() => setArmoryMode('duel')}>双人对战 · 分屏视角 <span>↗</span></button><button className="secondary-button" onClick={() => setArmoryMode('duel-fixed')}>双人对战 · 固定视角 <span>→</span></button><button className="secondary-button" onClick={() => setArmoryMode('practice')}>木桩练习 <span>→</span></button><button className="secondary-button" onClick={() => setArmoryMode('solo')}>单人自由视角 <span>→</span></button><small>开打前可分别选武器 · 双人共用键盘</small></div>
       </section>}
       {active && <div className="match-tools"><button className="pill-button" onClick={() => session.pause()}>Ⅱ 暂停 <kbd>ESC</kbd></button><button className="pill-button" onClick={() => session.startRound()} title="重新开始当前对局">↻ 重开</button><button className="pill-button" onClick={() => session.goHome()} title="回到主菜单">返回</button></div>}
-      {active && <div className="live-tip"><span className="status-dot"></span><span>{solo ? 'W / S 前后挥动 · A / D 水平转向 · 拖动鼠标转动视角' : game.practice ? '练习模式 · 青丸不主动出招，停止受击后恢复血量' : '左右画面各跟随一位玩家 · 武器升降时镜头跟随高度，水平转向时镜头转向'}</span></div>}
+      {active && <div className="live-tip"><span className="status-dot"></span><span>{solo ? 'W / S 前后挥动 · A / D 水平转向 · 拖动鼠标转动视角' : game.practice ? '练习模式 · 青丸不主动出招，停止受击后恢复血量' : fixedDuel ? '固定视角 · 两位玩家共用同一画面 · P1 WASD / P2 方向键' : '自由视角 · P1：Q / E · P2：. / ?（无需 Shift）· 松开保持角度'}</span></div>}
       {!ready && !game.error && <div className="loading"><span className="loader"></span><p>正在布置角斗场…</p></div>}
       {game.error && <div className="error-panel"><h2>角斗场暂时无法载入</h2><p>{game.error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载 ↗</button></div>}
     </main>
 
     <footer className={`controls-bar${solo ? ' solo-controls' : ''}`}>
-      <div className="control-block"><span className="player-chip red">P1</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>{game.weapon === 'sword' ? '赤丸的短剑' : '赤丸的棍法'}</b><span>W 朝正面挥 <i>·</i> S 朝背面挥 <i>·</i> A / D 水平转向 · 可组合</span></div></div>
+      <div className="control-block"><span className="player-chip red">P1</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>赤丸的{weaponName(game.weapons[0])}</b><span>W 朝正面挥 <i>·</i> S 朝背面挥 <i>·</i> A / D 水平转向 · 可组合</span></div></div>
       <div className="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br/><b>武器才是主角</b></span></div>
-      {solo ? <div className="control-copy solo-view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div> : <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的长柄刀</b><span>↑ 朝正面挥 <i>·</i> ↓ 朝背面挥 <i>·</i> ← / → 水平转向 · 可组合</span></div></div>}
+      {solo ? <div className="control-copy solo-view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div> : <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的{weaponName(game.weapons[1])}</b><span>↑ 朝正面挥 <i>·</i> ↓ 朝背面挥 <i>·</i> ← / → 水平转向 · 可组合</span></div></div>}
     </footer>
 
     {helpOpen && <Modal onCancel={closeHelp}><HelpContent close={closeHelp}/></Modal>}
+    {armoryMode !== null && <Modal className="armory-modal" onCancel={() => setArmoryMode(null)}><Armory game={game} session={session} mode={armoryMode} close={() => setArmoryMode(null)} start={() => { session.startRound(armoryMode); setArmoryMode(null); }}/></Modal>}
     {game.state === 'paused' && !helpOpen && !game.error && <Modal className="compact-modal" onCancel={() => session.resume()}><span className="eyebrow">TAKE A BREATH</span><h2>歇一棍。</h2><p>对局已暂停，准备好再继续。</p><button className="primary-button" onClick={() => session.resume()}>继续对战 <span>↗</span></button><button className="secondary-button" onClick={() => session.goHome()}>回到主菜单</button></Modal>}
     {game.state === 'result' && <Modal className="compact-modal"><span className="eyebrow">A GOOD BONK, WELL PLAYED.</span><div className="winner-icon" style={{ background: winner === 1 ? '#568d92' : winner === 0 ? '#c4684f' : '#838c74' }}>{winner === -1 ? '和' : winner === 0 ? '赤' : '青'}</div><h2>{resultTitle}</h2><p>{resultDetail}</p><button className="primary-button" onClick={() => session.startRound()}>再战一局 <span>↗</span></button><button className="secondary-button" onClick={() => session.goHome()}>回到主菜单</button></Modal>}
   </>;

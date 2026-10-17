@@ -1,35 +1,15 @@
 import * as THREE from 'three';
-import { CONFIG, SOLO_ARENA_SCALE, WEAPONS, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
+import { CONFIG, arenaScaleForMode, WEAPONS, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
+import { WEAPON_VISUALS, setWeaponRotation } from './weapon-visuals.js';
+import { createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera, turnFreeCamera } from './free-camera.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
-const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const PALETTE = [0xc4684f, 0x568d92];
-// Measured on the first Tripo export: from the shaft's butt toward the blade.
-const WEAPON_AXIS = new THREE.Vector3(0.556405, 0.627597, -0.544551).normalize();
-const WEAPON_BUTT = new THREE.Vector3(-0.391, 0.014, 0.418);
-// The public sword GLB stores the blade diagonally; align hilt-to-tip with the physics segment.
-const SWORD_AXIS = new THREE.Vector3(-0.703801, -0.710392, -0.002717).normalize();
-const SWORD_BUTT = new THREE.Vector3(0.485, 0.977, 0);
 const vec = p => new THREE.Vector3(p.x, p.y, p.z);
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, ...extra });
 
-export const shortestAngle = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
-
-export function duelCameraTarget(player) {
-  const heading = fighterHeading(player);
-  const weaponY = staffFrame(player, weaponStats(player).length * 0.65).point.y;
-  const height = player.p.y + 2.65 + clamp((weaponY - player.p.y) * 0.2, -0.45, 0.7);
-  const distance = 6.2;
-  return {
-    heading,
-    height,
-    x: player.p.x - Math.cos(heading) * distance,
-    z: player.p.z - Math.sin(heading) * distance,
-  };
-}
-
 export class ArenaView {
-  constructor(renderer, camera, mode = 'duel', weapon = 'polearm') {
+  constructor(renderer, camera, mode = 'duel', weapon = 'polearm', secondWeapon = 'polearm') {
     // R3F owns the renderer, camera, frame loop and canvas. These groups keep
     // the existing meshes and their appearance while R3F manages each layer.
     this.arena = new THREE.Group();
@@ -43,27 +23,17 @@ export class ArenaView {
     this.solo = mode === 'solo';
     this.duel = mode === 'duel';
     this.weapon = weapon;
+    this.secondWeapon = secondWeapon;
     this.swordPitch = new THREE.Quaternion();
     this.weaponLoaded = new Set();
-    if (this.solo) this.arenaGeometry.scale.set(SOLO_ARENA_SCALE, 1, SOLO_ARENA_SCALE);
+    this.arenaScale = arenaScaleForMode(mode);
+    this.arenaGeometry.scale.set(this.arenaScale, 1, this.arenaScale);
     this.cameraBase = new THREE.Vector3(0, 15.4, 21);
     this.target = new THREE.Vector3(0, 0, -0.3);
     this.camera.position.copy(this.solo ? new THREE.Vector3(-4, 3, -4) : this.cameraBase);
     this.camera.lookAt(this.target);
-    this.cameraYaw = 0;
-    this.cameraPitch = 0.52;
-    this.cameraDistance = 6.2;
-    this.mouseYaw = 0;
-    this.mousePitch = 0;
-    this.mouseIdle = 0;
-    this.cameraInitialized = false;
-    this.cameraFocus = new THREE.Vector3();
-    this.cameraDesired = new THREE.Vector3();
-    this.duelCameras = this.solo ? [] : [0, 1].map(() => ({
-      camera: new THREE.PerspectiveCamera(62, 1, 0.1, 120),
-      yaw: null,
-      target: new THREE.Vector3(),
-    }));
+    this.soloCamera = this.solo ? createFreeCameraRig(camera) : null;
+    this.duelCameras = this.duel ? [0, 1].map(() => createFreeCameraRig(undefined, true)) : [];
     this.particles = [];
     this.rings = [];
     this.trailTime = 0;
@@ -86,11 +56,12 @@ export class ArenaView {
   makeLighting() {
     this.arena.add(new THREE.HemisphereLight(0xfff9e9, 0x849079, 3));
     const sun = new THREE.DirectionalLight(0xffedcd, 3.4);
-    sun.position.set(this.solo ? -20 : -8, this.solo ? 30 : 15, this.solo ? 20 : 8);
+    const largeArena = this.arenaScale > 1;
+    sun.position.set(largeArena ? -20 : -8, largeArena ? 30 : 15, largeArena ? 20 : 8);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
-    const shadowExtent = this.solo ? 25 : 11;
-    Object.assign(sun.shadow.camera, { left: -shadowExtent, right: shadowExtent, top: shadowExtent, bottom: -shadowExtent, near: 1, far: this.solo ? 85 : 45 });
+    const shadowExtent = largeArena ? 25 : 11;
+    Object.assign(sun.shadow.camera, { left: -shadowExtent, right: shadowExtent, top: shadowExtent, bottom: -shadowExtent, near: 1, far: largeArena ? 85 : 45 });
     sun.shadow.normalBias = 0.035;
     sun.shadow.bias = -0.0003;
     sun.shadow.radius = 4;
@@ -173,9 +144,9 @@ export class ArenaView {
     }
     // Inlaid starting marks.
     for (const [x, color] of this.solo ? [] : [[-2.2, PALETTE[0]], [2.2, PALETTE[1]]]) {
-      const mark = this.mesh(new THREE.RingGeometry(0.58, 0.62, 48), material(color, { transparent: true, opacity: 0.42 }));
+      const mark = this.mesh(new THREE.RingGeometry(0.58, 0.62, 48), material(color, { transparent: true, opacity: 0.42 }), this.arena);
       mark.rotation.x = -Math.PI / 2; mark.position.set(x, 0.014, 0); mark.castShadow = false;
-      const dash = this.mesh(new THREE.BoxGeometry(0.14, 0.01, 0.6), material(color, { transparent: true, opacity: 0.35 }));
+      const dash = this.mesh(new THREE.BoxGeometry(0.14, 0.01, 0.6), material(color, { transparent: true, opacity: 0.35 }), this.arena);
       dash.position.set(x < 0 ? -3.1 : 3.1, 0.015, 0); dash.castShadow = false;
     }
     this.banners = new THREE.Group();
@@ -216,7 +187,7 @@ export class ArenaView {
   }
 
   makeFighter(id) {
-    const weaponType = id === 0 ? this.weapon : 'polearm';
+    const weaponType = id === 0 ? this.weapon : this.secondWeapon;
     const weapon = WEAPONS[weaponType];
     const root = new THREE.Group();
     this.actors.add(root);
@@ -243,6 +214,16 @@ export class ArenaView {
     cap.position.y = weapon.length - 0.08;
     const tip = this.mesh(new THREE.SphereGeometry(0.107, 12, 10), material(0xd6c6a0), staff);
     tip.position.y = weapon.length;
+    const fallbackHead = new THREE.Group();
+    staff.add(fallbackHead);
+    for (const collider of weapon.colliders?.slice(1) || []) {
+      const a = new THREE.Vector3(...collider.a), b = new THREE.Vector3(...collider.b);
+      const direction = b.clone().sub(a);
+      const part = this.mesh(new THREE.CapsuleGeometry(collider.radius, direction.length(), 4, 8),
+        material(0x7d8180, { metalness: 0.35, roughness: 0.6 }), fallbackHead);
+      part.position.copy(a.add(b).multiplyScalar(0.5));
+      part.quaternion.setFromUnitVectors(UP, direction.normalize());
+    }
     const marker = this.mesh(new THREE.RingGeometry(0.47, 0.51, 40), new THREE.MeshBasicMaterial({ color: PALETTE[id], transparent: true, opacity: 0.48, depthWrite: false }));
     marker.rotation.x = -Math.PI / 2; marker.castShadow = false;
     const contact = this.mesh(new THREE.RingGeometry(0.12, 0.155, 24), new THREE.MeshBasicMaterial({ color: 0xf5efd6, transparent: true, opacity: 0.75, depthWrite: false }));
@@ -257,7 +238,7 @@ export class ArenaView {
     const trail = new THREE.Mesh(trailGeometry, new THREE.MeshBasicMaterial({ color: weaponType === 'sword' ? 0xffa256 : PALETTE[id], transparent: true, opacity: 0.11, side: THREE.DoubleSide, depthWrite: false }));
     trail.frustumCulled = false;
     this.actors.add(trail);
-    return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, marker, contact, trail, positions, trailHistory: [], maxTrail, weaponType, baseColor: new THREE.Color(PALETTE[id]) };
+    return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, fallbackHead, marker, contact, trail, positions, trailHistory: [], maxTrail, weaponType, baseColor: new THREE.Color(PALETTE[id]) };
   }
 
   setWeaponModel(source, type = 'polearm') {
@@ -265,8 +246,8 @@ export class ArenaView {
     for (const [id, fighter] of this.players.entries()) {
       if (fighter.weaponType !== type) continue;
       const weapon = source.clone(true);
-      const axis = type === 'sword' ? SWORD_AXIS : WEAPON_AXIS;
-      const sourceButt = type === 'sword' ? SWORD_BUTT : WEAPON_BUTT;
+      const axis = new THREE.Vector3(...WEAPON_VISUALS[type].axis).normalize();
+      const sourceButt = new THREE.Vector3(...WEAPON_VISUALS[type].butt);
       weapon.quaternion.setFromUnitVectors(axis, UP);
       weapon.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(weapon);
@@ -280,17 +261,22 @@ export class ArenaView {
         if (!object.isMesh) return;
         object.castShadow = true;
         object.receiveShadow = true;
-        object.material = object.material.clone();
-        if (type === 'polearm') {
-          object.material.color.set(0x626a70).lerp(fighter.baseColor, 0.18);
-          object.material.metalness = 0.24;
-          object.material.roughness = 0.62;
-        }
+        const copyMaterial = original => {
+          const mat = original.clone();
+          if (type === 'polearm') {
+            mat.color.set(0x626a70).lerp(fighter.baseColor, 0.18);
+            mat.metalness = 0.24;
+            mat.roughness = 0.62;
+          }
+          return mat;
+        };
+        object.material = Array.isArray(object.material) ? object.material.map(copyMaterial) : copyMaterial(object.material);
       });
       fighter.staff.add(weapon);
       fighter.rod.visible = false;
       fighter.cap.visible = false;
       fighter.tip.visible = false;
+      fighter.fallbackHead.visible = false;
       if (type === 'sword') fighter.grip.visible = false;
       // Keep the existing colored grip so each player can identify their weapon.
     }
@@ -318,7 +304,7 @@ export class ArenaView {
     this.camera.updateProjectionMatrix();
   }
 
-  update(players, dt, active = false, cameraDt = dt, splitView = false) {
+  update(players, dt, active = false, cameraDt = dt, splitView = false, cameraInputs = []) {
     this.banners.visible = !splitView;
     this.trailTime += dt;
     const recordTrail = this.trailTime > 1 / 90;
@@ -332,14 +318,7 @@ export class ArenaView {
       model.skinMat.color.set(0xe7c199).lerp(new THREE.Color(0xffffff), p.hitFlash * 0.8);
       const frame = staffFrame(p);
       model.staff.position.copy(vec(staffFrame(p, 0).point));
-      if (model.weaponType === 'sword') {
-        // Yaw then pitch gives the flat blade a stable roll, including when it
-        // points straight down and supports the fighter.
-        model.staff.quaternion.setFromAxisAngle(UP, -p.phi)
-          .multiply(this.swordPitch.setFromAxisAngle(Z_AXIS, -p.theta));
-      } else {
-        model.staff.quaternion.setFromUnitVectors(UP, vec(frame.r).normalize());
-      }
+      setWeaponRotation(model.staff.quaternion, p.theta, p.phi, this.swordPitch);
       model.marker.position.set(p.p.x, 0.02, p.p.z);
       model.marker.material.opacity = clamp(0.5 - (p.p.y - CONFIG.bodyFloor) * 0.09, 0.16, 0.5);
       model.contact.visible = p.staffGrounded;
@@ -373,101 +352,41 @@ export class ArenaView {
       if (r.life <= 0) { this.effectsRoot.remove(r.mesh); r.mesh.geometry.dispose(); r.mesh.material.dispose(); this.rings.splice(i, 1); }
     }
     this.shake *= Math.exp(-16 * dt);
-    if (this.solo && players[0]) this.updateSoloCamera(players[0], cameraDt);
+    if (this.solo && players[0]) updateFreeCamera(this.soloCamera, players[0], cameraDt);
     else this.camera.position.copy(this.cameraBase);
     if (!this.reducedMotion && this.shake > 0.003) {
       this.camera.position.x += (Math.random() - 0.5) * this.shake;
       this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
     }
-    this.camera.lookAt(this.solo ? this.cameraFocus : this.target);
-    if (splitView && this.duel) this.updateDuelCameras(players, cameraDt);
+    this.camera.lookAt(this.solo ? this.soloCamera.focus : this.target);
+    if (splitView && this.duel) this.updateDuelCameras(players, cameraDt, cameraInputs);
   }
 
   resetCamera() {
-    this.cameraInitialized = false;
-    this.mouseYaw = 0;
-    this.mousePitch = 0;
-    this.mouseIdle = 0;
-    for (const rig of this.duelCameras) rig.yaw = null;
+    if (this.soloCamera) resetFreeCamera(this.soloCamera);
+    for (const rig of this.duelCameras) resetFreeCamera(rig);
   }
 
-  updateDuelCameras(players, dt) {
+  updateDuelCameras(players, dt, inputs) {
     for (const player of players) {
       const rig = this.duelCameras[player.id];
       if (!rig) continue;
-      const wanted = duelCameraTarget(player);
-      const firstFrame = rig.yaw === null;
-      rig.yaw = firstFrame ? wanted.heading : rig.yaw + shortestAngle(rig.yaw, wanted.heading) * (1 - Math.exp(-8 * dt));
-      const position = this.cameraDesired.set(
-        player.p.x - Math.cos(rig.yaw) * 6.2,
-        wanted.height,
-        player.p.z - Math.sin(rig.yaw) * 6.2,
-      );
-      if (firstFrame) rig.camera.position.copy(position);
-      else rig.camera.position.lerp(position, 1 - Math.exp(-5 * dt));
-      if (!this.reducedMotion && this.shake > 0.003) {
-        rig.camera.position.x += (Math.random() - 0.5) * this.shake;
-        rig.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
-      }
-      rig.target.set(
-        rig.camera.position.x + Math.cos(rig.yaw) * 10,
-        // Keep a fixed, gentle downward pitch so the arena stays visible as
-        // the camera rises with the weapon; W/S do not tilt the view.
-        rig.camera.position.y - 2.5,
-        rig.camera.position.z + Math.sin(rig.yaw) * 10,
-      );
-      rig.camera.lookAt(rig.target);
-      rig.camera.updateMatrixWorld();
+      const shake = !this.reducedMotion && this.shake > 0.003 ? this.shake : 0;
+      turnFreeCamera(rig, inputs[player.id] || 0, dt);
+      updateFreeCamera(rig, player, dt,
+        (Math.random() - 0.5) * shake,
+        (Math.random() - 0.5) * shake * 0.65);
     }
   }
 
-  orbit(dx, dy) {
-    if (!this.solo) return;
-    this.mouseYaw -= dx * 0.006;
-    this.mousePitch = clamp(this.mousePitch + dy * 0.004, -0.2, 0.7);
-    this.mouseIdle = 0;
+  orbit(dx, dy, playerId = 0) {
+    const rig = this.soloCamera || this.duelCameras[playerId];
+    if (rig) orbitFreeCamera(rig, dx, dy);
   }
 
-  zoom(delta) {
-    if (!this.solo) return;
-    this.cameraDistance = clamp(this.cameraDistance * Math.exp(delta * 0.001), 3.8, 10);
-    this.mouseIdle = 0;
-  }
-
-  updateSoloCamera(player, dt) {
-    const aim = staffFrame(player, weaponStats(player).length * 0.55).point;
-    const wantedYaw = player.phi;
-    const firstFrame = !this.cameraInitialized;
-    if (firstFrame) {
-      // Start from the side so the polearm's length is visible, not foreshortened.
-      this.cameraYaw = wantedYaw + Math.PI / 2;
-      this.cameraInitialized = true;
-    }
-    // Keep the horizontal camera direction stable while A/D steer the staff.
-    // The weapon is followed within the frame; mouse drag alone orbits the view.
-    this.mouseIdle += dt;
-    if (this.mouseIdle > 1.5) {
-      const settle = Math.exp(-0.8 * dt);
-      this.mouseYaw *= settle;
-      this.mousePitch *= settle;
-    }
-    const yaw = this.cameraYaw + this.mouseYaw;
-    const pitch = clamp(this.cameraPitch + this.mousePitch, 0.06, 0.9);
-    const focus = this.cameraDesired.set(
-      player.p.x * 0.75 + aim.x * 0.25,
-      clamp(player.p.y * 0.6 + aim.y * 0.4, 0.45, 2.6),
-      player.p.z * 0.75 + aim.z * 0.25,
-    );
-    if (firstFrame) this.cameraFocus.copy(focus);
-    else this.cameraFocus.lerp(focus, 1 - Math.exp(-5 * dt));
-    const horizontal = Math.cos(pitch) * this.cameraDistance;
-    this.cameraDesired.set(
-      player.p.x - Math.cos(yaw) * horizontal,
-      player.p.y + Math.sin(pitch) * this.cameraDistance + 1.2,
-      player.p.z - Math.sin(yaw) * horizontal,
-    );
-    if (firstFrame) this.camera.position.copy(this.cameraDesired);
-    else this.camera.position.lerp(this.cameraDesired, 1 - Math.exp(-5 * dt));
+  zoom(delta, playerId = 0) {
+    const rig = this.soloCamera || this.duelCameras[playerId];
+    if (rig) zoomFreeCamera(rig, delta);
   }
 
   impact(event) {

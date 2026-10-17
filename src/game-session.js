@@ -1,9 +1,12 @@
-import { ArenaPhysics, CONFIG, WEAPONS } from './physics.js';
+import { ArenaPhysics, CONFIG, WEAPONS, arenaScaleForMode } from './physics.js';
 import { GameAudio } from './audio.js';
+
+export const CAMERA_KEYS = new Set(['KeyQ', 'KeyE', 'Period', 'Slash']);
 
 export const CONTROL_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD',
   'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+  ...CAMERA_KEYS,
 ]);
 
 export class GameSession {
@@ -17,7 +20,8 @@ export class GameSession {
     this.practice = false;
     this.mode = 'duel';
     this.weapon = 'sword';
-    this.world.reset(false, false, this.weapon);
+    this.secondWeapon = 'polearm';
+    this.world.reset(false, false, this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
     this.accumulator = 0;
     this.freeze = 0;
     this.countdown = 0;
@@ -45,8 +49,10 @@ export class GameSession {
       practice: this.practice,
       mode: this.mode,
       weapon: this.weapon,
+      weapons: [this.weapon, this.secondWeapon],
       pressed: [...this.keys],
       health: this.world.players.map(player => player.health),
+      stamina: this.world.players.map(player => player.stamina),
       seconds: Math.floor(this.world.time),
       winner: this.world.winner,
       countdownText: this.state === 'countdown' ? (this.countdownNumber > 0 ? String(this.countdownNumber) : '') :
@@ -78,6 +84,14 @@ export class GameSession {
     ];
   }
 
+  getCameraInputs() {
+    if (this.mode !== 'duel') return [0, 0];
+    return [
+      Number(this.keys.has('KeyE')) - Number(this.keys.has('KeyQ')),
+      Number(this.keys.has('Slash')) - Number(this.keys.has('Period')),
+    ];
+  }
+
   syncPolarInputs() {
     this.getInputs().forEach((input, id) => this.world.setPolarInput(id, input.theta));
   }
@@ -85,6 +99,7 @@ export class GameSession {
   keyDown(code) {
     if (!CONTROL_KEYS.has(code) || (this.state !== 'playing' && this.state !== 'countdown')) return;
     if (this.mode === 'solo' && code.startsWith('Arrow')) return;
+    if (CAMERA_KEYS.has(code) && this.mode !== 'duel') return;
     if (this.keys.has(code)) return;
     this.keys.add(code);
     this.syncPolarInputs();
@@ -104,22 +119,24 @@ export class GameSession {
     this.publish();
   }
 
-  setWeapon(weapon) {
-    if (this.state !== 'lobby' || !WEAPONS[weapon] || this.weapon === weapon) return;
-    this.weapon = weapon;
-    this.world.reset(false, false, weapon);
+  setWeapon(weapon, playerId = 0) {
+    if (this.state !== 'lobby' || !WEAPONS[weapon] || ![0, 1].includes(playerId)) return;
+    const field = playerId === 0 ? 'weapon' : 'secondWeapon';
+    if (this[field] === weapon) return;
+    this[field] = weapon;
+    this.world.reset(false, false, this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
     this.visualRevision++;
     this.publish();
   }
 
   startRound(mode = this.mode) {
     this.mode = typeof mode === 'boolean' ? (mode ? 'practice' : 'duel') : mode;
-    if (!['duel', 'practice', 'solo'].includes(this.mode)) throw new Error(`Unknown game mode: ${this.mode}`);
+    if (!['duel', 'duel-fixed', 'practice', 'solo'].includes(this.mode)) throw new Error(`Unknown game mode: ${this.mode}`);
     this.practice = this.mode === 'practice';
     void this.sound.unlock();
     this.sound.lastWhoosh = [0, 0];
     this.clearKeys();
-    this.world.reset(this.practice, this.mode === 'solo', this.weapon);
+    this.world.reset(this.practice, this.mode === 'solo', this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -138,7 +155,7 @@ export class GameSession {
     this.clearKeys();
     this.mode = 'duel';
     this.practice = false;
-    this.world.reset(false, false, this.weapon);
+    this.world.reset(false, false, this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -184,7 +201,7 @@ export class GameSession {
     this.readout = {
       label: event.damage >= 22 ? '漂亮的一击' : '有效命中',
       damage: event.damage,
-      detail: `${event.speed.toFixed(1)} m/s · 发力加成 ${Math.round(30 * Math.min(event.acceleration / 48, 1))}%`,
+      detail: `${event.speed.toFixed(1)} m/s · 发力加成 ${Math.round(30 * Math.min(event.acceleration / 48, 1))}%${event.turnShare > 0.01 ? ' · 横转伤害降低' : ''}`,
     };
     this.readoutTimer = 3;
     this.publish();

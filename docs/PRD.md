@@ -1,6 +1,6 @@
 # Wankai Weapon Duel PRD
 
-Status: Draft for review, updated 14 October 2026. The first playable demo remains small; a growing set of weapons with distinct gameplay effects is the longer-term product direction. Unresolved decisions are recorded in the [design handoff](DESIGN_HANDOFF.md).
+Status: Draft for review, updated 15 October 2026. The first playable demo remains small; a growing set of weapons with distinct gameplay effects is the longer-term product direction. Unresolved decisions are recorded in the [design handoff](DESIGN_HANDOFF.md).
 
 ## 1. Executive summary
 
@@ -15,8 +15,8 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 ### Product direction and staged scope
 
 1. **Original appearance trial:** Place the same generated polearm model on both fighters without changing its physics. This showed the basic Tripo-to-GLB-to-game workflow.
-2. **Current two-weapon prototype:** Give the sword shorter reach and faster swings, keep the polearm's existing profile, and compare them in a local duel. The sword's downward support direction still needs investigation before this prototype is accepted.
-3. **Future weapon roster:** Add further weapons with their own readable appearance and gameplay effects. Reach, swing response, ground contact, damage, and any special visual or mechanical effects must be designed and tested per weapon. The exact roster, effects, selection rules, and balance targets are not decided yet.
+2. **Current weapon prototype:** Give the sword shorter reach and faster swings, keep the polearm's existing profile, and compare them in a local duel. The sword's downward support direction still needs investigation before this prototype is accepted.
+3. **Third weapon and later roster:** The creator selected the iron/red-cloth Tripo hammer and approved its 5-credit export and integration. It now contrasts with the quick sword and long-reach polearm through slower response, greater inertia, broad head contacts, and 30% stronger metal-head damage. The same four controls apply. Both players choose independently in the armory. Further roster entries and final balance remain open.
 
 ### Success criteria
 
@@ -36,8 +36,8 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 
 ### User flow
 
-1. Open the Electron development app, choose player one's available weapon, and choose a two-player match or practice mode. The current default is sword versus polearm; solo exploration is also available.
-2. Read the visible controls or help panel. Both players use the same keyboard and see separate views of the same match inside one Electron window.
+1. Open the Electron development app and browse the armory's actual model previews, descriptions, strengths, and tradeoffs. Choosing a two-player, practice, or solo mode opens weapon selection before starting. Both players choose independently and may equip the same weapon; solo shows only player one's choice. The default remains sword versus polearm.
+2. Read the visible controls or help panel. Both players use the same keyboard and choose either separate following views or one fixed, elevated shared view of the match inside one Electron window.
 3. Push against the ground, swing, strike, and block with the staff. The HUD shows health and match time; hits produce the current visual and sound feedback.
 4. Pause, resume, or rematch as needed. The app pauses and clears input on focus loss.
 
@@ -58,16 +58,19 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 - The [approved control animation](control-concept-combinations.mp4) illustrates the intended motion; playtesting is still needed to assess its feel in the game.
 - Collisions can still alter the swing as they do today. Playtesting informs final tuning.
 
-**Two local players:** As a player, I want my own view of the shared fight so I can judge my weapon direction and ground contact.
+**Two local players:** As a player, I want to choose separate free views or a shared fixed view so I can judge the fight from the perspective I prefer.
 
 - The duel is divided into two labeled views inside one Electron window, with player one on the left and player two on the right. Both views show the same world, hits, and health state; the fixed-step match advances once per frame.
-- Each camera begins behind its fighter facing the opponent. Horizontal weapon steering turns that camera smoothly; raising or lowering the weapon changes camera height while its viewing pitch stays fixed. Camera lag keeps the weapon's turning visible.
-- When the weapon points vertically, the stored horizontal heading stays defined so neither camera flips. The visible fighter face follows this heading, while body collision physics remains unchanged.
+- Each camera adopts the approved rear-view framing: start behind its fighter with a small 15° heading offset, a shallow 0.35-radian orbit pitch, 55° perspective, a 10.5-unit distance, and smooth weapon-relative composition. The far arena edge should be visible at the starting positions while fighters remain readable. Weapon steering does not rotate the view. P1 holds Q / E to turn their camera left / right; P2 holds period / slash (the ? key, without Shift). Releasing keeps that angle, opposite keys cancel, and rematches reset both views. Camera and weapon inputs can be held together. The duel uses no mouse camera controls.
+- Translation remains anchored to the fighter so jumps or knockback cannot leave the camera behind. A projected body/head framing check pulls the camera back if the fighter approaches their pane's safe edges, then eases inward. Focus height follows the fighter vertically. Each pane has the solo-style direction indicator relative to its own camera. The split-screen arena and its physical boundary match solo at three times the original radius (19.35 units). The rendered floor, rim contacts, and lighting must match that boundary; starting marks remain aligned with fighters. Combat rules stay the same.
+- The visible fighter face follows weapon heading even when the view points elsewhere. When the weapon points vertically, the stored horizontal heading remains defined.
+- An additional fixed-camera duel uses the original elevated arena camera and one full-width viewport showing both players. Both players remain active with the same controls, weapons, collision, health, and victory rules; the camera does not follow either fighter. Rematches keep the selected camera mode.
 - Practice retains the shared arena camera. Solo mode retains its mouse orbit and larger arena.
 
 **Player trying different weapons:** As a player, I want each weapon to have a recognizable strength, limitation, and effect on play so choosing one changes my approach.
 
-- In the current prototype, the sword's shorter reach and quicker swing response are visible and felt; the polearm keeps its longer reach and existing swing response.
+- In the current prototype, the sword has shorter reach and quicker swing response; the polearm keeps longer reach. The iron hammer has intermediate reach, higher inertia, slower response, and 30% stronger metal-head damage at the same impact speed. Its broad head participates in hits, blocks, and ground support; cloth is decorative.
+- Both players choose independently in the armory before fighting. Rematches preserve both selections; returning to the menu allows changing them. The selected iron hammer is also playable, with slower response and stronger head strikes.
 - The sword uses the same contact-driven movement system. It does not grant an unrelated running-speed bonus.
 - The visible weapon direction and collision path should agree well enough that players can predict support, blocks, and hits. The sword's downward support direction remains an open issue.
 - Later weapons require a short design specification and playtest for each proposed effect before implementation. No particular special ability is approved by this PRD.
@@ -77,7 +80,7 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 - The first Tripo polearm model can be attached to both moving weapons and remain visible during hits and rematches. In the current default pairing, player one instead has the short-sword model and player two has the polearm model.
 - Player color accents and the different weapon silhouettes help identify the players.
 - Importing the polearm model changes appearance only. The short sword is a separate experiment with its own shorter collision length and faster swing parameters; each selected physics profile remains authoritative over its visual model.
-- If the model fails to load, the current procedural staff remains visible and the match remains playable; development output identifies the loading problem.
+- If the model fails to load, the procedural weapon remains visible (including a broad head proxy for the hammer) and the match remains playable; development output identifies the loading problem.
 
 ### Non-goals for the first demo
 
@@ -86,7 +89,7 @@ Build a small local two-player demo on one Mac, using the existing Electron, Rea
 
 ## 3. Generated-asset requirements
 
-Tripo is an external **asset creation step**, not an AI feature running inside Wankai. The [supplied polearm image](reference/polearm.png) started the first trial; its result and workflow are in the [first weapon trial guide](TRIPO_WEAPON_TRIAL.md). The [short sword trial](SWORD_TRIAL.md) records the second asset and its different physics profile. Future assets can be generated or sourced individually, but each must be reviewed for shape, orientation, performance, and reuse rights before distribution.
+Tripo is an external **asset creation step**, not an AI feature running inside Wankai. The [supplied polearm image](reference/polearm.png) started the first trial; its result and workflow are in the [first weapon trial guide](TRIPO_WEAPON_TRIAL.md). The [short sword trial](SWORD_TRIAL.md) records the second asset and its different physics profile. The [iron hammer trial](HAMMER_TRIAL.md) records the approved third weapon, import checks, and armory. Future assets can be generated or sourced individually, but each must be reviewed for shape, orientation, performance, and reuse rights before distribution.
 
 Evaluate the first model by checking that its shaft and blade are recognizable from multiple views, that it can be aligned with the staff, and that it remains readable while moving. A single image may leave hidden surfaces uncertain. Exact style and alignment can be refined after the first in-game test.
 
@@ -95,7 +98,7 @@ Evaluate the first model by checking that its shaft and blade are recognizable f
 ### Architecture and integration
 
 - `src/physics.js` owns fixed-step movement, weapon profiles, collision shapes, and damage rules. Rendering must not change those calculations. Future weapon-specific effects belong in explicit gameplay rules, with visuals following those rules.
-- React owns menus, HUD, dialogs, and input indicators. React Three Fiber and Three.js render the arena, fighters, staffs, cameras, trails, and effects in Electron's sandboxed renderer. One Canvas renders the same 3D scene into two scissored duel viewports; its frame loop calls the game session once before drawing both views.
+- React owns menus, HUD, dialogs, and input indicators. React Three Fiber and Three.js render the arena, fighters, staffs, cameras, trails, and effects in Electron's sandboxed renderer. One Canvas renders the same 3D scene into two scissored viewports for split-screen duel, or one full-width viewport for fixed-camera duel; its frame loop advances the game session once.
 - Load the exported GLB as a local asset, attach a visual copy to each existing moving staff group, and align its grip end, orientation, and approximate length. Retain the procedural staff as a fallback.
 - Keep the renderer isolated from Node.js and IPC. The running game needs no Tripo account, API key, or network connection. Generation and export happen outside the game in the creator's Tripo account.
 
@@ -117,16 +120,18 @@ The first generation may have an unclear rear surface or a broken shaft because 
 
 Use playtest findings to tune controls and feedback. If friends struggle to control the weapon deliberately, consider lowering the execution difficulty while preserving weapon-based movement and combat. Design further weapons with distinct effects, including how their visuals, reach, swing response, ground support, and collision behavior fit together; exact effects are still open. Consider a guided tutorial. Refine weapon art and collision design as the weapon set grows.
 
+The fourth weapon, focused on slower horizontal steering and deliberate control, is deferred at the creator's request. Its agreed direction, unapproved Tripo staff candidate, inspected export cost, and resume checklist are recorded in the [precision weapon side project](PRECISION_WEAPON.md). No staff export has been purchased.
+
 ### Solo camera experiment
 
-A separate local prototype offers one fighter with the same weapon movement rules, no opponent, and a circular arena with three times the duel radius. The raised view starts from the weapon's side, softly keeps it in frame, and follows the fighter's position. A / D still rotate the staff; mouse drag changes the camera angle and the wheel changes distance. A small dial shows the staff's horizontal direction relative to the independent solo camera. This mode is for exploring movement and camera feel and does not replace the two-player playtest criteria. Its camera and arena size remain open to hands-on tuning.
+A separate local prototype offers one fighter with the same weapon movement rules, no opponent, and a circular arena with three times the original radius, now also used by split-screen duel. Fixed-camera duel and practice retain the original radius. The raised view starts from the weapon's side, softly keeps it in frame, and follows the fighter's position. A / D still rotate the staff; mouse drag changes the camera angle and the wheel changes distance. A small dial shows the staff's horizontal direction relative to the independent solo camera. This mode is for exploring movement and camera feel and does not replace the two-player playtest criteria. Its camera and arena size remain open to hands-on tuning.
 
 ### Short sword experiment
 
-As the first differentiated weapon, a local weapon-selection prototype gives player one a short sword by default while player two keeps the curved polearm; player one can choose the polearm instead. The sword has shorter physical reach and faster swing acceleration, braking, and angular speed. It does not add independent character movement; the same ground-contact rules move the fighter. Its direction during downward support is still disputed and needs reproduction and playtesting. See the [short sword trial](SWORD_TRIAL.md) for the asset source, tuning, and checks, and the [design handoff](DESIGN_HANDOFF.md) for the unresolved questions.
+As the first differentiated weapon, the short sword has shorter physical reach and faster swing acceleration, braking, and angular speed. Both players can select it, the polearm, or the iron hammer through the armory; the default remains sword versus polearm. It does not add independent character movement; the same ground-contact rules move the fighter. Historical investigation identified a fixed-angle controller discontinuity near straight down; the current controller avoids that switch, and automated checks now cover input direction and continuous visual rotation through the poles. The creator's overall support-direction concern still needs hands-on acceptance. See the [short sword trial](SWORD_TRIAL.md) for evidence, asset source, tuning, and checks, and the [design handoff](DESIGN_HANDOFF.md) for the unresolved questions.
 
 ### Open dependencies
 
 - The first Tripo GLB is available locally. A two-player playtest is needed to judge its visibility, collision mismatch, and performance.
 - The first-time-player success checks and swing feel are proposed evaluation criteria until observed in playtesting.
-- Further weapon types, their specific effects, how both players will select them, and balance targets need design decisions after the current sword-versus-polearm behavior is understood.
+- The iron hammer has been exported and integrated with measured alignment, a reduced asset budget, and broad head collision coverage. Its five-capsule proxy and initial balance need hands-on playtesting; see [hammer trial](HAMMER_TRIAL.md). Further weapon types, special effects, and balance targets remain design work.

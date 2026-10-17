@@ -14,5 +14,48 @@
 .view-divider{position:absolute;top:0;bottom:0;left:50%;z-index:1;width:2px;transform:translateX(-50%);background:#f8f4e8;box-shadow:0 0 12px #2228;pointer-events:none}
 .view-name{position:absolute;top:104px;z-index:2;padding:7px 11px;border:1px solid #fff9;border-radius:5px;background:#faf8efdc;font-size:10px;font-weight:700;letter-spacing:1px;pointer-events:none}
 .view-one{left:25px;color:var(--red)}.view-two{left:calc(50% + 25px);color:var(--blue)}
+.split-mode .heading-guide{left:25px;bottom:76px;width:112px;padding:8px;gap:2px}.split-mode .pane-heading-1{left:calc(50% + 25px)}.split-mode .heading-dial{width:50px;height:50px;margin:3px 0}.split-mode .heading-arrow{width:40px;height:40px;font-size:33px}.split-mode .pane-heading-1 .heading-arrow{color:var(--blue)}
 @media(max-height:740px){.view-name{top:88px}}
 @media(max-width:740px){.view-name{top:81px;padding:5px 7px;font-size:8px}.view-one{left:12px}.view-two{left:calc(50% + 12px)}}
+@media(max-width:740px){.split-mode .heading-guide{left:12px;bottom:109px;width:96px}.split-mode .pane-heading-1{left:calc(50% + 12px)}.split-mode .heading-guide strong{font-size:9px}}
+.armory-menu-button{border:1px solid #c9cbbb;border-radius:6px;background:#ecebdc;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:5px}.armory-menu-button>span{font-size:11px;font-weight:700;letter-spacing:.5px}.armory-menu-button>small{font-size:9px;color:#7a806e}.armory-menu-button:hover{background:#e1e5d1}
+.armory-modal{width:min(1000px,calc(100vw - 40px));padding:30px;height:min(780px,94dvh);max-height:94dvh;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto}.armory-heading h2{font-size:27px;margin:9px 0}.armory-heading h2>span{color:var(--red)}.armory-heading p{font-size:11px;color:#828975;line-height:1.8;margin:0 0 18px}.armory-loadouts{display:flex;align-items:center;gap:24px;padding:13px 18px;border:1px solid #d8dbcb;border-radius:8px;background:#f0eee2;margin-bottom:18px}.armory-loadouts>div{display:flex;align-items:center;gap:15px;flex:1}.armory-loadouts>div>span{font-size:10px;letter-spacing:.8px}.armory-loadouts strong{font-size:15px}.loadout-one{color:var(--red)}.loadout-two{color:var(--blue);justify-content:flex-end}.armory-versus{font:italic 18px Georgia,serif;color:#8b907d}.armory-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;min-height:0}.weapon-cards{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding:2px}.weapon-card{border:1px solid #dcdece;border-radius:10px;padding:16px;background:#f5f3e8}.weapon-card.viewing{border-color:#a8b18e;background:#f8f6eb;box-shadow:0 2px 10px #5765440a}.weapon-inspect{display:flex;align-items:center;gap:13px;width:100%;border:0;background:none;padding:0;text-align:left}.weapon-inspect>span:first-child{display:flex;flex-direction:column;gap:5px}.weapon-inspect small{font-size:7px;letter-spacing:1.6px;color:#919780}.weapon-inspect b{font-size:21px;font-weight:750}.weapon-inspect em{font-size:9px;letter-spacing:.5px;font-style:normal;padding:5px 7px;background:#e7ead9;color:#707b59;border-radius:4px}.inspect-arrow{margin-left:auto;color:#989e87}.weapon-card>p{font-size:11px;color:#818976;line-height:1.8;margin:11px 0}.weapon-traits{display:flex;gap:18px;font-size:9px;color:#8a907f}.weapon-traits b{font-size:10px;margin-left:7px;color:#626e51}.weapon-card dl{font-size:10px;line-height:1.7;margin:10px 0}.weapon-card dl>div{display:flex;gap:11px}.weapon-card dt{color:#989e8b}.weapon-card dd{margin:0;color:#68745b}.weapon-equip{display:flex;gap:8px}.weapon-equip button{flex:1;padding:9px 11px;border:1px solid #d2d7c4;background:#faf9f2;border-radius:5px;font-size:10px;font-weight:600}.equip-one[aria-pressed=true]{border-color:#c5816b;background:#f3e3d9;color:var(--red)}.equip-two[aria-pressed=true]{border-color:#80a5a4;background:#e0eeea;color:var(--blue)}.weapon-showcase{position:relative;min-height:0;display:flex;flex-direction:column;border-radius:10px;background:radial-gradient(ellipse at 50% 47%,#e8e9db,#dedfcd);overflow:hidden}.showcase-caption{position:absolute;top:22px;left:23px;display:flex;flex-direction:column;gap:7px;z-index:1;pointer-events:none}.showcase-caption strong{font-size:17px;font-weight:600;color:#667155}.showcase-caption small{font-size:9px;color:#949b85}.weapon-preview{position:absolute;inset:65px 8px 92px}.weapon-preview canvas{width:100%;height:100%}.preview-message{position:absolute;left:15px;right:15px;top:50%;font-size:10px;line-height:1.8;text-align:center;color:#899478}.showcase-rule{position:absolute;bottom:22px;left:23px;display:flex;flex-direction:column;gap:9px;pointer-events:none}.showcase-rule b{font-size:12px;letter-spacing:1px;color:#687552}.showcase-rule>span{font-size:9px;line-height:1.9;color:#8a947b}.armory-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #daddcc;margin-top:20px;padding-top:16px}.armory-footer>span{font-size:10px;line-height:1.8;color:#8c947e}.armory-footer .primary-button{min-width:210px;font-size:11px}
+@media(max-width:740px){.armory-modal{padding:24px 18px;width:calc(100vw - 24px);height:auto;display:block}.weapon-cards{overflow:visible}.armory-heading h2{font-size:21px}.armory-layout{grid-template-columns:1fr}.weapon-showcase{min-height:280px;grid-row:1}.weapon-preview{inset:25px 8px 65px}.showcase-caption{top:15px;left:15px}.showcase-caption strong{font-size:14px}.showcase-rule{left:15px;bottom:12px}.showcase-rule>span{font-size:8px}.armory-loadouts{gap:10px;padding:12px}.armory-loadouts>div{gap:8px;flex-wrap:wrap}.armory-loadouts strong{font-size:13px}.armory-footer{align-items:stretch;flex-direction:column;gap:10px}.armory-footer .primary-button{width:100%}.weapon-card{padding:13px}.weapon-card>p{font-size:10px}.weapon-inspect b{font-size:18px}}
+
+.weapon-library{display:flex;flex-direction:column;gap:12px;min-height:0}.weapon-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.weapon-tabs button{display:flex;flex-direction:column;gap:6px;padding:11px 8px;border:1px solid #d6daca;border-radius:6px;background:#f2f1e5;text-align:left;color:#7d876e}.weapon-tabs b{font-size:12px}.weapon-tabs small{font-size:8px}.weapon-tabs button[aria-pressed=true]{background:#e1e7d1;border-color:#a4b18b;color:#57684b}.weapon-cards{flex:1}.weapon-card{flex-shrink:0}
+
+.stamina-meter { margin-top: 7px; }
+.stamina-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 4px;
+  color: #58684c;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+.stamina-track {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #d8d9ca;
+}
+.stamina-fill {
+  height: 100%;
+  background: #728454;
+  transform-origin: left;
+  transition: transform .1s linear;
+}
+.stamina-low .stamina-heading { color: #865a20; }
+.stamina-low .stamina-fill { background: #b1803f; }
+.stamina-empty .stamina-heading { color: #a14836; font-weight: 700; }
+.stamina-empty .stamina-track { background: #dac2b5; }
+@media (max-width: 740px) {
+  .stamina-heading { font-size: 8px; }
+  .stamina-meter { margin-top: 6px; }
+  .view-name { top: 104px; }
+  .arena-caption, .arena-coordinate { top: 115px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stamina-fill { transition: none; }
+}

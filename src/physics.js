@@ -21,8 +21,19 @@ export const CONFIG = Object.freeze({
   maxAngularSpeed: 8.5,
   grip: 1.28,
   maxHealth: 100,
+  turnDamageScale: 0.5,
+});
+export const STAMINA = Object.freeze({
+  max: 100,
+  swingDrain: 20,
+  turnDrain: 8,
+  recoveryDelay: 0.5,
+  recoveryRate: 30,
+  lowThreshold: 25,
+  minPower: 0.4,
 });
 export const SOLO_ARENA_SCALE = 3;
+export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' ? SOLO_ARENA_SCALE : 1;
 
 export const WEAPONS = Object.freeze({
   polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius,
@@ -31,6 +42,17 @@ export const WEAPONS = Object.freeze({
   sword: Object.freeze({ length: 1.45, offset: 1.2, radius: 0.09,
     inertia: 2.8, motorAcceleration: 38,
     brakeAcceleration: 48, maxAngularSpeed: 12.2 }),
+  hammer: Object.freeze({ length: 1.9, offset: 1.3, radius: 0.09,
+    inertia: 5.8, motorAcceleration: 18,
+    brakeAcceleration: 22, maxAngularSpeed: 6.8,
+    // Native +Y coordinates, normalized to 1.9 units. The hanging cloth is visual only.
+    colliders: Object.freeze([
+      { a: [0, 0.0951, 0], b: [0, 1.2746, 0], radius: 0.0951 },
+      { a: [0.019, 1.2175, 0], b: [-0.019, 1.7692, 0], radius: 0.1427, damageScale: 1.3 },
+      { a: [-0.3805, 1.5029, 0], b: [-0.2473, 1.8358, 0], radius: 0.1046, damageScale: 1.3 },
+      { a: [-0.3805, 1.5029, 0], b: [-0.1997, 1.2175, 0], radius: 0.0951, damageScale: 1.3 },
+      { a: [0.1807, 1.4363, 0], b: [0.2188, 1.6646, 0], radius: 0.1332, damageScale: 1.3 },
+    ]) }),
 });
 
 export const weaponStats = player => WEAPONS[player.weapon] || WEAPONS.polearm;
@@ -57,13 +79,15 @@ export function makePlayer(id, weapon = 'polearm') {
     theta: weapon === 'sword' ? Math.PI / 2 : 0.4,
     polarInput: 0,
     phi,
-    // The fighter's face and camera follow the weapon's horizontal direction.
+    // The fighter's face follows the weapon's horizontal direction.
     facingOffset: 0,
     wt: 0,
     wp: 0,
     driveT: 0,
     driveP: 0,
     health: CONFIG.maxHealth,
+    stamina: STAMINA.max,
+    staminaRestTime: 0,
     grounded: true,
     staffGrounded: false,
     contactSpeed: 0,
@@ -80,17 +104,47 @@ export const fighterHeading = player => player.phi + player.facingOffset;
 // distance is measured along the solid staff, from its floating inner end.
 // The invisible constraint still transmits contact impulses to the body pivot.
 export function staffFrame(player, distance = weaponStats(player).length) {
-  const radius = weaponStats(player).offset + distance;
+  return weaponPointFrame(player, v3(0, distance, 0));
+}
+
+// The broad hammer head needs off-axis contacts. These derivatives use the
+// same yaw × pitch rotation as the visible model, including at either pole.
+export function weaponPointFrame(player, local) {
+  const y = weaponStats(player).offset + local.y;
   const st = Math.sin(player.theta), ct = Math.cos(player.theta);
   const sp = Math.sin(player.phi), cp = Math.cos(player.phi);
-  const r = v3(radius * st * cp, radius * ct, radius * st * sp);
-  const jt = v3(radius * ct * cp, -radius * st, radius * ct * sp);
-  const jp = v3(-radius * st * sp, 0, radius * st * cp);
+  const x = local.x * ct + y * st;
+  const r = v3(x * cp - local.z * sp, -local.x * st + y * ct, x * sp + local.z * cp);
+  const dx = -local.x * st + y * ct;
+  const jt = v3(dx * cp, -local.x * ct - y * st, dx * sp);
+  const jp = v3(-r.z, 0, r.x);
   return {
     r, jt, jp,
     point: add(player.p, r),
     velocity: add(player.v, add(mul(jt, player.wt), mul(jp, player.wp))),
   };
+}
+
+export function weaponSegments(player) {
+  const weapon = weaponStats(player);
+  const colliders = weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
+  return colliders.map(collider => {
+    const localA = v3(...collider.a), localB = v3(...collider.b);
+    return { ...collider, localA, localB,
+      a: weaponPointFrame(player, localA).point, b: weaponPointFrame(player, localB).point };
+  });
+}
+
+const segmentFrame = (player, segment, fraction) => weaponPointFrame(player,
+  add(segment.localA, mul(sub(segment.localB, segment.localA), fraction)));
+
+// Existing narrow weapons retain their tip-driven ground behavior. Every
+// solid hammer endpoint can support the fighter or meet the low arena rim.
+function surfacePoints(player) {
+  if (!weaponStats(player).colliders) return [{ local: v3(0, weaponStats(player).length, 0), radius: weaponStats(player).radius }];
+  return weaponSegments(player).flatMap(segment => [
+    { local: segment.localA, radius: segment.radius }, { local: segment.localB, radius: segment.radius },
+  ]);
 }
 
 function phiInertia(p) {
@@ -107,7 +161,37 @@ function impulse(p, frame, force) {
   p.wp += dot(frame.jp, force) / phiInertia(p);
 }
 
-function drivePolarAngle(p, dt) {
+export const staminaPower = stamina => STAMINA.minPower + (1 - STAMINA.minPower) *
+  clamp(stamina / STAMINA.lowThreshold, 0, 1);
+
+function updateStamina(p, turnInput, dt) {
+  const cost = Math.abs(p.polarInput) * STAMINA.swingDrain + Math.abs(turnInput) * STAMINA.turnDrain;
+  if (cost > 0) {
+    p.stamina = Math.max(0, p.stamina - cost * dt);
+    p.staminaRestTime = 0;
+  } else {
+    // Only the part of this step after the recovery delay can refill stamina.
+    const restTime = p.staminaRestTime + dt;
+    const recoveryTime = Math.max(0, restTime - STAMINA.recoveryDelay);
+    p.stamina = Math.min(STAMINA.max, p.stamina + recoveryTime * STAMINA.recoveryRate);
+    p.staminaRestTime = Math.min(STAMINA.recoveryDelay, restTime);
+  }
+}
+
+function motorAcceleration(speed, direction, weapon, power, dt, reverseAcceleration) {
+  if (direction === 0) return 0;
+  // Preserve the existing braking response even when exhausted. Once reversed,
+  // acceleration in the new direction uses the reduced strength again.
+  if (speed * direction < 0) return direction * reverseAcceleration;
+  const drivenLimit = weapon.maxAngularSpeed * power;
+  if (power < 1 && Math.abs(speed) > drivenLimit) {
+    // Ease down toward the tired motor's speed instead of cutting momentum.
+    return -Math.sign(speed) * Math.min(weapon.brakeAcceleration, (Math.abs(speed) - drivenLimit) / dt);
+  }
+  return direction * weapon.motorAcceleration * power;
+}
+
+function drivePolarAngle(p, dt, power) {
   const weapon = weaponStats(p);
   // W and S drive opposite rotations in the fighter's vertical facing plane.
   // There is no pole target: the same input can carry the weapon past the floor
@@ -115,9 +199,8 @@ function drivePolarAngle(p, dt) {
   const center = weapon.offset + weapon.length / 2;
   const radiusSquared = center ** 2 + weapon.length ** 2 / 12;
   const gravityAcceleration = CONFIG.gravity * center / radiusSquared * Math.sin(p.theta);
-  const reversing = p.polarInput !== 0 && p.wt * p.polarInput < 0;
-  const motorAcceleration = p.polarInput * (reversing ? weapon.brakeAcceleration : weapon.motorAcceleration);
-  p.wt = clamp((p.wt + (gravityAcceleration + motorAcceleration) * dt) * Math.exp(-CONFIG.damping * dt),
+  const motor = motorAcceleration(p.wt, p.polarInput, weapon, power, dt, weapon.brakeAcceleration);
+  p.wt = clamp((p.wt + (gravityAcceleration + motor) * dt) * Math.exp(-CONFIG.damping * dt),
     -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
 }
 
@@ -159,16 +242,22 @@ export class ArenaPhysics {
     player.polarInput = Math.sign(direction || 0);
   }
 
-  reset(practice = false, solo = false, firstWeapon = 'polearm') {
+  reset(practice = false, solo = false, firstWeapon = 'polearm', secondWeapon = 'polearm', arenaScale = solo ? SOLO_ARENA_SCALE : 1) {
     if (!WEAPONS[firstWeapon]) throw new Error(`Unknown weapon: ${firstWeapon}`);
-    this.players = solo ? [makePlayer(0, firstWeapon)] : [makePlayer(0, firstWeapon), makePlayer(1)];
+    if (!WEAPONS[secondWeapon]) throw new Error(`Unknown weapon: ${secondWeapon}`);
+    this.players = solo ? [makePlayer(0, firstWeapon)] : [makePlayer(0, firstWeapon), makePlayer(1, secondWeapon)];
+    // Two level swords would overlap at the original starting marks.
+    if (!solo && firstWeapon === 'sword' && secondWeapon === 'sword') {
+      this.players[0].p.x = -2.85;
+      this.players[1].p.x = 2.85;
+    }
     if (solo) this.players[0].p.x = 0;
     this.time = 0;
     this.events = [];
     this.winner = null;
     this.practice = practice;
     this.solo = solo;
-    this.arenaRadius = CONFIG.arenaRadius * (solo ? SOLO_ARENA_SCALE : 1);
+    this.arenaRadius = CONFIG.arenaRadius * arenaScale;
     this.contacts = this.players.map(() => ({ separated: 1 }));
     this.lastClash = -1;
     this.lastHit = null;
@@ -187,10 +276,14 @@ export class ArenaPhysics {
       const weapon = weaponStats(p);
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
-      const motorP = clamp(input.phi || 0, -1, 1) * weapon.motorAcceleration;
+      const turnInput = clamp(input.phi || 0, -1, 1);
+      updateStamina(p, turnInput, dt);
+      const power = staminaPower(p.stamina);
+      // Yaw keeps its existing reversal strength; pitch uses the stronger brake.
+      const motorP = motorAcceleration(p.wp, turnInput, weapon, power, dt, weapon.motorAcceleration);
       const previousT = p.wt, previousP = p.wp;
       const damp = Math.exp(-CONFIG.damping * dt);
-      drivePolarAngle(p, dt);
+      drivePolarAngle(p, dt, power);
       p.wp = clamp((p.wp + motorP * dt) * damp, -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
       p.theta += p.wt * dt;
       // Net angular acceleration before contact, including damping/speed limits.
@@ -225,6 +318,9 @@ export class ArenaPhysics {
       this.solveAttack(this.players[1], this.players[0], dt);
     }
     for (const p of this.players) {
+      // Body separation can push a fighter slightly past the rim on the last
+      // contact pass. Reapply the body boundary after pair contacts finish.
+      this.solveBodyWall(p);
       const speed = length(p.v);
       if (speed > 15) p.v = mul(p.v, 15 / speed);
       const limit = Math.max(12, weaponStats(p).maxAngularSpeed);
@@ -252,15 +348,19 @@ export class ArenaPhysics {
   }
 
   solveStaffGround(p, dt) {
-    let f = staffFrame(p);
-    const penetration = weaponStats(p).radius - f.point.y;
+    for (const point of surfacePoints(p)) this.solveWeaponGroundPoint(p, point, dt);
+  }
+
+  solveWeaponGroundPoint(p, { local, radius }, dt) {
+    let f = weaponPointFrame(p, local);
+    const penetration = radius - f.point.y;
     if (penetration < -0.008) return;
     p.staffGrounded = true;
     const n = v3(0, 1, 0);
     const bias = Math.max(0, penetration - 0.002) * 0.2 / dt;
     const j = Math.max(0, (bias - f.velocity.y) / effectiveMass(p, f, n));
     impulse(p, f, mul(n, j));
-    f = staffFrame(p);
+    f = weaponPointFrame(p, local);
     const tangent = v3(f.velocity.x, 0, f.velocity.z);
     const speed = length(tangent);
     if (speed > 1e-6 && j > 0) {
@@ -270,7 +370,7 @@ export class ArenaPhysics {
     }
   }
 
-  solveWall(p, dt) {
+  solveBodyWall(p) {
     const bodyLimit = this.arenaRadius - CONFIG.bodyRadius;
     const distance = Math.hypot(p.p.x, p.p.z);
     if (distance > bodyLimit) {
@@ -280,12 +380,17 @@ export class ArenaPhysics {
       const outward = dot(p.v, n);
       if (outward > 0) p.v = sub(p.v, mul(n, outward * 1.16));
     }
+  }
+
+  solveWall(p, dt) {
+    this.solveBodyWall(p);
     // The rim is waist-high: elevated weapons may pass above it.
-    const f = staffFrame(p);
-    const r = Math.hypot(f.point.x, f.point.z);
-    if (f.point.y < 0.48 && r > this.arenaRadius - weaponStats(p).radius) {
+    for (const { local, radius } of surfacePoints(p)) {
+      const f = weaponPointFrame(p, local);
+      const r = Math.hypot(f.point.x, f.point.z);
+      if (f.point.y >= 0.48 || r <= this.arenaRadius - radius) continue;
       const n = v3(-f.point.x / r, 0, -f.point.z / r);
-      const bias = Math.min(4, (r - this.arenaRadius + weaponStats(p).radius) * 0.15 / dt);
+      const bias = Math.min(4, (r - this.arenaRadius + radius) * 0.15 / dt);
       const j = Math.max(0, (bias - dot(f.velocity, n)) / effectiveMass(p, f, n));
       impulse(p, f, mul(n, j));
     }
@@ -309,13 +414,16 @@ export class ArenaPhysics {
 
   solveStaffClash(dt) {
     const [a, b] = this.players;
-    const baseA = staffFrame(a, 0).point, baseB = staffFrame(b, 0).point;
-    const tipA = staffFrame(a).point, tipB = staffFrame(b).point;
-    const c = closestSegments(baseA, tipA, baseB, tipB);
-    const depth = weaponStats(a).radius + weaponStats(b).radius - c.distance;
-    if (depth <= 0) return;
+    let best;
+    for (const sa of weaponSegments(a)) for (const sb of weaponSegments(b)) {
+      const c = closestSegments(sa.a, sa.b, sb.a, sb.b);
+      const depth = sa.radius + sb.radius - c.distance;
+      if (depth > 0 && (!best || depth > best.depth)) best = { c, depth, sa, sb };
+    }
+    if (!best) return;
+    const { c, depth, sa, sb } = best;
     const n = unit(sub(c.a, c.b), v3(0, 1, 0));
-    const fa = staffFrame(a, weaponStats(a).length * c.s), fb = staffFrame(b, weaponStats(b).length * c.t);
+    const fa = segmentFrame(a, sa, c.s), fb = segmentFrame(b, sb, c.t);
     const closing = -dot(sub(fa.velocity, fb.velocity), n);
     const j = Math.max(0, (closing * 1.35 + depth * 0.13 / dt) / (effectiveMass(a, fa, n) + effectiveMass(b, fb, n)));
     impulse(a, fa, mul(n, j));
@@ -327,24 +435,36 @@ export class ArenaPhysics {
   }
 
   solveAttack(attacker, target, dt) {
-    const base = staffFrame(attacker, 0).point;
-    const tip = staffFrame(attacker).point;
-    const torso = closestSegments(base, tip,
-      add(target.p, v3(0, -0.19, 0)), add(target.p, v3(0, 0.18, 0)));
     const headPoint = add(target.p, v3(0, 0.76, 0));
-    const head = closestSegments(base, tip, headPoint, headPoint);
-    const c = torso.distance <= head.distance ? torso : head;
-    const depth = CONFIG.bodyRadius + weaponStats(attacker).radius - c.distance;
+    let best;
+    for (const segment of weaponSegments(attacker)) {
+      const torso = closestSegments(segment.a, segment.b,
+        add(target.p, v3(0, -0.19, 0)), add(target.p, v3(0, 0.18, 0)));
+      const head = closestSegments(segment.a, segment.b, headPoint, headPoint);
+      const c = torso.distance <= head.distance ? torso : head;
+      const depth = CONFIG.bodyRadius + segment.radius - c.distance;
+      if (!best || depth > best.depth) best = { c, depth, segment };
+    }
+    const { c, depth, segment } = best;
     const contact = this.contacts[attacker.id];
     if (depth <= 0) { contact.separated += dt; return; }
     const n = unit(sub(c.a, c.b));
-    const f = staffFrame(attacker, weaponStats(attacker).length * c.s);
+    const f = segmentFrame(attacker, segment, c.s);
     const relative = sub(f.velocity, target.v);
     const closing = -dot(relative, n);
     const driving = add(mul(f.jt, attacker.driveT), mul(f.jp, attacker.driveP));
     const swing = sub(f.velocity, attacker.v);
     const acceleration = Math.max(0, dot(driving, unit(swing, v3())));
-    const damage = damageForImpact(closing, acceleration);
+    // Attribute only motion closing into the target. Sideways motion that does
+    // not cause the contact cannot reduce a vertical hit, and released keys do
+    // not disguise a coasting horizontal strike. Body translation stays neutral.
+    const turnClosing = Math.max(0, -dot(mul(f.jp, attacker.wp), n));
+    const swingClosing = Math.max(0, -dot(mul(f.jt, attacker.wt), n));
+    const bodyClosing = Math.max(0, -dot(sub(attacker.v, target.v), n));
+    const totalClosing = turnClosing + swingClosing + bodyClosing;
+    const turnShare = totalClosing > 1e-8 ? turnClosing / totalClosing : 0;
+    const directionScale = 1 - (1 - CONFIG.turnDamageScale) * turnShare;
+    const damage = Math.round(damageForImpact(closing, acceleration) * (segment.damageScale || 1) * directionScale);
     const fresh = contact.separated > 0.045 && this.time - attacker.lastAttackAt > 0.28;
     contact.separated = 0;
     const j = Math.max(0, (closing * 1.12 + Math.max(0, depth - 0.008) * 0.12 / dt) /
@@ -360,10 +480,10 @@ export class ArenaPhysics {
     attacker.totalDamage += damage;
     // A bounded arcade impulse makes solid hits readable without toppling bodies.
     target.v = sub(target.v, mul(n, damage * 0.07));
-    this.lastHit = { damage, speed: closing, acceleration, attacker: attacker.id };
+    this.lastHit = { damage, speed: closing, acceleration, turnShare, attacker: attacker.id };
     this.events.push({
       type: 'hit', point: c.a, normal: mul(n, -1), attacker: attacker.id,
-      target: target.id, damage, speed: closing, acceleration,
+      target: target.id, damage, speed: closing, acceleration, turnShare,
       strength: clamp(damage / 30, 0.12, 1),
     });
   }
