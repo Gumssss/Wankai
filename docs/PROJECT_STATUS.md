@@ -18,7 +18,7 @@ The current source is available from the default `main` branch. See [download an
 
 ## Latest combat prototype
 
-The requested stamina system, separate HUD bars, reduced horizontal-turn damage, and their documentation are included in the source checkpoint. Nine combat regression checks pass alongside the existing checks. Final pacing and hands-on acceptance remain open; implementation and automated checks do not establish acceptance of the new combat feel.
+The requested stamina system, separate HUD bars, reduced horizontal-turn damage, and their documentation are included in the source checkpoint. Nine combat regression checks pass alongside the existing checks. Body hits have hit pause and a damage readout; weapon clashes have physical impulses, sound, and particles. Final pacing and hands-on acceptance remain open; implementation and automated checks do not establish acceptance of the new combat feel.
 
 The current implementation starts each fighter with 100 stamina, drains 20 points per second for swing input and 8 for horizontal turning, and recovers 30 per second after 0.5 seconds without weapon input. Below 25 stamina, powered control weakens toward 40% at zero while retaining reversal braking. Pure turning damage starts at 50% of an equivalent vertical strike, with mixed-contact damage blended by closing motion. These are initial tuning choices under active verification, not accepted final balance.
 
@@ -28,6 +28,7 @@ The current implementation starts each fighter with 100 stamina, drains 20 point
 - `npm run build`: successful. The renderer JavaScript bundle is approximately 1.24 MB before gzip; Vite still reports its existing bundle-size warning.
 - `git diff --check`: successful.
 - Previous in-game checks verified armory selections, the actual hammer model, camera key direction, and the approved rear view. See [armory](screenshots/armory.jpg) and [applied rear cameras](screenshots/approved-rear-duel.jpg). Those checks are evidence of implementation, not a new two-person playtest on this review date.
+- The documentation audit on 17 October checked all 11 repository Markdown documents against source controls, mode settings, weapon profiles, asset scripts, GLB sizes/mesh counts, and 73 local links. Historical trial screenshots predate some current HUD/features. This documentation-only pass adds no gameplay changes or new playtest acceptance.
 
 ## Remaining work, in recommended order
 
