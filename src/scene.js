@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { CONFIG, arenaScaleForMode, WEAPONS, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
 import { WEAPON_VISUALS, setWeaponRotation } from './weapon-visuals.js';
 import { createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera, turnFreeCamera } from './free-camera.js';
+import { BEAGLE } from './beagle-profile.js';
+import { instantiateBeagle, poseBeagle, makeBeagleFallback } from './beagle-model.js';
+import { weaponPointFrame, v3 } from './physics.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const PALETTE = [0xc4684f, 0x568d92];
@@ -216,7 +219,7 @@ export class ArenaView {
     tip.position.y = weapon.length;
     const fallbackHead = new THREE.Group();
     staff.add(fallbackHead);
-    for (const collider of weapon.colliders?.slice(1) || []) {
+    for (const collider of weaponType === 'beagle' ? [] : weapon.colliders?.slice(1) || []) {
       const a = new THREE.Vector3(...collider.a), b = new THREE.Vector3(...collider.b);
       const direction = b.clone().sub(a);
       const part = this.mesh(new THREE.CapsuleGeometry(collider.radius, direction.length(), 4, 8),
@@ -238,11 +241,35 @@ export class ArenaView {
     const trail = new THREE.Mesh(trailGeometry, new THREE.MeshBasicMaterial({ color: weaponType === 'sword' ? 0xffa256 : PALETTE[id], transparent: true, opacity: 0.11, side: THREE.DoubleSide, depthWrite: false }));
     trail.frustumCulled = false;
     this.actors.add(trail);
-    return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, fallbackHead, marker, contact, trail, positions, trailHistory: [], maxTrail, weaponType, baseColor: new THREE.Color(PALETTE[id]) };
+    const trails = [{ mesh: trail, positions, history: [], anchor: undefined }];
+    let beagleFallback;
+    if (weaponType === 'beagle') {
+      for (const child of root.children) child.visible = false;
+      staff.visible = false;
+      beagleFallback = makeBeagleFallback(id);root.add(beagleFallback.root);
+      trails[0].anchor = BEAGLE.anchors.L;
+      const other = trail.clone();other.geometry = trail.geometry.clone();other.material = trail.material.clone();
+      const otherPositions = new Float32Array(positions.length);
+      other.geometry.setAttribute('position', new THREE.BufferAttribute(otherPositions, 3));
+      this.actors.add(other);
+      trails.push({ mesh: other, positions: otherPositions, history: [], anchor: BEAGLE.anchors.R });
+    }
+    return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, fallbackHead, marker, contact, trail, positions,
+      trails, beagleFallback, maxTrail, weaponType, baseColor: new THREE.Color(PALETTE[id]) };
   }
 
   setWeaponModel(source, type = 'polearm') {
     if (this.disposed || this.weaponLoaded.has(type)) return;
+    if (type === 'beagle') {
+      for (const [id, fighter] of this.players.entries()) {
+        if (fighter.weaponType !== type) continue;
+        fighter.beagle = instantiateBeagle(source, id);
+        fighter.root.add(fighter.beagle.host);
+        fighter.beagleFallback.root.visible = false;
+      }
+      this.weaponLoaded.add(type);
+      return;
+    }
     for (const [id, fighter] of this.players.entries()) {
       if (fighter.weaponType !== type) continue;
       const weapon = source.clone(true);
@@ -306,6 +333,7 @@ export class ArenaView {
 
   update(players, dt, active = false, cameraDt = dt, splitView = false, cameraInputs = []) {
     this.banners.visible = !splitView;
+    this.trailTimeTotal = (this.trailTimeTotal || 0) + dt;
     this.trailTime += dt;
     const recordTrail = this.trailTime > 1 / 90;
     if (recordTrail) this.trailTime = 0;
@@ -316,6 +344,8 @@ export class ArenaView {
       model.root.rotation.y = -fighterHeading(p);
       model.bodyMat.color.copy(model.baseColor).lerp(new THREE.Color(0xffefd6), p.hitFlash * 0.8);
       model.skinMat.color.set(0xe7c199).lerp(new THREE.Color(0xffffff), p.hitFlash * 0.8);
+      if (model.beagle) poseBeagle(model.beagle, p, this.trailTimeTotal || 0);
+      if (model.beagleFallback) for (const hinge of Object.values(model.beagleFallback.hinges)) hinge.rotation.z = -p.theta;
       const frame = staffFrame(p);
       model.staff.position.copy(vec(staffFrame(p, 0).point));
       setWeaponRotation(model.staff.quaternion, p.theta, p.phi, this.swordPitch);
@@ -323,18 +353,21 @@ export class ArenaView {
       model.marker.material.opacity = clamp(0.5 - (p.p.y - CONFIG.bodyFloor) * 0.09, 0.16, 0.5);
       model.contact.visible = p.staffGrounded;
       model.contact.position.set(frame.point.x, 0.023, frame.point.z);
-      if (recordTrail) {
-        const near = staffFrame(p, weaponStats(p).length * 0.72).point;
-        model.trailHistory.unshift([vec(near), vec(frame.point)]);
-        if (model.trailHistory.length > model.maxTrail) model.trailHistory.pop();
+      for (const trail of model.trails) {
+        if (recordTrail) {
+          const near = weaponPointFrame(p, v3(0, weaponStats(p).length * .72, 0), trail.anchor).point;
+          const tip = weaponPointFrame(p, v3(0, weaponStats(p).length, 0), trail.anchor).point;
+          trail.history.unshift([vec(near), vec(tip)]);
+          if (trail.history.length > model.maxTrail) trail.history.pop();
+        }
+        trail.mesh.visible = active && p.contactSpeed > 3 && trail.history.length > 1;
+        trail.mesh.material.opacity = clamp(p.contactSpeed / 100, .05, .2);
+        for (let i = 0; i < model.maxTrail; i++) {
+          const points = trail.history[Math.min(i, trail.history.length - 1)];
+          if (points) { points[0].toArray(trail.positions, i * 6); points[1].toArray(trail.positions, i * 6 + 3); }
+        }
+        trail.mesh.geometry.attributes.position.needsUpdate = true;
       }
-      model.trail.visible = active && p.contactSpeed > 3 && model.trailHistory.length > 1;
-      model.trail.material.opacity = clamp(p.contactSpeed / 100, 0.05, 0.2);
-      for (let i = 0; i < model.maxTrail; i++) {
-        const points = model.trailHistory[Math.min(i, model.trailHistory.length - 1)];
-        if (points) { points[0].toArray(model.positions, i * 6); points[1].toArray(model.positions, i * 6 + 3); }
-      }
-      model.trail.geometry.attributes.position.needsUpdate = true;
     }
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
@@ -422,15 +455,16 @@ export class ArenaView {
   clearEffects() {
     for (const p of [...this.particles, ...this.rings]) { this.effectsRoot.remove(p.mesh); p.mesh.geometry.dispose(); p.mesh.material.dispose(); }
     this.particles = []; this.rings = []; this.shake = 0;
-    for (const p of this.players) p.trailHistory.length = 0;
+    for (const p of this.players) for (const trail of p.trails) trail.history.length = 0;
   }
 
   dispose() {
     this.disposed = true;
     this.clearEffects();
-    const geometries = new Set(), materials = new Set(), textures = new Set();
+    const geometries = new Set(), materials = new Set(), textures = new Set(), skeletons = new Set();
     for (const root of [this.arena, this.actors, this.effectsRoot]) root.traverse(object => {
       if (object.geometry) geometries.add(object.geometry);
+      if (object.skeleton) skeletons.add(object.skeleton);
       const objectMaterials = Array.isArray(object.material) ? object.material : [object.material];
       for (const mat of objectMaterials) if (mat) {
         materials.add(mat);
@@ -440,5 +474,6 @@ export class ArenaView {
     for (const geometry of geometries) geometry.dispose();
     for (const material of materials) material.dispose();
     for (const texture of textures) texture.dispose();
+    for (const skeleton of skeletons) skeleton.dispose();
   }
 }

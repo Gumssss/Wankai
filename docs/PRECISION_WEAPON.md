@@ -8,6 +8,8 @@ Reviewed 17 October 2026: still deferred. The playable three-weapon build is on 
 
 The creator wants a weapon focused on control, with slower horizontal turning on A / D (and the equivalent arrow keys). The accepted starting direction is roughly half the sword's maximum horizontal turning speed, with quick response and stronger braking on release. This should make aiming and deliberate ground placement easier, at the cost of slower wide sweeps and slower turns toward an opponent behind the fighter. Tune W / S independently rather than slowing every movement of the weapon.
 
+That comparison was made before the current three-weapon half-speed trial, when the sword limit was 12.2 rad/s. The original reference therefore suggests about 6.1 rad/s; do not silently halve the new 6.1 sword limit again. Revisit the intended relative pace when this deferred project resumes. Neither a fourth weapon nor its final values are implemented.
+
 ## Candidate awaiting approval
 
 The proposed appearance is [enchanted staff 3d model by cgbiw3 on Tripo](https://studio.tripo3d.ai/3d-model/wooden-staff-with-glowing-runes-wrapped-in-vine-like-bindings-carved-41879527-9b4e-45b0-bb93-6e8e591e60e5): a wooden shaft with glowing runes, vine-like bindings, an ornate upper head, and a metal-cap base.

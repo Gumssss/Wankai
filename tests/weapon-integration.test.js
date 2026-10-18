@@ -52,8 +52,8 @@ test('unknown weapon choices and player ids leave the chosen loadout intact', ()
   assert.throws(() => session.world.reset(false, false, 'sword', 'unknown'), /Unknown weapon/);
 });
 
-test('every weapon visual tracks its physical axis continuously through overhead and support', () => {
-  for (const weapon of Object.keys(WEAPONS)) for (const phi of [-Math.PI, 0, 0.73, 3.8]) {
+test('every floating weapon visual tracks its physical axis continuously through overhead and support', () => {
+  for (const weapon of Object.keys(WEAPONS).filter(id => !WEAPONS[id].attachment)) for (const phi of [-Math.PI, 0, 0.73, 3.8]) {
     const world = new ArenaPhysics();
     world.reset(false, true, weapon);
     const p = world.players[0]; p.phi = phi;
@@ -158,7 +158,7 @@ test('hammer is slower to start and reverse than the sword without producing mov
   assert.ok(states.hammer.remaining > states.sword.remaining);
 });
 
-test('all nine loadouts remain finite and within the arena under sustained mixed input', () => {
+test('all loadouts remain finite and within the arena under sustained mixed input', () => {
   for (const first of Object.keys(WEAPONS)) for (const second of Object.keys(WEAPONS)) {
     const world = new ArenaPhysics(); world.reset(true, false, first, second);
     for (let step = 0; step < 5400; step++) {
@@ -169,6 +169,8 @@ test('all nine loadouts remain finite and within the arena under sustained mixed
         for (const value of [p.p.x, p.p.y, p.p.z, p.wt, p.wp, p.health]) assert.ok(Number.isFinite(value));
         assert.ok(Math.hypot(p.p.x, p.p.z) <= world.arenaRadius - CONFIG.bodyRadius + 1e-6);
         assert.ok(p.p.y >= CONFIG.bodyFloor - 1e-6);
+        assert.ok(Math.abs(p.wt) <= WEAPONS[p.weapon].maxAngularSpeed &&
+          Math.abs(p.wp) <= WEAPONS[p.weapon].maxAngularSpeed, 'contacts restored the old spin speed');
       }
     }
   }

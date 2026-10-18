@@ -3,3 +3,11 @@ __pycache__/
 .test-artifacts/
 node_modules/
 dist/
+.local/blender/
+output/
+assets/source/blender/*.blend[1-9]
+# Keep the large raw beagle downloads/import study in the local authoring archive.
+# The editable packed v05 rig, runtime models, and measured rig report are tracked.
+assets/source/tripo/beagle-*/
+assets/source/blender/beagle-tripo-appearance-v02.blend
+assets/source/textures/beagle-tripo-v03/

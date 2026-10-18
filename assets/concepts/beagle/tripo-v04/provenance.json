@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-18",
+  "status": "retired-user-prefers-earlier-smooth-tripo-v02",
+  "purpose": "Wider, softer plush ears while preserving the approved face/body proportions; prepare separated source parts for Blender editing and custom rigging",
+  "reference_input": "assets/concepts/beagle/tripo-v02/appearance-reference.png",
+  "reference_output": "assets/concepts/beagle/tripo-v04/wide-plush-ear-reference.png",
+  "user_direction": {
+    "scope": "The ears\u2014keep the face and body proportions",
+    "regeneration_authorized": true,
+    "credit_authorization": "User permits freely using available Tripo credits and explicitly permits editing the reference and regenerating if that is a better route.",
+    "latest": "User rejected the wider fluffy/scalloped variant and prefers the earlier model."
+  },
+  "image_generation": {
+    "tool": "OpenAI built-in image_gen",
+    "transparent_background": true,
+    "prompt": "Edit target: the supplied single-character beagle concept. Change ONLY the two ears. Preserve the existing face, head proportions, white blaze, sleepy half-lidded eyes, muzzle, nose, smirk, tiny white torso, tucked paws, feet, tail and terracotta bib exactly as they are. Make BOTH ears about 1.7 times wider than the current ears, with fuller pillow-like volume and a softer plush appearance. Retain their basic hanging length for this reference, their anatomical head roots, their gentle outward bow and rounded ends. Keep a small clean gap between each ear and torso. The broad ears should have subtly lobed, softly scalloped outer contours, with three very shallow rounded tufts per outer edge, and a rounded padded tip; cohesive large shapes rather than long hairs. Surface is soft matte short plush with delicate velvety microtexture. The game character should remain clean, readable and cute at small sizes. No individual fur strands, no fluffy halo, no spikes, no photoreal animal hair, no pink inner ears, no mechanical parts, no extra joints, no accessories. Keep the forehead and face as in the target. The ears must visibly feel wider, fuller and softer, not simply flat triangles. One complete character alone, near-orthographic front view, evenly lit neutral studio illustration with convincing smooth 3D volume. Increase the transparent canvas width as needed to fit the broader ears with generous margins; never crop the ears. No text, no watermark, no scenery, no pedestal. Transparent background."
+  },
+  "tripo": {
+    "generation_id": "af4dbc1f-85e7-4914-9056-f17f01916e28",
+    "workspace_url": "https://studio.tripo3d.ai/workspace/segmentation/af4dbc1f-85e7-4914-9056-f17f01916e28",
+    "model": "H3.1 - Best Quality",
+    "mode": "HD Model with Generate in Parts enabled",
+    "parts_detail": "Balanced, 6\u201315 parts",
+    "privacy": "Private",
+    "displayed_standard_generation_credits": 60,
+    "generation_credits_charged": 0,
+    "free_trial_used": "Generate in Parts single-use trial",
+    "balance_before": 3110,
+    "balance_after_submission": 3110,
+    "segmented_parts": 11,
+    "segmented_source": "assets/source/tripo/beagle-v04/segmented-original.glb",
+    "segmented_triangles": 1939001,
+    "part_completion": "AI Completion completed on all eleven parts; no observed credit charge",
+    "completed_source": "assets/source/tripo/beagle-v04/completed-parts.glb",
+    "retopology_source": "assets/source/tripo/beagle-v04/retopologized-parts.glb",
+    "retopology_credits_charged": 35,
+    "retopology_triangles": 20434,
+    "balance_after_retopology": 3075,
+    "texture_credits_charged": 20,
+    "balance_after_texture": 3055,
+    "texture_finished": true
+  },
+  "technical_locks": {
+    "body_height_target": 1.7,
+    "active_ear_reach_target": 3.6,
+    "ear_motion": "One root hinge per rigid striking ear; preserve a soft rounded appearance without folding joints",
+    "note": "Compact hanging ears in the input are appearance references. Exact long-ear geometry, pivots, weights, and collision guides are Blender work. Wider ear coverage will need matching runtime contact geometry."
+  },
+  "verification": {
+    "in_gameplay_reviewed": false,
+    "approved_as_shippable_asset": false,
+    "segmented_blender_import_passed": true,
+    "open_boundaries_identified": true,
+    "selected_for_further_modeling": false
+  }
+}

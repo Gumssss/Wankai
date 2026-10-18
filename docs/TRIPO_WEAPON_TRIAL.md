@@ -2,6 +2,8 @@
 
 Status: Historical record of the first polearm import on 13 October 2026, reviewed 17 October 2026. The polearm remains playable in the current three-weapon armory. Shape, visibility, and performance still need a two-player playtest. Current setup and behavior are in the [README](../README.md), [project status](PROJECT_STATUS.md), and later [sword](SWORD_TRIAL.md) / [hammer](HAMMER_TRIAL.md) trials.
 
+The later local half-speed/contact trial retains this GLB and its original normalization. It adds measured collar/blade/tip/barb capsules around the original shaft and samples motion between physics poses; those gameplay changes are separate from the original appearance-only import described below. See [control system](CONTROL_SYSTEM.md) for current collision behavior and limitations.
+
 ## First model result (13 October 2026)
 
 - [Tripo model page](https://studio.tripo3d.ai/zh/workspace/generate/d70e3616-deab-424a-a97c-1e12ca05869f) (private to the creator's account): generated from the single supplied image using H3.1 High Quality. This generation used 30 account credits.

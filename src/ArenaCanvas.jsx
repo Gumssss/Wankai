@@ -4,6 +4,7 @@ import { ACESFilmicToneMapping, PCFShadowMap, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { ArenaView } from './scene.js';
 import { FREE_CAMERA } from './free-camera.js';
+import { BEAGLE } from './beagle-profile.js';
 
 function ArenaEnvironment({ group }) { return <primitive object={group} dispose={null} />; }
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
@@ -25,7 +26,7 @@ function ArenaScene({ session, mode, weapon, secondWeapon }) {
     let cancelled = false;
     const types = [...new Set(mode === 'solo' ? [weapon] : [weapon, secondWeapon])];
     for (const type of types) {
-      const weaponUrl = `${import.meta.env.BASE_URL}models/${type}.glb`;
+      const weaponUrl = `${import.meta.env.BASE_URL}models/${type === 'beagle' ? BEAGLE.model : `${type}.glb`}`;
       new GLTFLoader().load(weaponUrl, gltf => {
         if (cancelled) {
           gltf.scene.traverse(object => {
