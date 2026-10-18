@@ -1,6 +1,6 @@
 # Weapon control system
 
-Reviewed against the source on 17 October 2026. These rules apply to the current `main` prototype; final control feel and balance still need playtesting. See the [project status](PROJECT_STATUS.md) for open work.
+Reviewed against the source on 18 October 2026. These rules apply to the current `main` prototype; final control feel and balance still need playtesting. See the [project status](PROJECT_STATUS.md) for open work.
 
 The [approved motion video](control-concept-combinations.mp4) shows the intended input rule, including continued motion after ground contact and simultaneous swing and horizontal steering. It is a concept animation; the game uses its own physics and camera rendering.
 
@@ -13,7 +13,15 @@ The [approved motion video](control-concept-combinations.mp4) shows the intended
 
 W or S can be held with A or D. Swinging does not stop at an up or down angle target; the weapon can continue past the floor-facing pose while ground contact pushes the fighter. Opposite swing inputs brake before reversing. Releasing keys removes motor input but preserves momentum under gravity, damping, and collision. Pressing both opposite keys on the same axis cancels that axis's input.
 
-Both axes use the selected weapon's `motorAcceleration` and `maxAngularSpeed`. Pitch reversal uses its `brakeAcceleration`; yaw reversal uses `motorAcceleration`. Released motion uses damping rather than a separate release brake. These are motor settings: gravity and collision can affect actual angular velocity. The proposed fourth weapon would need independent yaw tuning; it is not implemented.
+Both axes use the selected weapon's `motorAcceleration` and `maxAngularSpeed`. Pitch reversal uses its `brakeAcceleration`; yaw reversal uses `motorAcceleration`. Released motion uses damping rather than a separate release brake. The approved local half-speed trial retains acceleration/braking and clamps each axis to the new limit both before angle integration and after collision response. The proposed fourth weapon would need independent yaw tuning; it is not implemented.
+
+| Weapon | Previous axis limit | Local trial limit | Ideal full rotation at trial limit |
+| --- | ---: | ---: | ---: |
+| Sword | 12.2 rad/s | 6.1 rad/s | 1.03 s |
+| Polearm | 8.5 rad/s | 4.25 rad/s | 1.48 s |
+| Hammer | 6.8 rad/s | 3.4 rad/s | 1.85 s |
+
+These times exclude acceleration, damping, fatigue, gravity, and contacts. Weapon size, model normalization, reach, damage formula, and stamina rules retain their settings. Slower motion can change impact damage and ground-driven travel, so this remains a playtest trial.
 
 ## Stamina and directional damage
 
@@ -46,8 +54,24 @@ Camera constants and fitting live in `src/free-camera.js`, input bindings and si
 
 ## Contact and feedback limits
 
-Physics uses 180 Hz discrete overlap checks. Sword and polearm use straight contact segments, while the hammer uses five solid capsules. A diagnostic reported fast weapon-tip crossings missed between samples; smaller collision steps caught the contact. Swept collision detection and a proposed 30% speed cap are not implemented. Current motor settings remain unchanged.
+The local trial keeps 180 Hz motor, stamina, gravity, and ground integration, but checks weapon clashes and body hits along the motion between consecutive poses. A movement bound using translation, angular travel, and the thinnest capsule sets the number of samples, up to 64 intervals per contact query. The first sampled overlap is refined six times; impulses use its incoming pose and contact derivatives. Heading interpolation takes the short path through angle wrap. Contact events are delivered once through the existing session loop.
 
-Weapon clashes apply physical impulses; sufficiently fast clashes emit sound and particles. Body hits additionally trigger hit pause, damage numbers, a readout, and damage-based knockback. Stronger clash feedback remains a proposal. See [project status](PROJECT_STATUS.md) for the investigation and playtest priorities.
+This catches the reproduced crossing even when both endpoint poses are separated, without adding collision radius. It is bounded pose sampling, not an analytic continuous collision solver: very shallow grazing contacts, extreme motion beyond the sample budget, and the capsule approximations remain limitations. A 30% speed cap and an extra weapon-block allowance have not been applied.
 
-The previous fixed-target controller is retained at Git checkpoint `8cc6441`; the current continuous controller predates the armory checkpoint. Current controls need hands-on playtesting with all three weapons, especially while standing on the weapon and while turning and swinging together. The sword complaint remains open in [SWORD_TRIAL.md](SWORD_TRIAL.md).
+The sword retains its original shaft capsule and adds two measured crossguard capsules. The polearm retains its shaft and adds four collar/blade/tip/barb capsules. The hammer retains its five existing solid capsules. All solid endpoints participate in ground/rim contacts; model scale and reach are unchanged. The sword's flame wisps and hammer cloth do not receive extra proxies. These remain rounded approximations and can overestimate local thickness.
+
+Measurements reproduce the renderer's source-AABB normalization and butt/axis transform. The additions improve measured sword vertex coverage from 94.18% to 99.08%, and polearm from 94.41% to 100%; vertex-weighted coverage does not prove exact collision geometry or final balance. `tests/contact-motion.test.js` covers positive crossings, nearby misses, added solid hits/blocks, heading wrap, limits, and ground support. The original sword support-direction complaint still needs hands-on acceptance.
+
+Weapon clashes apply physical impulses. Clear impacts also make both fighters recoil backward opposite `fighterHeading(player)`, using their current weapon/fighter azimuth plus facing offset. The camera does not determine this direction. Recoil gives each fighter at least 1.8–3.2 m/s of backward velocity according to impact speed, cancelling forward velocity as needed while preserving sideways/vertical motion and any faster existing backward motion. Normal friction, collisions, and arena boundaries then act on that motion.
+
+`CLASH` in `src/physics.js` sets an impact threshold above 2.5 m/s, full recoil at 12 m/s, a 0.18-second event cooldown, and 0.05 seconds of weapon separation before rearming. A gentle touch or sustained overlap therefore does not repeatedly apply the extra recoil. Rematches reset these gates. Recoil itself adds no damage or stamina charge; existing weapon deflection and half-speed limits remain.
+
+The same clear impact emits the existing sound/particles. Body hits additionally trigger hit pause, damage numbers, a readout, and damage-based knockback. Extra clash pause/readout remains a proposal. `tests/clash-recoil.test.js` checks both heading directions, momentum components, gentle/sustained contacts, separation/cooldown, arena bounds, and rematch reset. Recoil strength still needs hands-on acceptance.
+
+The previous fixed-target controller is retained at Git checkpoint `8cc6441`; the current continuous controller predates the armory checkpoint. Current controls need hands-on playtesting with all four loadouts, especially while standing on the weapon and while turning and swinging together. The sword complaint remains open in [SWORD_TRIAL.md](SWORD_TRIAL.md).
+
+## Beagle ear attachment and pending body flips
+
+The beagle loadout uses two physical ears anchored at the measured v05 head sockets rather than a floating weapon. Both ears share the existing swing angle, yaw, motor, stamina and pair-level hit gate. Eighteen capsules approximate their actual surfaces. Ground contact supports and moves the body; horizontal strikes, blocks, recoil, coasting and reverse braking use the ordinary rules. Both axes can be held together.
+
+The live body stays upright. S drives the ears backward and can cause backward travel, but **does not yet cause the body backflip shown in the earlier concept studies**. The rig already has `body_pitch`; adding the feature requires physical body rotation and hinge reactions, matching rotated sockets and body/ear collision shapes, and tests for forward/backward support with A/D. Momentum should determine the rotation rather than an automatic full flip whenever a key is held. See [beagle v05](BEAGLE_MODEL_V05.md) and [motion-study history](BEAGLE_MOTION_STUDY.md).

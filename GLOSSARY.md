@@ -1,6 +1,6 @@
 # Wankai Game
 
-Terms for the current three-weapon local prototype, reviewed 17 October 2026. See the [README](README.md) for controls and the [project status](docs/PROJECT_STATUS.md) for remaining work.
+Terms for the current three-weapon plus beagle prototype, reviewed 18 October 2026. See the [README](README.md) for controls and the [project status](docs/PROJECT_STATUS.md) for remaining work.
 
 ## Language
 
@@ -11,7 +11,7 @@ One of the upright contestants in a match. Fighters have no feet and move by usi
 A floating object used to push against the ground, strike, and block. Every weapon follows the same basic control and contact-driven movement system, but a weapon profile can change reach and response.
 
 **Polearm**:
-The first Tripo-generated curved-blade weapon. Its long collision segment and original swing parameters form the baseline weapon profile. It is not a plain stick, though the physics uses a simplified straight segment.
+The first Tripo-generated curved-blade weapon, with the longest reach. The current local trial halves its original speed limit and adds solid collar/blade/tip proxies around the retained shaft capsule.
 
 **Short sword**:
 The first differentiated weapon prototype. It has shorter reach and faster swings, but no separate walking-speed bonus. Its direction while supporting the fighter is still under review.
@@ -29,7 +29,7 @@ The gameplay behavior assigned to a weapon: reach, inertia, swing response, coll
 The visible 3D model of a weapon, stored locally as a GLB. The first polearm import changed appearance only. The sword and hammer also have distinct physics profiles; model geometry itself does not define collision.
 
 **Contact proxy**:
-The simplified physics shape used for hits, blocks, and support. Sword and polearm use a straight segment with radius; the hammer uses five capsules for its solid shaft/head. Visible edges can extend beyond these shapes.
+The simplified physics shape used for hits, blocks, and support. The local trial uses three capsules for the sword shaft/guard, five for the polearm shaft/blade, and five for the hammer shaft/head. These approximate the solid model; decorations and visible edges can still differ.
 
 **Stamina / exhaustion**:
 A separate 100-point resource spent on weapon input. Rest restores it; below 25, powered control weakens, reaching 40% at zero. Reversal braking, passive motion, and collision remain active. Camera input is free.
@@ -41,7 +41,7 @@ At equivalent impact conditions, pure horizontal-turn hits deal half the vertica
 A local fight between two players that ends when a fighter's health reaches zero.
 
 **Weapon clash / block**:
-A physical weapon-to-weapon collision. Sufficiently fast clashes produce sound and particles; the current hit pause and damage readout apply to body hits. Fast crossings can still be missed between collision samples.
+A physical weapon-to-weapon collision. Clear impacts produce sound/particles and make each fighter recoil opposite their own current facing. Gentle or sustained contact cannot repeatedly trigger recoil; the weapons must separate before another impact. Hit pause and damage readouts apply to body hits. The local trial samples motion between physics poses; finite sampling can still miss grazing contacts.
 
 **Practice mode**:
 A session against a non-attacking target that recovers health after it is no longer being hit.
@@ -60,3 +60,7 @@ The 19.35-unit-radius arena used by split-screen duel and solo: three times the 
 
 **Precision weapon**:
 The deferred fourth weapon concept with slower horizontal steering and quick response. Its staff appearance and export purchase remain unapproved; it is not in the playable roster. See the [side-project record](docs/PRECISION_WEAPON.md).
+
+## Beagle / twin ears
+
+The paired **比格犬·双耳** character/weapon loadout. Two long smooth ears rotate from measured head sockets and obey the shared weapon rules. The body currently stays upright; full-body backflips/front flips remain unfinished. `body_pitch` is an available rig control, not yet a physical gameplay state.

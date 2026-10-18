@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-18",
+  "model_sha256": "8ecb18ba8e440e9ec5534e6b104d1234f040837be86abe1ff5470538eb0da875",
+  "rig": {
+    "status": "passed",
+    "three_revision": "186",
+    "bytes": 3489120,
+    "triangles": 26530,
+    "skinned_draw_groups": 5,
+    "materials": 3,
+    "images": 1,
+    "maximum_vertex_influences": 2,
+    "full_rotation_angles": 7,
+    "maximum_socket_error": 1.1649813694067009e-07,
+    "maximum_rigid_rotation_error": 2.5990153674307014e-07,
+    "minimum_ear_to_core_clearance": 0.03499988980194879,
+    "body_pitch_socket_error": 1.0738729966667668e-07,
+    "combined_yaw_body_ear_error": 2.6781027350236137e-07,
+    "blink_vertex_displacement": 0.3525824744470528,
+    "independent_ears": true,
+    "independent_skeleton_clones": true,
+    "note": "Exported geometry/rig checks. Texture decoding and appearance require browser review. Runtime behavior is covered by the beagle gameplay/model tests; full-body flips remain unimplemented."
+  },
+  "contact_fit": {
+    "coverage": {
+      "L": {
+        "vertices": 1752,
+        "maximum_uncovered_distance": 0.05925916818340149,
+        "rms_uncovered_distance": 0.007993474160992085
+      },
+      "R": {
+        "vertices": 1752,
+        "maximum_uncovered_distance": 0.05627071757301577,
+        "rms_uncovered_distance": 0.0076909699110233
+      }
+    },
+    "colliders": 18,
+    "source": "assets/concepts/beagle/tripo-v05/rig-report.json"
+  },
+  "runtime_validation": {
+    "tests_passed": 85,
+    "tests_failed": 0,
+    "production_build": "passed",
+    "loadout_pairings": 16,
+    "browser_checks": [
+      "solo W and W+D",
+      "two beagles with independent split-screen controls",
+      "beagle versus sword practice with outgoing and received damage"
+    ],
+    "screenshots": [
+      "docs/screenshots/beagle-armory.png",
+      "docs/screenshots/beagle-duel.png",
+      "docs/screenshots/beagle-practice.png"
+    ],
+    "known_gap": "Body stays upright; backward and forward full-body flips are not implemented."
+  }
+}

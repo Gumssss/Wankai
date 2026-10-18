@@ -5,11 +5,13 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { WEAPON_CATALOG, weaponName } from './weapon-catalog.js';
 import { WEAPON_VISUALS } from './weapon-visuals.js';
 import { WEAPONS } from './physics.js';
+import { BEAGLE } from './beagle-profile.js';
 
 function disposeModel(root) {
   const resources = new Set();
   root.traverse(object => {
     if (object.geometry) resources.add(object.geometry);
+    if (object.skeleton) resources.add(object.skeleton);
     for (const mat of Array.isArray(object.material) ? object.material : [object.material]) {
       if (!mat) continue;
       resources.add(mat);
@@ -26,13 +28,15 @@ function PreviewModel({ weapon, onError, onLoaded }) {
     let cancelled = false;
     let owned;
     setRoot(null);
-    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/${weapon}.glb`, gltf => {
+    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/${weapon === 'beagle' ? BEAGLE.model : `${weapon}.glb`}`, gltf => {
       if (cancelled) { disposeModel(gltf.scene); return; }
       owned = new Group();
       const model = gltf.scene;
-      model.quaternion.setFromUnitVectors(new Vector3(...WEAPON_VISUALS[weapon].axis).normalize(), new Vector3(0, 1, 0));
-      const bounds = new Box3().setFromObject(model);
-      model.scale.setScalar(WEAPONS[weapon].length / (bounds.max.y - bounds.min.y));
+      if (weapon !== 'beagle') {
+        model.quaternion.setFromUnitVectors(new Vector3(...WEAPON_VISUALS[weapon].axis).normalize(), new Vector3(0, 1, 0));
+        const bounds = new Box3().setFromObject(model);
+        model.scale.setScalar(WEAPONS[weapon].length / (bounds.max.y - bounds.min.y));
+      }
       if (weapon === 'polearm') model.traverse(object => {
         for (const mat of Array.isArray(object.material) ? object.material : [object.material]) {
           if (!mat?.color) continue;
@@ -40,8 +44,8 @@ function PreviewModel({ weapon, onError, onLoaded }) {
         }
       });
       owned.add(model);
-      owned.rotation.z = -0.4;
-      owned.rotation.y = 0.25;
+      owned.rotation.z = weapon === 'beagle' ? 0 : -0.4;
+      owned.rotation.y = weapon === 'beagle' ? 0 : 0.25;
       owned.updateMatrixWorld(true);
       owned.position.sub(new Box3().setFromObject(owned).getCenter(new Vector3()));
       setRoot(owned);
@@ -52,12 +56,17 @@ function PreviewModel({ weapon, onError, onLoaded }) {
   }, [weapon, invalidate, onError, onLoaded]);
   useEffect(() => {
     if (!root) return;
-    const extent = new Box3().setFromObject(root).getSize(new Vector3());
+    camera.position.set(...(weapon === 'beagle' ? [5, 2.5, 7] : [0, 0, 5]));
+    camera.lookAt(0, 0, 0);camera.updateMatrixWorld(true);
+    const box = new Box3().setFromObject(root), projected = new Box3();
+    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z])
+      projected.expandByPoint(new Vector3(x, y, z).applyMatrix4(camera.matrixWorldInverse));
+    const extent = projected.getSize(new Vector3());
     camera.zoom = Math.min(size.width / Math.max(0.1, extent.x), size.height / Math.max(0.1, extent.y)) / 1.1;
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
     invalidate();
-  }, [root, camera, size.width, size.height, invalidate]);
+  }, [root, camera, size.width, size.height, invalidate, weapon]);
   return root ? <primitive object={root} dispose={null} /> : null;
 }
 
@@ -80,7 +89,7 @@ export function Armory({ game, session, mode, close, start }) {
 
   return <>
     <button className="modal-close" onClick={close} aria-label="关闭兵器库">×</button>
-    <div className="armory-heading"><span className="eyebrow">THE ARMORY / 兵器库</span><h2>选一把，找到你的打法<span>。</span></h2><p>看兵器，读特点。开打之前，各选所长。</p></div>
+    <div className="armory-heading"><span className="eyebrow">THE ARMORY / 兵器库</span><h2>选一套，找到你的打法<span>。</span></h2><p>选兵器，或让比格犬用双耳出战。开打之前，各选所长。</p></div>
     <div className="armory-loadouts" aria-live="polite">
       <div className="loadout-one"><span>P1 · 赤丸</span><strong>{weaponName(game.weapons[0])}</strong></div>
       {!solo && <><span className="armory-versus">VS</span><div className="loadout-two"><span>{practice ? 'P2 · 木桩' : 'P2 · 青丸'}</span><strong>{weaponName(game.weapons[1])}</strong></div></>}

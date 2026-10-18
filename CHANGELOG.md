@@ -2,6 +2,26 @@
 
 This records changes to the playable source prototype. Dated checkpoints are not packaged app releases. Download and update instructions are in the [README](README.md); acceptance questions and next work are in the [project status](docs/PROJECT_STATUS.md).
 
+## 2026-10-18 — Playable smooth-ear beagle checkpoint
+
+- Added **比格犬·双耳** as a paired character/weapon loadout in every mode. Both players can select it independently, including matching beagles, and rematches retain the choices.
+- Integrated the approved smooth Tripo appearance, lengthened in Blender with rounded roots/tips retained. Includes a packed editable rig, compact local GLBs, source provenance, measured geometry, and the motion-study history. The rejected fluffy appearance remains a historical study.
+- Both ears use measured head sockets and eighteen fitted contact capsules. Shared W/S plus A/D, inertia, reversal braking, ground-driven lift/travel, stamina, directional damage, hit gating, blocks and clash recoil use the ordinary game solver. Wider head/paw hurt shapes, independent skeletons/materials and ear-aware camera framing accompany the character.
+- Validation: **85 tests passed**, including all sixteen loadout pairings, actual GLB/physics alignment, combined inputs, contacts, damage, stamina, cloning and recoil; production build passed. Browser checks covered solo, two beagles in split screen, and practice hits. Existing bundle-size warning remains; final balance still needs playtesting.
+- **Known gap:** backward/forward full-body flips from the earlier concept studies are not implemented. S rotates the ears backward while the body stays upright. The next physics extension must couple body pitch, hinge reactions, ear momentum and the rendered/contact poses; no input-triggered flip animation has been substituted.
+- The creator approved the appearance and requested pushing and merging this source checkpoint. This is source delivery, with no packaged app release. Large raw Tripo downloads, local preferences, renders and diagnostic output remain in the local authoring archive.
+
+## 2026-10-17 — Half-speed, contact, and clash-recoil trial
+
+The creator approved a local playtest at 50% of the previous maximum swing and horizontal-turn speeds, with weapon size/reach retained. This trial awaits hands-on acceptance.
+
+- Sword, polearm, and hammer axis limits are now 6.1, 4.25, and 3.4 rad/s. Acceleration, reversal braking, damping, stamina, and the damage formula retain their previous settings. The lower limits also apply after collision impulses. Slower impacts and ground-driven movement can therefore feel weaker; balance remains for playtesting.
+- Added measured solid proxies for the sword crossguard and polearm collar, blade, curved tip, and barb. Existing shaft radii, axial reach, model transforms, and hammer shapes remain. No broad invisible collision allowance was added.
+- Weapon clashes and body hits inspect intermediate rigid poses between 180 Hz states, using motion-bounded samples and refinement of the first sampled overlap. Ground integration and the simulation clock retain their fixed timestep. Regression fixtures now catch a crossing missed by endpoint-only checks and retain nearby misses.
+- New checks cover half-speed limits, incoming-side contact response, body crossings, heading wrap, added solid features, and support in both directions with all three weapons. The sustained nine-loadout regression also checks post-contact speed limits. See [control system](docs/CONTROL_SYSTEM.md) for method and limitations and [project status](docs/PROJECT_STATUS.md) for validation.
+- At the creator's request, clear weapon clashes now make both fighters step backward opposite their own current heading. Recoil grows with impact speed, preserves sideways/vertical and faster backward motion, and cannot repeat from held contact. Separation plus cooldown rearms it; rematches reset it. Existing particles/sound remain, with no added clash damage or stamina charge. Six recoil regressions bring the local suite to 77 checks; the in-game help describes the rule.
+- A 30% speed setting, additional block allowance, stronger clash pause/readout, and the deferred precision weapon remain unimplemented. The original sword support-direction complaint still needs acceptance.
+
 ## 2026-10-17 — Combat checkpoint and GitHub setup
 
 ### Added

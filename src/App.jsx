@@ -61,11 +61,11 @@ function HelpContent({ close }) {
   return <>
     <button className="modal-close" onClick={close} aria-label="关闭玩法说明">×</button>
     <span className="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，转动武器。</h2>
-    <p className="modal-intro">你控制的是悬空武器的转动力。武器与身体保持间距，绕身体旋转；身体始终直立，由撑地或碰撞带动。双人对战可选各自独立的分屏自由视角，或两人共用的固定视角。分屏中 Q / E 转动赤丸视角，句号 / 问号键转动青丸视角（无需 Shift）；松开保持角度。水平转动武器不会带着镜头转向。</p>
+    <p className="modal-intro">你控制的是兵器或双耳的转动力。普通兵器与身体保持间距；比格犬的双耳从头部两侧转动。身体保持直立，由撑地或碰撞带动。双人对战可选各自独立的分屏自由视角，或两人共用的固定视角。分屏中 Q / E 转动赤丸视角，句号 / 问号键转动青丸视角（无需 Shift）；松开保持角度。水平转动武器不会带着镜头转向。</p>
     <div className="guide-steps">
       <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D（← / →）调整水平方向，再用 W 或 S（↑ 或 ↓）选择挥动方向。武器触地后，继续挥动可撑起并带动身体；角色没有独立行走按键。</p></div></article>
       <article><span>02</span><div><h3>选择挥动方向</h3><p>W（↑）让武器向角色正面旋转，S（↓）向背面旋转；在头顶可以选前后，触地后继续按住可撑起身体并转到另一侧。A / D（← / →）只改变水平方向，也可与 W 或 S 同时按。松手后保留惯性，并受重力和阻尼影响。</p></div></article>
-      <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>武器撞中头部或躯干都会扣血，伤害相同。相同碰撞速度与发力下，纯横转命中伤害为竖挥的一半；组合挥动按实际碰撞方向混合计算。松手后的惯性命中也遵循此规则。武器之间可以互相格挡。</p></div></article>
+      <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>武器撞中头部或躯干都会扣血，伤害相同。相同碰撞速度与发力下，纯横转命中伤害为竖挥的一半；组合挥动按实际碰撞方向混合计算。松手后的惯性命中也遵循此规则。武器之间可以互相格挡，有力相撞会让双方沿各自面向的反方向后退；轻触和持续贴住不会反复触发。</p></div></article>
       <article><span>04</span><div><h3>留些耐力，再挥下一棍</h3><p>每人 100 耐力。竖挥每秒消耗 20，横转每秒消耗 8，同时操作叠加。放开武器操作半秒后，每秒恢复 30。耐力低于 25 时逐渐变慢；耗尽仍可弱控、撑地与格挡，反向刹车保持灵敏。转动镜头不耗耐力。</p></div></article>
     </div>
     <div className="guide-note"><b>100 HP · 血量归零判负</b><span>圆台有边界，不会掉落。练习木桩会在受击停止后恢复血量。</span></div>
@@ -154,7 +154,7 @@ function App() {
     <main id="game-shell" className={`${solo ? 'solo-mode' : ''} ${splitView ? 'split-mode' : ''}`}>
       <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : 'shared'}-${game.weapons.join('-')}`} session={session} mode={game.mode} weapon={game.weapon} secondWeapon={game.weapons[1]} onReady={() => setReady(true)} /></CanvasBoundary></div>
       {splitView && <><div className="view-divider" aria-hidden="true"></div><div className="view-name view-one">P1 · 赤丸自由视角</div><div className="view-name view-two">P2 · 青丸自由视角</div></>}
-      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '三种兵器，各有所长。'}</span></div>
+      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '兵器与双耳，各有所长。'}</span></div>
       <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
       {active && (solo || splitView) && viewIds.map(id => <HeadingGuide key={id} id={id} split={splitView} />)}
       <section className="scoreboard" aria-label={solo ? '单人状态' : '对战血量'}>
