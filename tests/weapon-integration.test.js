@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Quaternion, Vector3 } from 'three';
 import { GameSession } from '../src/game-session.js';
-import { ArenaPhysics, CONFIG, closestSegments, staffFrame, weaponSegments, weaponPointFrame, WEAPONS, v3 } from '../src/physics.js';
+import { ArenaPhysics, CONFIG, closestSegments, staffFrame, weaponSegments, weaponPointFrame, hurtSegments, WEAPONS, v3 } from '../src/physics.js';
 import { setWeaponRotation } from '../src/weapon-visuals.js';
 
 function sessionWithoutAudio() {
@@ -167,10 +167,19 @@ test('all loadouts remain finite and within the arena under sustained mixed inpu
         { theta: phase % 3 ? -1 : 1, phi: phase % 2 ? -1 : 1 }]);
       for (const p of world.players) {
         for (const value of [p.p.x, p.p.y, p.p.z, p.wt, p.wp, p.health]) assert.ok(Number.isFinite(value));
-        assert.ok(Math.hypot(p.p.x, p.p.z) <= world.arenaRadius - CONFIG.bodyRadius + 1e-6);
-        assert.ok(p.p.y >= CONFIG.bodyFloor - 1e-6);
-        assert.ok(Math.abs(p.wt) <= WEAPONS[p.weapon].maxAngularSpeed &&
-          Math.abs(p.wp) <= WEAPONS[p.weapon].maxAngularSpeed, 'contacts restored the old spin speed');
+        if(p.weapon==='beagle') {
+          assert.ok(Number.isFinite(p.bodyPitch+p.bodyRate));
+          for(const shape of hurtSegments(p))for(const point of [shape.a,shape.b]) {
+            assert.ok(Math.hypot(point.x,point.z)+shape.radius<=world.arenaRadius+.02);
+            assert.ok(point.y-shape.radius>-.035,'rotated body crossed the floor');
+          }
+          assert.ok(Math.abs(p.bodyRate)<=8.05&&Math.abs(p.wt)<24.1&&Math.abs(p.wp)<4.3);
+        } else {
+          assert.ok(Math.hypot(p.p.x, p.p.z) <= world.arenaRadius - CONFIG.bodyRadius + 1e-6);
+          assert.ok(p.p.y >= CONFIG.bodyFloor - 1e-6);
+          assert.ok(Math.abs(p.wt) <= WEAPONS[p.weapon].maxAngularSpeed &&
+            Math.abs(p.wp) <= WEAPONS[p.weapon].maxAngularSpeed, 'contacts restored the old spin speed');
+        }
       }
     }
   }

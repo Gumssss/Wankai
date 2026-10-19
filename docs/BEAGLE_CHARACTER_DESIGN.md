@@ -1,5 +1,9 @@
 # Beagle Character and Weapon Ear Design
 
+The [complete design process](BEAGLE_DESIGN_PROCESS.md) records the reference, motion studies, Blender/Tripo model branches, creator feedback, rejected flips and current hover/stamina decisions. This brief retains earlier proposals below its implementation updates.
+
+**Latest implementation — 19 October 2026:** The creator approved normal parallel-ear W/S+A/D movement and requested F for a separate spinning skill with a small hover. It is now implemented locally: press F (P2 Right Shift), timer expiry lands, with no stamina cost. Flips remain inactive. This supersedes the earlier hover deferral. See [current skill handoff](BEAGLE_SPIN_SKILL.md). The design stages below preserve earlier decisions and studies.
+
 **18 October 2026 implementation:** The approved smooth Tripo v05 model is now
 playable as **比格犬·双耳** in the armory. Its upright movement/combat baseline
 matches the latest functional v07 videos. See [current model and runtime

@@ -1,6 +1,35 @@
 # 更新记录 / Changelog
 
+## 2026-10-19 — Timed hover and character-production source checkpoint
+
+- Include the five-second F / P2 Right Shift hover skill, upright parallel-ear W/S+A/D movement and 200 ordinary stamina in the playable source. The skill costs no stamina; the rejected flip controller remains inactive.
+- Include `game-character-pipeline` and its production, move-video, review, documentation and beagle-lesson references. New character bases use Tripo; proposed moves require videos before implementation and actual gameplay footage afterward.
+- Preserve the complete beagle design history, motion previews, handoffs and current verification. Correct stale flip-status descriptions in the glossary/provenance and repair the historical functional-preview adapter's current import.
+- Validation: 100 tests, production build, native rig import and historical functional-preview simulation pass. The existing bundle-size warning remains. The in-progress orange-tabby work is excluded from this checkpoint; no packaged app release is produced.
+
+## 2026-10-19 — Double stamina and separate timed hover
+
+- Increase ordinary stamina from 100 to 200 for every loadout, keeping attack costs, recovery and fatigue thresholds.
+- Press F (P2 Right Shift) for a five-second hover activation, independent of stamina. Skill steering is free too; release does not cancel, repeated input cannot extend it, and holding cannot auto-repeat.
+- Update the HUD timer, help, reset behavior and regressions. This supersedes the stamina-driven hold-to-hover prototype below.
+
+
+## 2026-10-19 — Beagle normal controls and F hover skill (local)
+
+- Replace the active flip experiment with upright parallel-ear W/S movement and slower simultaneous A/D steering, matching the approved comparison video.
+- Hold F (P2 Right Shift) to spread the ears, spin the whole character and hover slightly. Release or exhaustion retracts and lands; one shared stamina bar limits use.
+- Keep the actual skin, fallback, swept contacts, damage, blocking and camera aligned through deployment and lag. Update controls and regression checks. Existing source model is unchanged; no push/merge in this step.
+
+
 This records changes to the playable source prototype. Dated checkpoints are not packaged app releases. Download and update instructions are in the [README](README.md); acceptance questions and next work are in the [project status](docs/PROJECT_STATUS.md).
+
+## Unreleased — 2026-10-18 — Coupled beagle front/back flips
+
+- Added body pitch coupled to the physical ear hinge. Grounded W/S strokes plant the ears and vault into forward/backward rotation; A/D continues steering during takeoff and flight. Release retains momentum and reversal brakes. Body and ears can change angle relative to one another.
+- Added an articulated mass matrix, finite hinge motors, gravity/inertial terms and damping. A supported loading stance assists the initial push; flight has no upright constraint, fixed animation or scripted launch impulse. Both ears still share one swing control and stamina budget.
+- Body/head/paw contacts, ear sockets, hits, blocks, ground/rim response, fallback geometry and camera framing follow the rotated pose. Contact position stabilization limits floor overlap. Mixed-body separation also reapplies the ordinary fighter floor constraint.
+- Validation: **92 tests passed** including complete airborne flips in both directions with either A/D direction, momentum reaction, release/reversal/fatigue, inverted GLB alignment, rotated-head hits and all sixteen loadout pairings. The original smooth model is unchanged. See [flip handoff](docs/BEAGLE_FLIPS.md) for control details, assisted stance and remaining limitations.
+- Originally a local follow-up to merged PR #1. Retained as inactive experiment code/history in the later source checkpoint; it does not drive current gameplay and was not released as an active flip feature.
 
 ## 2026-10-18 — Playable smooth-ear beagle checkpoint
 

@@ -19,7 +19,7 @@
     "blink_vertex_displacement": 0.3525824744470528,
     "independent_ears": true,
     "independent_skeleton_clones": true,
-    "note": "Exported geometry/rig checks. Texture decoding and appearance require browser review. Runtime behavior is covered by the beagle gameplay/model tests; full-body flips remain unimplemented."
+    "note": "Exported geometry/rig checks. Texture decoding and appearance require browser review. Current upright movement, timed hover, spread/lag alignment and combat are covered by the beagle skill, gameplay and model tests. The articulated flip experiment is inactive."
   },
   "contact_fit": {
     "coverage": {
@@ -52,6 +52,27 @@
       "docs/screenshots/beagle-duel.png",
       "docs/screenshots/beagle-practice.png"
     ],
-    "known_gap": "Body stays upright; backward and forward full-body flips are not implemented."
+    "known_gap": "Body stays upright; backward and forward full-body flips are not implemented.",
+    "scope": "Historical upright checkpoint merged in PR #1. Current timed-hover behavior is recorded in current_runtime_validation and docs/BEAGLE_SPIN_SKILL.md; the flip experiment is inactive."
+  },
+  "current_runtime_validation": {
+    "date": "2026-10-19",
+    "tests_passed": 100,
+    "tests_failed": 0,
+    "production_build": "passed",
+    "rig_import": "passed",
+    "historical_functional_preview": "passed",
+    "ordinary_stamina": 200,
+    "skill_duration_seconds": 5,
+    "skill_stamina_cost": 0,
+    "body_flips_active": false,
+    "loadout_pairings": 16,
+    "browser_checks": [
+      "F tap starts timer while stamina remains at 200/200",
+      "upright normal W/S with simultaneous A/D"
+    ],
+    "screenshot": "docs/screenshots/beagle-timed-hover.png",
+    "runtime_handoff": "docs/BEAGLE_SPIN_SKILL.md",
+    "limitations": "Initial balance values; rounded contact proxies and finite sweep sampling; no packaged release."
   }
 }

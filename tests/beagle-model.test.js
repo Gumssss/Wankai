@@ -5,7 +5,7 @@ import {Group,Vector3} from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {instantiateBeagle,poseBeagle} from '../src/beagle-model.js';
 import {BEAGLE} from '../src/beagle-profile.js';
-import {makePlayer,weaponPointFrame,v3} from '../src/physics.js';
+import {makePlayer,weaponPointFrame,bodyPointFrame,v3} from '../src/physics.js';
 
 async function loadGeometry(){
  const bytes=await readFile(new URL('../public/models/'+BEAGLE.model,import.meta.url));
@@ -36,9 +36,13 @@ test('the actual exported skinned ears follow the same anchored frame as gamepla
    mesh.getVertexPosition(i,new Vector3()).applyMatrix4(mesh.matrixWorld).sub(socket)
     .applyAxisAngle(new Vector3(0,0,1),BEAGLE.earBindPitch))};
  }
+ const bodyNode=instance.model.getObjectByName('SM_Beagle_Body');
+ const body=bodyNode.isSkinnedMesh?bodyNode:bodyNode.children.find(o=>o.isSkinnedMesh);
+ const bodyLocal=Array.from({length:body.geometry.attributes.position.count},(_,i)=>
+   body.getVertexPosition(i,new Vector3()).applyMatrix4(body.matrixWorld).sub(new Vector3(0,BEAGLE.bodyFloor,0)));
  const p=makePlayer(0,'beagle');p.p=v3(.4,3,-.7);
- for(const theta of [-Math.PI,-1.55,0,Math.PI/2,Math.PI,2*Math.PI])for(const phi of [-2,0,.7]){
-  Object.assign(p,{theta,phi});root.position.set(p.p.x,p.p.y,p.p.z);root.rotation.y=-phi;
+ for(const earSpread of [0,.65,Math.PI/2])for(const bodyPitch of [-Math.PI,-.8,0,1.7,Math.PI*2])for(const theta of [-Math.PI,-1.55,0,Math.PI/2,Math.PI,2*Math.PI])for(const phi of [-2,0,.7]){
+  Object.assign(p,{theta,phi,bodyPitch,earSpread,earLag:.07*earSpread});root.position.set(p.p.x,p.p.y,p.p.z);root.rotation.y=-phi;
   poseBeagle(instance,p,1);refresh(root);
   for(const side of ['L','R']){
    const {mesh,local}=samples[side],anchor=BEAGLE.anchors[side];
@@ -49,6 +53,10 @@ test('the actual exported skinned ears follow the same anchored frame as gamepla
     const actual=mesh.getVertexPosition(i,new Vector3()).applyMatrix4(mesh.matrixWorld);
     assert.ok(actual.distanceTo(new Vector3(f.point.x,f.point.y,f.point.z))<3e-6,'visible ear detached from physical frame');
    }
+  }
+  for(let i=0;i<bodyLocal.length;i+=71){
+   const expected=bodyPointFrame(p,bodyLocal[i]).point,actual=body.getVertexPosition(i,new Vector3()).applyMatrix4(body.matrixWorld);
+   assert.ok(actual.distanceTo(new Vector3(expected.x,expected.y,expected.z))<3e-6,'visible body differs from its physical rotation');
   }
  }
 });

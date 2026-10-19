@@ -2,6 +2,7 @@
 // Contact impulses use the staff Jacobian: rotation and translation respond
 // together. No locomotion force is added by the input controller.
 import { BEAGLE } from './beagle-profile.js';
+import { BEAGLE_SKILL, beaglePointFrame, updateBeagleSkill, applyBeagleHover } from './beagle-skill.js';
 export const CONFIG = Object.freeze({
   step: 1 / 180,
   arenaRadius: 6.45,
@@ -29,7 +30,7 @@ export const CONFIG = Object.freeze({
   turnDamageScale: 0.5,
 });
 export const STAMINA = Object.freeze({
-  max: 100,
+  max: 200,
   swingDrain: 20,
   turnDrain: 8,
   recoveryDelay: 0.5,
@@ -112,6 +113,9 @@ export function makePlayer(id, weapon = 'polearm') {
     facingOffset: 0,
     wt: 0,
     wp: 0,
+    bodyPitch: 0, bodyRate: 0, vaulting: false, earPush: false,
+    skillActive: false, skillRemaining: 0, skillWasHeld: false, skillRequested: false,
+    earSpread: 0, earSpreadRate: 0, earLag: 0, earLagRate: 0,
     driveT: 0,
     driveP: 0,
     health: CONFIG.maxHealth,
@@ -151,7 +155,8 @@ export function weaponPointFrame(player, local, anchor) {
   const weapon = weaponStats(player);
   const attached = weapon.attachment === 'ears';
   const socket = attached ? (anchor || [0, (weapon.anchors.L[1] + weapon.anchors.R[1]) / 2, 0]) : [0, 0, 0];
-  const y = (attached ? 0 : weapon.offset) + local.y;
+  if (attached) return beaglePointFrame(player, local, socket);
+  const y = weapon.offset + local.y;
   const st = Math.sin(player.theta), ct = Math.cos(player.theta);
   const sp = Math.sin(player.phi), cp = Math.cos(player.phi);
   const x = local.x * ct + y * st + socket[0], z = local.z + socket[2];
@@ -181,6 +186,13 @@ const segmentFrame = (player, segment, fraction) => weaponPointFrame(player,
 
 export function bodyRadius(player) { return weaponStats(player).bodyRadius || CONFIG.bodyRadius; }
 
+export function bodyPointFrame(player, local) {
+  if (player.weapon === 'beagle') return beaglePointFrame(player, local);
+  const heading=fighterHeading(player),cp=Math.cos(heading),sp=Math.sin(heading);
+  const r=v3(local.x*cp-local.z*sp,local.y,local.x*sp+local.z*cp);
+  return {r,point:add(player.p,r),velocity:player.v,jt:v3(),jp:v3()};
+}
+
 export function hurtSegments(player) {
   const local = player.weapon === 'beagle' ? [
     { a: [0, -.32, 0], b: [0, -.07, 0], radius: .27 },
@@ -190,9 +202,8 @@ export function hurtSegments(player) {
     { a: [0, -.19, 0], b: [0, .18, 0], radius: CONFIG.bodyRadius },
     { a: [0, .76, 0], b: [0, .76, 0], radius: CONFIG.bodyRadius },
   ];
-  const heading = fighterHeading(player), cp = Math.cos(heading), sp = Math.sin(heading);
-  const point = ([x, y, z]) => add(player.p, v3(x * cp - z * sp, y, x * sp + z * cp));
-  return local.map(shape => ({ ...shape, a: point(shape.a), b: point(shape.b) }));
+  return local.map(shape => ({ ...shape, localA: v3(...shape.a), localB: v3(...shape.b),
+    a: bodyPointFrame(player,v3(...shape.a)).point, b: bodyPointFrame(player,v3(...shape.b)).point }));
 }
 
 // Solid capsule endpoints can support the fighter or meet the low arena rim.
@@ -223,7 +234,7 @@ export const staminaPower = stamina => STAMINA.minPower + (1 - STAMINA.minPower)
   clamp(stamina / STAMINA.lowThreshold, 0, 1);
 
 function updateStamina(p, turnInput, dt) {
-  const cost = Math.abs(p.polarInput) * STAMINA.swingDrain + Math.abs(turnInput) * STAMINA.turnDrain;
+  const cost = p.skillActive ? 0 : Math.abs(p.polarInput) * STAMINA.swingDrain + Math.abs(turnInput) * STAMINA.turnDrain;
   if (cost > 0) {
     p.stamina = Math.max(0, p.stamina - cost * dt);
     p.staminaRestTime = 0;
@@ -305,8 +316,9 @@ function contactMotion(player, start) {
     }
   }
   const theta = player.theta - start.theta, phi = headingDelta(player.phi, start.phi);
-  return { theta, phi, radius,
-    travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi)) };
+  const spread=(player.earSpread||0)-(start.earSpread||0),lag=(player.earLag||0)-(start.earLag||0);
+  return { theta, phi, spread, lag, radius,
+    travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi) + Math.abs(spread) + Math.abs(lag)) };
 }
 
 // Inspect intermediate rigid poses, including curved rotation and heading wrap.
@@ -323,7 +335,8 @@ function contactAlongMotion(a, b, previous, detect) {
     (Math.min(motionA.radius, motionB.radius) * CONFIG.contactTravelFraction)), 1, CONFIG.maxContactSubsteps);
   const at = (player, start, motion, t) => ({ ...player,
     p: add(start.p, mul(sub(player.p, start.p), t)),
-    theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t });
+    theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t,
+    earSpread:(start.earSpread||0)+motion.spread*t,earLag:(start.earLag||0)+motion.lag*t });
   const inspect = t => {
     const poseA = at(a, startA, motionA, t), poseB = at(b, startB, motionB, t);
     const contact = detect(poseA, poseB);
@@ -388,26 +401,49 @@ export class ArenaPhysics {
     if (this.winner !== null) return;
     this.events.length = 0;
     this.time += dt;
-    const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi }));
+    const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, earSpread:p.earSpread, earLag:p.earLag }));
     for (const p of this.players) {
       const weapon = weaponStats(p);
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
       const turnInput = clamp(input.phi || 0, -1, 1);
+      if (p.weapon === 'beagle') {
+        p.bodyPitch=0;p.bodyRate=0;
+        updateBeagleSkill(p,input.skill,dt);
+        if(p.skillActive || p.earSpread>.001)p.polarInput=0;
+      }
       updateStamina(p, turnInput, dt);
       const power = staminaPower(p.stamina);
       // Yaw keeps its existing reversal strength; pitch uses the stronger brake.
       const motorP = motorAcceleration(p.wp, turnInput, weapon, power, dt, weapon.motorAcceleration);
       const previousT = p.wt, previousP = p.wp;
       const damp = Math.exp(-CONFIG.damping * dt);
-      drivePolarAngle(p, dt, power);
-      p.wp = clamp((p.wp + motorP * dt) * damp, -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
+      if(p.weapon==='beagle'){
+        const rotor=p.skillActive || p.earSpread>.001;
+        if(rotor){
+          const error=Math.atan2(Math.sin(-Math.PI/2-p.theta),Math.cos(-Math.PI/2-p.theta));
+          const target=clamp(error*8,-weapon.maxAngularSpeed,weapon.maxAngularSpeed);
+          p.wt+=clamp(target-p.wt,-BEAGLE_SKILL.pitchAcceleration*dt,BEAGLE_SKILL.pitchAcceleration*dt);
+        }else drivePolarAngle(p,dt,power);
+        if(p.skillActive){
+          const target=(turnInput || Math.sign(p.wp) || 1)*BEAGLE_SKILL.spinSpeed;
+          p.wp+=clamp(target-p.wp,-weapon.motorAcceleration*dt,weapon.motorAcceleration*dt);
+        }else{
+          const assist=(p.polarInput || turnInput) ? clamp((turnInput*BEAGLE_SKILL.normalTurnSpeed*power-p.wp)*BEAGLE_SKILL.steeringGain,-1,1) : 0;
+          const motor=motorAcceleration(p.wp,assist,weapon,power,dt,weapon.motorAcceleration);
+          p.wp=clamp((p.wp+motor*dt)*damp,-weapon.maxAngularSpeed,weapon.maxAngularSpeed);
+        }
+      }else{
+        drivePolarAngle(p, dt, power);
+        p.wp = clamp((p.wp + motorP * dt) * damp, -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
+      }
       p.theta += p.wt * dt;
       // Net angular acceleration before contact, including damping/speed limits.
       // Holding an already-max-speed motor does not award an acceleration bonus.
       const smooth = 1 - Math.exp(-dt / 0.09);
       p.driveT += ((p.wt - previousT) / dt - p.driveT) * smooth;
       p.driveP += ((p.wp - previousP) / dt - p.driveP) * smooth;
+      if(p.weapon==='beagle')applyBeagleHover(p,dt,CONFIG.gravity);
       p.v.y -= CONFIG.gravity * dt;
       p.v.x *= Math.exp(-0.15 * dt);
       p.v.z *= Math.exp(-0.15 * dt);
@@ -490,6 +526,17 @@ export class ArenaPhysics {
   }
 
   solveBodyWall(p) {
+    if(p.weapon==='beagle'){
+      for(const shape of hurtSegments(p))for(const point of [shape.a,shape.b]){
+        const distance=Math.hypot(point.x,point.z),overlap=distance+shape.radius-this.arenaRadius;
+        if(overlap<=0)continue;
+        const n=v3(-point.x/distance,0,-point.z/distance);
+        p.p=add(p.p,mul(n,overlap));
+        const speed=dot(p.v,n);
+        if(speed<0)p.v=sub(p.v,mul(n,1.16*speed));
+      }
+      return;
+    }
     const bodyLimit = this.arenaRadius - bodyRadius(p);
     const distance = Math.hypot(p.p.x, p.p.z);
     if (distance > bodyLimit) {

@@ -40,7 +40,7 @@ test('a strong weapon clash sends each fighter backward along their own facing w
       assert.ok(project(player.v, heading) < project(baseline.v, heading), 'both fighters must receive recoil');
       near(project(player.v, heading + Math.PI / 2), project(baseline.v, heading + Math.PI / 2));
       near(player.v.y, baseline.v.y);
-      assert.equal(player.health, 100); assert.equal(player.stamina, 100);
+      assert.equal(player.health, 100); assert.equal(player.stamina, 200);
     }
   }
 });

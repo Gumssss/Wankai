@@ -104,5 +104,5 @@ const result={status:'passed',three_revision:REVISION,bytes:bytes.length,triangl
  full_rotation_angles:7,maximum_socket_error:socketError,maximum_rigid_rotation_error:rotationError,
  minimum_ear_to_core_clearance:minimumClearance,body_pitch_socket_error:bodyPitchSocketError,combined_yaw_body_ear_error:combinedInputError,
  blink_vertex_displacement:blinkDisplacement,independent_ears:true,independent_skeleton_clones:true,
- note:'Exported geometry/rig checks. Texture decoding and appearance require browser review. Runtime behavior is covered by the beagle gameplay/model tests; full-body flips remain unimplemented.'};
+ note:'Exported geometry/rig checks. Texture decoding and appearance require browser review. Current upright movement, timed hover, spread/lag alignment and combat are covered by the beagle skill, gameplay and model tests. The articulated flip experiment is inactive.'};
 await writeFile(new URL('three-report.json',out),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

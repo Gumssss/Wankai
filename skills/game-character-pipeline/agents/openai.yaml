@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Character Pipeline"
+  short_description: "Create playable characters with Tripo and move videos"
+  default_prompt: "Use $game-character-pipeline to develop this character with Tripo, review every move through video, refine it in Blender, and integrate the approved result into the game."

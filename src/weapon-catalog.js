@@ -1,6 +1,6 @@
 export const WEAPON_CATALOG = Object.freeze([
   { id: 'beagle', name: '比格犬·双耳', english: 'BEAGLE / TWIN EARS', role: '长耳 · 撑地',
-    description: '双耳就是兵器。W / S 驱动双耳前后挥动，A / D 同时转向；用撑地、惯性和碰撞带动身体。',
+    description: '双耳就是兵器。W / S 前后挥耳撑地，A / D 同时转向；按 F 展耳旋转并低空悬停 5 秒，不耗耐力，结束后自动落地。',
     strength: '双耳覆盖更宽，可撑地、挥击与格挡', weakness: '耳朵长，转向时要留出空间，共用一条耐力',
     reach: '长', response: '稳' },
   { id: 'sword', name: '短剑', english: 'SHORT SWORD', role: '近身 · 快挥',

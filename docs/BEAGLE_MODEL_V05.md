@@ -90,20 +90,9 @@ are not used. The first response profile retains v07's 4.25 rad/s limit and
 shared motor settings, adding yaw inertia for the side anchors. Competitive
 coverage and inertia tuning still need hands-on playtesting.
 
-The rig supports full body pitch. Gameplay currently implements the upright body
-baseline from the functional v07 videos, including contact-driven rise,
-translation and recoil. **The earlier requested backward and forward body flips
-are still missing.** Holding S rotates the ears backward; it does not yet rotate
-the body. This is an implementation gap relative to the earlier flip studies.
+The current rig keeps the body upright, with parallel W/S ear strokes and combined A/D steering. Press F (P2 Right Shift) spreads the ears horizontally and spins the body and ears together, with a small hover and damped ear-root lag. The same transforms drive actual skinned vertices, capsule contacts and fallback geometry. The approved mesh, texture and rigid single-root ear construction are unchanged. The flip controller is inactive; see [current skill handoff](BEAGLE_SPIN_SKILL.md).
 
-Next, add a physical body-pitch state and hinge reaction so the body, head and
-ear sockets rotate together while the ears retain their own relative momentum.
-Ground contacts, hurt shapes and rendering must use the same rotated pose.
-Backward support should be able to produce a backflip, and forward support a
-front flip, when contact and momentum are sufficient; A/D must still work during
-either. Do not force a complete somersault just because S or W is held, or play a
-visual flip over upright collision shapes. Separate ear angular states and
-competitive balance also remain open.
+The shared solver retains ordinary stamina, damage, blocks and recoil. The now-inactive flip experiment added an assisted loading stance and airborne body pitch with gravity, inertial reaction, damping and a finite hinge motor; those body-flip dynamics do not drive the current upright game. Separate left/right ear angular states, unrestricted 3D roll and competitive balance remain open. The original v07 video records the earlier upright baseline, while the [complete design process](BEAGLE_DESIGN_PROCESS.md) explains the later return to upright movement and separate skill.
 
 Runtime helpers live in `src/beagle-model.js`. SkeletonUtils clones keep players'
 bones and materials independent; only the bib uses player colour. Solo and split

@@ -4,7 +4,7 @@ import { GameAudio } from './audio.js';
 export const CAMERA_KEYS = new Set(['KeyQ', 'KeyE', 'Period', 'Slash']);
 
 export const CONTROL_KEYS = new Set([
-  'KeyW', 'KeyA', 'KeyS', 'KeyD',
+  'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'ShiftRight',
   'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
   ...CAMERA_KEYS,
 ]);
@@ -53,6 +53,7 @@ export class GameSession {
       pressed: [...this.keys],
       health: this.world.players.map(player => player.health),
       stamina: this.world.players.map(player => player.stamina),
+      skills: this.world.players.map(player=>({active:player.skillActive,remaining:player.skillRemaining})),
       seconds: Math.floor(this.world.time),
       winner: this.world.winner,
       countdownText: this.state === 'countdown' ? (this.countdownNumber > 0 ? String(this.countdownNumber) : '') :
@@ -74,12 +75,14 @@ export class GameSession {
 
   getInputs() {
     const first = { theta: Number(this.keys.has('KeyW')) - Number(this.keys.has('KeyS')), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
+    if(this.weapon==='beagle'&&this.keys.has('KeyF'))first.skill=true;
     if (this.mode === 'solo') return [first];
     return [
       first,
       this.practice ? { theta: 0, phi: 0 } : {
         theta: Number(this.keys.has('ArrowUp')) - Number(this.keys.has('ArrowDown')),
         phi: Number(this.keys.has('ArrowRight')) - Number(this.keys.has('ArrowLeft')),
+        ...(this.secondWeapon==='beagle'&&this.keys.has('ShiftRight')?{skill:true}:{}),
       },
     ];
   }
@@ -99,9 +102,12 @@ export class GameSession {
   keyDown(code) {
     if (!CONTROL_KEYS.has(code) || (this.state !== 'playing' && this.state !== 'countdown')) return;
     if (this.mode === 'solo' && code.startsWith('Arrow')) return;
+    if(code==='KeyF'&&this.weapon!=='beagle')return;
+    if(code==='ShiftRight'&&(this.secondWeapon!=='beagle'||this.mode==='solo'||this.practice))return;
     if (CAMERA_KEYS.has(code) && this.mode !== 'duel') return;
     if (this.keys.has(code)) return;
     this.keys.add(code);
+    if(code==='KeyF'||code==='ShiftRight')this.world.players[code==='KeyF'?0:1].skillRequested=true;
     this.syncPolarInputs();
     this.publish();
   }
@@ -113,6 +119,7 @@ export class GameSession {
   }
 
   clearKeys() {
+    for(const player of this.world.players)player.skillRequested=false;
     if (this.keys.size === 0) return;
     this.keys.clear();
     this.syncPolarInputs();

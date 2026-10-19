@@ -15,8 +15,10 @@ function replaceOnce(text,from,to){
  return text.replace(from,to);
 }
 // The adapter runs in a data URL, so resolve the game's local profile import.
-const portableSource=replaceOnce(source,"from './beagle-profile.js'",
+const withProfile=replaceOnce(source,"from './beagle-profile.js'",
   "from '"+new URL('../../src/beagle-profile.js',import.meta.url).href+"'");
+const portableSource=replaceOnce(withProfile,"from './beagle-skill.js'",
+  "from '"+new URL('../../src/beagle-skill.js',import.meta.url).href+"'");
 let code=replaceOnce(portableSource,'export const WEAPONS = Object.freeze({',`export const WEAPONS = Object.freeze({
   ears: Object.freeze({length:3.6,offset:0,radius:.055,inertia:4.1,
     motorAcceleration:24,brakeAcceleration:30,maxAngularSpeed:4.25,
