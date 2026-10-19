@@ -117,7 +117,7 @@ Evaluate each new model from multiple views, measure its shaft axis and grip ori
 
 ### Verification
 
-- Run `npm test` for physics, weapon integration, contact paths, recoil, session behavior, stamina/damage, and camera regressions, then `npm run build`. The merged upright checkpoint passed 85 checks and the build; the local body-flip extension passes 92 checks and the build, including all sixteen loadout pairings and inverted beagle rig/physics alignment. The existing bundle-size warning remains. See [project status](PROJECT_STATUS.md) for evidence and limitations.
+- Run `npm test` for physics, weapon integration, contact paths, recoil, session behavior, stamina/damage, and camera regressions, then `npm run build`. The current timed-hover source checkpoint passes 100 tests and the build, including all sixteen loadout pairings, skill lifecycle and actual beagle skin/contact alignment. The earlier 85-test upright checkpoint and 92-test flip experiment are historical; flips are inactive. The existing bundle-size warning remains. See [project status](PROJECT_STATUS.md) for evidence and limitations.
 - In Electron, check both duel views, two-player and practice matches, the swing transition, hits and blocks, sound, pause/resume, rematch, window resizing, focus loss, and offline operation.
 - Check that importing or removing a visual model leaves the selected weapon's physics profile unchanged. Verify resource cleanup through repeated armory, match, rematch, and mode transitions; automated physics checks do not establish the absence of resource leaks.
 

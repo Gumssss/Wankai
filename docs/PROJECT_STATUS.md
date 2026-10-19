@@ -1,5 +1,7 @@
 # Project review — 19 October 2026
 
+New collaborators and agents should start with the [project handoff](COLLABORATOR_AGENT_HANDOFF.md), which consolidates setup, architecture, current rules, active/deferred work and the contribution workflow. The orange-tabby work remains a separate unpublished prototype, not an integrated loadout.
+
 The current state is a playable local two-player prototype, ready for focused playtesting. It has a complete weapon-selection-to-match flow, three distinct weapons and a paired beagle/twin-ear loadout. Automated checks cover the implemented rules; control feel and weapon balance still require hands-on acceptance.
 
 The original upright source checkpoint was merged into `main` as PR #1. The creator later reported the flip experiment lying down and set flips aside; that code is retained as inactive history. This source checkpoint adds upright normal movement, timed hover and the character-production skill. The half-speed/contact trial is included and still needs balance playtesting. It halves both weapon-axis limits, adds measured solid blade/guard coverage, and samples contacts between physics poses while preserving model size/reach and the ground timestep. See [download and update instructions](../README.md) and the dated [changelog](../CHANGELOG.md).

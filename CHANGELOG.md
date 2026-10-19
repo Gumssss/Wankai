@@ -4,6 +4,7 @@
 
 - Include the five-second F / P2 Right Shift hover skill, upright parallel-ear W/S+A/D movement and 200 ordinary stamina in the playable source. The skill costs no stamina; the rejected flip controller remains inactive.
 - Include `game-character-pipeline` and its production, move-video, review, documentation and beagle-lesson references. New character bases use Tripo; proposed moves require videos before implementation and actual gameplay footage afterward.
+- Add a collaborator/agent handoff with setup, architecture, current rules, accepted/deferred decisions, progress tracking and the GitHub contribution/merge process. Link it from the README and current handoffs.
 - Preserve the complete beagle design history, motion previews, handoffs and current verification. Correct stale flip-status descriptions in the glossary/provenance and repair the historical functional-preview adapter's current import.
 - Validation: 100 tests, production build, native rig import and historical functional-preview simulation pass. The existing bundle-size warning remains. The in-progress orange-tabby work is excluded from this checkpoint; no packaged app release is produced.
 

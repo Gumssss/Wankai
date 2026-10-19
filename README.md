@@ -2,6 +2,8 @@
 
 一个可以离线运行的 Electron 3D 物理对战原型。界面使用 React，角斗场由 React Three Fiber 和 Three.js 渲染，固定时间步的自定义约束物理计算撑地、挥棍与碰撞。菜单提供分屏双人对战、固定视角双人对战、木桩练习和单人自由视角。
 
+协作者与开发代理请从[项目交接指南 / Collaborator and agent handoff](docs/COLLABORATOR_AGENT_HANDOFF.md)开始：包含环境搭建、架构、当前玩法、已确认决定、待办、验证与 GitHub 提交合并流程。
+
 ## 最新更新 / Latest update — 2026-10-19
 
 - 当前源码已合并到默认的 `main` 分支，包含三种兵器与「比格犬·双耳」套装、双方独立选择、扩大后的分屏圆台和已确认的后方镜头。

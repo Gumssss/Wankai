@@ -1,5 +1,7 @@
 # Wankai design handoff — updated 19 October 2026
 
+For a new collaborator or coding agent, use the [complete project handoff](COLLABORATOR_AGENT_HANDOFF.md) for setup, architecture, current gameplay and GitHub delivery. This file retains the detailed design decisions and open questions.
+
 Status: source checkpoint with upright beagle normal controls, the F low-hover skill and reusable character-production skill. Normal W/S+A/D keeps ears parallel; press F (P2 Right Shift) spreads/spins them and adds low hover on an independent timer. The five-second timer expires and lands, with no stamina cost. Ordinary stamina is 200 for every loadout. The earlier flip path is inactive. See [skill handoff](BEAGLE_SPIN_SKILL.md). Final balance and sword support feel still need hands-on playtesting.
 
 The [complete beagle design process](BEAGLE_DESIGN_PROCESS.md) records the reference, motion studies, model branches, rejected approaches, tooling, implementation and lessons through the current timed-hover version.
