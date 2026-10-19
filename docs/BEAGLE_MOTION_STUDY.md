@@ -1,6 +1,6 @@
 # Beagle Ear Motion Studies
 
-Current status (18 October): the [approved smooth v05 beagle](BEAGLE_MODEL_V05.md) is playable with the upright v07 rules. Earlier front/back flips below remain motion studies; body-pitch physics has not yet been integrated. These historical videos use the earlier proxy proportions.
+Current status (19 October): the [approved smooth v05 beagle](BEAGLE_MODEL_V05.md) uses upright parallel-ear movement and a separate timed F hover skill. The creator set flips aside after reporting a lying-down result; the [coupled flip extension](BEAGLE_FLIPS.md) is inactive. The videos below are historical studies using earlier proxy proportions. See the [complete design process](BEAGLE_DESIGN_PROCESS.md) for the decisions and [current skill handoff](BEAGLE_SPIN_SKILL.md) for active controls.
 
 ## Revision 07 — powered weapon ears with game contact and combat rules
 

@@ -3,6 +3,7 @@ import { CONFIG, arenaScaleForMode, WEAPONS, weaponStats, staffFrame, fighterHea
 import { WEAPON_VISUALS, setWeaponRotation } from './weapon-visuals.js';
 import { createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera, turnFreeCamera } from './free-camera.js';
 import { BEAGLE } from './beagle-profile.js';
+import {beagleEarYaw} from './beagle-skill.js';
 import { instantiateBeagle, poseBeagle, makeBeagleFallback } from './beagle-model.js';
 import { weaponPointFrame, v3 } from './physics.js';
 
@@ -345,7 +346,11 @@ export class ArenaView {
       model.bodyMat.color.copy(model.baseColor).lerp(new THREE.Color(0xffefd6), p.hitFlash * 0.8);
       model.skinMat.color.set(0xe7c199).lerp(new THREE.Color(0xffffff), p.hitFlash * 0.8);
       if (model.beagle) poseBeagle(model.beagle, p, this.trailTimeTotal || 0);
-      if (model.beagleFallback) for (const hinge of Object.values(model.beagleFallback.hinges)) hinge.rotation.z = -p.theta;
+      if (model.beagleFallback) {
+        model.beagleFallback.body.rotation.z = -(p.bodyPitch || 0);
+        for (const [side,hinge] of Object.entries(model.beagleFallback.hinges))
+          hinge.rotation.set(0,-beagleEarYaw(p,BEAGLE.anchors[side]),-p.theta,'YZX');
+      }
       const frame = staffFrame(p);
       model.staff.position.copy(vec(staffFrame(p, 0).point));
       setWeaponRotation(model.staff.quaternion, p.theta, p.phi, this.swordPitch);

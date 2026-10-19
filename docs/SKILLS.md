@@ -1,10 +1,10 @@
 # Wankai development skills guide
 
-Updated 17 October 2026.
+Updated 19 October 2026.
 
 Wankai uses Electron, React, React Three Fiber, Three.js, and a custom fixed-step physics system. Its current development priorities are reproducing the sword support-direction issue, evaluating controls and cameras with two players, and measuring model-loading and rendering costs. The skills below help with that work.
 
-This guide covers **all eight skills installed in this workspace**, plus the globally installed `find-skills` used to discover them. A skill supplies instructions and sometimes helper scripts to the coding assistant; it does not add a gameplay feature or become a runtime dependency of Wankai.
+This guide covers the **eight project skills installed in this workspace**, the new globally installed `game-character-pipeline`, and the globally installed `find-skills` used for discovery. A skill supplies instructions and sometimes helper scripts to the coding assistant; it does not add a gameplay feature or become a runtime dependency of Wankai.
 
 ## Installation and scope
 
@@ -23,16 +23,20 @@ Game developing/
     threejs-loaders/
   Wankai/
     docs/SKILLS.md
+    skills/game-character-pipeline/
 ```
 
 `grilling` and `grill-me` were already present. `systematic-debugging`, `threejs-loaders`, `playwright`, `create-game-assets`, `character-design`, and `rigging` were installed on 17 October 2026. New installations become available on the next assistant turn in this workspace.
 
 The parent `.agents` directory is outside the nested Wankai Git repository. Cloning Wankai alone therefore does not copy these skills. Installation commands for another checkout are provided below. Other account-wide skills and plugin-provided capabilities are separate from this project's installed inventory.
 
+`game-character-pipeline` was created and installed in the account's Codex skills directory on 19 October. Its portable source is included under `Wankai/skills/game-character-pipeline/`. It does not modify the parent `.agents` skills.
+
 ## Skills at a glance
 
 | Skill | Main purpose | Useful Wankai task | Availability |
 | --- | --- | --- | --- |
+| `game-character-pipeline` | Coordinate reference-to-playable character production with required Tripo bases, move videos and user reviews | Develop a new character or resume an approved Tripo model through Blender and gameplay integration | Global; source included in this repository |
 | `systematic-debugging` | Reproduce a problem and identify its cause before fixing it | Investigate sword support direction, collision misses, and camera/input confusion | Project |
 | `threejs-loaders` | Load models and textures, handle failures, and manage loading patterns | Improve the GLB pipeline and investigate repeated armory loading | Project |
 | `playwright` | Operate a browser and capture screenshots and traces | Check menus, weapon selection, pause, rematch, and viewport layouts | Project |
@@ -42,6 +46,20 @@ The parent `.agents` directory is outside the nested Wankai Git repository. Clon
 | `character-design` | Develop readable silhouettes, proportions, palettes, and character sheets | Explore the beagle's twin weapon ears and distinct designs for 刘备、关羽、张飞、吕布 | Project |
 | `rigging` | Author skeletons, constraints, and skin weights in Blender | Prepare deforming ears and character animation for GLB export | Project; Blender authoring connection required |
 | `find-skills` | Discover and evaluate additional skills | Find a focused skill when a new development need appears | Global |
+
+## Game character pipeline
+
+**Source:** [included skill instructions](../skills/game-character-pipeline/SKILL.md). The installed account copy is under `~/.codex/skills/game-character-pipeline/`. The [workflow specification](CHARACTER_CREATION_WORKFLOW_SPEC.md) and [beagle design history](BEAGLE_DESIGN_PROCESS.md) record the decisions behind it.
+
+Invoke it with `$game-character-pipeline`. It handles the requested part of character production: design brief and references, required Tripo generation for new bases, Blender refinement/rigging, required before/after move videos, concrete review milestones, runtime integration and documentation. Already approved Tripo sources and decisions are reused for local edits. A concept-only request remains concept-only.
+
+The package contains the main instructions, UI metadata and four references for production, motion/reviews, document templates and beagle lessons. Skill metadata validation, package links, JSON template and installed-file hashes passed. No live Tripo generation or character gameplay change was performed to create the skill.
+
+Example request:
+
+> Use $game-character-pipeline to develop this reference into a new Wankai character. Present every move through video, use Tripo for its base and preserve the approved appearance during Blender refinement.
+
+For another checkout, copy the included `skills/game-character-pipeline` folder into the account's Codex skills directory, preserving an existing installation rather than blindly overwriting it. The supporting references use relative paths and do not require the original author's filesystem.
 
 ## Systematic debugging
 
@@ -194,7 +212,7 @@ Directory entries can outlive their source files. The previously considered `dev
 5. Use `playwright` for browser-visible behavior, alongside `npm test` and `npm run build` for relevant code changes.
 6. Use two first-time players to judge deliberate movement, aiming, camera comfort, stamina pacing, and weapon balance. Automated checks support this evaluation but cannot replace it.
 
-For new characters, use `create-game-assets` for the shared production brief, `character-design` for concepts and references, and `rigging` when a model is ready for skeleton authoring. Keep existing combat behavior unchanged until character-specific controls and contacts are agreed.
+For new characters, use `game-character-pipeline` to coordinate the complete workflow. It can use `create-game-assets` for the shared production brief, `character-design` for concepts and references, and `rigging` when a model is ready for skeleton authoring. Every new production base uses Tripo, and all proposed moves need video review followed by actual gameplay footage after implementation. Keep existing combat behavior unchanged until character-specific controls and contacts are agreed.
 
 ## Reinstalling in another checkout
 

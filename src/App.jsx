@@ -61,12 +61,12 @@ function HelpContent({ close }) {
   return <>
     <button className="modal-close" onClick={close} aria-label="关闭玩法说明">×</button>
     <span className="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，转动武器。</h2>
-    <p className="modal-intro">你控制的是兵器或双耳的转动力。普通兵器与身体保持间距；比格犬的双耳从头部两侧转动。身体保持直立，由撑地或碰撞带动。双人对战可选各自独立的分屏自由视角，或两人共用的固定视角。分屏中 Q / E 转动赤丸视角，句号 / 问号键转动青丸视角（无需 Shift）；松开保持角度。水平转动武器不会带着镜头转向。</p>
+    <p className="modal-intro">你控制的是兵器或双耳的转动力。比格犬保持直立，W / S 前后挥耳撑地，A / D 同时转向，普通转向时双耳保持并列。按 F（P2 右 Shift）启动 5 秒旋耳悬停，不消耗耐力，时间到后自动收耳落地。松开技能键不会提前结束。悬停时 W / S 暂停挥耳，A / D 可改变旋转方向。分屏中 Q / E 转动赤丸视角，句号 / 问号键转动青丸视角（无需 Shift），松开保持角度。武器转向不会带着镜头转向。</p>
     <div className="guide-steps">
       <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D（← / →）调整水平方向，再用 W 或 S（↑ 或 ↓）选择挥动方向。武器触地后，继续挥动可撑起并带动身体；角色没有独立行走按键。</p></div></article>
       <article><span>02</span><div><h3>选择挥动方向</h3><p>W（↑）让武器向角色正面旋转，S（↓）向背面旋转；在头顶可以选前后，触地后继续按住可撑起身体并转到另一侧。A / D（← / →）只改变水平方向，也可与 W 或 S 同时按。松手后保留惯性，并受重力和阻尼影响。</p></div></article>
       <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>武器撞中头部或躯干都会扣血，伤害相同。相同碰撞速度与发力下，纯横转命中伤害为竖挥的一半；组合挥动按实际碰撞方向混合计算。松手后的惯性命中也遵循此规则。武器之间可以互相格挡，有力相撞会让双方沿各自面向的反方向后退；轻触和持续贴住不会反复触发。</p></div></article>
-      <article><span>04</span><div><h3>留些耐力，再挥下一棍</h3><p>每人 100 耐力。竖挥每秒消耗 20，横转每秒消耗 8，同时操作叠加。放开武器操作半秒后，每秒恢复 30。耐力低于 25 时逐渐变慢；耗尽仍可弱控、撑地与格挡，反向刹车保持灵敏。转动镜头不耗耐力。</p></div></article>
+      <article><span>04</span><div><h3>留些耐力，再挥下一棍</h3><p>每人 200 耐力。竖挥每秒消耗 20，横转每秒消耗 8，同时操作叠加。比格犬旋耳悬停使用独立的 5 秒计时，不消耗耐力，低耐力也可发动。放开武器操作半秒后，每秒恢复 30。耐力低于 25 时逐渐变慢；耗尽仍可弱控、撑地与格挡，反向刹车保持灵敏。转动镜头不耗耐力。</p></div></article>
     </div>
     <div className="guide-note"><b>100 HP · 血量归零判负</b><span>圆台有边界，不会掉落。练习木桩会在受击停止后恢复血量。</span></div>
     <button className="primary-button" onClick={close}>明白了，抡起来 <span>↗</span></button>
@@ -178,9 +178,9 @@ function App() {
     </main>
 
     <footer className={`controls-bar${solo ? ' solo-controls' : ''}`}>
-      <div className="control-block"><span className="player-chip red">P1</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>赤丸的{weaponName(game.weapons[0])}</b><span>W 朝正面挥 <i>·</i> S 朝背面挥 <i>·</i> A / D 水平转向 · 可组合</span></div></div>
+      <div className="control-block"><span className="player-chip red">P1</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>赤丸的{weaponName(game.weapons[0])}</b><span>W 朝正面挥 <i>·</i> S 朝背面挥 <i>·</i> A / D 水平转向 · 可组合{game.weapons[0]==='beagle'&&<><br/><kbd data-key="KeyF" className={game.pressed.includes('KeyF')?'pressed':''}>F</kbd> 旋耳悬停{game.skills[0]?.active?` · ${game.skills[0].remaining.toFixed(1)} 秒`:''}</>}</span></div></div>
       <div className="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br/><b>武器才是主角</b></span></div>
-      {solo ? <div className="control-copy solo-view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div> : <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的{weaponName(game.weapons[1])}</b><span>↑ 朝正面挥 <i>·</i> ↓ 朝背面挥 <i>·</i> ← / → 水平转向 · 可组合</span></div></div>}
+      {solo ? <div className="control-copy solo-view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div> : <div className="control-block"><span className="player-chip blue">P2</span><KeyGrid codes={['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']} labels={['↑', '←', '↓', '→']} pressed={game.pressed}/><div className="control-copy"><b>青丸的{weaponName(game.weapons[1])}</b><span>↑ 朝正面挥 <i>·</i> ↓ 朝背面挥 <i>·</i> ← / → 水平转向 · 可组合{game.weapons[1]==='beagle'&&<><br/><kbd data-key="ShiftRight" className={game.pressed.includes('ShiftRight')?'pressed':''}>右 Shift</kbd> 旋耳悬停{game.skills[1]?.active?` · ${game.skills[1].remaining.toFixed(1)} 秒`:''}</>}</span></div></div>}
     </footer>
 
     {helpOpen && <Modal onCancel={closeHelp}><HelpContent close={closeHelp}/></Modal>}

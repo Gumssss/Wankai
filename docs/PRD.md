@@ -14,7 +14,7 @@ Wankai has an unusual combat rule: a fighter with no feet uses a floating weapon
 
 The current source demo runs on one Mac using Electron, React, React Three Fiber, Three.js, and custom physics. Players choose a mode, including separate following views or a shared fixed duel view, then select weapons in the armory. Movement remains driven by weapon contact; stamina rewards resting, and horizontal-turn hits deal less damage than equivalent vertical strikes. The default pairing is P1's short sword against P2's curved polearm, with the iron hammer also selectable. Further weapons and effects are a longer-term direction.
 
-The beagle is a paired character/weapon option using smooth rounded ears at fixed head sockets, with ordinary stamina, damage, blocks and contact-driven movement. The upright implementation is playable. Earlier backward and forward body flips remain a requirement for the next physics extension: body pitch, hinge reactions and rotated contacts must agree with the visible rig. Holding S alone is not a scripted backflip trigger. See [beagle runtime handoff](BEAGLE_MODEL_V05.md).
+The beagle is a paired character/weapon option using smooth rounded ears at fixed head sockets, with ordinary stamina, damage, blocks and contact-driven movement. The accepted local follow-up keeps the body upright with parallel W/S ear strokes and slower combined A/D steering. Press F (P2 Right Shift) for the separate full-spread spinning skill with a small hover; timer expiry retracts and lands, without stamina use. The skin and all contact queries use the same deployment/lag transform. This supersedes the rejected flip experiment and earlier hover deferral. See [current skill handoff](BEAGLE_SPIN_SKILL.md).
 
 ### Product direction and staged scope
 
@@ -83,7 +83,7 @@ The beagle is a paired character/weapon option using smooth rounded ears at fixe
 
 **Player managing combat effort:** As a player, I want sustained swinging to create a reason to rest while retaining enough control to reposition and defend.
 
-- Start at 100 stamina. Front/back input drains 20/s and horizontal steering drains 8/s, with additive costs. Begin recovering 30/s after 0.5 seconds without either weapon input. Passive motion and camera input are free; continued input at zero does not recover stamina.
+- Start at 200 stamina. Front/back input drains 20/s and horizontal steering drains 8/s, with additive costs. Begin recovering 30/s after 0.5 seconds without either weapon input. Passive motion and camera input are free; continued input at zero does not recover stamina.
 - Below 25 stamina, progressively reduce powered strength and driven speed toward 40% of normal at zero. Preserve reverse braking and normal released inertia. All modes use the same initial stamina rules and show separately labeled health and stamina bars; rematches refill stamina.
 - At matched impact speed, acceleration, and contact surface, pure horizontal-turn hits deal 50% of vertical-swing damage before final rounding. Mixed hits blend by actual incoming yaw/pitch/body motion rather than current keys; physical blocking and collision impulse calculations remain unchanged. The hammer head bonus still applies.
 - Verify deliberate ground-supported movement and defense at exhaustion during hands-on playtesting; the initial stamina costs and damage multiplier remain tunable.
@@ -117,7 +117,7 @@ Evaluate each new model from multiple views, measure its shaft axis and grip ori
 
 ### Verification
 
-- Run `npm test` for physics, weapon integration, contact paths, recoil, session behavior, stamina/damage, and camera regressions, then `npm run build`. This checkpoint passes 85 checks and the build, including all sixteen loadout pairings and beagle rig/physics alignment; the earlier published checkpoint passed 63. The existing bundle-size warning remains. See [project status](PROJECT_STATUS.md) for evidence and limitations.
+- Run `npm test` for physics, weapon integration, contact paths, recoil, session behavior, stamina/damage, and camera regressions, then `npm run build`. The current timed-hover source checkpoint passes 100 tests and the build, including all sixteen loadout pairings, skill lifecycle and actual beagle skin/contact alignment. The earlier 85-test upright checkpoint and 92-test flip experiment are historical; flips are inactive. The existing bundle-size warning remains. See [project status](PROJECT_STATUS.md) for evidence and limitations.
 - In Electron, check both duel views, two-player and practice matches, the swing transition, hits and blocks, sound, pause/resume, rematch, window resizing, focus loss, and offline operation.
 - Check that importing or removing a visual model leaves the selected weapon's physics profile unchanged. Verify resource cleanup through repeated armory, match, rematch, and mode transitions; automated physics checks do not establish the absence of resource leaks.
 

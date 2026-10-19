@@ -13,7 +13,7 @@ The [approved motion video](control-concept-combinations.mp4) shows the intended
 
 W or S can be held with A or D. Swinging does not stop at an up or down angle target; the weapon can continue past the floor-facing pose while ground contact pushes the fighter. Opposite swing inputs brake before reversing. Releasing keys removes motor input but preserves momentum under gravity, damping, and collision. Pressing both opposite keys on the same axis cancels that axis's input.
 
-Both axes use the selected weapon's `motorAcceleration` and `maxAngularSpeed`. Pitch reversal uses its `brakeAcceleration`; yaw reversal uses `motorAcceleration`. Released motion uses damping rather than a separate release brake. The approved local half-speed trial retains acceleration/braking and clamps each axis to the new limit both before angle integration and after collision response. The proposed fourth weapon would need independent yaw tuning; it is not implemented.
+Floating weapons use the selected profile's `motorAcceleration` and `maxAngularSpeed` on both axes; the beagle's normal steering and rotor controller are described below. Pitch reversal uses its `brakeAcceleration`; yaw reversal uses `motorAcceleration`. Released motion uses damping rather than a separate release brake. The approved half-speed trial retains acceleration/braking and clamps each axis to the new limit both before angle integration and after collision response. The proposed fourth weapon would need independent yaw tuning; it is not implemented.
 
 | Weapon | Previous axis limit | Local trial limit | Ideal full rotation at trial limit |
 | --- | ---: | ---: | ---: |
@@ -25,7 +25,7 @@ These times exclude acceleration, damping, fatigue, gravity, and contacts. Weapo
 
 ## Stamina and directional damage
 
-Each fighter has 100 stamina, independent of health. Effective front/back input costs 20 points per simulation second, horizontal steering costs 8, and simultaneous inputs add their costs. Held input still costs stamina when blocked or braking. Opposite keys cancel their axis before charging; camera controls, passive motion, and collisions are free. After both weapon axes are released for 0.5 seconds, stamina recovers at 30 points per second. Continued input at zero prevents recovery.
+Each fighter has 200 stamina, independent of health. Effective front/back input costs 20 points per simulation second, horizontal steering costs 8, and simultaneous inputs add their costs. Held input still costs stamina when blocked or braking. Opposite keys cancel their axis before charging; camera controls, passive motion, and collisions are free. After both weapon axes are released for 0.5 seconds, stamina recovers at 30 points per second. Continued input at zero prevents recovery.
 
 Below 25 stamina, powered acceleration and the driven speed target decrease linearly toward 40% of each weapon's normal values at zero. Existing reverse braking strength is preserved. When driving in the current direction above the tired speed target, the motor brakes progressively using that weapon's braking acceleration; releasing input retains normal coasting. Gravity, ground support, and collision impulses continue to act. These rules apply to all weapons and modes. Countdown, pause, hit pause, and results freeze stamina with physics; rematches reset it.
 
@@ -70,8 +70,10 @@ The same clear impact emits the existing sound/particles. Body hits additionally
 
 The previous fixed-target controller is retained at Git checkpoint `8cc6441`; the current continuous controller predates the armory checkpoint. Current controls need hands-on playtesting with all four loadouts, especially while standing on the weapon and while turning and swinging together. The sword complaint remains open in [SWORD_TRIAL.md](SWORD_TRIAL.md).
 
-## Beagle ear attachment and pending body flips
+## Beagle parallel ears and hover skill — 19 October 2026
 
-The beagle loadout uses two physical ears anchored at the measured v05 head sockets rather than a floating weapon. Both ears share the existing swing angle, yaw, motor, stamina and pair-level hit gate. Eighteen capsules approximate their actual surfaces. Ground contact supports and moves the body; horizontal strikes, blocks, recoil, coasting and reverse braking use the ordinary rules. Both axes can be held together.
+The active beagle controller keeps the body upright. W/S powers parallel-ear strokes; A/D uses a slower 1.15 rad/s steering target with finite motor assistance. Both axes combine as in the normal-controls video. The rejected flip controller is inactive.
 
-The live body stays upright. S drives the ears backward and can cause backward travel, but **does not yet cause the body backflip shown in the earlier concept studies**. The rig already has `body_pitch`; adding the feature requires physical body rotation and hinge reactions, matching rotated sockets and body/ear collision shapes, and tests for forward/backward support with A/D. Momentum should determine the rotation rather than an automatic full flip whenever a key is held. See [beagle v05](BEAGLE_MODEL_V05.md) and [motion-study history](BEAGLE_MOTION_STUDY.md).
+Press **F** (P2 **Right Shift**) to activate a separate **five-second** skill: settle the ears horizontally, spread them, spin the body and ears together and rise into a low hover. A/D can reverse the rotor; W/S strokes pause during deployment/retraction. Releasing F does not cancel it; timer expiry removes lift and retracts the ears. The hover height is 0.35 world units above the floor, with bounded thrust ramping with rotor readiness. The skill and its A/D steering cost **no stamina**, work at zero stamina and do not weaken with fatigue; ordinary stamina may recover during it. Repeated presses cannot extend it, and holding cannot auto-repeat. A new activation requires an edge after retraction. Pause freezes the timer, and rematch resets it. Other loadouts ignore skill keys.
+
+The measured sockets and all eighteen solid ear capsules follow the same pitch/spread/lag/heading frame as the actual GLB and fallback. Swept contacts include deployment motion. The ordinary hit, block, directional damage, repeat-hit and clash recoil rules remain. See [current skill handoff](BEAGLE_SPIN_SKILL.md) for tuning and checks; the older flip and motion-study files are historical.

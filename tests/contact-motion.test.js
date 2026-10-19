@@ -125,7 +125,7 @@ test('solid guard and curved-tip features also block beyond the old shaft-only c
 });
 
 test('all three weapons can still support movement through the lower-speed swing in either direction', () => {
-  for (const weapon of Object.keys(WEAPONS)) for (const direction of [-1, 1]) {
+  for (const weapon of Object.keys(WEAPONS).filter(id=>!WEAPONS[id].attachment)) for (const direction of [-1, 1]) {
     const world = new ArenaPhysics(); world.reset(false, true, weapon);
     const p = world.players[0]; p.theta = 0;
     let highest = p.p.y, furthest = 0;

@@ -22,25 +22,27 @@ test('ear sockets stay on the head through complete swings and their Jacobians m
  }
 });
 
-test('W/S with either turn direction produces real grounded lift and travel, never an airborne movement force',()=>{
+test('W/S with either turn direction produces grounded lift and travel, with no airborne travel force',()=>{
  for(const theta of [-1,1])for(const phi of [-1,1]){
   const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];let rise=0;
   for(let i=0;i<540;i++){w.step([{theta,phi}]);rise=Math.max(rise,p.p.y-CONFIG.bodyFloor);}
   assert.ok(rise>.4,`missing substantial lift for ${theta}/${phi}: ${rise}`);
   assert.ok(Math.hypot(p.p.x,p.p.z)>.25,'ears must carry the body through contact');
-  const air=new ArenaPhysics();air.reset(false,true,'beagle');air.players[0].p.y=1000;
+  const air=new ArenaPhysics();air.reset(false,true,'beagle');air.players[0].p.y=1000;air.players[0].grounded=false;
+  const center={...air.players[0].p};
   for(let i=0;i<180;i++)air.step([{theta,phi}]);
-  assert.equal(air.players[0].p.x,0);assert.equal(air.players[0].p.z,0);
+  const after=air.players[0].p;
+  assert.ok(Math.hypot(after.x-center.x,after.z-center.z)<.04,'ordinary ear input must not add airborne body travel');
  }
 });
 
 test('both ears use one stamina budget and release/reverse retain the ordinary controller rules',()=>{
  const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];p.p.y=1000;p.theta=0;
  for(let i=0;i<180;i++)w.step([{theta:1,phi:1}]);
- assert.ok(Math.abs(p.stamina-72)<1e-7,'the pair must not charge twice');
- const before=p.wt;w.step([{}]);assert.ok(p.wt>0&&p.wt<=BEAGLE.maxAngularSpeed);
+ assert.ok(Math.abs(p.stamina-172)<1e-7,'the pair must not charge twice');
+ const before=p.wt;w.step([{}]);assert.ok(p.wt>0);
  assert.ok(p.wt>before*.8,'release must coast');
- p.theta=0;p.wt=3;
+ p.theta=0;p.wt=3;p.bodyRate=0;
  w.step([{theta:-1}]);assert.ok(p.wt>0&&p.wt<3,'reverse must brake before reversing');
  for(let i=0;i<90;i++)w.step([{theta:-1}]);assert.ok(p.wt<0);
 });

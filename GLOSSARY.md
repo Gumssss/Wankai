@@ -1,11 +1,11 @@
 # Wankai Game
 
-Terms for the current three-weapon plus beagle prototype, reviewed 18 October 2026. See the [README](README.md) for controls and the [project status](docs/PROJECT_STATUS.md) for remaining work.
+Terms for the current three-weapon plus beagle prototype, reviewed 19 October 2026. See the [README](README.md) for controls and the [project status](docs/PROJECT_STATUS.md) for remaining work.
 
 ## Language
 
 **Fighter**:
-One of the upright contestants in a match. Fighters have no feet and move by using their weapons against the ground. Solo mode has only one fighter.
+One of the upright contestants in a match. Fighters move through weapon contact rather than independent walking; the beagle's visible paws do not provide a walking controller. The beagle also has a separate low-hover skill. Solo mode has only one fighter.
 
 **Weapon**:
 A floating object used to push against the ground, strike, and block. Every weapon follows the same basic control and contact-driven movement system, but a weapon profile can change reach and response.
@@ -63,4 +63,4 @@ The deferred fourth weapon concept with slower horizontal steering and quick res
 
 ## Beagle / twin ears
 
-The paired **比格犬·双耳** character/weapon loadout. Two long smooth ears rotate from measured head sockets and obey the shared weapon rules. The body currently stays upright; full-body backflips/front flips remain unfinished. `body_pitch` is an available rig control, not yet a physical gameplay state.
+The paired **比格犬·双耳** character/weapon loadout. Two long smooth ears rotate from measured head sockets and obey the shared weapon rules. W/S drives parallel ear strokes and A/D steers the upright body. Press F (P2 Right Shift) for a five-second horizontal spin and low hover, with no stamina cost; expiry retracts the ears and lands. Ordinary stamina is 200 for all loadouts. The earlier front/back flip controller is inactive.

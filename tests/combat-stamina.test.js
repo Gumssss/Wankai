@@ -81,15 +81,15 @@ test('body-driven impacts retain their damage and slow touches still cause no da
   for (const share of [0, 0.5, 1]) assert.equal(contact('polearm', share, 1).lastHit, null);
 });
 
-test('swing stamina lasts five seconds, turning is cheaper, and simultaneous inputs add costs', () => {
+test('swing stamina lasts ten seconds, turning is cheaper, and simultaneous inputs add costs', () => {
   for (const weapon of Object.keys(WEAPONS)) {
-    for (const [input, afterOneSecond] of [[{ theta: 1 }, 80], [{ phi: -1 }, 92], [{ theta: -1, phi: 1 }, 72]]) {
+    for (const [input, afterOneSecond] of [[{ theta: 1 }, 180], [{ phi: -1 }, 192], [{ theta: -1, phi: 1 }, 172]]) {
       const world = solo(weapon);
       advance(world, 1, input);
       near(world.players[0].stamina, afterOneSecond);
     }
     const world = solo(weapon);
-    advance(world, 5, { theta: 1 });
+    advance(world, 10, { theta: 1 });
     near(world.players[0].stamina, 0);
     advance(world, 1, { theta: 1 });
     assert.equal(world.players[0].stamina, 0, 'continued input cannot regenerate stamina');
@@ -100,22 +100,23 @@ test('stamina recovery observes the release delay, clamps at full, and is indepe
   for (const dt of [1 / 180, 1 / 90, 1 / 60]) {
     const world = solo();
     advance(world, 2, { theta: 1 }, dt);
-    near(world.players[0].stamina, 60);
+    near(world.players[0].stamina, 160);
     advance(world, 0.5, {}, dt);
-    near(world.players[0].stamina, 60);
+    near(world.players[0].stamina, 160);
     advance(world, 0.5, {}, dt);
-    near(world.players[0].stamina, 75);
+    near(world.players[0].stamina, 175);
     advance(world, 2, {}, dt);
-    assert.equal(world.players[0].stamina, 100);
+    assert.equal(world.players[0].stamina, 200);
     advance(world, 0.5, { phi: 1 }, dt);
-    near(world.players[0].stamina, 96);
+    near(world.players[0].stamina, 196);
     advance(world, 0.25, {}, dt);
-    near(world.players[0].stamina, 96, 0.1);
+    near(world.players[0].stamina, 196, 0.1);
   }
 });
 
-test('exhaustion weakens acceleration and sustained turning while preserving coasting and reverse braking', () => {
-  for (const weapon of Object.keys(WEAPONS)) {
+test('exhaustion weakens floating-weapon acceleration and turning while preserving coasting and reverse braking', () => {
+  // Articulated body/ear fatigue and reaction are covered in beagle-flips/gameplay.
+  for (const weapon of Object.keys(WEAPONS).filter(id=>!WEAPONS[id].attachment)) {
     const fresh = solo(weapon), tired = solo(weapon, 0);
     for (const world of [fresh, tired]) world.step([{ theta: 1, phi: 1 }]);
     near(tired.players[0].wt / fresh.players[0].wt, 0.4);
@@ -158,11 +159,11 @@ test('camera keys and cancelling weapon keys cost nothing, and each fighter spen
   game.state = 'playing';
   for (const key of ['KeyW', 'KeyS', 'KeyA', 'KeyD', 'KeyQ', 'Slash']) game.keyDown(key);
   for (let step = 0; step < 10; step++) game.tick(0.05);
-  assert.deepEqual(game.getSnapshot().stamina, [100, 100]);
+  assert.deepEqual(game.getSnapshot().stamina, [200, 200]);
   game.clearKeys(); game.keyDown('ArrowDown');
   for (let step = 0; step < 10; step++) game.tick(0.05);
-  assert.equal(game.getSnapshot().stamina[0], 100);
-  assert.ok(game.getSnapshot().stamina[1] < 100);
+  assert.equal(game.getSnapshot().stamina[0], 200);
+  assert.ok(game.getSnapshot().stamina[1] < 200);
 });
 
 test('countdown, pause, hit pause and result freeze stamina; rematches restore it in every mode', () => {
@@ -182,7 +183,7 @@ test('countdown, pause, hit pause and result freeze stamina; rematches restore i
     game.state = 'result'; game.tick(0.05);
     near(game.world.players[0].stamina, before);
     game.startRound();
-    assert.deepEqual(game.getSnapshot().stamina, mode === 'solo' ? [100] : [100, 100]);
+    assert.deepEqual(game.getSnapshot().stamina, mode === 'solo' ? [200] : [200, 200]);
     assert.ok(game.world.players.every(p => p.staminaRestTime === 0));
   }
 });
