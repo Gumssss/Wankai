@@ -1,0 +1,10 @@
+Use case: precise-object-edit
+Asset type: clean single-image Tripo 3D reconstruction input from the selected character seed
+
+Prepare the supplied approved image for image-to-3D reconstruction. This is image cleanup and framing only. Keep the exact same cat design, pose, face and proportions.
+
+Preserve exactly: the central golden-orange tabby cat's wide rounded-square head, half-lidded graphic white eyes with large solid dark pupils, heavy rounded orange eyelids, tiny pink nose and the small centered rounded W-shaped cute closed-mouth cat smile; cream muzzle and belly, broad simple tabby stripes; tiny seated body with two tucked hind feet and curled striped tail. Preserve both enormous detached cat paws at the same scale relative to the head and body, each substantially wider than the head, four short rounded toe lobes, four small pink toe beans and one large pink central pad. Same smooth matte painted 3D surfaces with no fur, same colors and softly shaded depth, same near-frontal viewpoint showing the thickness of the paw volumes. Exactly one central cat body and two giant paws. No additional limbs or connected front paws.
+
+Change only the presentation: replace the entire gray studio background and floor with solid pure white. Remove all cast shadows, floor shadows, floor line, gray gradients, vignette and ambient background haze. Keep the soft object shading that shows rounded 3D volume. The cat and two paws remain suspended, fully separated by clear white gaps. Make no support stand, strings, arms, forearms, wrists or connectors.
+
+Reframe the whole assembly uniformly to leave at least 6 percent clean white margin on both left and right, with every toe, paw edge, ear, foot and tail tip completely inside frame. Do not shrink the paws relative to the cat or enlarge the cat relative to the paws. Preserve the current pose and relative placements. Center the complete assembly in a landscape 3:2 image. One clean subject assembly, no collage, no turnarounds, no panels, no labels, no text, no watermark and no props.

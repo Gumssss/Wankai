@@ -1,0 +1,129 @@
+{
+  "version": "orange-tabby-v04-loader-and-controls",
+  "checks": [
+    {
+      "name": "real GLB has independently driven body and hands",
+      "passed": true,
+      "detail": [
+        "FloatingPawLeft",
+        "FloatingPawRight"
+      ]
+    },
+    {
+      "name": "orange and green identity colors survived GLB export",
+      "passed": true,
+      "detail": [
+        {
+          "name": "Orange reference volume",
+          "r": 0.8468732237815857,
+          "g": 0.366252601146698,
+          "b": 0.07818742096424103
+        },
+        {
+          "name": "Green eyes",
+          "r": 0.23839756846427917,
+          "g": 0.37123769521713257,
+          "b": 0.13013647496700287
+        },
+        {
+          "name": "Green eyes",
+          "r": 0.23839756846427917,
+          "g": 0.37123769521713257,
+          "b": 0.13013647496700287
+        },
+        {
+          "name": "Orange reference volume",
+          "r": 0.8468732237815857,
+          "g": 0.366252601146698,
+          "b": 0.07818742096424103
+        },
+        {
+          "name": "Orange reference volume",
+          "r": 0.8468732237815857,
+          "g": 0.366252601146698,
+          "b": 0.07818742096424103
+        },
+        {
+          "name": "Orange reference volume",
+          "r": 0.8468732237815857,
+          "g": 0.366252601146698,
+          "b": 0.07818742096424103
+        },
+        {
+          "name": "Orange reference volume",
+          "r": 0.8468732237815857,
+          "g": 0.366252601146698,
+          "b": 0.07818742096424103
+        },
+        {
+          "name": "Orange reference volume",
+          "r": 0.8468732237815857,
+          "g": 0.366252601146698,
+          "b": 0.07818742096424103
+        },
+        {
+          "name": "Orange reference volume",
+          "r": 0.8468732237815857,
+          "g": 0.366252601146698,
+          "b": 0.07818742096424103
+        }
+      ]
+    },
+    {
+      "name": "loaded hand centers match physical transforms through pitch and yaw",
+      "passed": true,
+      "detail": 9.155133597044475e-16
+    },
+    {
+      "name": "ordinary hover is stable without input or stamina cost",
+      "passed": true,
+      "detail": {
+        "position": {
+          "x": 0,
+          "y": 0.94,
+          "z": 0
+        },
+        "stamina": 200
+      }
+    },
+    {
+      "name": "A and D steer in opposite directions while staying afloat",
+      "passed": true,
+      "detail": {
+        "left": -2.097861317168901,
+        "right": 2.097861317168901
+      }
+    },
+    {
+      "name": "W and S produce oppositely directed contact travel",
+      "passed": true,
+      "detail": {
+        "forward": {
+          "x": 6.2997188532559285,
+          "y": 1.591353756288792,
+          "z": -1.1057624710060265
+        },
+        "backward": {
+          "x": -4.007079791527005,
+          "y": 1.1077226039160994,
+          "z": -0.7722457840292581
+        }
+      }
+    },
+    {
+      "name": "release retains motion rather than snapping to a rest angle",
+      "passed": true,
+      "detail": {
+        "before": 8.786526828156637,
+        "after": 8.801509080486996,
+        "rate": 2.6968054194647757
+      }
+    },
+    {
+      "name": "browser and video use the same solver adapter",
+      "passed": true,
+      "detail": "Only import URLs differ."
+    }
+  ],
+  "productionIntegration": false
+}

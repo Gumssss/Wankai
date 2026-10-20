@@ -1,0 +1,36 @@
+{
+  "artifact": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+  "sha256": "4241a26dbfb8f87e4c16c34b07c9319dd368523263b18b50ae3cdaa2e0485912",
+  "checks": {
+    "glb_header_and_index_ranges_valid": true,
+    "source_matches_original_download": true,
+    "source_unchanged_after_blender_import": true,
+    "tripo_ui_triangle_count_matches": true,
+    "tripo_ui_vertex_count_matches": true,
+    "exactly_three_disconnected_components": true,
+    "one_embedded_2K_texture": true,
+    "blender_import_matches_vertex_and_triangle_counts": true,
+    "three_actual_mesh_renders_decode": true,
+    "front_reference_preserved": true
+  },
+  "visual_inspection": {
+    "front": "rounded orange/cream head, graphic heavy-lidded eyes, small centered cat smile, tiny seated body and enormous pink-pad paws retained",
+    "side": "substantial rounded paw thickness, natural projection overlap, seated haunches and curled tail; no connecting arm geometry",
+    "back": "golden dorsal paw shells, simple rear tabby markings, tail on the correct side; no palm-pad texture on backs",
+    "caveat": "Generated eye/muzzle contours are softer and a little less even than the approved image. Actual mesh appearance still needs user selection."
+  },
+  "review_state": "D actual base candidate presented; pending user appearance selection",
+  "rig": "none; unrigged source",
+  "game_scale": "not calibrated; original normalized Tripo scale retained",
+  "runtime_integration": false,
+  "renders": [
+    "assets/concepts/orange-tabby/tripo-v01/mesh-front.png",
+    "assets/concepts/orange-tabby/tripo-v01/mesh-left.png",
+    "assets/concepts/orange-tabby/tripo-v01/mesh-back.png"
+  ],
+  "service_screenshot": "assets/concepts/orange-tabby/tripo-v01/tripo-model-review.jpg",
+  "limitations": [
+    "Not optimized to final game triangle budget.",
+    "Rigging, deformation, physical contact fit and actual-game verification are later stages."
+  ]
+}

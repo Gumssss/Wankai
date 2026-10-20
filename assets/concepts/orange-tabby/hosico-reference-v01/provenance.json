@@ -1,0 +1,38 @@
+{
+  "id": "hosico-reference-v01",
+  "date": "2026-10-19",
+  "authorization": "User asked to try making the proposed cartoonish Hosico image. This authorizes a concept trial, not final appearance acceptance or Tripo spending.",
+  "tool": "built-in image_gen.imagegen",
+  "intent": "reference-guided style transfer / stylized concept",
+  "prompt": "assets/concepts/orange-tabby/hosico-reference-v01/prompt.txt",
+  "prompt_sha256": "a6170eb161694096e8ee95ebfe725ef7190542eee103614823c855cfba72de4a",
+  "inputs": [
+    {
+      "path": "assets/concepts/orange-tabby/references/hosico-seated-source.jpg",
+      "sha256": "3db68cd60499534b31322dc7b67af87a0e1fd8939b15186d5648914200a4fcde"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/references/paw-weapon-original.png",
+      "sha256": "78bc38b7bc46238630a9365abe22f01cd0ae22a63326ee4eca8ec70c303970fd"
+    }
+  ],
+  "output": {
+    "path": "assets/concepts/orange-tabby/hosico-reference-v01/hosico-floating-paws-reference-v01.png",
+    "sha256": "f9117cf643398490454c857226d145439810629e4399b4192f80e7c57ce9c1fa",
+    "bytes": 2099771,
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB"
+  },
+  "visual_inspection": {
+    "identity": "golden round-faced seated Hosico-inspired cat with green irises and pink nose",
+    "pose": "clear seated silhouette in low hover; two small tucked hind feet and curled tail",
+    "paws": "exactly two separate rounded feline paws, four toe beans and central pad each; no arms or exposed wrist sections; claws not visible",
+    "style": "soft shaded 3D with detailed plush fur; more fur detail than the brief, so simplified game surface remains a later art decision",
+    "composition": "full subject visible on a plain warm background; no text or UI; hovering shadows present"
+  },
+  "review": "rejected by user for style mismatch; superseded by beagle-style-reference-v02 candidate",
+  "production_base": false,
+  "tripo_operation_submitted": false,
+  "latest_feedback": "Analyze the beagle's features and style first and follow its vibe."
+}

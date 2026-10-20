@@ -1,12 +1,12 @@
 # Short sword trial
 
-Status: Playable source experiment on `main`, reviewed 17 October 2026. Historical controller and visual discontinuities have regression coverage, but the creator's unexpected direction change while standing on the sword still needs hands-on acceptance. Balance and redistribution permission remain open. See [project status](PROJECT_STATUS.md).
+Status: Playable source experiment on `main`, reviewed 20 October 2026. Historical controller and visual discontinuities have regression coverage, but the creator's unexpected direction change while standing on the sword still needs hands-on acceptance. Balance and redistribution permission remain open. See [project status](PROJECT_STATUS.md).
 
-The later approved local half-speed/contact trial is not yet pushed: it halves speed limits and adds solid guard proxies while retaining appearance, reach, acceleration/braking, damage formula, and stamina settings. The table below describes this local trial.
+The approved half-speed/contact trial is included in merged baseline PR #2, `a591070`: it halves speed limits and adds solid guard proxies while retaining appearance, reach, acceleration/braking and the damage formula. The merged baseline has 200 stamina. The later character/weapon separation, orange tabby and full-window preparation page are local changes beyond that baseline and remain unpushed. The table below records the ordinary weapon profile.
 
 ## Purpose
 
-Test the first weapon in a planned roster with a clear tradeoff: less reach than the polearm, but quicker swings. The default two-player match gives player one the sword and player two the existing curved polearm model. Both players can now choose the sword, polearm, or iron hammer independently in the armory, including matching weapons; the choice carries into practice and rematches. Solo uses player one's selection. Movement still comes from weapon contact with the ground; there is no separate run-speed bonus.
+Test the first weapon in a planned roster with a clear tradeoff: less reach than the polearm, but quicker swings. The default two-player match gives player one the sword and player two the existing curved polearm model. Both players can choose these three common weapons on either the basic fighter or beagle through the [full-window preparation page](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md), including matching loadouts. The complete current roster has eight valid loadouts, including the beagle's long ears and orange tabby's paws. Choices carry into practice and rematches; solo uses P1 and preserves P2's configuration. Movement still comes from weapon contact with the ground; there is no separate run-speed bonus.
 
 ## Asset
 
@@ -23,6 +23,8 @@ Test the first weapon in a planned roster with a clear tradeoff: less reach than
 | Swing motor acceleration | 24 | 38 |
 | Pitch reversal brake acceleration | 30 | 48 |
 | Local trial axis speed limit | 4.25 | 6.1 |
+
+The listed offset is the basic fighter's profile. The local separated beagle+sword loadout uses a measured 1.34 offset for body clearance; rendering and contacts share that value. No other sword tuning changed for the preparation-page update.
 
 The local sword proxy retains its original 0.09-radius shaft and adds two capsules following the solid crossguard. The polearm retains its shaft with four additions following its collar/blade/tip/barb. Measured sword vertex coverage rises from 94.18% to 99.08%, with guard-band coverage rising from 85.60% to 99.10%. Rounded capsules remain approximate; no extra proxy was added for flame wisps. Rendering scale and reach are unchanged.
 
@@ -43,4 +45,4 @@ The earlier chat records two separate complaints: the sword initially sat at a s
 
 Automated checks guard the identified discontinuities; only hands-on comparison can settle the creator's original support-direction concern.
 
-Earlier in-game checks loaded the textured sword in practice with the default sword-versus-polearm pairing. Automated checks cover independent selection, nine pairings, shorter reach, quicker response, visual rotation, rematches, no direct airborne movement, half-speed limits, sampled crossings/near misses, and solid guard hits/blocks. See [project status](PROJECT_STATUS.md) for the local trial's 77 checks, including the later shared clash-recoil checks, and build result. Sword support direction, two-person balance, repeated mode switching, and offline Electron play still need hands-on checks. Record the mode, camera angle, held keys, before/after pose, and expected support movement as described in the [design handoff](DESIGN_HANDOFF.md).
+Earlier in-game checks loaded the textured sword in practice with the default sword-versus-polearm pairing. That ordinary-weapon checkpoint covered nine ordered pairings, shorter reach, quicker response, visual rotation, rematches, no direct airborne movement, half-speed limits, sampled crossings/near misses, solid guard hits/blocks and shared clash recoil; its 77-check result is historical. Current dated full-suite and focused UI results are in the [selection handoff](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md#current-verification-and-next-work) and [project status](PROJECT_STATUS.md). They are separate runs, not cumulative test totals. Sword support direction, two-person balance, repeated mode switching, and offline Electron play still need hands-on checks. Record the mode, camera angle, held keys, before/after pose, and expected support movement as described in the [design handoff](DESIGN_HANDOFF.md).

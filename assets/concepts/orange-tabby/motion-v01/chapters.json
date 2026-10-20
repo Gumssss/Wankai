@@ -1,0 +1,359 @@
+[
+  {
+    "id": "w",
+    "duration": 3.5,
+    "title": "W / forward rake",
+    "detail": "Alternating paws; floor reaction supplies travel",
+    "group": "controls",
+    "kind": "support",
+    "start": 1,
+    "end": 84,
+    "bounds": [
+      -1.3794115781784058,
+      1.4432276487350464,
+      -1.5195366144180298,
+      1.5766335725784302
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      0.03190803527832031,
+      0.028548479080200195
+    ]
+  },
+  {
+    "id": "s",
+    "duration": 3.5,
+    "title": "S / reverse rake",
+    "detail": "Alternating paws; floor reaction supplies travel",
+    "group": "controls",
+    "kind": "support",
+    "start": 85,
+    "end": 168,
+    "bounds": [
+      -1.3801485300064087,
+      1.4449275732040405,
+      -1.4710307121276855,
+      1.5738155841827393
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      0.03238952159881592,
+      0.051392436027526855
+    ]
+  },
+  {
+    "id": "a",
+    "duration": 3.5,
+    "title": "A / left heading sweep",
+    "detail": "Turn heading with attached paws; no walking drive",
+    "group": "controls",
+    "kind": "support",
+    "start": 169,
+    "end": 252,
+    "bounds": [
+      -1.4198533296585083,
+      1.5461409091949463,
+      -1.4435559511184692,
+      1.4597446918487549
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      0.063143789768219,
+      0.008094370365142822
+    ]
+  },
+  {
+    "id": "d",
+    "duration": 3.5,
+    "title": "D / right heading sweep",
+    "detail": "Turn heading with attached paws; no walking drive",
+    "group": "controls",
+    "kind": "support",
+    "start": 253,
+    "end": 336,
+    "bounds": [
+      -1.5461406707763672,
+      1.4198886156082153,
+      -1.5480499267578125,
+      1.4597426652908325
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      -0.06312602758407593,
+      -0.04415363073348999
+    ]
+  },
+  {
+    "id": "wa",
+    "duration": 3.5,
+    "title": "W + A / forward rake + steering",
+    "detail": "Alternating paws; floor reaction supplies travel",
+    "group": "controls",
+    "kind": "support",
+    "start": 337,
+    "end": 420,
+    "bounds": [
+      -1.4199070930480957,
+      1.4029991626739502,
+      -1.4991856813430786,
+      1.548614740371704
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      -0.008453965187072754,
+      0.024714529514312744
+    ]
+  },
+  {
+    "id": "wd",
+    "duration": 3.5,
+    "title": "W + D / forward rake + steering",
+    "detail": "Alternating paws; floor reaction supplies travel",
+    "group": "controls",
+    "kind": "support",
+    "start": 421,
+    "end": 504,
+    "bounds": [
+      -1.5302369594573975,
+      1.4143548011779785,
+      -1.545137643814087,
+      1.5638346672058105
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      -0.05794107913970947,
+      0.009348511695861816
+    ]
+  },
+  {
+    "id": "sa",
+    "duration": 3.5,
+    "title": "S + A / reverse rake + steering",
+    "detail": "Alternating paws; floor reaction supplies travel",
+    "group": "controls",
+    "kind": "support",
+    "start": 505,
+    "end": 588,
+    "bounds": [
+      -1.4198065996170044,
+      1.4031604528427124,
+      -1.4435559511184692,
+      1.5515110492706299
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      -0.008323073387145996,
+      0.05397754907608032
+    ]
+  },
+  {
+    "id": "sd",
+    "duration": 3.5,
+    "title": "S + D / reverse rake + steering",
+    "detail": "Alternating paws; floor reaction supplies travel",
+    "group": "controls",
+    "kind": "support",
+    "start": 589,
+    "end": 672,
+    "bounds": [
+      -1.5377509593963623,
+      1.3696414232254028,
+      -1.5451204776763916,
+      1.547563910484314
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      -0.08405476808547974,
+      0.0012217164039611816
+    ]
+  },
+  {
+    "id": "release-reverse",
+    "duration": 6,
+    "title": "Release, coast, brake, reverse",
+    "detail": "W -> release -> S -> release; continuous phase and velocity",
+    "group": "controls",
+    "kind": "support",
+    "start": 673,
+    "end": 816,
+    "bounds": [
+      -1.400130033493042,
+      1.4429020881652832,
+      -1.5195510387420654,
+      1.5765860080718994
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      0.021386027336120605,
+      0.028517484664916992
+    ]
+  },
+  {
+    "id": "yaw-reverse",
+    "duration": 5,
+    "title": "Steering release and reversal",
+    "detail": "A -> release -> D -> release; attached paws keep their heading",
+    "group": "controls",
+    "kind": "support",
+    "start": 817,
+    "end": 936,
+    "bounds": [
+      -1.4199094772338867,
+      1.546112298965454,
+      -1.47553288936615,
+      1.4597446918487549
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      0.06310141086578369,
+      -0.00789409875869751
+    ]
+  },
+  {
+    "id": "opposites",
+    "duration": 4,
+    "title": "Opposite keys cancel their axis",
+    "detail": "W + S, then A + D; no powered phase or heading change",
+    "group": "controls",
+    "kind": "support",
+    "start": 937,
+    "end": 1032,
+    "bounds": [
+      -1.186694622039795,
+      1.2376893758773804,
+      -1.4435559511184692,
+      1.4596998691558838
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      0.025497376918792725,
+      0.008071959018707275
+    ]
+  },
+  {
+    "id": "landing",
+    "duration": 4,
+    "title": "Landing and return to useful control",
+    "detail": "External 0.75-unit drop setup; no jump or special ability",
+    "group": "controls",
+    "kind": "support",
+    "start": 1033,
+    "end": 1128,
+    "bounds": [
+      -1.4001281261444092,
+      1.4430640935897827,
+      -1.5195504426956177,
+      1.8532131910324097
+    ],
+    "scale": 11.313253278752292,
+    "center": [
+      0.021467983722686768,
+      0.166831374168396
+    ]
+  },
+  {
+    "id": "vertical",
+    "title": "Vertical paw rake / W",
+    "detail": "Prepare, downward contact, then folded recovery",
+    "duration": 4,
+    "kind": "authored",
+    "group": "combat",
+    "start": 1129,
+    "end": 1224,
+    "bounds": [
+      -1.5195133686065674,
+      0.9048703908920288,
+      -1.3124569654464722,
+      1.5923279523849487
+    ],
+    "scale": 9.834255162524977,
+    "center": [
+      -0.3073214888572693,
+      0.13993549346923828
+    ]
+  },
+  {
+    "id": "horizontal",
+    "title": "Horizontal paw swipe / D",
+    "detail": "Heading sweep with paws extended; body turns together",
+    "duration": 4,
+    "kind": "authored",
+    "group": "combat",
+    "start": 1225,
+    "end": 1320,
+    "bounds": [
+      -1.7328906059265137,
+      1.0703362226486206,
+      -1.3394696712493896,
+      1.5923676490783691
+    ],
+    "scale": 9.834255162524977,
+    "center": [
+      -0.33127719163894653,
+      0.12644898891448975
+    ]
+  },
+  {
+    "id": "block",
+    "title": "Pad-facing interception / W then release",
+    "detail": "Position a paw in the blade path; no automatic guard",
+    "duration": 4,
+    "kind": "authored",
+    "group": "combat",
+    "start": 1321,
+    "end": 1416,
+    "bounds": [
+      -1.5195133686065674,
+      1.2096703052520752,
+      -1.145024299621582,
+      1.5923279523849487
+    ],
+    "scale": 9.834255162524977,
+    "center": [
+      -0.1549215316772461,
+      0.22365182638168335
+    ]
+  },
+  {
+    "id": "clash",
+    "title": "Weapon clash and recovery / W + D",
+    "detail": "Paw/blade meet; both recoil, then return to control",
+    "duration": 4,
+    "kind": "authored",
+    "group": "combat",
+    "start": 1417,
+    "end": 1512,
+    "bounds": [
+      -1.6358654499053955,
+      1.5008876323699951,
+      -1.2517461776733398,
+      1.6586391925811768
+    ],
+    "scale": 9.834255162524977,
+    "center": [
+      -0.0674889087677002,
+      0.20344650745391846
+    ]
+  },
+  {
+    "id": "postures",
+    "title": "A compact / B taller posture",
+    "detail": "Same arm lengths and relative stroke; B needs a deeper reach path",
+    "duration": 6,
+    "kind": "authored",
+    "group": "comparison",
+    "start": 1513,
+    "end": 1656,
+    "bounds": [
+      -2.8293044567108154,
+      3.240109920501709,
+      -1.6680446863174438,
+      1.6841425895690918
+    ],
+    "scale": 11.244234049095297,
+    "center": [
+      0.20540273189544678,
+      0.008048951625823975
+    ]
+  }
+]

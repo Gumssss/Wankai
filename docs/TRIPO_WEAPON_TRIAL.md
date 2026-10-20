@@ -1,6 +1,6 @@
 # First Tripo weapon trial
 
-Status: Historical record of the first polearm import on 13 October 2026, reviewed 17 October 2026. The polearm remains playable in the current three-weapon armory. Shape, visibility, and performance still need a two-player playtest. Current setup and behavior are in the [README](../README.md), [project status](PROJECT_STATUS.md), and later [sword](SWORD_TRIAL.md) / [hammer](HAMMER_TRIAL.md) trials.
+Status: Historical record of the first polearm import on 13 October 2026, reviewed 20 October 2026. The polearm remains one of three common weapons, now available to the basic fighter and beagle through the [full-window preparation page](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md). The current complete roster has eight valid character/weapon combinations, including the orange tabby's paws. Shape, visibility, and performance still need a two-player playtest. Current setup and behavior are in the [README](../README.md), [project status](PROJECT_STATUS.md), and later [sword](SWORD_TRIAL.md) / [hammer](HAMMER_TRIAL.md) trials.
 
 The later local half-speed/contact trial retains this GLB and its original normalization. It adds measured collar/blade/tip/barb capsules around the original shaft and samples motion between physics poses; those gameplay changes are separate from the original appearance-only import described below. See [control system](CONTROL_SYSTEM.md) for current collision behavior and limitations.
 

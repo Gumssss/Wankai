@@ -1,5 +1,6 @@
 import { ArenaPhysics, CONFIG, WEAPONS, arenaScaleForMode } from './physics.js';
 import { GameAudio } from './audio.js';
+import {DEFAULT_LOADOUTS,normalizeLoadout,isEarLoadout} from './loadouts.js';
 
 export const CAMERA_KEYS = new Set(['KeyQ', 'KeyE', 'Period', 'Slash']);
 
@@ -19,9 +20,8 @@ export class GameSession {
     this.previousState = 'playing';
     this.practice = false;
     this.mode = 'duel';
-    this.weapon = 'sword';
-    this.secondWeapon = 'polearm';
-    this.world.reset(false, false, this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
+    this.loadouts=DEFAULT_LOADOUTS.map(p=>Object.freeze({...p}));
+    this.world.reset(false, false, ...this.loadouts, arenaScaleForMode(this.mode));
     this.accumulator = 0;
     this.freeze = 0;
     this.countdown = 0;
@@ -36,6 +36,9 @@ export class GameSession {
     this.snapshot = this.makeSnapshot();
   }
 
+  get weapon(){return this.loadouts[0].weaponId;}
+  get secondWeapon(){return this.loadouts[1].weaponId;}
+
   subscribe = listener => {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
@@ -48,6 +51,7 @@ export class GameSession {
       state: this.state,
       practice: this.practice,
       mode: this.mode,
+      loadouts: Object.freeze(this.loadouts.map(p=>Object.freeze({...p}))),
       weapon: this.weapon,
       weapons: [this.weapon, this.secondWeapon],
       pressed: [...this.keys],
@@ -75,14 +79,14 @@ export class GameSession {
 
   getInputs() {
     const first = { theta: Number(this.keys.has('KeyW')) - Number(this.keys.has('KeyS')), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
-    if(this.weapon==='beagle'&&this.keys.has('KeyF'))first.skill=true;
+    if(isEarLoadout(this.loadouts[0])&&this.keys.has('KeyF'))first.skill=true;
     if (this.mode === 'solo') return [first];
     return [
       first,
       this.practice ? { theta: 0, phi: 0 } : {
         theta: Number(this.keys.has('ArrowUp')) - Number(this.keys.has('ArrowDown')),
         phi: Number(this.keys.has('ArrowRight')) - Number(this.keys.has('ArrowLeft')),
-        ...(this.secondWeapon==='beagle'&&this.keys.has('ShiftRight')?{skill:true}:{}),
+        ...(isEarLoadout(this.loadouts[1])&&this.keys.has('ShiftRight')?{skill:true}:{}),
       },
     ];
   }
@@ -102,8 +106,8 @@ export class GameSession {
   keyDown(code) {
     if (!CONTROL_KEYS.has(code) || (this.state !== 'playing' && this.state !== 'countdown')) return;
     if (this.mode === 'solo' && code.startsWith('Arrow')) return;
-    if(code==='KeyF'&&this.weapon!=='beagle')return;
-    if(code==='ShiftRight'&&(this.secondWeapon!=='beagle'||this.mode==='solo'||this.practice))return;
+    if(code==='KeyF'&&!isEarLoadout(this.loadouts[0]))return;
+    if(code==='ShiftRight'&&(!isEarLoadout(this.loadouts[1])||this.mode==='solo'||this.practice))return;
     if (CAMERA_KEYS.has(code) && this.mode !== 'duel') return;
     if (this.keys.has(code)) return;
     this.keys.add(code);
@@ -126,14 +130,19 @@ export class GameSession {
     this.publish();
   }
 
+  setLoadouts(values) {
+    if(this.state!=='lobby'||!Array.isArray(values)||values.length!==2)return false;
+    let next;try{next=values.map(value=>Object.freeze(normalizeLoadout(value)));}catch{return false;}
+    if(next.every((p,id)=>p.characterId===this.loadouts[id].characterId&&p.weaponId===this.loadouts[id].weaponId))return true;
+    this.loadouts=next;
+    this.world.reset(false,false,...this.loadouts,arenaScaleForMode(this.mode));
+    this.visualRevision++;this.publish();return true;
+  }
+
   setWeapon(weapon, playerId = 0) {
-    if (this.state !== 'lobby' || !WEAPONS[weapon] || ![0, 1].includes(playerId)) return;
-    const field = playerId === 0 ? 'weapon' : 'secondWeapon';
-    if (this[field] === weapon) return;
-    this[field] = weapon;
-    this.world.reset(false, false, this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
-    this.visualRevision++;
-    this.publish();
+    if(![0,1].includes(playerId))return false;
+    let next;try{next=weapon==='beagle'||weapon==='long-ears'?normalizeLoadout(weapon):normalizeLoadout({...this.loadouts[playerId],weaponId:weapon});}catch{return false;}
+    return this.setLoadouts(this.loadouts.map((p,id)=>id===playerId?next:p));
   }
 
   startRound(mode = this.mode) {
@@ -143,7 +152,7 @@ export class GameSession {
     void this.sound.unlock();
     this.sound.lastWhoosh = [0, 0];
     this.clearKeys();
-    this.world.reset(this.practice, this.mode === 'solo', this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
+    this.world.reset(this.practice, this.mode === 'solo', ...this.loadouts, arenaScaleForMode(this.mode));
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -162,7 +171,7 @@ export class GameSession {
     this.clearKeys();
     this.mode = 'duel';
     this.practice = false;
-    this.world.reset(false, false, this.weapon, this.secondWeapon, arenaScaleForMode(this.mode));
+    this.world.reset(false, false, ...this.loadouts, arenaScaleForMode(this.mode));
     this.visualRevision++;
     this.effects = [];
     this.readout = null;

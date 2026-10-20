@@ -1,5 +1,8 @@
 # Beagle: preferred smooth-ear model
 
+**Current local entry, 20 October 2026:** open the [live game](http://127.0.0.1:5173/) for implemented behavior. Preparation is a full-window P1-left/P2-right stage, with each player's choices above their own actual-model preview, independent Ready and shared Start/Save. Back/Escape cancels drafts. Beagle may equip sword, polearm, hammer or long ears; only long ears activate F/Right Shift hover. Orange tabby + cat paws is also playable, giving eight valid loadouts and 64 ordered pairings. The creator prefers live review after implementation; the dated videos below remain evidence. [Current preparation and verification](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) · [latest UI checks](selection-concepts/v04-preparation-stage/verification.json).
+
+
 The selected appearance is the earlier **Tripo v02** beagle, asset
 `6db09ed1-8155-4b84-8dae-fb67085c611f`. The wider, scalloped plush v04 study
 was rejected by the user on 18 October 2026. Keep its files as a study; do not
@@ -19,9 +22,14 @@ use it as the character's current art direction.
 - Recorded rig/contact checks: `assets/concepts/beagle/tripo-v05/verification.json`
 - Fresh Three.js checks: `output/blender/beagle-tripo-v05/three-report.json`
 
-The game now registers **比格犬·双耳** as a paired character/weapon loadout in
-the armory. P1/P2 can choose it independently in solo, practice, split-screen
-and fixed-camera matches. Its actual rig follows the shared game solver.
+The local game now selects **比格犬** independently from equipment. Sword, polearm
+and hammer use the compact GLB as a rigid upright character with natural cosmetic
+ears; long ears resolve to the accepted rig and paired-ear controller. No new
+Tripo generation, Blender rebuild or skeleton is required for the compact model.
+P1/P2 select independently in all modes; hover requires long ears. See the
+[selection implementation](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) for
+measured clearance, verification and local delivery status. The actual long-ear
+rig continues to follow the shared game solver.
 The separate model-review page's automatic floor clearance remains a pose
 inspection convenience; the game uses contact impulses to lift the body.
 

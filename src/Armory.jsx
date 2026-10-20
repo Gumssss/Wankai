@@ -1,128 +1,72 @@
-import { useEffect, useState } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { Box3, Group, Vector3 } from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { WEAPON_CATALOG, weaponName } from './weapon-catalog.js';
-import { WEAPON_VISUALS } from './weapon-visuals.js';
-import { WEAPONS } from './physics.js';
-import { BEAGLE } from './beagle-profile.js';
+import {useEffect,useRef,useState} from 'react';
+import {CHARACTER_CATALOG,characterName} from './character-catalog.js';
+import {WEAPON_CATALOG} from './weapon-catalog.js';
+import {normalizeLoadout,canEquip,isValidLoadout,loadoutName,loadoutKey} from './loadouts.js';
+import {createDrafts,updateDraft,toggleReady,requiredPlayers,canConfirm,confirmedLoadouts} from './armory-drafts.js';
+import {LoadoutPreview} from './LoadoutPreview.jsx';
+import {CharacterPortrait,WeaponIcon} from './selection-icons.jsx';
+import './armory.css';
 
-function disposeModel(root) {
-  const resources = new Set();
-  root.traverse(object => {
-    if (object.geometry) resources.add(object.geometry);
-    if (object.skeleton) resources.add(object.skeleton);
-    for (const mat of Array.isArray(object.material) ? object.material : [object.material]) {
-      if (!mat) continue;
-      resources.add(mat);
-      for (const value of Object.values(mat)) if (value?.isTexture) resources.add(value);
-    }
-  });
-  for (const resource of resources) resource.dispose();
+const MODES={duel:'双人对战 · 分屏视角','duel-fixed':'双人对战 · 固定视角',practice:'木桩练习',solo:'单人自由视角',browse:'出战配置'};
+const selectionName=draft=>draft.weaponId?loadoutName(draft):`${characterName(draft.characterId)} · 待选武器`;
+
+function PlayerSelection({id,draft,mode,onChange,onReady}){
+  const valid=isValidLoadout(draft),player=`P${id+1}`;
+  return <section className="loadout-player-panel" data-player={id} style={{'--selection-accent':id===0?'#bd6048':'#4f858a'}} aria-label={`${player} 出战配置`}>
+    <header className="loadout-player-heading">
+      <b className="loadout-player-label">{player}<span>{id===0?'赤方':mode==='practice'?'木桩':'青方'}</span></b>
+      <span className="loadout-ready-status" aria-live="polite">{draft.ready?'✓ 已准备':'选择角色与武器'}</span>
+    </header>
+    <div className="loadout-choices">
+      <div className="loadout-library-title"><b>角色</b><span>CHARACTERS</span></div>
+      <div className="loadout-character-grid" role="group" aria-label={`${player} 角色选择`}>
+        {CHARACTER_CATALOG.map(character=><button key={character.id} type="button" aria-label={`${player} 选择${character.name}`} aria-pressed={draft.characterId===character.id} disabled={!character.available} onClick={()=>onChange({characterId:character.id})}>
+          <div className="loadout-portrait"><CharacterPortrait id={character.id}/>{draft.characterId===character.id&&<i aria-hidden="true">✓</i>}{!character.available&&<span>开发中</span>}</div>
+          <b>{character.name}</b><small>{character.english}</small>
+        </button>)}
+      </div>
+      <div className="loadout-library-title"><b>武器</b><span>WEAPONS</span><small>{draft.weaponId?'':'选择一件武器'}</small></div>
+      <div className="loadout-weapon-grid" role="group" aria-label={`${player} 武器选择`}>
+        {WEAPON_CATALOG.map(weapon=>{
+          const compatible=canEquip(draft.characterId,weapon.id),reason=!weapon.available?'开发中':weapon.characterId?`${characterName(weapon.characterId)}专属`:compatible?'通用':'暂不适配';
+          return <button key={weapon.id} type="button" aria-label={`${player} 选择${weapon.name}`} aria-pressed={draft.weaponId===weapon.id} disabled={!compatible} title={`${weapon.name} · ${reason}。${weapon.description}`} onClick={()=>onChange({weaponId:weapon.id})}>
+            <WeaponIcon id={weapon.id}/><span><b>{weapon.name}</b><small>{reason}</small></span>{draft.weaponId===weapon.id&&<i aria-hidden="true">✓</i>}
+          </button>;
+        })}
+      </div>
+    </div>
+    <div className="loadout-showcase" aria-label={`${player} 角色与武器模型预览`}>
+      <LoadoutPreview key={`${id}:${loadoutKey(draft)}`} selection={draft} id={id}/>
+      <div className="loadout-current" aria-live="polite"><b>{selectionName(draft)}</b></div>
+      <div className="loadout-drag">↔ 拖动旋转 · 滚轮缩放</div>
+    </div>
+    <button type="button" className="loadout-ready-button" aria-label={`${player} ${draft.ready?'取消准备':'准备就绪'}`} aria-pressed={draft.ready} disabled={!valid} onClick={onReady}>
+      {draft.ready?'✓ 已准备 · 取消准备':'✓ 准备就绪'}
+    </button>
+  </section>;
 }
 
-function PreviewModel({ weapon, onError, onLoaded }) {
-  const { camera, size, invalidate } = useThree();
-  const [root, setRoot] = useState(null);
-  useEffect(() => {
-    let cancelled = false;
-    let owned;
-    setRoot(null);
-    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/${weapon === 'beagle' ? BEAGLE.model : `${weapon}.glb`}`, gltf => {
-      if (cancelled) { disposeModel(gltf.scene); return; }
-      owned = new Group();
-      const model = gltf.scene;
-      if (weapon !== 'beagle') {
-        model.quaternion.setFromUnitVectors(new Vector3(...WEAPON_VISUALS[weapon].axis).normalize(), new Vector3(0, 1, 0));
-        const bounds = new Box3().setFromObject(model);
-        model.scale.setScalar(WEAPONS[weapon].length / (bounds.max.y - bounds.min.y));
-      }
-      if (weapon === 'polearm') model.traverse(object => {
-        for (const mat of Array.isArray(object.material) ? object.material : [object.material]) {
-          if (!mat?.color) continue;
-          mat.color.set(0x70797c); mat.metalness = 0.24; mat.roughness = 0.62;
-        }
-      });
-      owned.add(model);
-      owned.rotation.z = weapon === 'beagle' ? 0 : -0.4;
-      owned.rotation.y = weapon === 'beagle' ? 0 : 0.25;
-      owned.updateMatrixWorld(true);
-      owned.position.sub(new Box3().setFromObject(owned).getCenter(new Vector3()));
-      setRoot(owned);
-      onLoaded();
-      invalidate();
-    }, undefined, () => { if (!cancelled) onError(); });
-    return () => { cancelled = true; if (owned) disposeModel(owned); };
-  }, [weapon, invalidate, onError, onLoaded]);
-  useEffect(() => {
-    if (!root) return;
-    camera.position.set(...(weapon === 'beagle' ? [5, 2.5, 7] : [0, 0, 5]));
-    camera.lookAt(0, 0, 0);camera.updateMatrixWorld(true);
-    const box = new Box3().setFromObject(root), projected = new Box3();
-    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z])
-      projected.expandByPoint(new Vector3(x, y, z).applyMatrix4(camera.matrixWorldInverse));
-    const extent = projected.getSize(new Vector3());
-    camera.zoom = Math.min(size.width / Math.max(0.1, extent.x), size.height / Math.max(0.1, extent.y)) / 1.1;
-    camera.lookAt(0, 0, 0);
-    camera.updateProjectionMatrix();
-    invalidate();
-  }, [root, camera, size.width, size.height, invalidate, weapon]);
-  return root ? <primitive object={root} dispose={null} /> : null;
-}
-
-const MODES = { duel: '双人对战 · 分屏视角', 'duel-fixed': '双人对战 · 固定视角', practice: '木桩练习', solo: '单人自由视角' };
-
-export function Armory({ game, session, mode, close, start }) {
-  const [viewed, setViewed] = useState(game.weapons[0]);
-  const [previewState, setPreviewState] = useState('loading');
-  const [onError] = useState(() => () => setPreviewState('error'));
-  const [onLoaded] = useState(() => () => setPreviewState('ready'));
-  const solo = mode === 'solo';
-  const practice = mode === 'practice';
-  const viewing = WEAPON_CATALOG.find(weapon => weapon.id === viewed);
-  const choose = (weapon, id) => {
-    session.setWeapon(weapon, id);
-    if (viewed !== weapon) setPreviewState('loading');
-    setViewed(weapon);
+export function Armory({game,session,mode,close,start}){
+  const headingRef=useRef(null);
+  useEffect(()=>{headingRef.current?.focus({preventScroll:true});},[]);
+  const [drafts,setDrafts]=useState(()=>createDrafts(game.loadouts||game.weapons.map(normalizeLoadout)));
+  const [error,setError]=useState(''),players=requiredPlayers(mode),ready=canConfirm(drafts,mode);
+  const change=(id,patch)=>{setError('');setDrafts(current=>updateDraft(current,id,patch));};
+  const prepare=id=>{setError('');setDrafts(current=>toggleReady(current,id));};
+  const confirm=()=>{
+    const selections=confirmedLoadouts(drafts,mode);
+    if(!selections)return;
+    if(!session.setLoadouts(selections)){setError('无法保存搭配，请检查角色与武器。');return;}
+    if(mode==='browse')close();else start();
   };
-  const preview = weapon => { if (viewed !== weapon) setPreviewState('loading'); setViewed(weapon); };
-
+  const action=mode==='browse'?'保存搭配':mode==='practice'?'开始练习':mode==='solo'?'开始单人':'开始对战';
+  const hint=players.length===1?(ready?'已准备，可以开始':'准备后开始'):ready?(mode==='browse'?'双方已准备，可以保存':'双方已准备，可以开始'):(mode==='browse'?'双方准备后保存':'双方准备后开始');
   return <>
-    <button className="modal-close" onClick={close} aria-label="关闭兵器库">×</button>
-    <div className="armory-heading"><span className="eyebrow">THE ARMORY / 兵器库</span><h2>选一套，找到你的打法<span>。</span></h2><p>选兵器，或让比格犬用双耳出战。开打之前，各选所长。</p></div>
-    <div className="armory-loadouts" aria-live="polite">
-      <div className="loadout-one"><span>P1 · 赤丸</span><strong>{weaponName(game.weapons[0])}</strong></div>
-      {!solo && <><span className="armory-versus">VS</span><div className="loadout-two"><span>{practice ? 'P2 · 木桩' : 'P2 · 青丸'}</span><strong>{weaponName(game.weapons[1])}</strong></div></>}
+    <header className="loadout-header"><button type="button" className="loadout-back" onClick={close} aria-label="返回主菜单">← 返回</button><div className="loadout-heading-copy"><h1 id="preparation-title" ref={headingRef} tabIndex={-1}>出战准备</h1><p>PREPARE / 选择角色与武器</p></div><span>{MODES[mode]}</span></header>
+    <div className={`loadout-dual-picker${mode==='solo'?' solo':''}`}>
+      {players.map(id=><PlayerSelection key={id} id={id} draft={drafts[id]} mode={mode} onChange={patch=>change(id,patch)} onReady={()=>prepare(id)}/>)}
     </div>
-    <div className="armory-layout">
-      <div className="weapon-library">
-      <div className="weapon-tabs" role="group" aria-label="兵器种类">
-        {WEAPON_CATALOG.map(weapon => <button key={weapon.id} aria-pressed={viewed === weapon.id} onClick={() => preview(weapon.id)}><b>{weapon.name}</b><small>{weapon.role}</small></button>)}
-      </div>
-      <div className="weapon-cards" aria-label="可选兵器">
-        {WEAPON_CATALOG.filter(weapon => weapon.id === viewed).map(weapon => <article key={weapon.id} className="weapon-card viewing">
-          <button className="weapon-inspect" aria-pressed={viewed === weapon.id} onClick={() => preview(weapon.id)}><span><small>{weapon.english}</small><b>{weapon.name}</b></span><em>{weapon.role}</em><span className="inspect-arrow">↗</span></button>
-          <p>{weapon.description}</p>
-          <div className="weapon-traits"><span>距离 <b>{weapon.reach}</b></span><span>起挥 <b>{weapon.response}</b></span></div>
-          <dl><div><dt>所长</dt><dd>{weapon.strength}</dd></div><div><dt>取舍</dt><dd>{weapon.weakness}</dd></div></dl>
-          <div className="weapon-equip">
-            {[0, ...(solo ? [] : [1])].map(id => <button key={id} type="button" className={id === 0 ? 'equip-one' : 'equip-two'} aria-label={`P${id + 1}选择${weapon.name}`} aria-pressed={game.weapons[id] === weapon.id} onClick={() => choose(weapon.id, id)}>P{id + 1} {game.weapons[id] === weapon.id ? '已装备 ✓' : '选择'}</button>)}
-          </div>
-        </article>)}
-      </div>
-      </div>
-      <div className="weapon-showcase">
-        <div className="showcase-caption"><span className="eyebrow">WEAPON STUDY</span><strong>{viewing.name}</strong><small>游戏中的实际模型</small></div>
-        <div className="weapon-preview">
-          <Canvas orthographic frameloop="demand" dpr={[1, 1.5]} camera={{position:[0, 0, 5], near:0.01, far:50, zoom:80}} gl={{alpha:true, antialias:true}}>
-            <ambientLight intensity={2}/><hemisphereLight args={[0xfff9e9, 0x849079, 2]}/><directionalLight position={[3, 5, 4]} intensity={3}/>
-            <PreviewModel weapon={viewed} onError={onError} onLoaded={onLoaded}/>
-          </Canvas>
-          {previewState !== 'ready' && <div className="preview-message">{previewState === 'error' ? '模型预览暂时不可用，仍可选择兵器。' : '正在取出兵器…'}</div>}
-        </div>
-        <div className="showcase-rule"><b>武器，也是你的脚。</b><span>W / S 前后挥动 · A / D 水平转向<br/>所有兵器都靠触地与碰撞带动身体。</span></div>
-      </div>
-    </div>
-    <div className="armory-footer"><span>{mode === 'browse' ? '双方可以选用同一种兵器。选择会保留到重开。' : `${MODES[mode]} · ${solo ? '赤丸独自探索' : practice ? '木桩不主动出招' : '双方可以选用相同兵器'}`}</span><button className="primary-button" onClick={mode === 'browse' ? close : start}>{mode === 'browse' ? '保存选择，回到菜单' : '就用这套，开始'} <span>↗</span></button></div>
+    {error&&<p className="loadout-form-error" role="alert">{error}</p>}
+    <footer className="loadout-footer"><div className="loadout-start"><button type="button" className="primary-button" disabled={!ready} onClick={confirm}>{action}<span>→</span></button><span className="loadout-start-hint" aria-live="polite">{hint}</span></div></footer>
   </>;
 }

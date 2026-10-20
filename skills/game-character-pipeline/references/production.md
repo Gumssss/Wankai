@@ -1,22 +1,24 @@
 # Reference to production asset
 
-Read the relevant sections for reconstruction images, Tripo, Blender or engine integration. The selected identity, approved motion contract and accepted Tripo source remain authoritative across stages.
+Read only the relevant sections for the requested stage/range: reconstruction images, Tripo, Blender or engine integration. These are independently deliverable stages. Retain a checkpoint at the requested endpoint rather than automatically starting the next section. The selected identity, approved motion contract and accepted Tripo source remain authoritative across stages; an approved-base edit or integration does not restart generation.
 
 ## Reconstruction images
 
-Create clean inputs from the selected seed, not independent redesigns for each angle. Keep proportions, markings, clothing, pose, style, scale and illumination consistent. Expose moving parts and attachment areas; avoid overlapping weapons/body parts that must later separate. Inspect generated hidden views for invented or contradictory details before submission.
+Always prepare three clean views—front, one side and back—before generating a new model in Tripo. This is the user's required workflow, even when the service could accept a single image. Create the views from the selected seed, not independent redesigns for each angle. Reuse matching approved views and generate missing ones. Keep proportions, markings, clothing, pose, style, camera magnification and illumination consistent. Expose moving parts and attachment areas; avoid unnecessary overlap between weapons/body parts that must later separate. Inspect generated hidden views for invented or contradictory details before submission.
 
 Separate a design-review sheet from machine input. A labeled turnaround or collage can explain the design to the user, but submit individual clean subject images in the selected Tripo mode's expected slots. Avoid cropped extremities, extra characters, labels, dramatic perspective and obstructed parts. Use background/alpha appropriate to the actual tool requirements; inspect the resulting files rather than trusting prompt wording.
 
-Choose the input strategy after inspecting the current Tripo UI or official documentation:
+Inspect the current Tripo UI or official documentation, then prepare and map the required views:
 
-- For a simple readable design, a clean front three-quarter view can be sufficient.
-- Add consistent side/back views when hidden geometry, rear markings or attachment design matters. Add another side for relevant asymmetry if supported.
-- Do not require exactly three views. A design turnaround can contain views that are not submitted for reconstruction.
+- Front: preserve the selected face, expression, silhouette and visible markings. A selected near-frontal or front three-quarter view may be reused without regenerating its identity.
+- Side: reveal depth, appendage thickness, seated/standing posture and attachment gaps. Keep the world pose and relative part positions fixed while changing the camera; do not turn individual parts toward the camera just to show them. Record natural occlusion in a true profile and add a useful extra angle or component view if essential geometry remains hidden.
+- Back: specify the rear silhouette, markings, tail and backs of weapons consistently with the front and side. Treat newly inferred hidden details as reconstruction proposals, not evidence from an existing mesh.
+- Submit individual front/side/back files through a compatible multi-view mode for one model. Verify which side each slot expects. Distinguish multi-view from batch-image generation, which creates separate models and can multiply the charge. If the current tool cannot accept the set, report the concrete gap before a paid submission rather than silently falling back to one image.
+- Add a fourth view when relevant asymmetry or occlusion justifies it and the selected mode supports it. A design-review sheet can contain additional views but does not replace the individual inputs.
 - If a feature is intentionally compact or simplified for generation, document its exact planned Blender correction and the approved functional dimensions.
 - Reuse an already selected Tripo source for edits instead of making a replacement automatically.
 
-Tripo's [multi-view help](https://www.tripo3d.ai/help/features/how-to-use-multi-view-input-effectively) described single front three-quarter and consistent multi-view approaches when checked on 19 October 2026. Recheck current capabilities before a paid operation; do not freeze a view count, product mode or price into the skill.
+Tripo's [multi-view help](https://www.tripo3d.ai/help/features/how-to-use-multi-view-input-effectively) describes consistency across views and current slot options. The front/side/back rule above is a user preference, not a claim that Tripo universally requires three images. Recheck supported modes, settings and prices before a paid operation.
 
 Review the exact input packet and generation/spending scope before submitting. Image approval does not select an unseen 3D reconstruction.
 
@@ -58,6 +60,8 @@ Use the smallest suitable loadout/character entry. Include the requested selecti
 
 Account deliberately for pair-level motors, stamina, damage and repeat-hit gates when multiple appendages form one weapon. Specify ability activation, duration, cost source, interruption, cancellation, expiry, rearming and compatibility with ordinary actions; preserve shared defaults outside the approved scope.
 
-Verify relevant positive hits and near misses, contacts, movement, reversal, abilities, recovery, modes and opponent combinations. Run meaningful focused tests, the required regression suite and build. Inspect actual game-scale appearance and camera behavior, then record gameplay footage corresponding to the approved moves.
+For character/motion integration, verify relevant positive hits and near misses, contacts, movement, reversal, abilities, recovery, modes and opponent combinations. Run meaningful focused tests, the required regression suite and build. Inspect actual game-scale appearance and camera behavior, then capture and retain gameplay footage corresponding to the approved moves. When the user prefers inspecting the implemented game, open it instead of presenting another recording; keep the footage linked in the records.
+
+For UI-only selection/navigation changes with unchanged character assets, controls and contacts, verify the actual screen, interaction/readiness/cancellation flow, focus/navigation, responsive bounds, preview loading and return to the arena. Use screenshots and relevant focused checks/build; reuse existing motion evidence without another Tripo/Blender pass or new movement recording. Keep project-specific screen layouts in repository docs rather than adding universal character rules.
 
 Update the current model/runtime pointers, source and export records, commands/results and known approximations. Keep visual acceptance, technical evidence and hands-on acceptance separate. Publishing is a distinct delivery state and follows existing user authorization.

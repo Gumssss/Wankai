@@ -1,0 +1,1069 @@
+{
+  "schema_version": 1,
+  "character_id": "orange-tabby",
+  "display_name": "\u6a58\u732b\u00b7\u732b\u722a",
+  "date": "2026-10-20",
+  "stage": "Approved cat integrated locally; 132 regressions/build and 73 actual-game capture checks pass; playable review ready",
+  "selected": {
+    "reference": [
+      "orange-tabby-original",
+      "paw-weapon-original"
+    ],
+    "tripo_base": "orange-tabby-tripo-v01",
+    "blender_source": "assets/concepts/orange-tabby/prepared-v02/orange-tabby-prepared-v02.blend",
+    "runtime_export": "public/models/orange-tabby-prepared-v02.glb",
+    "runtime_revision": "orange-tabby-gameplay-v01",
+    "appearance_seed": "orange-tabby-selected-upload-v03"
+  },
+  "inputs": [
+    {
+      "id": "orange-tabby-original",
+      "path": "assets/concepts/orange-tabby/references/orange-tabby-original.png",
+      "sha256": "e5f041feabb500e33c886c9fa991518630cdb6df18fd558c8e65ceedf845b674",
+      "role": "selected character identity collage; multiple poses of one cat",
+      "source": "user screenshot preserved without modification",
+      "selection": "explicit user reference",
+      "original_creator": null,
+      "reuse_terms": null
+    },
+    {
+      "id": "paw-weapon-original",
+      "path": "assets/concepts/orange-tabby/references/paw-weapon-original.png",
+      "sha256": "78bc38b7bc46238630a9365abe22f01cd0ae22a63326ee4eca8ec70c303970fd",
+      "role": "selected paw weapon appearance; original attachment requirement superseded by detached v03",
+      "source": "user screenshot preserved without modification",
+      "selection": "explicit user reference",
+      "original_creator": null,
+      "reuse_terms": null
+    },
+    {
+      "id": "hosico-seated-source",
+      "path": "assets/concepts/orange-tabby/references/hosico-seated-source.jpg",
+      "sha256": "3db68cd60499534b31322dc7b67af87a0e1fd8939b15186d5648914200a4fcde",
+      "role": "user-authorized trial identity and seated-pose reference",
+      "source_url": "https://www.boredpanda.com/cute-hosico-cat/",
+      "download_url": "https://static.boredpanda.com/blog/wp-content/uploads/2017/03/Hosico-Cat-58b920b850cad__880.jpg",
+      "identity_source": "https://hosicocat.com/about",
+      "file_status": "unmodified downloaded source photo",
+      "reuse_terms": "not established"
+    },
+    {
+      "id": "orange-tabby-selected-upload-v03",
+      "path": "assets/concepts/orange-tabby/tripo-input-v01/selected-source.png",
+      "sha256": "20910ab0e9ade7cd9a0f6eb5823dad7fc85443ee5a881e202ae12f03f1f32842",
+      "role": "exact latest user-selected appearance; unmodified reattached cute-smile image",
+      "selection": "User: use the last one ... create the tripo image",
+      "date": "2026-10-19"
+    }
+  ],
+  "assets": [
+    {
+      "id": "orange-tabby-controls-v01",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v01.mp4",
+      "sha256": "eed8dc7aff026e274c028444afeffbe55ecc954c771cac7dbea19c019ad88209",
+      "bytes": 6629662,
+      "duration_seconds": 47,
+      "type": "reduced support model"
+    },
+    {
+      "id": "orange-tabby-combat-v01",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v01.mp4",
+      "sha256": "ffabacab61a724e16a0e71cfd5b16174ab0d416d8105e1cc273228a8f63e2c38",
+      "bytes": 776089,
+      "duration_seconds": 16,
+      "type": "authored concept"
+    },
+    {
+      "id": "orange-tabby-comparison-v01",
+      "path": "docs/previews/orange-tabby/orange-tabby-comparison-v01.mp4",
+      "sha256": "21387a3b867cbfa2c67a4aab22a2e0932ac3a191e026a145675f9fa505def94b",
+      "bytes": 378333,
+      "duration_seconds": 6,
+      "type": "authored concept"
+    },
+    {
+      "id": "orange-tabby-blockout-v01",
+      "role": "primitive motion study; never production base",
+      "path": "assets/concepts/orange-tabby/motion-v01/orange-tabby-blockout-v01.blend",
+      "sha256": "d8cd4dee9518074b9d5362622b8974cb8f2175446f656025b0f2707e343bf708"
+    },
+    {
+      "id": "orange-tabby-controls-v02",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v02.mp4",
+      "sha256": "74c3e8fa9b241193bde2ce688184d6375aeebcf58bb7b0297c624a5cb7935800",
+      "bytes": 10300658,
+      "duration_seconds": 40,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v02",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v02.mp4",
+      "sha256": "55837112a34652f8d8a7aaa2fa9771f46f072fc49cfe6851a446aa3b0378bd06",
+      "bytes": 3286251,
+      "duration_seconds": 12.5,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v02",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v02.mp4",
+      "sha256": "52a10d0bdd9114e4fcc7761df26832e6e6c60b2a91525224686287fc79e83bce",
+      "bytes": 448765,
+      "duration_seconds": 4,
+      "role": "authored design turntable"
+    },
+    {
+      "id": "orange-tabby-blockout-v02",
+      "role": "primitive standing giant-paw study, never production base",
+      "path": "assets/concepts/orange-tabby/motion-v02/orange-tabby-standing-giant-paws-v02.blend",
+      "sha256": "5343380c5bf9db79660405f74580aca1e4256413e2e532ba7fc1d7c2b71e0a29"
+    },
+    {
+      "id": "orange-tabby-controls-v03",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v03.mp4",
+      "sha256": "3f7edcf6c14bd89f73d022589f61fe825d53fc9d0cba1d48476380911308c0d3",
+      "bytes": 14000233,
+      "duration_seconds": 40,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v03",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v03.mp4",
+      "sha256": "11c2b8c5bd0747ab931ee041d81857c51733a76944dda73ad8a9b481c046a7d3",
+      "bytes": 4221824,
+      "duration_seconds": 12.5,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v03",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v03.mp4",
+      "sha256": "d76bd806e370abf863aff3f61bd0fc907e8da6fcf0e2582db623ced64a5967bc",
+      "bytes": 436466,
+      "duration_seconds": 4,
+      "role": "authored design turntable"
+    },
+    {
+      "id": "orange-tabby-blockout-v03",
+      "role": "primitive seated detached-paw study, never production base",
+      "path": "assets/concepts/orange-tabby/motion-v03/orange-tabby-seated-floating-paws-v03.blend",
+      "sha256": "1cc51a410f567bbc3df64ada9ef7f459a1f314ea29cd966a415cb127451b671e"
+    },
+    {
+      "id": "orange-tabby-controls-v04",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v04.mp4",
+      "sha256": "9d5229cbe69e513647347fdc55af69d061853eb5e7a726983cf990b03194e82e",
+      "bytes": 10524882,
+      "duration_seconds": 44,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v04",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v04.mp4",
+      "sha256": "d36d3deb80aaeaaf8db35c0e9c1d01a53fbc2b638022be35cffb7d054b04091a",
+      "bytes": 4603891,
+      "duration_seconds": 12.5,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v04",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v04.mp4",
+      "sha256": "51cee10b09439e3d6d07b1877a3b62a34579e13af7967acff4b786c7f9165045",
+      "bytes": 453351,
+      "duration_seconds": 4,
+      "role": "authored design turntable"
+    },
+    {
+      "id": "orange-tabby-blockout-v04",
+      "role": "primitive floating giant-paw study, never production base",
+      "path": "assets/concepts/orange-tabby/motion-v04/orange-tabby-hovering-paws-v04.blend",
+      "sha256": "21a64f3ca8a46fe8202ccef8fb1932ab4c75eaaa02cd3177f16691fd4c012002"
+    },
+    {
+      "id": "orange-tabby-keyboard-model-v04",
+      "role": "primitive interactive review model only; never production base/runtime export",
+      "path": "docs/previews/orange-tabby/cat-study-v04.glb",
+      "sha256": "85c63f7110c9709a3d4ad51a1c4bc2de4d39d4d311c1d3c1b8b3f7796152f8a1",
+      "bytes": 489796
+    },
+    {
+      "id": "hosico-floating-paws-reference-v01",
+      "role": "generated image concept candidate; not a 3D model or selected production base",
+      "path": "assets/concepts/orange-tabby/hosico-reference-v01/hosico-floating-paws-reference-v01.png",
+      "sha256": "f9117cf643398490454c857226d145439810629e4399b4192f80e7c57ce9c1fa",
+      "bytes": 2099771,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "review": "rejected style; preserved"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/beagle-style-reference-v02/orange-tabby-beagle-style-reference-v02.png",
+      "sha256": "886c4c3296c7d246a0686ef75119102c8ad2ef121d55f6b3da32af3d4625773b",
+      "bytes": 1567609,
+      "width": 1536,
+      "height": 1024,
+      "id": "orange-tabby-beagle-style-reference-v02",
+      "role": "current generated appearance candidate; not a 3D production asset"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/beagle-style-reference-v03/orange-tabby-cute-smile-reference-v03.png",
+      "sha256": "4cb372b30d4d70bf297aa62292a83ef4dea80e955334d6d8443d331c67cebe65",
+      "bytes": 1523735,
+      "width": 1536,
+      "height": 1024,
+      "id": "orange-tabby-cute-smile-reference-v03",
+      "role": "current expression-revised image candidate"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v01/orange-tabby-tripo-input-v01.png",
+      "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+      "bytes": 1326587,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "id": "orange-tabby-tripo-input-v01",
+      "role": "clean machine-input image; no 3D mesh"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/front.png",
+      "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+      "bytes": 1326587,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "front",
+      "slot": "Front",
+      "id": "orange-tabby-tripo-v02-front",
+      "role": "individual multi-view reconstruction input"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/left.png",
+      "sha256": "576d5ab3f0e9bec18c62ed834feaa0b289e9ac3e204ecb7bba34a2f4ff36dfd5",
+      "bytes": 1484238,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "left",
+      "slot": "Left",
+      "id": "orange-tabby-tripo-v02-left",
+      "role": "individual multi-view reconstruction input"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/back.png",
+      "sha256": "c6ed80b72f66b05ee77cc56e7bd129259f3ef2a7340a8be387995288d381cf9b",
+      "bytes": 1457806,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "back",
+      "slot": "Back",
+      "id": "orange-tabby-tripo-v02-back",
+      "role": "individual multi-view reconstruction input"
+    },
+    {
+      "id": "orange-tabby-tripo-v01-source",
+      "role": "original textured Tripo base candidate, unmodified and unrigged",
+      "path": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+      "sha256": "4241a26dbfb8f87e4c16c34b07c9319dd368523263b18b50ae3cdaa2e0485912",
+      "bytes": 3319720,
+      "triangles": 96044,
+      "vertices": 51645,
+      "materials": 1,
+      "texture": "one embedded 2048x2048 JPEG",
+      "skins": 0,
+      "animations": 0
+    },
+    {
+      "id": "orange-tabby-controls-v05",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v05.mp4",
+      "sha256": "c27ead5dad89997e5ac23c118e646ddb9197baaa9931c206cbb6b4639d130016",
+      "bytes": 5493724,
+      "duration_seconds": 44,
+      "role": "actual prepared Tripo mesh / isolated game solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v05",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v05.mp4",
+      "sha256": "469b341331cfd2137b7a773d111f52b99873261af66cdedda7b7a93681a89c35",
+      "bytes": 2977063,
+      "duration_seconds": 12.5,
+      "role": "actual prepared Tripo mesh / isolated game solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v05",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v05.mp4",
+      "sha256": "25bfb28227ff087c0e85d1fa712c14249575883bdc5b311bf2087167953e8e6b",
+      "bytes": 368435,
+      "duration_seconds": 4,
+      "role": "actual prepared Tripo asset turntable"
+    },
+    {
+      "id": "orange-tabby-prepared-v01",
+      "path": "assets/concepts/orange-tabby/prepared-v01/orange-tabby-prepared-v01.glb",
+      "sha256": "0e45dd20ef6025f49336ca1eb7e8070e24a20a9486ffd288991c759418529cdb",
+      "bytes": 1135244,
+      "role": "actual optimized Tripo mesh; candidate for integration review, not selected runtime export"
+    },
+    {
+      "id": "orange-tabby-lift-v06",
+      "path": "docs/previews/orange-tabby/orange-tabby-lift-v06.mp4",
+      "sha256": "f5f0af7197b5b9f7bc4d84c05b3e86104c5dd95119d419bb40dac411950c1490",
+      "bytes": 3365615,
+      "duration_seconds": 10.8,
+      "role": "Actual prepared Tripo mesh / isolated game-solver functional replay, beagle v07 format"
+    },
+    {
+      "id": "orange-tabby-controls-v06",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v06.mp4",
+      "sha256": "567d57ac8e18ef3e9c356185318eee725805fb27fff829ac3c338fe869644794",
+      "bytes": 10613817,
+      "duration_seconds": 39.0,
+      "role": "Actual prepared Tripo mesh / isolated game-solver functional replay, beagle v07 format"
+    },
+    {
+      "id": "orange-tabby-combat-v06",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v06.mp4",
+      "sha256": "53c9793b51ef6a73321857f1068335847c0e4d2e44649983927da952feac4449",
+      "bytes": 6438106,
+      "duration_seconds": 23.7,
+      "role": "Actual prepared Tripo mesh / isolated game-solver functional replay, beagle v07 format"
+    },
+    {
+      "id": "orange-tabby-prepared-v02",
+      "path": "assets/concepts/orange-tabby/prepared-v02/orange-tabby-prepared-v02.glb",
+      "sha256": "3b3893335848deb1d65280e70eabad94005f4c532cd42f7720f92008dbf6cc00",
+      "role": "Neutral appearance unchanged; virtual paw pivots lowered for support lift; candidate, not runtime export"
+    },
+    {
+      "id": "orange-tabby-all-controls-v07",
+      "path": "docs/previews/orange-tabby/orange-tabby-all-controls-v07.mp4",
+      "sha256": "0a410c616015e836bc9752c01d93e2b6d2334ff0864824b7ddc9b13002e8b00b",
+      "bytes": 14154048,
+      "duration_seconds": 49.8,
+      "role": "Primary complete-controls video / unchanged actual-model isolated v06 solver replay"
+    },
+    {
+      "id": "orange-tabby-runtime-v01",
+      "path": "public/models/orange-tabby-prepared-v02.glb",
+      "sha256": "3b3893335848deb1d65280e70eabad94005f4c532cd42f7720f92008dbf6cc00",
+      "role": "Selected runtime export; exact approved prepared-v02 bytes",
+      "source": "assets/concepts/orange-tabby/prepared-v02/orange-tabby-prepared-v02.glb"
+    },
+    {
+      "id": "orange-tabby-gameplay-v01",
+      "path": "docs/previews/orange-tabby/orange-tabby-gameplay-v01.mp4",
+      "sha256": "1f3305ac9cc08b26cbb43cb8cfb0a069788fae561e9fc01242131a1b77ce1450",
+      "bytes": 5136495,
+      "duration": 63.133333,
+      "frames": 1894,
+      "fps": 30,
+      "resolution": [
+        1600,
+        900
+      ],
+      "full_decode": true,
+      "role": "Actual production game: complete eight-case matrix, recovery, combat and same-event slow replay"
+    }
+  ],
+  "operations": [
+    {
+      "id": "orange-tabby-tripo-v01",
+      "path": "assets/concepts/orange-tabby/tripo-v01/operation.json",
+      "status": "complete",
+      "quoted_credits": 25,
+      "operation_id": "37bbff57-418a-4f36-90a7-b1f154966c9d",
+      "observed_credits": 25,
+      "source": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+      "verification": "assets/concepts/orange-tabby/tripo-v01/verification.json"
+    }
+  ],
+  "moves": [
+    {
+      "id": "s",
+      "group": "lift",
+      "start": 0,
+      "end": 6,
+      "title": "S / giant paws lift the cat into the air",
+      "speed": 1,
+      "record_id": "s",
+      "physical_offset": 0
+    },
+    {
+      "id": "s-slow",
+      "group": "lift",
+      "start": 6,
+      "end": 10.8,
+      "title": "S / giant paws lift the cat into the air / same event, 0.25x",
+      "speed": 0.25,
+      "record_id": "s",
+      "physical_offset": 0.8666666666666666
+    },
+    {
+      "id": "hover-idle",
+      "group": "controls",
+      "start": 0,
+      "end": 2,
+      "title": "Idle / low floating rest pose",
+      "speed": 1,
+      "record_id": "hover-idle",
+      "physical_offset": 0
+    },
+    {
+      "id": "w",
+      "group": "controls",
+      "start": 2,
+      "end": 5,
+      "title": "W / forward paw drive",
+      "speed": 1,
+      "record_id": "w",
+      "physical_offset": 0
+    },
+    {
+      "id": "a",
+      "group": "controls",
+      "start": 5,
+      "end": 8,
+      "title": "A / left heading sweep",
+      "speed": 1,
+      "record_id": "a",
+      "physical_offset": 0
+    },
+    {
+      "id": "d",
+      "group": "controls",
+      "start": 8,
+      "end": 11,
+      "title": "D / right heading sweep",
+      "speed": 1,
+      "record_id": "d",
+      "physical_offset": 0
+    },
+    {
+      "id": "wa",
+      "group": "controls",
+      "start": 11,
+      "end": 14,
+      "title": "W + A / forward paw drive + steering",
+      "speed": 1,
+      "record_id": "wa",
+      "physical_offset": 0
+    },
+    {
+      "id": "wd",
+      "group": "controls",
+      "start": 14,
+      "end": 17,
+      "title": "W + D / forward paw drive + steering",
+      "speed": 1,
+      "record_id": "wd",
+      "physical_offset": 0
+    },
+    {
+      "id": "sa",
+      "group": "controls",
+      "start": 17,
+      "end": 20,
+      "title": "S + A / reverse paw drive + steering",
+      "speed": 1,
+      "record_id": "sa",
+      "physical_offset": 0
+    },
+    {
+      "id": "sd",
+      "group": "controls",
+      "start": 20,
+      "end": 23,
+      "title": "S + D / reverse paw drive + steering",
+      "speed": 1,
+      "record_id": "sd",
+      "physical_offset": 0
+    },
+    {
+      "id": "release-reverse",
+      "group": "controls",
+      "start": 23,
+      "end": 28,
+      "title": "W / release / S reversal",
+      "speed": 1,
+      "record_id": "release-reverse",
+      "physical_offset": 0
+    },
+    {
+      "id": "yaw-reverse",
+      "group": "controls",
+      "start": 28,
+      "end": 32,
+      "title": "A / release / D reversal",
+      "speed": 1,
+      "record_id": "yaw-reverse",
+      "physical_offset": 0
+    },
+    {
+      "id": "landing",
+      "group": "controls",
+      "start": 32,
+      "end": 36,
+      "title": "Drop test / recovery / W resumes",
+      "speed": 1,
+      "record_id": "landing",
+      "physical_offset": 0
+    },
+    {
+      "id": "opposites",
+      "group": "controls",
+      "start": 36,
+      "end": 39,
+      "title": "Opposite keys cancel powered drive",
+      "speed": 1,
+      "record_id": "opposites",
+      "physical_offset": 0
+    },
+    {
+      "id": "vertical-hit",
+      "group": "combat",
+      "start": 0,
+      "end": 3,
+      "title": "Vertical giant-paw hit / W",
+      "speed": 1,
+      "record_id": "vertical-hit",
+      "physical_offset": 0
+    },
+    {
+      "id": "vertical-hit-slow",
+      "group": "combat",
+      "start": 3,
+      "end": 6.6,
+      "title": "Vertical giant-paw hit / W / same event, 0.25x",
+      "speed": 0.25,
+      "record_id": "vertical-hit",
+      "physical_offset": 0.4388888888888889
+    },
+    {
+      "id": "horizontal-hit",
+      "group": "combat",
+      "start": 6.6,
+      "end": 9.6,
+      "title": "Horizontal giant-paw hit / D",
+      "speed": 1,
+      "record_id": "horizontal-hit",
+      "physical_offset": 0
+    },
+    {
+      "id": "horizontal-hit-slow",
+      "group": "combat",
+      "start": 9.6,
+      "end": 13.2,
+      "title": "Horizontal giant-paw hit / D / same event, 0.25x",
+      "speed": 0.25,
+      "record_id": "horizontal-hit",
+      "physical_offset": 1.027777777777778
+    },
+    {
+      "id": "sword-clash",
+      "group": "combat",
+      "start": 13.2,
+      "end": 17.2,
+      "title": "Giant paw blocks sword / clash recoil",
+      "speed": 1,
+      "record_id": "sword-clash",
+      "physical_offset": 0
+    },
+    {
+      "id": "sword-clash-slow",
+      "group": "combat",
+      "start": 17.2,
+      "end": 21.2,
+      "title": "Giant paw blocks sword / clash recoil / same event, 0.25x",
+      "speed": 0.25,
+      "record_id": "sword-clash",
+      "physical_offset": 0.3222222222222223
+    },
+    {
+      "id": "near-miss",
+      "group": "combat",
+      "start": 21.2,
+      "end": 23.7,
+      "title": "Same giant-paw swing / clear miss",
+      "speed": 1,
+      "record_id": "near-miss",
+      "physical_offset": 0
+    }
+  ],
+  "reviews": [
+    {
+      "stage": "reference",
+      "status": "selected by user",
+      "scope": "orange tabby identity and paw/claw weapons; posture and mapping remain proposals"
+    },
+    {
+      "stage": "A/B",
+      "artifact_version": "orange-tabby-motion-v01",
+      "status": "superseded by user floating-paw/beagle-motion request",
+      "review_page": "docs/previews/orange-tabby/index.html",
+      "scope": "posture and ordinary move intent; game-solver support/combat validation remains open"
+    },
+    {
+      "stage": "direction revision",
+      "status": "user requested",
+      "scope": "huge attached hands, permanently standing cat, weapon use similar to beagle; v01 seated posture superseded",
+      "date": "2026-10-19"
+    },
+    {
+      "stage": "B revised motion",
+      "artifact_version": "orange-tabby-motion-v02",
+      "status": "superseded by user floating-paw/beagle-motion request",
+      "scope": "new synchronized paw swings/support/steering/scale; huge hands and standing direction already user requested"
+    },
+    {
+      "stage": "direction revision v03",
+      "status": "user requested",
+      "scope": "seated gesture, no body/huge-hand connections, larger hands; standing v02 superseded",
+      "date": "2026-10-19"
+    },
+    {
+      "stage": "B revised motion",
+      "artifact_version": "orange-tabby-motion-v03",
+      "status": "superseded by user floating-paw/beagle-motion request",
+      "scope": "revised proportions and motion; seated pose, detached hands and further enlargement explicitly user requested"
+    },
+    {
+      "stage": "direction revision v04",
+      "status": "user requested",
+      "scope": "lift the detached giant paws into the air; W/S/A/D movement based on the beagle physics; user explicitly corrected ears to giant paws",
+      "date": "2026-10-19"
+    },
+    {
+      "stage": "B revised motion",
+      "artifact_version": "orange-tabby-motion-v04",
+      "status": "pending",
+      "scope": "airborne paws and beagle-style normal control motion; user explicitly corrected ears to giant paws"
+    },
+    {
+      "stage": "appearance feedback v04",
+      "artifact_version": "orange-tabby-motion-v04",
+      "status": "appearance rejected by user as creepy, insufficiently cute/cartoonish",
+      "scope": "Return to cartoon Rocky reference selection. User explicitly requires approval before creating a new reference image. Mechanics remain research, not approved gameplay.",
+      "date": "2026-10-19"
+    },
+    {
+      "stage": "reference feedback",
+      "status": "standing cartoon unsuitable; user asks for a sitting cat",
+      "scope": "Propose a clearly seated cute cartoon cat before any new reference image generation",
+      "date": "2026-10-19"
+    },
+    {
+      "stage": "appearance preference clarification",
+      "date": "2026-10-19",
+      "status": "user requests famous cat, less exaggerated cartoon styling",
+      "scope": "Generic seated illustration is too cartoonish. Propose Hosico identity and soft 3D stylization; no image generation before approval."
+    },
+    {
+      "stage": "appearance image trial",
+      "artifact_version": "hosico-reference-v01",
+      "status": "rejected by user: style does not match intended game vibe",
+      "scope": "Hosico-inspired moderate cartoon style, seated hover and giant detached rounded paws",
+      "date": "2026-10-19"
+    },
+    {
+      "stage": "beagle style revision",
+      "date": "2026-10-19",
+      "artifact_version": "beagle-style-reference-v02",
+      "status": "positive user feedback on overall design; requested a slightly cuter smile",
+      "scope": "Approved beagle style applied to a tiny seated floating orange cat, with huge detached paws; visual analysis and targeted paw-scale correction recorded."
+    },
+    {
+      "stage": "expression revision",
+      "date": "2026-10-19",
+      "artifact_version": "beagle-style-reference-v03",
+      "status": "selected by user as seed for Tripo image preparation",
+      "scope": "Tiny centered soft cat smile and gentler expression; overall v02 design retained."
+    },
+    {
+      "stage": "A appearance selection",
+      "artifact_version": "beagle-style-reference-v03",
+      "status": "selected by user",
+      "date": "2026-10-19",
+      "scope": "Last cute-smile image, reattached by user; prepare clean Tripo reconstruction image."
+    },
+    {
+      "stage": "reconstruction input preparation",
+      "date": "2026-10-19",
+      "artifact_version": "tripo-input-v01",
+      "status": "prepared; cleaned derivative available for review",
+      "scope": "Single white-background near-frontal image derived from user-selected seed. No Tripo paid operation submitted."
+    },
+    {
+      "stage": "three-view workflow and model generation request",
+      "date": "2026-10-19",
+      "status": "user requested",
+      "scope": "Prepare front, side and back, update skill to always require these before Tripo generation, then upload and generate the model using computer use."
+    },
+    {
+      "stage": "C reconstruction operation",
+      "date": "2026-10-19",
+      "artifact_version": "tripo-input-v02 / tripo-v01",
+      "status": "delegated preparation and one initial generation explicitly requested by user",
+      "scope": "Front/left/back, H3.1 textured 2K, 100k target, Private, 25-credit quoted one-candidate operation. Exact settings disclosed before submission; actual mesh not accepted."
+    },
+    {
+      "stage": "D actual base",
+      "artifact_version": "orange-tabby-tripo-v01",
+      "date": "2026-10-19",
+      "status": "pending user appearance selection",
+      "scope": "Actual textured Tripo mesh opened in service viewer, downloaded unmodified, imported in Blender and rendered front/left/back. Image approval does not imply model approval."
+    },
+    {
+      "stage": "B/E combined",
+      "artifact_version": "orange-tabby-motion-v05",
+      "asset_version": "orange-tabby-prepared-v01",
+      "status": "rejected",
+      "decision": "Use this actual prepared model and presented ordinary motion for character-scoped runtime integration.",
+      "reason": "User requires S paw-floor support to lift cat clearly into air and the functional beagle v07 video format."
+    },
+    {
+      "stage": "B/E revised motion and rig",
+      "artifact_version": "orange-tabby-motion-v06",
+      "asset_version": "orange-tabby-prepared-v02",
+      "status": "approved for integration",
+      "scope": "No inferred playable acceptance; all directions/combinations now presented in the v07 main video.",
+      "accepted_scope": "User: it is good, approved ... then implement this in the game. Exact prepared-v02 actual model and v06 motion shown in v07."
+    },
+    {
+      "stage": "complete movement presentation",
+      "artifact_version": "orange-tabby-complete-controls-v07",
+      "date": "2026-10-20",
+      "status": "approved for integration",
+      "scope": "W,S,A,D,WA,WD,SA,SD in one primary normal-speed matrix, followed by same-event S slow replay and recovery. No controller/model changes.",
+      "accepted_scope": "User: it is good, approved ... then implement this in the game. Exact prepared-v02 actual model and v06 motion shown in v07."
+    },
+    {
+      "stage": "F playable",
+      "artifact_version": "orange-tabby-gameplay-v01",
+      "date": "2026-10-20",
+      "status": "ready for playable review",
+      "scope": "Playable review follows actual local integration; no inferred final balance acceptance.",
+      "review_page": "docs/previews/orange-tabby/review-gameplay-v01.html"
+    }
+  ],
+  "target": {
+    "forward": "+X",
+    "blender_up": "+Z",
+    "game_up": "+Y",
+    "units": "one Blender unit = one game unit",
+    "triangle_target": 25000,
+    "texture_target": "one 2048 atlas maximum initially",
+    "material_target": 3,
+    "bone_budget": "measure after function proof; no inherited beagle count",
+    "runtime_size_target_mb": 4
+  },
+  "delivery": {
+    "local": "Orange tabby + giant paws selectable for both players; approved model/motion preserved. 132 tests, build and 73 actual-game capture checks pass; 63.1-second complete gameplay video delivered. Not pushed, merged or released.",
+    "merged_commit": null,
+    "release": null
+  },
+  "verification": [
+    {
+      "path": "assets/concepts/orange-tabby/motion-v01/verification.json",
+      "technical_checks": "passed",
+      "user_acceptance": "pending"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/motion-v02/verification.json",
+      "technical_checks": "passed",
+      "motion_acceptance": "pending"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/motion-v03/verification.json",
+      "technical_checks": "passed",
+      "motion_acceptance": "pending"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/motion-v04/verification.json",
+      "technical_checks": "passed",
+      "motion_acceptance": "pending"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v01/verification.json",
+      "technical_checks": "passed",
+      "appearance_selection": "selected source approved; clean derivative prepared"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-v01/verification.json",
+      "technical_checks": "passed",
+      "appearance_acceptance": "pending"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/prepared-v01/loader-verification.json",
+      "technical_checks": "26 passed",
+      "user_acceptance": "motion/asset review B/E pending"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/motion-v05/verification.json",
+      "technical_checks": "passed",
+      "user_acceptance": "motion B / asset E pending"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/motion-v06/verification.json",
+      "technical_checks": "passed",
+      "user_acceptance": "Corrected S lift accepted; runtime integration/playable acceptance outstanding."
+    },
+    {
+      "path": "assets/concepts/orange-tabby/motion-v07/verification.json",
+      "technical_checks": "35 passed",
+      "scope": "Complete video coverage and accepted-motion preservation; unchanged v06 solver."
+    },
+    {
+      "path": "assets/concepts/orange-tabby/gameplay-v01/local-verification.json",
+      "technical_checks": "132 regressions/build pass; 73 actual-game capture checks pass; all media fully decodes",
+      "user_acceptance": "Model/motion accepted for integration; human playable review/feel remains separate."
+    }
+  ],
+  "current_motion": "orange-tabby-motion-v06",
+  "pose_references": [
+    {
+      "id": "seated-pose-commons",
+      "path": "assets/concepts/orange-tabby/references/seated-pose-commons-original.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Orange_Tabby_Cat_Sitting_Down.jpg",
+      "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Orange_Tabby_Cat_Sitting_Down.jpg/960px-Orange_Tabby_Cat_Sitting_Down.jpg",
+      "author": "Asabae2752",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "role": "selected full seated gesture reference: low haunches, lifted chest, tucked feet",
+      "file_status": "Unmodified 960px source preview; not the full-resolution master",
+      "sha256": "f855ac0f61d726476346ebe0d98c928890c717062d60b227b426e901084233b4"
+    },
+    {
+      "id": "seated-pose-pixabay",
+      "path": "assets/concepts/orange-tabby/references/seated-pose-pixabay-original.jpg",
+      "source_url": "https://pixabay.com/photos/cat-sitting-orange-tabby-orange-1114726/",
+      "download_url": "https://cdn.pixabay.com/photo/2015/12/30/20/21/cat-1114726_1280.jpg",
+      "author": "elljay",
+      "license": "Pixabay Content License",
+      "license_url": "https://pixabay.com/service/license-summary/",
+      "role": "secondary frontal seated silhouette and curled-tail reference",
+      "file_status": "Unmodified 1280px source preview",
+      "sha256": "5cfa33eb0cb5c9ac1fb12df08d73a0cc37e857844591ca9a5ca1a6b5ced7dab3"
+    }
+  ],
+  "interactive_preview": {
+    "page": "docs/previews/orange-tabby/try-v06.html",
+    "review": "docs/previews/orange-tabby/review-v07.html",
+    "solver": "docs/previews/orange-tabby/physics-v06.mjs",
+    "model": "assets/concepts/orange-tabby/prepared-v02/orange-tabby-prepared-v02.glb",
+    "type": "Actual-model isolated functional solver; not integrated gameplay"
+  },
+  "reference_candidates": [
+    {
+      "id": "standing-cat-cartoon-sthyouneed",
+      "title": "Cat Standing Up On Two Legs Meme",
+      "artist": "Sthyouneed",
+      "source_url": "https://www.redbubble.com/i/art-print/Cat-Standing-Up-On-Two-Legs-Meme-by-Sthyouneed/151421147.1G4ZT",
+      "preview_url": "https://ih1.redbubble.net/image.5210167218.1147/aps%2C504x498%2Csmall%2Ctransparent-pad%2C600x600%2Cf8f8f8.jpg",
+      "identity_verification": "Cartoon standing orange-tabby meme illustration; the source does not explicitly identify this cat as Rocky. Closest matching cartoon candidate, not a verified official Rocky depiction.",
+      "inspection": "Opened the actual preview in the browser: rounded head and body, large black eyes, tiny white paws, pink ears/nose, orange tabby stripes and white bib.",
+      "role": "appearance/style candidate only, pending user approval",
+      "license": "Reuse terms not established; artist/source retained; no production use or generation submitted",
+      "date": "2026-10-19",
+      "status": "not selected; user requires a sitting pose"
+    },
+    {
+      "id": "seated-orange-tabby-rosy-cheeks",
+      "title": "A cute, cartoon-style orange tabby cat with rosy cheeks",
+      "artist": "MkImagesDesign / Mark Kim",
+      "source_url": "https://www.etsy.com/listing/4307198314/a-cute-cartoon-style-orange-tabby-cat",
+      "preview_url": "https://i.etsystatic.com/59689678/r/il/a526ee/6918984519/il_fullxfull.6918984519_hfn5.jpg",
+      "role": "proposed sitting-pose and cute cartoon-style reference; not Rocky",
+      "inspection": "Actual preview opened: clearly seated on rounded haunches, front paws together on floor, large round head, closed happy eyes, pink cheeks, striped tail. Not standing bipedally.",
+      "status": "not selected; user asks for a famous cat and finds this illustration too cartoonish",
+      "reuse_terms": "Not established; no purchase, generation or production use submitted",
+      "date": "2026-10-19"
+    },
+    {
+      "id": "hosico-seated-photo",
+      "name": "Hosico",
+      "identity": "Internet-famous golden cat, verified through his own website",
+      "identity_source": "https://hosicocat.com/about",
+      "source_url": "https://www.boredpanda.com/cute-hosico-cat/",
+      "preview_url": "https://static.boredpanda.com/blog/wp-content/uploads/2017/03/Hosico-Cat-58b920b850cad__880.jpg",
+      "role": "proposed famous-cat identity and seated anatomy reference; a real photo, not a generated or approved style image",
+      "inspection": "Actual photo opened: seated golden cat with rounded cheeks, green eyes, upright ears, front paws together and visible haunches.",
+      "style_proposal": "historical: natural proportions and softly detailed 3D fur superseded by the accepted beagle's smooth exaggerated style",
+      "status": "identity used for authorized v01 trial; v01 style rejected; current beagle-style v02 uses only loose golden-cat/cheek inspiration",
+      "fan_art_gallery": "https://hosicocat.com/fan_art",
+      "reuse_terms": "Not established; no production use, purchase or generation submitted",
+      "date": "2026-10-19"
+    }
+  ],
+  "generation_scope": {
+    "authorized": "prepare front/side/back images and upload to Tripo for initial model generation using computer use",
+    "source": "beagle-style-reference-v03 and exact selected upload",
+    "preserve": "selected appearance, cute smile, giant detached paws, seated pose, materials and relative proportions",
+    "view_requirement": "front, side and back; front reused without pixel changes",
+    "production_generation": "Completed: one H3.1 multi-view candidate, 25 credits, original preserved. No new generation requested."
+  },
+  "current_concept": "beagle-style-reference-v03",
+  "image_generation_operations": [
+    {
+      "id": "hosico-reference-v01",
+      "provenance": "assets/concepts/orange-tabby/hosico-reference-v01/provenance.json",
+      "prompt": "assets/concepts/orange-tabby/hosico-reference-v01/prompt.txt",
+      "tool": "built-in imagegen"
+    },
+    {
+      "id": "beagle-style-reference-v02",
+      "provenance": "assets/concepts/orange-tabby/beagle-style-reference-v02/provenance.json",
+      "initial_prompt": "assets/concepts/orange-tabby/beagle-style-reference-v02/prompt.txt",
+      "final_prompt": "assets/concepts/orange-tabby/beagle-style-reference-v02/refinement-prompt.txt",
+      "tool": "built-in image_gen.imagegen",
+      "review": "pending user appearance review"
+    },
+    {
+      "id": "beagle-style-reference-v03",
+      "provenance": "assets/concepts/orange-tabby/beagle-style-reference-v03/provenance.json",
+      "prompt": "assets/concepts/orange-tabby/beagle-style-reference-v03/prompt.txt",
+      "tool": "built-in image_gen.imagegen",
+      "review": "pending user review of expression"
+    },
+    {
+      "id": "tripo-input-v01",
+      "provenance": "assets/concepts/orange-tabby/tripo-input-v01/provenance.json",
+      "prompt": "assets/concepts/orange-tabby/tripo-input-v01/prompt.txt",
+      "final_prompt": "assets/concepts/orange-tabby/tripo-input-v01/framing-prompt.txt",
+      "tool": "built-in image_gen.imagegen",
+      "review": "selected source approved; clean input prepared for review"
+    },
+    {
+      "id": "tripo-input-v02",
+      "provenance": "assets/concepts/orange-tabby/tripo-input-v02/provenance.json",
+      "tool": "built-in imagegen",
+      "review": "prepared under delegated generation request"
+    }
+  ],
+  "current_reconstruction": "tripo-input-v02",
+  "reconstruction_packet": "assets/concepts/orange-tabby/tripo-input-v02/input-plan.json",
+  "current_model_candidate": "tripo-v01",
+  "model_candidates": [
+    {
+      "id": "orange-tabby-tripo-v01",
+      "source": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+      "operation": "assets/concepts/orange-tabby/tripo-v01/operation.json",
+      "provenance": "assets/concepts/orange-tabby/tripo-v01/provenance.json",
+      "verification": "assets/concepts/orange-tabby/tripo-v01/verification.json",
+      "review": "Continued into asset preparation under user: cool ... do you think we can then implement it in the game? Final prepared appearance/motion review remains separate."
+    }
+  ],
+  "current_prepared_asset": "orange-tabby-prepared-v02",
+  "prepared_candidate": {
+    "id": "orange-tabby-prepared-v02",
+    "source": "assets/concepts/orange-tabby/prepared-v02/orange-tabby-prepared-v02.blend",
+    "export": "assets/concepts/orange-tabby/prepared-v02/orange-tabby-prepared-v02.glb",
+    "review": "Approved for integration by user; exact bytes now installed as runtime asset.",
+    "measurements": "assets/concepts/orange-tabby/prepared-v02/measurements.json",
+    "contacts": "assets/concepts/orange-tabby/prepared-v02/contact-fit.json"
+  },
+  "current_presentation": "orange-tabby-complete-controls-v07",
+  "movement_presentation": {
+    "version": "orange-tabby-complete-controls-v07",
+    "controller": "orange-tabby-motion-v06",
+    "model": "orange-tabby-prepared-v02",
+    "primary_video": "docs/previews/orange-tabby/orange-tabby-all-controls-v07.mp4",
+    "chapters": "assets/concepts/orange-tabby/motion-v07/chapters.json",
+    "coverage": [
+      {
+        "keys": "W",
+        "start": 0,
+        "end": 3,
+        "speed": 1,
+        "held_start": 0.26666666666666666,
+        "held_end_exclusive": 2.4,
+        "sample_frame": 41,
+        "source_frame": 425
+      },
+      {
+        "keys": "S",
+        "start": 3,
+        "end": 9,
+        "speed": 1,
+        "held_start": 3.433333333333333,
+        "held_end_exclusive": 6.3,
+        "sample_frame": 147,
+        "source_frame": 57
+      },
+      {
+        "keys": "A",
+        "start": 9,
+        "end": 12,
+        "speed": 1,
+        "held_start": 9.266666666666667,
+        "held_end_exclusive": 11.4,
+        "sample_frame": 311,
+        "source_frame": 515
+      },
+      {
+        "keys": "D",
+        "start": 12,
+        "end": 15,
+        "speed": 1,
+        "held_start": 12.266666666666667,
+        "held_end_exclusive": 14.4,
+        "sample_frame": 401,
+        "source_frame": 605
+      },
+      {
+        "keys": "W + A",
+        "start": 15,
+        "end": 18,
+        "speed": 1,
+        "held_start": 15.266666666666667,
+        "held_end_exclusive": 17.4,
+        "sample_frame": 491,
+        "source_frame": 695
+      },
+      {
+        "keys": "W + D",
+        "start": 18,
+        "end": 21,
+        "speed": 1,
+        "held_start": 18.266666666666666,
+        "held_end_exclusive": 20.4,
+        "sample_frame": 581,
+        "source_frame": 785
+      },
+      {
+        "keys": "S + A",
+        "start": 21,
+        "end": 24,
+        "speed": 1,
+        "held_start": 21.266666666666666,
+        "held_end_exclusive": 23.4,
+        "sample_frame": 671,
+        "source_frame": 875
+      },
+      {
+        "keys": "S + D",
+        "start": 24,
+        "end": 27,
+        "speed": 1,
+        "held_start": 24.266666666666666,
+        "held_end_exclusive": 26.4,
+        "sample_frame": 761,
+        "source_frame": 965
+      }
+    ],
+    "presentation_only": true
+  },
+  "current_runtime": "orange-tabby-gameplay-v01",
+  "runtime": {
+    "version": "orange-tabby-gameplay-v01",
+    "characterId": "orange-tabby",
+    "weaponId": "cat-paws",
+    "model": "public/models/orange-tabby-prepared-v02.glb",
+    "model_sha256": "3b3893335848deb1d65280e70eabad94005f4c532cd42f7720f92008dbf6cc00",
+    "profile": "src/orange-tabby-profile.js",
+    "accepted_motion": "orange-tabby-motion-v06",
+    "accepted_presentation": "orange-tabby-complete-controls-v07",
+    "review_page": "docs/previews/orange-tabby/review-gameplay-v01.html",
+    "gameplay_document": "docs/characters/orange-tabby/GAMEPLAY.md",
+    "delivery": "local; not pushed, merged or released",
+    "gameplay_video": "docs/previews/orange-tabby/orange-tabby-gameplay-v01.mp4"
+  }
+}

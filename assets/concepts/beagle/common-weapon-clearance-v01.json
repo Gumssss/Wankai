@@ -1,0 +1,44 @@
+{
+  "status": "measured",
+  "method": "Conservative enclosing sphere and separating plane, valid for the complete continuous swing/yaw sweep; no mesh edits.",
+  "source": "public/models/beagle-smooth-appearance-v05.glb",
+  "sha256": "a23571d1baba058d5a1a9905a4fcd1041fbbc7ef4af620f79ec900bd960ab558",
+  "bodyFloor": 0.59,
+  "bodyBounds": {
+    "min": [
+      -0.6390166878700256,
+      -0.00015091222303453833,
+      -0.9757412075996399
+    ],
+    "max": [
+      0.6387887001037598,
+      1.7001184225082397,
+      0.9756634831428528
+    ]
+  },
+  "bodyEnvelopeRadius": 1.2147877658085875,
+  "requiredClearance": 0.035,
+  "measurements": {
+    "sword": {
+      "originalOffset": 1.2,
+      "minimumVisualY": -0.0054957362718,
+      "minimumCapsuleY": -0.09,
+      "resolvedOffset": 1.34,
+      "guaranteedClearance": 0.035212234191412506
+    },
+    "polearm": {
+      "originalOffset": 1.35,
+      "minimumVisualY": -0.020336973783970147,
+      "minimumCapsuleY": -0.085,
+      "resolvedOffset": 1.35,
+      "guaranteedClearance": 0.05021223419141263
+    },
+    "hammer": {
+      "originalOffset": 1.3,
+      "minimumVisualY": 0,
+      "minimumCapsuleY": 0,
+      "resolvedOffset": 1.3,
+      "guaranteedClearance": 0.08521223419141255
+    }
+  }
+}

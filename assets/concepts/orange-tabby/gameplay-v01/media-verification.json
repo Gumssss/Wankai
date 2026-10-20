@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-20",
+  "normal_speed_preserved": true,
+  "original_capture": "output/orange-tabby-gameplay-v01/actual-gameplay.webm",
+  "slow_replay": "Identical normal-video frames 4.0\u20135.2 s repeated four times, with 0.25x label replacing normal speed label. No different physics or stronger event.",
+  "media": [
+    {
+      "path": "docs/previews/orange-tabby/orange-tabby-gameplay-normal-v01.mp4",
+      "sha256": "1c00f2d3003a15da63ba9840f95989b8ed4cb2cf459d69119af1d487f5fc91f0",
+      "bytes": 4878332,
+      "duration": 58.333333,
+      "frames": 1750,
+      "fps": 30,
+      "resolution": [
+        1600,
+        900
+      ],
+      "full_decode": true
+    },
+    {
+      "path": "docs/previews/orange-tabby/orange-tabby-gameplay-slow-v01.mp4",
+      "sha256": "80776fbc40e662f48ef7c31a91e9ff2bf927b7e0602121cba5c92743564c13fa",
+      "bytes": 258686,
+      "duration": 4.8,
+      "frames": 144,
+      "fps": 30,
+      "resolution": [
+        1600,
+        900
+      ],
+      "full_decode": true
+    },
+    {
+      "path": "docs/previews/orange-tabby/orange-tabby-gameplay-v01.mp4",
+      "sha256": "1f3305ac9cc08b26cbb43cb8cfb0a069788fae561e9fc01242131a1b77ce1450",
+      "bytes": 5136495,
+      "duration": 63.133333,
+      "frames": 1894,
+      "fps": 30,
+      "resolution": [
+        1600,
+        900
+      ],
+      "full_decode": true
+    }
+  ]
+}

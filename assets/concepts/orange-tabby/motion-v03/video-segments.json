@@ -1,0 +1,121 @@
+[
+  {
+    "id": "w",
+    "group": "controls",
+    "start": 0,
+    "end": 3,
+    "title": "W / front swing"
+  },
+  {
+    "id": "s",
+    "group": "controls",
+    "start": 3,
+    "end": 6,
+    "title": "S / back swing"
+  },
+  {
+    "id": "a",
+    "group": "controls",
+    "start": 6,
+    "end": 9,
+    "title": "A / left heading sweep"
+  },
+  {
+    "id": "d",
+    "group": "controls",
+    "start": 9,
+    "end": 12,
+    "title": "D / right heading sweep"
+  },
+  {
+    "id": "wa",
+    "group": "controls",
+    "start": 12,
+    "end": 15,
+    "title": "W + A / front swing + steering"
+  },
+  {
+    "id": "wd",
+    "group": "controls",
+    "start": 15,
+    "end": 18,
+    "title": "W + D / front swing + steering"
+  },
+  {
+    "id": "sa",
+    "group": "controls",
+    "start": 18,
+    "end": 21,
+    "title": "S + A / back swing + steering"
+  },
+  {
+    "id": "sd",
+    "group": "controls",
+    "start": 21,
+    "end": 24,
+    "title": "S + D / back swing + steering"
+  },
+  {
+    "id": "release-reverse",
+    "group": "controls",
+    "start": 24,
+    "end": 29,
+    "title": "Release, coast, brake, reverse"
+  },
+  {
+    "id": "yaw-reverse",
+    "group": "controls",
+    "start": 29,
+    "end": 33,
+    "title": "Steering release and reversal"
+  },
+  {
+    "id": "landing",
+    "group": "controls",
+    "start": 33,
+    "end": 37,
+    "title": "Seated landing and recovery"
+  },
+  {
+    "id": "opposites",
+    "group": "controls",
+    "start": 37,
+    "end": 40,
+    "title": "Opposite keys cancel powered input"
+  },
+  {
+    "id": "vertical-hit",
+    "group": "combat",
+    "start": 0,
+    "end": 3,
+    "title": "Vertical giant-paw hit / W"
+  },
+  {
+    "id": "horizontal-hit",
+    "group": "combat",
+    "start": 3,
+    "end": 6,
+    "title": "Horizontal giant-paw hit / D"
+  },
+  {
+    "id": "sword-clash",
+    "group": "combat",
+    "start": 6,
+    "end": 10,
+    "title": "Giant paw blocks sword / clash recoil"
+  },
+  {
+    "id": "near-miss",
+    "group": "combat",
+    "start": 10,
+    "end": 12.5,
+    "title": "Same giant-paw swing / clear miss"
+  },
+  {
+    "id": "seated-floating-paws",
+    "group": "design",
+    "start": 0,
+    "end": 4,
+    "title": "Seated cat / enormous detached paws"
+  }
+]

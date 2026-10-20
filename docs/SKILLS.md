@@ -1,8 +1,8 @@
 # Wankai development skills guide
 
-Updated 19 October 2026.
+Updated 20 October 2026.
 
-Wankai uses Electron, React, React Three Fiber, Three.js, and a custom fixed-step physics system. Its current development priorities are reproducing the sword support-direction issue, evaluating controls and cameras with two players, and measuring model-loading and rendering costs. The skills below help with that work.
+Wankai uses Electron, React, React Three Fiber, Three.js, and a custom fixed-step physics system. The current local prototype includes the orange tabby and the full-window P1/P2 preparation page. Current priorities are hands-on selection/control/camera acceptance, the unresolved sword support-direction report and combat balance. Model-loading optimization remains deferred until requested; its costs still need measurement. The skills below help with that work.
 
 This guide covers the **eight project skills installed in this workspace**, the new globally installed `game-character-pipeline`, and the globally installed `find-skills` used for discovery. A skill supplies instructions and sometimes helper scripts to the coding assistant; it does not add a gameplay feature or become a runtime dependency of Wankai.
 
@@ -36,7 +36,7 @@ The parent `.agents` directory is outside the nested Wankai Git repository. Clon
 
 | Skill | Main purpose | Useful Wankai task | Availability |
 | --- | --- | --- | --- |
-| `game-character-pipeline` | Coordinate reference-to-playable character production with required Tripo bases, move videos and user reviews | Develop a new character or resume an approved Tripo model through Blender and gameplay integration | Global; source included in this repository |
+| `game-character-pipeline` | Coordinate the requested stage or authorized production range, reusing accepted references, assets and decisions | Deliver references only, prepare a Tripo model, revise an approved asset or integrate it into gameplay | Global; source included in this repository |
 | `systematic-debugging` | Reproduce a problem and identify its cause before fixing it | Investigate sword support direction, collision misses, and camera/input confusion | Project |
 | `threejs-loaders` | Load models and textures, handle failures, and manage loading patterns | Improve the GLB pipeline and investigate repeated armory loading | Project |
 | `playwright` | Operate a browser and capture screenshots and traces | Check menus, weapon selection, pause, rematch, and viewport layouts | Project |
@@ -51,15 +51,44 @@ The parent `.agents` directory is outside the nested Wankai Git repository. Clon
 
 **Source:** [included skill instructions](../skills/game-character-pipeline/SKILL.md). The installed account copy is under `~/.codex/skills/game-character-pipeline/`. The [workflow specification](CHARACTER_CREATION_WORKFLOW_SPEC.md) and [beagle design history](BEAGLE_DESIGN_PROCESS.md) record the decisions behind it.
 
-Invoke it with `$game-character-pipeline`. It handles the requested part of character production: design brief and references, required Tripo generation for new bases, Blender refinement/rigging, required before/after move videos, concrete review milestones, runtime integration and documentation. Already approved Tripo sources and decisions are reused for local edits. A concept-only request remains concept-only.
+Invoke it with `$game-character-pipeline`. It handles the requested stage or authorized range of character production: references, motion review, reconstruction inputs, Tripo bases, Blender refinement, integration and handoff. Infer the endpoint from the request, reuse approved work and enter the earliest unfinished stage in scope. A concept-only request remains concept-only; integrating an approved model does not restart reference selection or generation. When the user authorizes a playable character or several stages, continue through that range without an automatic stop at every stage.
 
-The package contains the main instructions, UI metadata and four references for production, motion/reviews, document templates and beagle lessons. Skill metadata validation, package links, JSON template and installed-file hashes passed. No live Tripo generation or character gameplay change was performed to create the skill.
+### Collaborator quickstart
 
-Example request:
+In a checkout containing the updated package, name the installed skill explicitly in the prompt with `$game-character-pipeline` and state the requested endpoint. See [OpenAI's skill guidance](https://learn.chatgpt.com/docs/build-skills) for invocation and discovery conventions. If the skill is not installed or discoverable, tell the agent to read the repository's [skills/game-character-pipeline/SKILL.md](../skills/game-character-pipeline/SKILL.md) and use its relevant references directly; installation is not required to follow the included instructions. The repository's `skills/` folder is a portable source copy, not an automatic discovery location. The known installed path above belongs to this account; do not assume another agent has that installation.
 
-> Use $game-character-pipeline to develop this reference into a new Wankai character. Present every move through video, use Tripo for its base and preserve the approved appearance during Blender refinement.
+| Goal | Example request |
+| --- | --- |
+| References only | `$game-character-pipeline Find reference images for this character and stop after I select one.` |
+| Front/side/back inputs only | `$game-character-pipeline Create consistent front, side and back images from this approved seed; stop before Tripo generation.` |
+| Model only | `$game-character-pipeline Prepare this approved Tripo model in Blender and deliver the runtime GLB only; do not integrate it into the game.` |
+| Approved integration | `$game-character-pipeline Integrate this approved model and controller into Wankai, reuse the recorded approvals and open the game for review.` |
+| UI only | `$game-character-pipeline Revise the selection screen while keeping assets, motion and contacts unchanged; verify screenshots and interaction flows.` |
+| Authorized production range | `$game-character-pipeline Develop this selected reference into a playable character. Continue across the authorized stages, reuse approvals and ask only for genuinely missing decisions or spending scope.` |
 
-For another checkout, copy the included `skills/game-character-pipeline` folder into the account's Codex skills directory, preserving an existing installation rather than blindly overwriting it. The supporting references use relative paths and do not require the original author's filesystem.
+To resume, point the agent to the existing character record and name the endpoint: “Use `$game-character-pipeline`; read the selected/current versions, approvals and latest checkpoint in this character's handoff, then resume the unfinished model work and stop at the approved export.” Keep the checkpoint in that existing record rather than creating a new document set.
+
+The skill is the shared method; [project status](PROJECT_STATUS.md), the [collaborator handoff](COLLABORATOR_AGENT_HANDOFF.md) and character records define the actual project checkpoint, selected assets and remaining work. The current extensions and revised portable skill are collected on delivery branch `feat/orange-tabby-preparation`; use that branch until the user's integration agent merges it into `main`. That agent owns the merge and follows the handoff's cutoff/verification instructions. Invoking the character pipeline alone does not authorize a Git merge or publication.
+
+The package contains the main instructions, UI metadata and four references for production, motion/reviews, document templates and beagle lessons. The authorized 20 October revision is synchronized to the installed account copy; the five modified files were verified byte-for-byte. The package has supported continued orange-tabby production and local integration; that does not establish an independent end-to-end trial of every branch from a fresh character.
+
+Revision checks passed for metadata/UI YAML parsing with Ruby's standard YAML library, required names/descriptions/allowed fields, UI lengths/default prompt, internal relative links (none missing) and JSON templates. An independent read-only dry run covered four requests: image-only, approved-model integration with live review, UI-only changes and a delegated full production range. Each respected scope and review boundaries; no generation, Tripo operation or browser action was performed. The official `quick_validate.py` helper could not run because PyYAML was unavailable in the available Python environments; the structural checks above passed, but do not imply that helper or a fresh end-to-end production trial passed.
+
+### Stage-scoped pipeline and applied refinements
+
+The creator authorized these source changes on 20 October. Keep one umbrella pipeline with focused supporting references. Its seven stages describe the production map and decision types; they are not seven mandatory tasks or seven permission stops. Read only the references needed for the current stage. Preserve approval and spending boundaries when a decision is actually missing, and reuse approvals/delegated choices already given.
+
+The package now distinguishes:
+
+1. **Stage-only delivery and authorized continuation.** Stop at the requested endpoint, skip completed stages and preserve a short checkpoint in the existing record: artifact/version, completed stage, approvals/constraints, unfinished work and next action. Do not require new files or turn a suggested next stage into extra work. Resume at the unfinished work within the new request. An authorization spanning stages permits routine work across them without repeated confirmation.
+2. **Motion evidence and user-facing presentation.** When motion is in scope, keep the required pre-implementation video review and capture/retain matching actual-game evidence afterward. If the user chooses live-game review, open the implemented game instead of requiring another recording presentation or approval stop. Tests and evidence do not automatically establish hands-on acceptance.
+3. **UI-only verification.** With unchanged assets, controls and contacts, verify the screen using screenshots, interaction/readiness/cancellation checks, focus/navigation, responsive bounds, loading behavior and appropriate focused checks/build. Reuse accepted motion evidence; do not reopen Tripo, modeling or motion reviews for a layout change.
+
+Splitting every stage into a new skill would duplicate shared identity, provenance and review rules and make stop/resume harder to coordinate. Extract a focused stage skill later if it repeatedly becomes an independent, complex workflow with its own useful resources. No seven-skill split or new installation is needed now. Existing specialist skills remain available for design, rigging and loading work.
+
+Keep Wankai's exact full-window layout, P1/P2 positions, readiness rules and cancellation behavior in the [selection implementation handoff](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md). They should not become universal character-production requirements. Required Tripo bases, consistent front/side/back reconstruction inputs, before-implementation motion videos, the full W/S/A/D plus four-combination matrix and affected approval/spending boundaries remain in force for their relevant stages.
+
+The supporting references use relative paths and can be read in place from another checkout. They do not require the original author's filesystem or a new account installation.
 
 ## Systematic debugging
 
@@ -85,7 +114,7 @@ This skill covers GLTF/GLB and texture loading, loading progress, asynchronous w
 
 Wankai loads weapon GLBs in both the armory and arena. The sword currently has three 4K textures, while the hammer already uses a smaller texture budget. Useful work includes measuring repeated loading, evaluating texture compression, and defining resource ownership when models or materials are shared. A cache must be paired with a clear disposal policy.
 
-Relevant files include `src/Armory.jsx`, `src/ArenaCanvas.jsx`, `src/scene.js`, and the asset preparation scripts. `window.__arena.rendererInfo()` exposes arena-renderer resource counts; it does not measure texture bytes or automatically include the separate armory renderer.
+Relevant files include `src/LoadoutPreview.jsx`, `src/model-assets.js`, `src/Armory.jsx`, `src/ArenaCanvas.jsx`, `src/scene.js`, and the asset preparation scripts. `window.__arena.rendererInfo()` exposes arena-renderer resource counts; it does not measure texture bytes or include either player's separate preview renderer. The preparation page hides the mounted arena; each actual-model preview owns independent player instances and controls.
 
 Example request:
 
@@ -99,7 +128,7 @@ Some upstream examples load decoders from a CDN. Wankai requires offline play, s
 
 This skill provides a CLI workflow for browser navigation, element snapshots, interaction, screenshots, and traces. It favors direct browser checks; it does not automatically add a Playwright test suite to the project.
 
-Use it against Wankai's Vite renderer to check independent weapon selections, entry into all four modes, pause/help dialogs, rematches, and narrow-window layouts. Browser screenshots can also help compare weapon poses and camera framing. Physics regressions remain in the existing Node test suite, and two-player control feel still needs hands-on testing. Browser checks do not by themselves verify Electron lifecycle, application packaging, or native-window behavior.
+Use the available browser-control route against Wankai's Vite renderer to check the full-window preparation page: independent P1/P2 drafts and previews, readiness reset after edits, shared Start/save, Back/Escape cancellation and focus return, entry into all four modes, pause/help dialogs, rematches, and narrow-window layouts. Browser screenshots can also help compare weapon poses and camera framing. Physics regressions remain in the existing Node test suite, and two-player control feel still needs hands-on testing. Browser checks do not by themselves verify Electron lifecycle, application packaging, or native-window behavior. Follow the active environment's computer-use rules when choosing between its browser tools and this skill's CLI wrapper.
 
 Example request:
 
@@ -212,7 +241,7 @@ Directory entries can outlive their source files. The previously considered `dev
 5. Use `playwright` for browser-visible behavior, alongside `npm test` and `npm run build` for relevant code changes.
 6. Use two first-time players to judge deliberate movement, aiming, camera comfort, stamina pacing, and weapon balance. Automated checks support this evaluation but cannot replace it.
 
-For new characters, use `game-character-pipeline` to coordinate the complete workflow. It can use `create-game-assets` for the shared production brief, `character-design` for concepts and references, and `rigging` when a model is ready for skeleton authoring. Every new production base uses Tripo, and all proposed moves need video review followed by actual gameplay footage after implementation. Keep existing combat behavior unchanged until character-specific controls and contacts are agreed.
+For character work, use `game-character-pipeline` for the requested stage or authorized production range. It can use `create-game-assets` for the brief, `character-design` for references and `rigging` when skeleton authoring is relevant. Every new production base uses Tripo with the required front/side/back set; motion work uses the approved functional video format and full W/S/A/D plus four-combination coverage, followed by matching actual-game evidence when implemented. Honor the creator's live-game delivery preference above. Keep existing combat rules unchanged until character-specific controls and contacts are agreed. A UI-only preparation-page revision follows its screen/interaction checks and reuses unchanged motion evidence.
 
 ## Reinstalling in another checkout
 

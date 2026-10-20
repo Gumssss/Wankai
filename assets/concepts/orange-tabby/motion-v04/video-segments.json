@@ -1,0 +1,128 @@
+[
+  {
+    "id": "hover-idle",
+    "group": "controls",
+    "start": 0,
+    "end": 4,
+    "title": "Idle / paws floating beside the cat"
+  },
+  {
+    "id": "w",
+    "group": "controls",
+    "start": 4,
+    "end": 7,
+    "title": "W / front swing"
+  },
+  {
+    "id": "s",
+    "group": "controls",
+    "start": 7,
+    "end": 10,
+    "title": "S / back swing"
+  },
+  {
+    "id": "a",
+    "group": "controls",
+    "start": 10,
+    "end": 13,
+    "title": "A / left heading sweep"
+  },
+  {
+    "id": "d",
+    "group": "controls",
+    "start": 13,
+    "end": 16,
+    "title": "D / right heading sweep"
+  },
+  {
+    "id": "wa",
+    "group": "controls",
+    "start": 16,
+    "end": 19,
+    "title": "W + A / front swing + steering"
+  },
+  {
+    "id": "wd",
+    "group": "controls",
+    "start": 19,
+    "end": 22,
+    "title": "W + D / front swing + steering"
+  },
+  {
+    "id": "sa",
+    "group": "controls",
+    "start": 22,
+    "end": 25,
+    "title": "S + A / back swing + steering"
+  },
+  {
+    "id": "sd",
+    "group": "controls",
+    "start": 25,
+    "end": 28,
+    "title": "S + D / back swing + steering"
+  },
+  {
+    "id": "release-reverse",
+    "group": "controls",
+    "start": 28,
+    "end": 33,
+    "title": "Release, coast, brake, reverse"
+  },
+  {
+    "id": "yaw-reverse",
+    "group": "controls",
+    "start": 33,
+    "end": 37,
+    "title": "Steering release and reversal"
+  },
+  {
+    "id": "landing",
+    "group": "controls",
+    "start": 37,
+    "end": 41,
+    "title": "Hover recovery after a drop"
+  },
+  {
+    "id": "opposites",
+    "group": "controls",
+    "start": 41,
+    "end": 44,
+    "title": "Opposite keys cancel powered input"
+  },
+  {
+    "id": "vertical-hit",
+    "group": "combat",
+    "start": 0,
+    "end": 3,
+    "title": "Vertical giant-paw hit / W"
+  },
+  {
+    "id": "horizontal-hit",
+    "group": "combat",
+    "start": 3,
+    "end": 6,
+    "title": "Horizontal giant-paw hit / D"
+  },
+  {
+    "id": "sword-clash",
+    "group": "combat",
+    "start": 6,
+    "end": 10,
+    "title": "Giant paw blocks sword / clash recoil"
+  },
+  {
+    "id": "near-miss",
+    "group": "combat",
+    "start": 10,
+    "end": 12.5,
+    "title": "Same giant-paw swing / clear miss"
+  },
+  {
+    "id": "floating-paws",
+    "group": "design",
+    "start": 0,
+    "end": 4,
+    "title": "Floating cat / hovering giant paws"
+  }
+]

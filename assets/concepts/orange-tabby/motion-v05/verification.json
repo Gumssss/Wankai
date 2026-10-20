@@ -1,0 +1,316 @@
+{
+  "version": "orange-tabby-motion-v05 / prepared-v01",
+  "date": "2026-10-20",
+  "checks": [
+    {
+      "name": "selected supplied/reference originals remain unchanged",
+      "passed": true,
+      "detail": [
+        "assets/concepts/orange-tabby/references/orange-tabby-original.png",
+        "assets/concepts/orange-tabby/references/paw-weapon-original.png",
+        "assets/concepts/orange-tabby/references/hosico-seated-source.jpg",
+        "assets/concepts/orange-tabby/tripo-input-v01/selected-source.png"
+      ]
+    },
+    {
+      "name": "original Tripo source remains unchanged",
+      "passed": true,
+      "detail": "No replacement generation or source edits."
+    },
+    {
+      "name": "replay uses the recorded physics source",
+      "passed": true,
+      "detail": "b2791ed7fc5edb53f00b6130650212abba8912627e9cbc6090c373b5474ec9ac"
+    },
+    {
+      "name": "actual prepared export is the video model",
+      "passed": true,
+      "detail": "0e45dd20ef6025f49336ca1eb7e8070e24a20a9486ffd288991c759418529cdb"
+    },
+    {
+      "name": "body remains upright",
+      "passed": true,
+      "detail": "Seated body follows common heading, not paw pitch."
+    },
+    {
+      "name": "opposite input and idle cost nothing and remain stationary",
+      "passed": true,
+      "detail": "Canceled input supplies no motor or stamina drain."
+    },
+    {
+      "name": "both swing directions produce opposite support travel",
+      "passed": true,
+      "detail": {
+        "w": {
+          "minBaseClearance": 0.35,
+          "travel": [
+            7.726245136693391,
+            0.4199989535096839
+          ],
+          "maxRise": 0.627840900848604,
+          "finalHeight": 0.38514124329555044,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 30
+        },
+        "s": {
+          "minBaseClearance": 0.35,
+          "travel": [
+            -5.0127885053067605,
+            0.12319575715712694
+          ],
+          "maxRise": 0.6328640568526936,
+          "finalHeight": 0.6187166716307057,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 33
+        }
+      }
+    },
+    {
+      "name": "ordinary low hover and paw-contact rise stay bounded",
+      "passed": true,
+      "detail": {
+        "w": 0.627840900848604,
+        "s": 0.6328640568526936,
+        "wa": 0.6319966110834713,
+        "wd": 0.632389570270948,
+        "sa": 0.6342871344617648,
+        "sd": 0.631007326831372
+      }
+    },
+    {
+      "name": "analytical contact velocity agrees with transform",
+      "passed": true,
+      "detail": 9.155620951276835e-06
+    },
+    {
+      "name": "repeat-hit gates are shared across the paw pair",
+      "passed": true,
+      "detail": "One attacker hit gate, not one award per contact sphere."
+    },
+    {
+      "name": "ordinary stamina is charged once for both paws",
+      "passed": true,
+      "detail": {
+        "w": 157.1111111111099,
+        "wa": 139.95555555555165
+      }
+    },
+    {
+      "name": "actual export loader/control checks pass",
+      "passed": true,
+      "detail": {
+        "checks": 26
+      }
+    },
+    {
+      "name": "full-motion mesh bounds stay clear of captions",
+      "passed": true,
+      "detail": [
+        [
+          0.35437444455214384,
+          0.6456255554478562,
+          0.39017974559934304,
+          0.633820254400657
+        ],
+        [
+          0.3495186277319353,
+          0.6504813722680647,
+          0.3253279132716276,
+          0.6986720867283724
+        ],
+        [
+          0.33779189407959775,
+          0.6622081059204022,
+          0.309124591541732,
+          0.714875408458268
+        ],
+        [
+          0.34743058500230584,
+          0.6525694149976942,
+          0.3067623770471077,
+          0.7172376229528923
+        ],
+        [
+          0.34032429149693977,
+          0.6596757085030602,
+          0.30665316080293703,
+          0.717346839197063
+        ],
+        [
+          0.3282587403567244,
+          0.6717412596432756,
+          0.24740624562763924,
+          0.7765937543723608
+        ],
+        [
+          0.3321869426255959,
+          0.6678130573744041,
+          0.24999128959507577,
+          0.7740087104049242
+        ],
+        [
+          0.3281125892834566,
+          0.6718874107165433,
+          0.247,
+          0.777
+        ],
+        [
+          0.33364996103255745,
+          0.6663500389674426,
+          0.24829370897807468,
+          0.7757062910219253
+        ],
+        [
+          0.3440249139224396,
+          0.6559750860775604,
+          0.31755085388217474,
+          0.7064491461178253
+        ],
+        [
+          0.3340302036662207,
+          0.6659697963337793,
+          0.3155750124322547,
+          0.7084249875677453
+        ],
+        [
+          0.3450309131777084,
+          0.6549690868222916,
+          0.31891151317096544,
+          0.7050884868290346
+        ],
+        [
+          0.35437444455214384,
+          0.6456255554478562,
+          0.39017974559934304,
+          0.633820254400657
+        ],
+        [
+          0.2597249810328522,
+          0.7402750189671479,
+          0.247,
+          0.777
+        ],
+        [
+          0.2669781249190155,
+          0.7330218750809845,
+          0.247,
+          0.777
+        ],
+        [
+          0.31104070754203805,
+          0.688959292457962,
+          0.247,
+          0.777
+        ],
+        [
+          0.34083085604205654,
+          0.6591691439579435,
+          0.247,
+          0.777
+        ],
+        [
+          0.28018440497829666,
+          0.7198155950217033,
+          0.247,
+          0.777
+        ]
+      ]
+    },
+    {
+      "name": "controls video format/duration",
+      "passed": true,
+      "detail": {
+        "duration": "44.000000",
+        "frames": "1056",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "controls full encoded decode",
+      "passed": true,
+      "detail": "All encoded frames decode."
+    },
+    {
+      "name": "combat video format/duration",
+      "passed": true,
+      "detail": {
+        "duration": "12.500000",
+        "frames": "300",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "combat full encoded decode",
+      "passed": true,
+      "detail": "All encoded frames decode."
+    },
+    {
+      "name": "design video format/duration",
+      "passed": true,
+      "detail": {
+        "duration": "4.000000",
+        "frames": "96",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "design full encoded decode",
+      "passed": true,
+      "detail": "All encoded frames decode."
+    }
+  ],
+  "media": [
+    {
+      "id": "orange-tabby-controls-v05",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v05.mp4",
+      "sha256": "c27ead5dad89997e5ac23c118e646ddb9197baaa9931c206cbb6b4639d130016",
+      "bytes": 5493724,
+      "duration_seconds": 44,
+      "role": "actual prepared Tripo mesh / isolated game solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v05",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v05.mp4",
+      "sha256": "469b341331cfd2137b7a773d111f52b99873261af66cdedda7b7a93681a89c35",
+      "bytes": 2977063,
+      "duration_seconds": 12.5,
+      "role": "actual prepared Tripo mesh / isolated game solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v05",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v05.mp4",
+      "sha256": "25bfb28227ff087c0e85d1fa712c14249575883bdc5b311bf2087167953e8e6b",
+      "bytes": 368435,
+      "duration_seconds": 4,
+      "role": "actual prepared Tripo asset turntable"
+    }
+  ],
+  "loader_checks_passed": 26,
+  "body_radius_correction": {
+    "reproduced": 0.38,
+    "correct_measured": 0.58,
+    "root_cause": "Preview loadout normalization retained basic-fighter characterStats despite the new weapon profile. Corrected the isolated character profile.",
+    "control_rows_unchanged": true
+  },
+  "review": {
+    "motion_B": "pending",
+    "prepared_asset_E": "pending",
+    "runtime": null
+  },
+  "limitations": [
+    "Actual prepared Tripo mesh replaying an isolated current-game solver adapter, not actual game footage or a selectable character.",
+    "The seated body uses continuous bounded external hover lift; paw gravity is compensated. This is a new ordinary-hover proposal, distinct from the beagle timed F skill.",
+    "Paw spheres fit inside the actual mesh; small cosmetic surface gaps remain. Review before production integration and balance tuning.",
+    "No new cat ability or shared balance change.",
+    "Paw mesh surface undercoverage reaches about 0.14 units; ear tips and tail are cosmetic.",
+    "Low damage and travel pace are trial balance; actual-game integration/acceptance remain future work."
+  ]
+}

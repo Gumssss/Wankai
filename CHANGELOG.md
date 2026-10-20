@@ -1,5 +1,55 @@
 # 更新记录 / Changelog
 
+## 20 October 2026 — GitHub delivery branch
+
+- Collect playable orange tabby + giant paws, independent character/weapon selection, full-window preparation, required source/evidence assets, updated skill and handoff records on `feat/orange-tabby-preparation` for the requested GitHub push.
+- Pre-commit validation: complete **143/143 tests passed**, production build passed with the existing chunk-size advisory, and diff check passed. Blender autosave backups remain local.
+- Hand the branch/PR to the creator's own integration agent. This delivery does not merge into `main` or create an installer/release. Earlier local-only statements describe their dated checkpoints.
+
+## 20 October 2026 — user-side integration handoff
+
+- Clarified that the creator's own integration agent owns combined review, conflict resolution, final verification and merge; contributing agents hand over their assigned changes and tested revisions.
+- Added a current-cutoff packet, separate contributor/integration prompts and practical stage-scoped skill usage/resume instructions. Linked them from the README and project status.
+- Documentation only: no commit, push, PR creation, merge, release, new asset generation or gameplay change was performed for this handoff update.
+
+## 20 October 2026 — stage-scoped character pipeline refinement
+
+- Updated the portable `game-character-pipeline` source at the creator's request. Keep one umbrella skill with stage-scoped entry, requested endpoints, authorized continuation and checkpoint/resume; skip completed work and redundant reviews instead of forcing the whole production sequence.
+- Separate retained actual-game motion evidence from its presentation. Honor explicit live-game review after implementation, and use screen/interaction evidence for UI-only changes with unchanged assets and motion.
+- Preserve required Tripo bases, front/side/back reconstruction inputs, before-implementation motion review, full W/S/A/D plus four-combination coverage and affected approval/spending boundaries. No seven-skill split, new gameplay or asset generation is part of this refinement. [Scope and package guidance](docs/SKILLS.md#stage-scoped-pipeline-and-applied-refinements).
+- Synchronized the installed account copy and verified the five modified files byte-for-byte. Metadata/UI YAML and field checks, internal links, JSON templates and four independent read-only scope dry runs passed. The official `quick_validate.py` helper could not run because PyYAML was unavailable; no new production generation or game changes were performed.
+
+## 20 October 2026 — documentation reconciliation
+
+- Reconciled current README, product/design/control references, collaborator and character handoffs with the playable cat, eight loadouts/64 pairings, and full-window preparation flow. Preserved earlier concepts, motion studies and verification counts as dated history.
+- Clarified merged baseline versus local unpublished changes, 200 stamina and common versus character-specific weapons. Recorded the creator's preference to review implemented work in the live game.
+- At this documentation-only checkpoint, proposed honoring presentation preferences and using UI-specific evidence for UI-only work. The later authorized skill refinement above applies those changes and adds stage-scoped operation; gameplay is unchanged.
+
+## 20 October 2026 — approved two-player selection layout
+
+- Follow-up: make selection a dedicated full-window preparation page with larger responsive controls/previews and Back/Escape navigation. Hide the arena/HUD while preparing, restore keyboard focus on return, and preserve the last valid arena projection during hidden-container resizes. Seventeen focused draft/resize/camera checks and the build pass. [Current screenshot](docs/screenshots/preparation-stage-v04.jpg).
+- Show P1 on the left and P2 on the right, each with character/weapon choices above its own rotatable model preview. Stack complete player panels on narrow screens.
+- Add independent Ready buttons and a shared Start/save action. Choice edits reset only the edited player's readiness; cancel discards drafts and final confirmation commits both together.
+- Preserve solo/practice configuration, committed selections and all gameplay. Fourteen scoped state/loadout tests, production build and desktop/mobile browser checks pass. [Implementation and evidence](docs/CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md).
+
+## 20 October 2026 — approved orange tabby playable locally
+
+- Added orange tabby + giant paws to the character/weapon picker, using the exact approved prepared-v02 Tripo/Blender asset.
+- Integrated accepted v06 physical movement: paired W/S paw pitch, A/D steering, four combinations, support-driven lift, shared stamina and normal combat/recovery.
+- Added independent player models/materials, fitted paw contacts and trails, loading/failure fallback, cat camera bounds, help and reset behavior.
+- Added saved-preview motion parity, contact/geometry/input/lifecycle/combat and camera checks. Actual gameplay evidence and delivery results: [cat handoff](docs/characters/orange-tabby/GAMEPLAY.md).
+- Local work only; no new generation/spend, push, merge or release.
+
+## Unreleased — local character / weapon separation, 19 October 2026
+
+- Removed the brief simple-beagle flash during loading: show a loading label in the preview, and reveal the procedural backup only on an asset failure. Delayed loading, success and failure/retry were browser-checked.
+- Replaced the combined loadout picker with Character → Weapon → Confirm, boxed choices left and rotatable combined model right; responsive stacking, independent drafts, atomic save/start and cancellation.
+- Basic fighter supports sword/polearm/hammer; beagle supports those plus long ears. Compact natural ears are cosmetic. Orange cat/cat paws remain disabled and separate.
+- Added character/weapon catalogues and resolver, canonical selections, legacy compatibility, independent model loading and character-owned hurt shapes/boundaries. Hover remains five seconds, stamina-free and restricted to long ears; flips remain inactive.
+- Measured full-swing clearance: only beagle sword attachment moves outward, using the same offset for visuals and physical contacts. Existing resources, weapon tuning, cameras and shared simulation tick remain.
+- 108 tests pass, production build and rig checks pass. Browser flows/failure retry and actual gameplay recordings verified. Built Electron picker/local asset loading checked; full native match automation remains unverified. Human acceptance/balance remain open.
+- [Implementation and evidence](docs/CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md). These selection changes have not yet been pushed or merged.
+
 ## 2026-10-19 — Timed hover and character-production source checkpoint
 
 - Include the five-second F / P2 Right Shift hover skill, upright parallel-ear W/S+A/D movement and 200 ordinary stamina in the playable source. The skill costs no stamina; the rejected flip controller remains inactive.

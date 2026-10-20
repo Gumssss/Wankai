@@ -1,14 +1,14 @@
 # Deferred side project — precision weapon
 
-Status: **deferred at the creator's request on 15 October 2026**. This is a future fourth weapon, separate from the playable sword, polearm, and iron hammer. No completion date is set. No staff export has been purchased or downloaded, and no staff has been integrated.
+Status: **deferred at the creator's request on 15 October 2026**. This is a proposed fourth common weapon, separate from the playable sword, polearm, and iron hammer; character-specific long ears and cat paws are already available. No completion date is set. No staff export has been purchased or downloaded, and no staff has been integrated.
 
-Reviewed 17 October 2026: still deferred. The playable three-weapon build is on default `main`; its shared stamina and direction-weighted damage are documented in [CONTROL_SYSTEM.md](CONTROL_SYSTEM.md). Those implemented changes do not approve this fourth weapon or its proposed balance.
+Reviewed 20 October 2026: still deferred. The three ordinary weapons, 200 stamina, direction-weighted damage and half-speed/contact trial are in the merged baseline. The local game additionally has eight valid character/weapon loadouts and a full-window preparation page; see [CONTROL_SYSTEM.md](CONTROL_SYSTEM.md) and the [selection handoff](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md). Those changes do not approve this proposed common weapon or its balance.
 
 ## Agreed direction
 
 The creator wants a weapon focused on control, with slower horizontal turning on A / D (and the equivalent arrow keys). The accepted starting direction is roughly half the sword's maximum horizontal turning speed, with quick response and stronger braking on release. This should make aiming and deliberate ground placement easier, at the cost of slower wide sweeps and slower turns toward an opponent behind the fighter. Tune W / S independently rather than slowing every movement of the weapon.
 
-That comparison was made before the current three-weapon half-speed trial, when the sword limit was 12.2 rad/s. The original reference therefore suggests about 6.1 rad/s; do not silently halve the new 6.1 sword limit again. Revisit the intended relative pace when this deferred project resumes. Neither a fourth weapon nor its final values are implemented.
+That comparison was made before the ordinary-weapon half-speed trial, when the sword limit was 12.2 rad/s. The original reference therefore suggests about 6.1 rad/s; do not silently halve the current 6.1 sword limit again. Revisit the intended relative pace when this deferred project resumes. Neither this fourth common weapon nor its final values are implemented.
 
 ## Candidate awaiting approval
 

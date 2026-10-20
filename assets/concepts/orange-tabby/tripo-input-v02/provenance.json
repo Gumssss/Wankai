@@ -1,0 +1,120 @@
+{
+  "id": "tripo-input-v02",
+  "date": "2026-10-19",
+  "tool": "built-in image_gen.imagegen",
+  "mode": "built-in",
+  "source_seed": "beagle-style-reference-v03 and preserved selected user upload",
+  "authorization": "User requested front/side/back images, a permanent three-view skill rule, and upload to Tripo to generate the model using computer use.",
+  "views": [
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/front.png",
+      "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+      "bytes": 1326587,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "front",
+      "slot": "Front"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/left.png",
+      "sha256": "576d5ab3f0e9bec18c62ed834feaa0b289e9ac3e204ecb7bba34a2f4ff36dfd5",
+      "bytes": 1484238,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "left",
+      "slot": "Left"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/back.png",
+      "sha256": "c6ed80b72f66b05ee77cc56e7bd129259f3ef2a7340a8be387995288d381cf9b",
+      "bytes": 1457806,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "back",
+      "slot": "Back"
+    }
+  ],
+  "operations": [
+    {
+      "id": "front-reuse",
+      "type": "unmodified file copy",
+      "input": "assets/concepts/orange-tabby/tripo-input-v01/orange-tabby-tripo-input-v01.png",
+      "output": {
+        "path": "assets/concepts/orange-tabby/tripo-input-v02/front.png",
+        "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+        "bytes": 1326587,
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "view": "front",
+        "slot": "Front"
+      }
+    },
+    {
+      "id": "side-a",
+      "prompt": "assets/concepts/orange-tabby/tripo-input-v02/side-prompt.txt",
+      "prompt_sha256": "2c8969f3916497473640de0521df1cfa6ec883c535f82810242ab1a9dcd81d0c",
+      "input": [
+        "assets/concepts/orange-tabby/tripo-input-v02/front.png"
+      ],
+      "default_output": "/Users/haojun/.codex/generated_images/01a1547b-7bd0-79a2-b4fa-e63af785c1dc/exec-f3af7bfe-24a7-4833-a2ab-635cc881a1fd.png",
+      "output": {
+        "path": "assets/concepts/orange-tabby/tripo-input-v02/side-inconsistent-a.png",
+        "sha256": "58e61f02829fbe2af1c3d72b2da1d5af0bf20a6d7d962dc23ef358c7a321f088",
+        "bytes": 1514626,
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB"
+      },
+      "status": "rejected inconsistent part placement"
+    },
+    {
+      "id": "side-b",
+      "prompt": "assets/concepts/orange-tabby/tripo-input-v02/side-correction-prompt.txt",
+      "prompt_sha256": "d840a635d66c0da1c84ec45ca23cf4bf715e06e6a0c196dfc37fcc7bbea61c93",
+      "inputs": [
+        "assets/concepts/orange-tabby/tripo-input-v02/front.png",
+        "assets/concepts/orange-tabby/tripo-input-v02/side-inconsistent-a.png"
+      ],
+      "default_output": "/Users/haojun/.codex/generated_images/01a1547b-7bd0-79a2-b4fa-e63af785c1dc/exec-2d5d3cc2-99f2-46ac-8303-1b2a3560e95b.png",
+      "output": {
+        "path": "assets/concepts/orange-tabby/tripo-input-v02/left.png",
+        "sha256": "576d5ab3f0e9bec18c62ed834feaa0b289e9ac3e204ecb7bba34a2f4ff36dfd5",
+        "bytes": 1484238,
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "view": "left",
+        "slot": "Left"
+      },
+      "status": "current left view"
+    },
+    {
+      "id": "back",
+      "prompt": "assets/concepts/orange-tabby/tripo-input-v02/back-prompt.txt",
+      "prompt_sha256": "36a8bbecc3febe394c4b24ca8cf61da97eca369d43a5b426c962e6af3ef470bb",
+      "inputs": [
+        "assets/concepts/orange-tabby/tripo-input-v02/front.png",
+        "assets/concepts/orange-tabby/tripo-input-v02/left.png"
+      ],
+      "default_output": "/Users/haojun/.codex/generated_images/01a1547b-7bd0-79a2-b4fa-e63af785c1dc/exec-988d087d-0b48-436c-aac6-c4f0f2467035.png",
+      "output": {
+        "path": "assets/concepts/orange-tabby/tripo-input-v02/back.png",
+        "sha256": "c6ed80b72f66b05ee77cc56e7bd129259f3ef2a7340a8be387995288d381cf9b",
+        "bytes": 1457806,
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "view": "back",
+        "slot": "Back"
+      },
+      "status": "current back view"
+    }
+  ],
+  "verification": "assets/concepts/orange-tabby/tripo-input-v02/verification.json",
+  "operation_plan": "assets/concepts/orange-tabby/tripo-v01/operation.json",
+  "skill_change": "front/side/back required before every new Tripo model generation; repository and installed skill validated"
+}

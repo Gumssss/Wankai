@@ -59,16 +59,16 @@ Generated results are in `output/blender/environment-check/`, including `blender
 
 The existing Chrome session can access [Tripo's model-generation workspace](https://studio.tripo3d.ai/workspace/generate) while signed in. Browser control can inspect generation settings and later download selected assets. No Tripo model was generated or exported during environment setup.
 
-Use the [prototype plan](BEAGLE_PROTOTYPE_PLAN.md) to establish ear proportions and contact leverage first. Then prepare a clean single-character reference or consistent views; the supplied collage is an appearance reference rather than one generation-ready subject.
+For a new base, establish proportions and contact leverage before generation; the [beagle prototype plan](BEAGLE_PROTOTYPE_PLAN.md) is one historical example. Prepare the user's required **three separate, consistent front/side/back images** from the selected identity. A collage or single front reference alone is not the current production packet. Inspect the available Tripo multi-view slots/settings before submission; see the [current workflow](CHARACTER_CREATION_WORKFLOW_SPEC.md). Reuse an approved Tripo base for local revisions instead of generating it again.
 
-1. Use Tripo to produce a candidate base mesh when a reference and generation cost have been selected.
+1. Use Tripo to produce a candidate base mesh after the matching three-view packet and operation/cost are approved. The following ear-refinement steps describe the original beagle workflow; adapt them to another character's accepted anatomy and controller.
 2. Keep the original export and generation details with the asset source record.
 3. Import the GLB into Blender, inspect topology and separation around the ears, and refine the ear paddles and root folds to the proven dimensions.
 4. Author the custom ear rig and clean skin weights. Validate complete rotations and the ground-support pose.
 5. Export only the intended model/armature selection as GLB, with skins, Y-up conversion, and at most four bone influences per vertex.
 6. Load the result in the game; let its physics drive the root and ear swings.
 
-The default Tripo HD workspace displayed H3.1 generation at 30 credits during inspection. That is one observed configuration, not a quote for all generation modes or exports; inspect the final selected settings before spending credits.
+During the 17 October environment inspection, the default Tripo HD workspace displayed H3.1 generation at 30 credits. That is one historical observed configuration, not a current quote for generation modes or exports; inspect the final selected settings before spending credits.
 
 Browser use for Tripo plus Blender's Python tools is the recommended initial workflow. A bridge add-on or live automation server is not required for these checks. Existing static-weapon preparation scripts reject skinned meshes; do not use them to optimize a rigged character.
 

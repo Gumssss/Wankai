@@ -1,0 +1,464 @@
+[
+  {
+    "id": "s",
+    "group": "lift",
+    "title": "S / giant paws lift the cat into the air",
+    "detail": "Hold S, plant the paws, rise, release, descend and recover",
+    "speed": 1,
+    "offset": 0,
+    "duration": 6,
+    "start": 1,
+    "bounds": [
+      -2.818834066390991,
+      2.6901180744171143,
+      -2.782994270324707,
+      1.9177970886230469
+    ],
+    "end": 180,
+    "scale": 11.293192453928539,
+    "center": [
+      -0.06435799598693848,
+      -0.4325985908508301
+    ]
+  },
+  {
+    "id": "s-slow",
+    "group": "lift",
+    "title": "S / giant paws lift the cat into the air / same event, 0.25x",
+    "detail": "Hold S, plant the paws, rise, release, descend and recover",
+    "speed": 0.25,
+    "offset": 0.8666666666666666,
+    "duration": 4.8,
+    "start": 181,
+    "bounds": [
+      -2.2943954467773438,
+      2.406914472579956,
+      -2.427241802215576,
+      1.8653995990753174
+    ],
+    "end": 324,
+    "scale": 11.293192453928539,
+    "center": [
+      0.05625951290130615,
+      -0.2809211015701294
+    ]
+  },
+  {
+    "id": "hover-idle",
+    "group": "controls",
+    "title": "Idle / low floating rest pose",
+    "detail": "No drive or launch / original neutral appearance",
+    "speed": 1,
+    "offset": 0,
+    "duration": 2,
+    "start": 325,
+    "bounds": [
+      -0.7506138682365417,
+      1.9982740879058838,
+      -2.500462055206299,
+      1.1838332414627075
+    ],
+    "end": 384,
+    "scale": 9,
+    "center": [
+      0.623830109834671,
+      -0.6583144068717957
+    ]
+  },
+  {
+    "id": "w",
+    "group": "controls",
+    "title": "W / forward paw drive",
+    "detail": "Finite paired paw drive / contact carries the seated cat",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 385,
+    "bounds": [
+      -3.2722082138061523,
+      3.0794785022735596,
+      -3.0710811614990234,
+      1.9707125425338745
+    ],
+    "end": 474,
+    "scale": 12.11241730698594,
+    "center": [
+      -0.09636485576629639,
+      -0.5501843094825745
+    ]
+  },
+  {
+    "id": "a",
+    "group": "controls",
+    "title": "A / left heading sweep",
+    "detail": "Finite paired paw drive / contact carries the seated cat",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 475,
+    "bounds": [
+      -2.7671430110931396,
+      2.7659592628479004,
+      -2.500462055206299,
+      1.445696234703064
+    ],
+    "end": 564,
+    "scale": 9.480260155938408,
+    "center": [
+      -0.0005918741226196289,
+      -0.5273829102516174
+    ]
+  },
+  {
+    "id": "d",
+    "group": "controls",
+    "title": "D / right heading sweep",
+    "detail": "Finite paired paw drive / contact carries the seated cat",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 565,
+    "bounds": [
+      -2.766183614730835,
+      2.7672150135040283,
+      -2.5431439876556396,
+      1.228771686553955
+    ],
+    "end": 654,
+    "scale": 9.061659277380407,
+    "center": [
+      0.0005156993865966797,
+      -0.6571861505508423
+    ]
+  },
+  {
+    "id": "wa",
+    "group": "controls",
+    "title": "W + A / forward paw drive + steering",
+    "detail": "Finite paired paw drive / contact carries the seated cat",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 655,
+    "bounds": [
+      -3.205554246902466,
+      3.115769863128662,
+      -2.9435203075408936,
+      1.8382233381271362
+    ],
+    "end": 744,
+    "scale": 11.487672422025296,
+    "center": [
+      -0.044892191886901855,
+      -0.5526484847068787
+    ]
+  },
+  {
+    "id": "wd",
+    "group": "controls",
+    "title": "W + D / forward paw drive + steering",
+    "detail": "Finite paired paw drive / contact carries the seated cat",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 745,
+    "bounds": [
+      -3.28490948677063,
+      3.185858964920044,
+      -3.0641050338745117,
+      1.8690379858016968
+    ],
+    "end": 834,
+    "scale": 11.851394641864767,
+    "center": [
+      -0.04952526092529297,
+      -0.5975335240364075
+    ]
+  },
+  {
+    "id": "sa",
+    "group": "controls",
+    "title": "S + A / reverse paw drive + steering",
+    "detail": "Finite paired paw drive / contact carries the seated cat",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 835,
+    "bounds": [
+      -2.949256658554077,
+      3.223662853240967,
+      -3.1272969245910645,
+      1.9946612119674683
+    ],
+    "end": 924,
+    "scale": 12.30500453227275,
+    "center": [
+      0.13720309734344482,
+      -0.5663178563117981
+    ]
+  },
+  {
+    "id": "sd",
+    "group": "controls",
+    "title": "S + D / reverse paw drive + steering",
+    "detail": "Finite paired paw drive / contact carries the seated cat",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 925,
+    "bounds": [
+      -3.2783238887786865,
+      3.2811222076416016,
+      -2.671161413192749,
+      1.949554204940796
+    ],
+    "end": 1014,
+    "scale": 11.10081830182233,
+    "center": [
+      0.0013991594314575195,
+      -0.36080360412597656
+    ]
+  },
+  {
+    "id": "release-reverse",
+    "group": "controls",
+    "title": "W / release / S reversal",
+    "detail": "Coast, brake and reverse / support remains physical",
+    "speed": 1,
+    "offset": 0,
+    "duration": 5,
+    "start": 1015,
+    "bounds": [
+      -3.1061530113220215,
+      2.8615124225616455,
+      -3.0584981441497803,
+      1.9517772197723389
+    ],
+    "end": 1164,
+    "scale": 12.03669757098407,
+    "center": [
+      -0.12232029438018799,
+      -0.5533604621887207
+    ]
+  },
+  {
+    "id": "yaw-reverse",
+    "group": "controls",
+    "title": "A / release / D reversal",
+    "detail": "Common heading control / finite rate and recovery",
+    "speed": 1,
+    "offset": 0,
+    "duration": 4,
+    "start": 1165,
+    "bounds": [
+      -1.9498597383499146,
+      2.7662200927734375,
+      -2.5424489974975586,
+      1.4458658695220947
+    ],
+    "end": 1284,
+    "scale": 9.581537218065234,
+    "center": [
+      0.4081801772117615,
+      -0.5482915639877319
+    ]
+  },
+  {
+    "id": "landing",
+    "group": "controls",
+    "title": "Drop test / recovery / W resumes",
+    "detail": "Declared external 0.70-unit drop / not proof of a paw launch",
+    "speed": 1,
+    "offset": 0,
+    "duration": 4,
+    "start": 1285,
+    "bounds": [
+      -3.1040260791778564,
+      2.961418390274048,
+      -3.059525489807129,
+      1.9707931280136108
+    ],
+    "end": 1404,
+    "scale": 12.084849532302078,
+    "center": [
+      -0.0713038444519043,
+      -0.544366180896759
+    ]
+  },
+  {
+    "id": "opposites",
+    "group": "controls",
+    "title": "Opposite keys cancel powered drive",
+    "detail": "W + S, then A + D / shared normal resource rules",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 1405,
+    "bounds": [
+      -0.7506138682365417,
+      1.9982740879058838,
+      -2.500462055206299,
+      1.1838332414627075
+    ],
+    "end": 1494,
+    "scale": 9,
+    "center": [
+      0.623830109834671,
+      -0.6583144068717957
+    ]
+  },
+  {
+    "id": "vertical-hit",
+    "group": "combat",
+    "title": "Vertical giant-paw hit / W",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 1495,
+    "bounds": [
+      -2.923149824142456,
+      4.37480354309082,
+      -2.614089012145996,
+      2.2988414764404297
+    ],
+    "end": 1584,
+    "scale": 11.802836008616039,
+    "center": [
+      0.7258268594741821,
+      -0.1576237678527832
+    ]
+  },
+  {
+    "id": "vertical-hit-slow",
+    "group": "combat",
+    "title": "Vertical giant-paw hit / W / same event, 0.25x",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "speed": 0.25,
+    "offset": 0.4388888888888889,
+    "duration": 3.6,
+    "start": 1585,
+    "bounds": [
+      -2.5348896980285645,
+      1.490106225013733,
+      -2.358302354812622,
+      1.911219835281372
+    ],
+    "end": 1692,
+    "scale": 11.802836008616039,
+    "center": [
+      -0.5223917365074158,
+      -0.223541259765625
+    ]
+  },
+  {
+    "id": "horizontal-hit",
+    "group": "combat",
+    "title": "Horizontal giant-paw hit / D",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "speed": 1,
+    "offset": 0,
+    "duration": 3,
+    "start": 1693,
+    "bounds": [
+      -3.9310619831085205,
+      1.9264639616012573,
+      -2.2788522243499756,
+      1.605490803718567
+    ],
+    "end": 1782,
+    "scale": 9.331755022386888,
+    "center": [
+      -1.0022990107536316,
+      -0.33668071031570435
+    ]
+  },
+  {
+    "id": "horizontal-hit-slow",
+    "group": "combat",
+    "title": "Horizontal giant-paw hit / D / same event, 0.25x",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "speed": 0.25,
+    "offset": 1.027777777777778,
+    "duration": 3.6,
+    "start": 1783,
+    "bounds": [
+      -3.295248031616211,
+      1.5660260915756226,
+      -1.8998903036117554,
+      0.9789301753044128
+    ],
+    "end": 1890,
+    "scale": 9.331755022386888,
+    "center": [
+      -0.8646109700202942,
+      -0.46048006415367126
+    ]
+  },
+  {
+    "id": "sword-clash",
+    "group": "combat",
+    "title": "Giant paw blocks sword / clash recoil",
+    "detail": "Actual weapon contact deflects; both fighters recoil and recover",
+    "speed": 1,
+    "offset": 0,
+    "duration": 4,
+    "start": 1891,
+    "bounds": [
+      -3.467172622680664,
+      2.7527213096618652,
+      -2.8408377170562744,
+      2.213895797729492
+    ],
+    "end": 2010,
+    "scale": 12.143503939425266,
+    "center": [
+      -0.3572256565093994,
+      -0.3134709596633911
+    ]
+  },
+  {
+    "id": "sword-clash-slow",
+    "group": "combat",
+    "title": "Giant paw blocks sword / clash recoil / same event, 0.25x",
+    "detail": "Actual weapon contact deflects; both fighters recoil and recover",
+    "speed": 0.25,
+    "offset": 0.3222222222222223,
+    "duration": 4,
+    "start": 2011,
+    "bounds": [
+      -3.289199113845825,
+      2.0198910236358643,
+      -2.3985047340393066,
+      1.8653150796890259
+    ],
+    "end": 2130,
+    "scale": 12.143503939425266,
+    "center": [
+      -0.6346540451049805,
+      -0.2665948271751404
+    ]
+  },
+  {
+    "id": "near-miss",
+    "group": "combat",
+    "title": "Same giant-paw swing / clear miss",
+    "detail": "Distant target stays untouched; no invisible extra weapon reach",
+    "speed": 1,
+    "offset": 0,
+    "duration": 2.5,
+    "start": 2131,
+    "bounds": [
+      -4.3969316482543945,
+      3.037222146987915,
+      -3.5128304958343506,
+      3.460022211074829
+    ],
+    "end": 2205,
+    "scale": 16.75159809467671,
+    "center": [
+      -0.6798547506332397,
+      -0.026404142379760742
+    ]
+  }
+]

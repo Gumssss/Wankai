@@ -1,0 +1,28 @@
+{
+  "source": "/Users/haojun/Downloads/beagle-functional-combat-v07.mp4",
+  "sha256": "e53529f3a7680138f8f75274018feab756183dea0e1aa8c5bc7740a9952e63ef",
+  "duration": 19.4,
+  "resolution": [
+    1600,
+    900
+  ],
+  "fps": 30,
+  "selected_by_user": "Use this type of video; cat paws should lift the cat into the air when S is pressed. v05 motion rejected.",
+  "features": [
+    "compact live W/A/S/D key highlights",
+    "shared stamina and opponent HP bars",
+    "thin title/chapter and phase labels, leaving most pixels for motion",
+    "world floor grid and ground-projected travel trace",
+    "contact rings, event flash and recorded damage/clash text",
+    "normal-speed whole action, then the same event at 0.25 speed",
+    "lower side-view slow replay reveals support and impacts",
+    "fixed camera height and visible floor make body rise legible"
+  ],
+  "cat_changes": [
+    "retain selected Tripo appearance and floating rest pose",
+    "test lower virtual paw pitch pivot as one-variable support-leverage correction",
+    "show explicit S-driven paw-floor support, airborne ascent, release, landing and recovery",
+    "no scripted launch or render-only vertical adjustment"
+  ],
+  "review": "v05 rejected; revised mechanics/video pending"
+}

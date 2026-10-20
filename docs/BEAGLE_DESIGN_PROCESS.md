@@ -8,7 +8,13 @@ The process involved repeated visual comparisons, several rejected motion ideas,
 
 This record covers the decisions, experiments, tools, implementation and lessons. It distinguishes reviewed concepts from simulated behavior, the merged source checkpoint from newer local work, and automated checks from the creator’s acceptance.
 
-## Current design and delivery state
+## Current local use — 20 October 2026
+
+The beagle remains playable with the accepted upright controller. Beagle character selection is independent of equipment: sword/polearm/hammer use natural cosmetic ears, while long ears use the rigged weapon-ear controller and F/Right Shift hover. The [live game](http://127.0.0.1:5173/) now opens a full-window P1/P2 preparation stage with choices above each actual-model preview, independent Ready and shared Start/Save; Back/Escape cancels drafts. The roster includes the implemented orange tabby + cat paws: eight valid loadouts and 64 ordered pairings. The creator prefers reviewing the live game after implementation; archived videos retain their original role and scope.
+
+The cat integration later passed the full 132-test suite. Two selection follow-ups passed 14 focused checks, then 17 focused draft/resize/camera checks plus the build; they did not rerun the historical full physics suite. See [current selection handoff](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) and [latest UI verification](selection-concepts/v04-preparation-stage/verification.json). The dated 17–19 October production narrative and checks below remain unchanged as history.
+
+## Design and delivery state at the timed-hover checkpoint
 
 | Area | Current decision |
 | --- | --- |
@@ -54,7 +60,7 @@ The brief considered broad natural paddle ears, narrow saber-like ears and ribbo
 | Game integration and GitHub checkpoint, 18 October | Add the beagle as a paired character/weapon loadout, with fitted contacts, independent instances and camera support. | Upright checkpoint passed 85 tests and was pushed and merged as PR #1. |
 | Playable flip extension, 18 October | Add coupled body pitch and ear dynamics while retaining A/D steering. | Passed 92 tests, but the creator reported a lying-down result. Flips were later set aside. |
 | Helicopter and normal-control comparison, 19 October | Show whole-character horizontal spinning, then separate the wide spin from ordinary movement after the creator raised a coverage concern. | Approve parallel normal strokes and steering, reserving the wide rotor pose for a skill. |
-| Hover and stamina revision, 19 October | Implement F hover, then replace stamina-driven holding with a fixed activation and double normal stamina. | Current local version uses a free five-second skill and 200 normal stamina; 100 tests and the build pass. |
+| Hover and stamina revision, 19 October | Implement F hover, then replace stamina-driven holding with a fixed activation and double normal stamina. | Timed-hover checkpoint used a free five-second skill and 200 normal stamina; 100 tests and the build passed. |
 
 Motion version numbers and model version numbers belong to separate sequences. In particular, motion v05 is an old flip study, while model v05 is the selected smooth production asset. Neither a higher number nor a newer file date by itself identifies the current gameplay design.
 
@@ -272,7 +278,7 @@ Verification became more representative as the work progressed:
 | Browser review | Actual model loading, selections, two-player instances, controls, HUD and visible timed hover. | Extended two-person play and performance under repeated sessions. |
 | Creator feedback | Whether the look and action matched the intended character. | Long-term balance and production readiness require further play. |
 
-The game baseline preserved during functional v07 had 77 tests. The integrated upright beagle checkpoint passed 85; the later flip experiment passed 92. The current timed-hover version passed **100 tests with zero failures**, and the production build passed with the existing bundle-size warning. The saved latest logs are under ignored output/stamina-timed-skill.
+The game baseline preserved during functional v07 had 77 tests. The integrated upright beagle checkpoint passed 85; the later flip experiment passed 92. At the 19 October timed-hover checkpoint, **100 tests passed with zero failures**, and the production build passed with the existing bundle-size warning. That checkpoint’s logs are under ignored output/stamina-timed-skill; later verification scopes are linked above.
 
 The rejected flip result is the clearest example of why these forms of verification must stay distinct. Selected full-turn tests and correct transforms did not prevent an unacceptable lying-down outcome in the creator’s play session.
 
@@ -345,5 +351,5 @@ The large raw Tripo originals remain in the local authoring archive and are excl
 4. Prove powered movement and combat with the game solver before treating a motion study as an implemented mechanic.
 5. Select the appearance base, preserve it, and use controlled edits for dimensions, clearance and rigging.
 6. Measure the exported asset and derive shared contact/visual transforms from its actual geometry.
-7. Verify mesh import, physics, UI and real play as separate checks; keep failures and user corrections in the decision history.
+7. Verify mesh import, physics, UI and real play as separate checks; keep failures and user corrections in the decision history. For this creator, open the live game after implementation, retaining prior recordings as evidence; explain new or changed motion through a review video before integration.
 8. Save an accepted source checkpoint, then record later experiments separately so the current model, controls and delivery state remain unambiguous.

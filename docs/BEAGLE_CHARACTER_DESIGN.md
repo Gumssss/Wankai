@@ -1,5 +1,8 @@
 # Beagle Character and Weapon Ear Design
 
+**Current local entry, 20 October 2026:** open the [live game](http://127.0.0.1:5173/) for implemented behavior. Preparation is a full-window P1-left/P2-right stage, with each player's choices above their own actual-model preview, independent Ready and shared Start/Save. Back/Escape cancels drafts. Beagle may equip sword, polearm, hammer or long ears; only long ears activate F/Right Shift hover. Orange tabby + cat paws is also playable, giving eight valid loadouts and 64 ordered pairings. The creator prefers live review after implementation; the dated videos below remain evidence. [Current preparation and verification](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) · [latest UI checks](selection-concepts/v04-preparation-stage/verification.json).
+
+
 The [complete design process](BEAGLE_DESIGN_PROCESS.md) records the reference, motion studies, Blender/Tripo model branches, creator feedback, rejected flips and current hover/stamina decisions. This brief retains earlier proposals below its implementation updates.
 
 **Latest implementation — 19 October 2026:** The creator approved normal parallel-ear W/S+A/D movement and requested F for a separate spinning skill with a small hover. It is now implemented locally: press F (P2 Right Shift), timer expiry lands, with no stamina cost. Flips remain inactive. This supersedes the earlier hover deferral. See [current skill handoff](BEAGLE_SPIN_SKILL.md). The design stages below preserve earlier decisions and studies.

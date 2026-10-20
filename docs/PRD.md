@@ -1,6 +1,6 @@
 # Wankai Weapon Duel PRD
 
-Status: Implementation baseline reviewed 18 October 2026. This source checkpoint has three selectable weapons plus the approved beagle/twin-ear loadout, four modes, independent duel cameras, stamina, and directional damage. First-time-player acceptance and final balance remain open. See the [project status](PROJECT_STATUS.md), [changelog](../CHANGELOG.md), and [design handoff](DESIGN_HANDOFF.md).
+Status: Local implementation reviewed 20 October 2026. The source has eight validated character/equipment loadouts, a full-window preparation page, four play modes, independent duel cameras, stamina and directional damage. Basic fighter supports three common weapons, beagle supports those plus long ears, and orange tabby supports giant paws. The character/selection extensions are not yet pushed, merged or released; the prior merged baseline is PR #2 (`a591070`). First-time-player acceptance and final balance remain open. See the [project status](PROJECT_STATUS.md), [changelog](../CHANGELOG.md), and [design handoff](DESIGN_HANDOFF.md).
 
 The creator subsequently approved the included half-speed/contact trial: keep weapon appearance/reach, halve maximum swing and turn speeds, retain acceleration/braking and initial damage/stamina settings, improve solid shape coverage, and detect between-pose crossings. This is a playtest configuration, not final balance.
 
@@ -8,20 +8,23 @@ The creator subsequently approved the included half-speed/contact trial: keep we
 
 ### Problem statement
 
-Wankai has an unusual combat rule: a fighter with no feet uses a floating weapon for both movement and attacks. The current prototype is playable, but we have not yet shown that two new players can learn to move and land hits deliberately without a live explanation. The polearm, short sword, and iron hammer test different reach, response, and contact shapes while retaining that movement rule.
+Wankai has an unusual combat rule: equipment provides both movement and attacks, with no independent walking control. The current prototype is playable, but we have not yet shown that two new players can learn to move and land hits deliberately without a live explanation. The polearm, short sword, iron hammer, paired ears and giant paws test different silhouettes, response and contact shapes while retaining that movement rule.
 
 ### Proposed solution
 
-The current source demo runs on one Mac using Electron, React, React Three Fiber, Three.js, and custom physics. Players choose a mode, including separate following views or a shared fixed duel view, then select weapons in the armory. Movement remains driven by weapon contact; stamina rewards resting, and horizontal-turn hits deal less damage than equivalent vertical strikes. The default pairing is P1's short sword against P2's curved polearm, with the iron hammer also selectable. Further weapons and effects are a longer-term direction.
+The current source demo runs on one Mac using Electron, React, React Three Fiber, Three.js, and custom physics. Players choose a mode, including separate following views or a shared fixed duel view, then enter a full-window preparation page. Each player chooses a compatible character/equipment pair above their own actual-model preview and readies independently; a shared Start commits both selections. Movement remains driven by equipment contact; stamina rewards resting, and horizontal-turn hits deal less damage than equivalent vertical strikes. The default pairing is basic fighter + short sword against basic fighter + curved polearm. Further weapons and effects are a longer-term direction.
 
-The beagle is a paired character/weapon option using smooth rounded ears at fixed head sockets, with ordinary stamina, damage, blocks and contact-driven movement. The accepted local follow-up keeps the body upright with parallel W/S ear strokes and slower combined A/D steering. Press F (P2 Right Shift) for the separate full-spread spinning skill with a small hover; timer expiry retracts and lands, without stamina use. The skin and all contact queries use the same deployment/lag transform. This supersedes the rejected flip experiment and earlier hover deferral. See [current skill handoff](BEAGLE_SPIN_SKILL.md).
+The beagle can equip any common weapon with compact cosmetic ears, or long ears with the accepted paired controller. Long-ear movement keeps the body upright with parallel W/S ear strokes and slower combined A/D steering. Only this equipment enables F (P2 Right Shift), the five-second full-spread spinning skill with a small hover; expiry retracts and lands, without stamina use. The skin and contact queries share the deployment/lag transform. This supersedes the rejected flip experiment and earlier hover deferral. See [current skill handoff](BEAGLE_SPIN_SKILL.md).
+
+The orange tabby uses its approved seated model and detached giant paws. W/S drives paired paw rotation, A/D steers, and all four combinations work. S/Down paw-floor contact raises the seated body above its low rest hover; movement is driven by finite controls and physical support. It shares normal stamina/combat rules and has no F/Right Shift ability. Common-weapon cat combinations are not exposed. See the [cat gameplay handoff](characters/orange-tabby/GAMEPLAY.md).
 
 ### Product direction and staged scope
 
 1. **Original appearance trial:** Place the same generated polearm model on both fighters without changing its physics. This showed the basic Tripo-to-GLB-to-game workflow.
 2. **Differentiated sword trial:** Implement shorter reach and faster swings alongside the polearm. This is playable, but the sword's downward support direction still needs hands-on acceptance.
-3. **Current three-weapon prototype:** The approved iron/red-cloth hammer was exported for 5 credits and integrated. It contrasts through slower response, greater inertia, broad head contacts, and 30% stronger metal-head damage. Both players choose independently, using the same four weapon controls. Stamina, directional damage, enlarged split-screen arena, and the approved rear cameras are implemented; balance remains open.
-4. **Deferred roster work:** The fourth precision weapon is recorded in [PRECISION_WEAPON.md](PRECISION_WEAPON.md). Its appearance and purchase remain unapproved. The beagle/twin-ear character is a separate implemented loadout; the precision weapon and 30% speed setting remain deferred. The local trial adds the separately requested clash recoil; extra clash pause/readout remains deferred.
+3. **Three-common-weapon foundation:** The approved iron/red-cloth hammer was exported for 5 credits and integrated. It contrasts through slower response, greater inertia, broad head contacts, and 30% stronger metal-head damage. Both players choose independently, using the same four weapon controls. Stamina, directional damage, enlarged split-screen arena, and the approved rear cameras are implemented; balance remains open.
+4. **Current character and preparation extension:** Separate character/equipment catalogues support eight valid loadouts and 64 ordered pairings, including ordinary-weapon beagles and the approved cat/paws. The full-window preparation page shows P1/P2 together with independent Ready buttons and one Start/save action. This extends the earlier ordinary-weapon prototype without changing its combat tuning.
+5. **Deferred roster work:** The fourth precision weapon is recorded in [PRECISION_WEAPON.md](PRECISION_WEAPON.md). Its appearance and purchase remain unapproved; the precision weapon and 30% speed setting remain deferred. The local trial adds the separately requested clash recoil; extra clash pause/readout remains deferred.
 
 ### Success criteria
 
@@ -41,7 +44,7 @@ The beagle is a paired character/weapon option using smooth rounded ears at fixe
 
 ### User flow
 
-1. Open the Electron development app and browse the armory's actual model previews, descriptions, strengths, and tradeoffs. Choosing a two-player, practice, or solo mode opens weapon selection before starting. Both players choose independently and may equip the same weapon; solo shows only player one's choice. The default remains sword versus polearm.
+1. Open the local game and choose a two-player, practice or solo mode to enter the full-window preparation page. P1's character/equipment choices sit on the left above its actual-model preview; P2 has the matching panel on the right. Narrow screens stack complete P1 then P2 panels. Both players may select the same valid loadout. Each readies independently, then a shared Start applies both drafts atomically. Editing one choice resets only that player's readiness. Back/Escape returns to the menu without saving; focus enters the preparation heading and returns to the triggering menu control. Solo shows P1 only and preserves P2's committed configuration; practice also configures its passive dummy. The browse entry uses shared Save instead of starting a match. Defaults remain basic sword versus basic polearm.
 2. Read the visible controls or help panel. Both players use the same keyboard and choose either separate following views or one fixed, elevated shared view of the match inside one Electron window.
 3. Push against the ground, swing, strike, and block with the selected weapon. The HUD shows health, stamina, and match time; body hits produce pause, damage numbers, sound, and effects. Clear weapon clashes have sound/particles and make both fighters retreat opposite their own current headings. Resting contact cannot repeatedly trigger that recoil. Weapon input spends stamina, resting restores it, and low stamina weakens powered control while preserving contact-based movement and defense.
 4. Pause, resume, or rematch as needed. The app pauses and clears input on focus loss.
@@ -72,6 +75,14 @@ The beagle is a paired character/weapon option using smooth rounded ears at fixe
 - An additional fixed-camera duel uses the original elevated arena camera and one full-width viewport showing both players. Both players remain active with the same controls, weapons, collision, health, and victory rules; the camera does not follow either fighter. Rematches keep the selected camera mode.
 - Practice retains the shared arena camera. Solo mode retains its mouse orbit and larger arena.
 
+**Player choosing a loadout:** As a player, I want to choose a character and compatible equipment without confusing the two player slots.
+
+- Characters own body appearance, bounds and hurt shapes; equipment owns attack contacts, powered controls and approved abilities. Red/blue identity belongs to P1/P2 independently of character.
+- There are eight valid loadouts: basic fighter + sword/polearm/hammer; beagle + those three or long ears; orange tabby + giant paws. Only compatible equipment can be selected.
+- Both players remain visible during preparation, with choices above their independent rotatable actual-model previews. Ready alone neither saves nor starts. Final Start/save requires every visible participant to be ready and commits the canonical `{ characterId, weaponId }` pairs together.
+- Compatible equipment survives a character change; incompatible equipment clears and requires a new choice. An actual edit resets only that player's readiness; selecting the same choice preserves it. Back/Escape discards drafts. Rematch preserves committed selections.
+- Hide the arena/HUD during preparation while keeping the arena mounted. Ignore zero/invalid hidden-container resize dimensions and restore valid camera framing when returning. Loading, fallback/retry and selected IDs must remain consistent.
+
 **Player trying different weapons:** As a player, I want each weapon to have a recognizable strength, limitation, and effect on play so choosing one changes my approach.
 
 - In the current prototype, the sword has shorter reach and quicker swing response; the polearm keeps longer reach. The iron hammer has intermediate reach, higher inertia, slower response, and 30% stronger metal-head damage at the same impact speed. Its broad head participates in hits, blocks, and ground support; cloth is decorative.
@@ -79,7 +90,7 @@ The beagle is a paired character/weapon option using smooth rounded ears at fixe
 - The local trial halves each weapon's axis speed limit to 6.1 / 4.25 / 3.4 rad/s for sword / polearm / hammer while retaining response settings and reach. Existing stamina and speed-based damage rules remain, so movement and damage also need reassessment.
 - The sword uses the same contact-driven movement system. It does not grant an unrelated running-speed bonus.
 - The visible weapon direction and collision path should agree well enough that players can predict support, blocks, and hits. The sword's downward support direction remains an open issue.
-- Later weapons require a short design specification and playtest for each proposed effect before implementation. No particular special ability is approved by this PRD.
+- Later weapons require a short design specification and playtest for each proposed effect before implementation. The current separate ability remains restricted to beagle + long ears; additional abilities require their own review.
 
 **Player managing combat effort:** As a player, I want sustained swinging to create a reason to rest while retaining enough control to reposition and defend.
 
@@ -98,26 +109,26 @@ The beagle is a paired character/weapon option using smooth rounded ears at fixe
 ### Non-goals for the first demo
 
 - A guided tutorial; use the controls, help panel, and practice mode first.
-- A complete weapon roster, final balance, final weapon art, character model replacement, AI opponents, online play, new arenas, progression, or a packaged macOS app. A roster is a planned direction, but the first playable demo only needs a small, testable set.
+- A complete weapon/character roster, final balance, final art, AI opponents, online play, new arenas, progression, or a packaged macOS app. Further content should follow review of the current small, testable set.
 
 ## 3. Generated-asset requirements
 
 Tripo is an external **asset creation step**, not an AI feature running inside Wankai. The [supplied polearm image](reference/polearm.png) started the first trial; its result and workflow are in the [first weapon trial guide](TRIPO_WEAPON_TRIAL.md). The [short sword trial](SWORD_TRIAL.md) records the second asset and its different physics profile. The [iron hammer trial](HAMMER_TRIAL.md) records the approved third weapon, import checks, and armory. Future assets can be generated or sourced individually, but each must be reviewed for shape, orientation, performance, and reuse rights before distribution.
 
-Evaluate each new model from multiple views, measure its shaft axis and grip origin separately, align visuals with its contact proxy, and inspect readability in motion. Check both geometry and decoded texture memory before integration; the current sword's three 4K textures remain costly even after geometry reduction. A single reference image leaves hidden surfaces uncertain. Existing preparation scripts target inspected layouts and are not universal importers.
+For new Tripo character reconstruction, prepare consistent front/side/back images from the approved design, inspect the current multi-view inputs and identify any unsupported slots. A single historical reference leaves hidden surfaces uncertain. Evaluate the exported model from multiple views; measure weapon axes, grips, character pivots and contacts, then inspect readability in motion. Check geometry and decoded texture memory before integration; the current sword's three 4K textures remain costly even after geometry reduction. Existing preparation scripts target inspected layouts and are not universal importers.
 
 ## 4. Technical specifications
 
 ### Architecture and integration
 
 - `src/physics.js` owns fixed-step movement, weapon profiles, collision shapes, and damage rules. Rendering must not change those calculations. Future weapon-specific effects belong in explicit gameplay rules, with visuals following those rules.
-- React owns menus, HUD, dialogs, and input indicators. React Three Fiber and Three.js render the arena, fighters, staffs, cameras, trails, and effects in Electron's sandboxed renderer. One Canvas renders the same 3D scene into two scissored viewports for split-screen duel, or one full-width viewport for fixed-camera duel; its frame loop advances the game session once.
-- Load the exported GLB as a local asset, attach a visual copy to each existing moving staff group, and align its grip end, orientation, and approximate length. Retain the procedural staff as a fallback.
+- React owns menus, the preparation page, HUD, dialogs and input indicators. The preparation page hides the mounted arena screen and has separate demand-rendered model previews. React Three Fiber and Three.js render the arena, fighters, equipment, cameras, trails and effects in Electron's sandboxed renderer. One arena Canvas renders the same scene into two scissored viewports for split-screen duel, or one full-width viewport for fixed-camera duel; its frame loop advances the game session once.
+- Separate character and equipment catalogues feed a shared loadout resolver. Load body/equipment assets independently, clone player materials/controls, and align visuals with the same pivots and contact profiles used by the solver. Display loading while pending and matching fallback geometry after failure; retry retains selected IDs. `GameSession.setLoadouts` atomically validates both slots while in the lobby.
 - Keep the renderer isolated from Node.js and IPC. The running game needs no Tripo account, API key, or network connection. Generation and export happen outside the game in the creator's Tripo account.
 
 ### Verification
 
-- Run `npm test` for physics, weapon integration, contact paths, recoil, session behavior, stamina/damage, and camera regressions, then `npm run build`. The current timed-hover source checkpoint passes 100 tests and the build, including all sixteen loadout pairings, skill lifecycle and actual beagle skin/contact alignment. The earlier 85-test upright checkpoint and 92-test flip experiment are historical; flips are inactive. The existing bundle-size warning remains. See [project status](PROJECT_STATUS.md) for evidence and limitations.
+- Run `npm test` for physics, weapon integration, contact paths, recoil, session behavior, stamina/damage and camera regressions, then `npm run build`. The cat-integration checkpoint passed 132 full-suite tests and 73 actual-game capture checks. Subsequent selection-layout and full-window work passed 14 and 17 scoped checks respectively plus the build; those are separate runs, not a newly claimed full-suite total. The earlier 100-test timed-hover, 85-test upright and 92-test flip results are historical; flips are inactive. The existing bundle-size warning remains. See [project status](PROJECT_STATUS.md) and [preparation verification](selection-concepts/v04-preparation-stage/verification.json) for evidence and limits.
 - In Electron, check both duel views, two-player and practice matches, the swing transition, hits and blocks, sound, pause/resume, rematch, window resizing, focus loss, and offline operation.
 - Check that importing or removing a visual model leaves the selected weapon's physics profile unchanged. Verify resource cleanup through repeated armory, match, rematch, and mode transitions; automated physics checks do not establish the absence of resource leaks.
 
@@ -145,6 +156,6 @@ As the first differentiated weapon, the short sword has shorter physical reach a
 
 ### Open dependencies
 
-- All three weapon GLBs and the approved beagle GLB are included in the source repository; cloning and launching require no Tripo login or new export. A two-player playtest is needed to judge visibility, collision mismatch, and performance. Sword and hammer redistribution terms remain unverified.
+- Local source includes the three common-weapon GLBs, compact/long-ear beagle assets and the approved orange-tabby prepared-v02 GLB. The current local extensions have not been pushed or merged; a fresh clone of the prior merged baseline does not include all of them. Playing available local assets needs no Tripo login or new export. A two-player playtest is needed to judge visibility, collision mismatch and performance. Sword and hammer redistribution terms remain unverified.
 - The first-time-player success checks and swing feel are proposed evaluation criteria until observed in playtesting.
 - The iron hammer has been exported and integrated with measured alignment, a reduced asset budget, and broad head collision coverage. Its five-capsule proxy and initial balance need hands-on playtesting; see [hammer trial](HAMMER_TRIAL.md). Further weapon types, special effects, and balance targets remain design work.

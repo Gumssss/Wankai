@@ -1,0 +1,342 @@
+[
+  {
+    "id": "w",
+    "group": "controls",
+    "title": "W / front swing",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 1,
+    "end": 72,
+    "bounds": [
+      -4.060067653656006,
+      4.120230674743652,
+      -3.505208730697632,
+      3.660785675048828
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      0.030081510543823242,
+      0.07778847217559814
+    ]
+  },
+  {
+    "id": "s",
+    "group": "controls",
+    "title": "S / back swing",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 73,
+    "end": 144,
+    "bounds": [
+      -3.978365898132324,
+      3.8331987857818604,
+      -3.688432216644287,
+      3.8173930644989014
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      -0.07258355617523193,
+      0.06448042392730713
+    ]
+  },
+  {
+    "id": "a",
+    "group": "controls",
+    "title": "A / left heading sweep",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 145,
+    "end": 216,
+    "bounds": [
+      -3.0373921394348145,
+      4.041965007781982,
+      -3.2594547271728516,
+      1.7052361965179443
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      0.502286434173584,
+      -0.7771092653274536
+    ]
+  },
+  {
+    "id": "d",
+    "group": "controls",
+    "title": "D / right heading sweep",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 217,
+    "end": 288,
+    "bounds": [
+      -4.038990497589111,
+      4.041965007781982,
+      -3.183443784713745,
+      1.7052361965179443
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      0.0014872550964355469,
+      -0.7391037940979004
+    ]
+  },
+  {
+    "id": "wa",
+    "group": "controls",
+    "title": "W + A / front swing + steering",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 289,
+    "end": 360,
+    "bounds": [
+      -3.0011606216430664,
+      4.115331172943115,
+      -3.6333413124084473,
+      3.8152003288269043
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      0.5570852756500244,
+      0.09092950820922852
+    ]
+  },
+  {
+    "id": "wd",
+    "group": "controls",
+    "title": "W + D / front swing + steering",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 361,
+    "end": 432,
+    "bounds": [
+      -4.11970853805542,
+      4.071929931640625,
+      -3.693662643432617,
+      3.2830448150634766
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      -0.02388930320739746,
+      -0.2053089141845703
+    ]
+  },
+  {
+    "id": "sa",
+    "group": "controls",
+    "title": "S + A / back swing + steering",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 433,
+    "end": 504,
+    "bounds": [
+      -3.9406051635742188,
+      3.8484020233154297,
+      -3.686821460723877,
+      3.70828914642334
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      -0.04610157012939453,
+      0.010733842849731445
+    ]
+  },
+  {
+    "id": "sd",
+    "group": "controls",
+    "title": "S + D / back swing + steering",
+    "detail": "Both detached giant paws swing together; body keeps a seated pose",
+    "duration": 3,
+    "start": 505,
+    "end": 576,
+    "bounds": [
+      -4.026486873626709,
+      3.977144956588745,
+      -3.443917751312256,
+      3.201979637145996
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      -0.024670958518981934,
+      -0.12096905708312988
+    ]
+  },
+  {
+    "id": "release-reverse",
+    "group": "controls",
+    "title": "Release, coast, brake, reverse",
+    "detail": "W -> release -> S -> release / same detached paw pair",
+    "duration": 5,
+    "start": 577,
+    "end": 696,
+    "bounds": [
+      -4.063880443572998,
+      4.044343948364258,
+      -3.585205554962158,
+      3.753946542739868
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      -0.009768247604370117,
+      0.08437049388885498
+    ]
+  },
+  {
+    "id": "yaw-reverse",
+    "group": "controls",
+    "title": "Steering release and reversal",
+    "detail": "A -> release -> D -> release / seated body, no arms or rotor spread",
+    "duration": 4,
+    "start": 697,
+    "end": 792,
+    "bounds": [
+      -2.289437770843506,
+      4.041965007781982,
+      -3.2577764987945557,
+      1.7052361965179443
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      0.8762636184692383,
+      -0.7762701511383057
+    ]
+  },
+  {
+    "id": "landing",
+    "group": "controls",
+    "title": "Seated landing and recovery",
+    "detail": "External 0.70-unit drop setup; recover seated, then resume W",
+    "duration": 4,
+    "start": 793,
+    "end": 888,
+    "bounds": [
+      -3.9333138465881348,
+      4.0481767654418945,
+      -3.4589180946350098,
+      3.4211249351501465
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      0.05743145942687988,
+      -0.01889657974243164
+    ]
+  },
+  {
+    "id": "opposites",
+    "group": "controls",
+    "title": "Opposite keys cancel powered input",
+    "detail": "W + S, then A + D / gravity and passive contacts still act",
+    "duration": 3,
+    "start": 889,
+    "end": 960,
+    "bounds": [
+      -2.717698812484741,
+      4.0481767654418945,
+      -3.5526607036590576,
+      2.4599509239196777
+    ],
+    "scale": 25.176772431507548,
+    "center": [
+      0.6652389764785767,
+      -0.5463548898696899
+    ]
+  },
+  {
+    "id": "vertical-hit",
+    "group": "combat",
+    "title": "Vertical giant-paw hit / W",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "duration": 3,
+    "start": 961,
+    "end": 1032,
+    "bounds": [
+      -3.8348352909088135,
+      3.475372791290283,
+      -2.7286291122436523,
+      3.9720311164855957
+    ],
+    "scale": 25.888282248059156,
+    "center": [
+      -0.17973124980926514,
+      0.6217010021209717
+    ]
+  },
+  {
+    "id": "horizontal-hit",
+    "group": "combat",
+    "title": "Horizontal giant-paw hit / D",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "duration": 3,
+    "start": 1033,
+    "end": 1104,
+    "bounds": [
+      -2.627957820892334,
+      3.966726779937744,
+      -2.886964797973633,
+      4.336084842681885
+    ],
+    "scale": 25.888282248059156,
+    "center": [
+      0.6693844795227051,
+      0.724560022354126
+    ]
+  },
+  {
+    "id": "sword-clash",
+    "group": "combat",
+    "title": "Giant paw blocks sword / clash recoil",
+    "detail": "Actual weapon contact deflects; both fighters recoil and recover",
+    "duration": 4,
+    "start": 1105,
+    "end": 1200,
+    "bounds": [
+      -5.02623987197876,
+      2.8625574111938477,
+      -2.711298704147339,
+      4.207592010498047
+    ],
+    "scale": 25.888282248059156,
+    "center": [
+      -1.081841230392456,
+      0.748146653175354
+    ]
+  },
+  {
+    "id": "near-miss",
+    "group": "combat",
+    "title": "Same giant-paw swing / clear miss",
+    "detail": "Distant target stays untouched; no invisible extra weapon reach",
+    "duration": 2.5,
+    "start": 1201,
+    "end": 1260,
+    "bounds": [
+      -3.95583438873291,
+      2.910524368286133,
+      -3.5142955780029297,
+      4.203648567199707
+    ],
+    "scale": 25.888282248059156,
+    "center": [
+      -0.5226550102233887,
+      0.34467649459838867
+    ]
+  },
+  {
+    "id": "seated-floating-paws",
+    "group": "design",
+    "title": "Seated cat / enormous detached paws",
+    "detail": "Almost 2x previous hand width; sitting body; no arms or connectors",
+    "duration": 4,
+    "start": 1261,
+    "end": 1356,
+    "bounds": [
+      -4.11958122253418,
+      4.119582176208496,
+      -1.9048739671707153,
+      2.5855350494384766
+    ],
+    "scale": 15.062168609171293,
+    "center": [
+      4.76837158203125e-07,
+      0.3403305411338806
+    ]
+  }
+]

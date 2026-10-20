@@ -1,0 +1,51 @@
+{
+  "id": "orange-tabby-tripo-input-v01",
+  "status": "clean image prepared; no 3D submission",
+  "selected_seed": "beagle-style-reference-v03",
+  "seed": {
+    "path": "assets/concepts/orange-tabby/tripo-input-v01/selected-source.png",
+    "sha256": "20910ab0e9ade7cd9a0f6eb5823dad7fc85443ee5a881e202ae12f03f1f32842",
+    "bytes": 1490165,
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB"
+  },
+  "input_views": [
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v01/orange-tabby-tripo-input-v01.png",
+      "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+      "bytes": 1326587,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "selected near-frontal view; paw thickness visible",
+      "slot": "single image"
+    }
+  ],
+  "strategy": "Start from one clean individual image of the selected design; preserve all three separate forms. Add consistent hidden views only if reconstruction inspection justifies them.",
+  "official_guidance_checked": "2026-10-19",
+  "sources": [
+    "https://www.tripo3d.ai/help/features/how-to-use-multi-view-input-effectively",
+    "https://developers.tripo3d.ai/en/docs/generation-image-to-model/p"
+  ],
+  "proposed_next_operation": {
+    "service": "Tripo Studio",
+    "type": "Image to 3D",
+    "input": "assets/concepts/orange-tabby/tripo-input-v01/orange-tabby-tripo-input-v01.png",
+    "attempt_scope": "one deliberate initial candidate after exact live settings and operation scope are reviewed",
+    "model_version": null,
+    "settings": null,
+    "quoted_credits": null,
+    "observed_credits": null,
+    "credit_authorization": null,
+    "operation_id": null,
+    "submit_status": "not submitted; requested image-preparation endpoint reached"
+  },
+  "mesh_review_plan": "Preserve the raw textured download, inspect actual face and hidden geometry, paw thickness/complete components, and accidental bridges; review actual mesh separately before Blender refinement.",
+  "motion_state": "v04 videos are historical unaccepted mechanical studies; this task changes no move or controller.",
+  "limitations": [
+    "Rear markings and hidden surfaces are not separately specified by this single view.",
+    "Disconnected forms require actual-mesh inspection for missing or fused parts."
+  ],
+  "review_C": "Exact clean image is available; full live 3D operation/settings/credit review remains a later stage."
+}
