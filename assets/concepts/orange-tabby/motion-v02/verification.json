@@ -1,0 +1,470 @@
+{
+  "version": "orange-tabby-motion-v02",
+  "date": "2026-10-19",
+  "checks": [
+    {
+      "name": "existing runtime and beagle assets preserved",
+      "passed": true,
+      "detail": {
+        "files": 37,
+        "changed": []
+      }
+    },
+    {
+      "name": "selected originals unchanged",
+      "passed": true,
+      "detail": [
+        "assets/concepts/orange-tabby/references/orange-tabby-original.png",
+        "assets/concepts/orange-tabby/references/paw-weapon-original.png"
+      ]
+    },
+    {
+      "name": "current source provenance exact",
+      "passed": true,
+      "detail": {
+        "source": "src/physics.js",
+        "sha256": "eba2ff82dbd78697367689431fe6112942917681b93fe2b89ff6669f386e0072",
+        "productionModified": false,
+        "adaptations": [
+          "standing giant-paw profile",
+          "anatomical shoulder contact frame and derivatives",
+          "provisional standing hurt capsules",
+          "bounded common-heading rate feedback"
+        ],
+        "reused": [
+          "current gravity/180 Hz ground support",
+          "finite swing drive and reverse braking",
+          "shared stamina/fatigue",
+          "swept damage and repeat-hit gating",
+          "directional damage",
+          "clash impulses/recoil"
+        ],
+        "scriptedTranslation": false,
+        "normalLaunchImpulse": false
+      }
+    },
+    {
+      "name": "ordinary input matrix present",
+      "passed": true,
+      "detail": [
+        "w",
+        "s",
+        "a",
+        "d",
+        "wa",
+        "wd",
+        "sa",
+        "sd",
+        "release-reverse",
+        "yaw-reverse",
+        "landing",
+        "opposites",
+        "vertical-hit",
+        "horizontal-hit",
+        "sword-clash",
+        "near-miss"
+      ]
+    },
+    {
+      "name": "standing body remains upright",
+      "passed": true,
+      "detail": {
+        "contactVelocityFiniteDifferenceError": 6.872018474164429e-06,
+        "allBodiesUpright": true
+      }
+    },
+    {
+      "name": "both swing directions produce support",
+      "passed": true,
+      "detail": {
+        "w": {
+          "travel": [
+            2.6738575146100554,
+            -0.5527528866377308
+          ],
+          "maxRise": 0.6197114645265317,
+          "finalHeight": 0.4946875501329496,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "contactSamples": 47
+        },
+        "s": {
+          "travel": [
+            -2.616999256251412,
+            -0.4931576484800569
+          ],
+          "maxRise": 0.6202881074378989,
+          "finalHeight": 0.49798881362882763,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "contactSamples": 49
+        }
+      }
+    },
+    {
+      "name": "contact point velocity agrees with transform",
+      "passed": true,
+      "detail": 6.872018474164429e-06
+    },
+    {
+      "name": "vertical hit is powered and contact confirmed",
+      "passed": true,
+      "detail": {
+        "target": [
+          1.5,
+          0.59,
+          1.18
+        ],
+        "theta": 0.4,
+        "firstEvent": {
+          "time": 0.41111111111111115,
+          "type": "hit",
+          "point": {
+            "x": 1.2124571320154172,
+            "y": 2.18155522754773,
+            "z": 1.18
+          },
+          "normal": {
+            "x": 0.32680284930431275,
+            "y": -0.9450925339280712,
+            "z": 0
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 7,
+          "speed": 4.391434322757586,
+          "acceleration": 6.055725477335505,
+          "turnShare": 0,
+          "strength": 0.23333333333333334
+        }
+      }
+    },
+    {
+      "name": "horizontal hit is turning dominated",
+      "passed": true,
+      "detail": {
+        "target": [
+          1.9,
+          0.59,
+          1.6
+        ],
+        "theta": 0.8,
+        "firstEvent": {
+          "time": 0.6277777777777778,
+          "type": "hit",
+          "point": {
+            "x": 1.7920459987424535,
+            "y": 0.44548735141209395,
+            "z": 1.0403824244276592
+          },
+          "normal": {
+            "x": 0.18941458659691646,
+            "y": 0,
+            "z": 0.9818972015360462
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 1,
+          "speed": 1.8945517638978144,
+          "acceleration": 1.2305782323951409,
+          "turnShare": 0.732932388938242,
+          "strength": 0.12
+        }
+      }
+    },
+    {
+      "name": "weapon interception and recoil are functional",
+      "passed": true,
+      "detail": {
+        "target": [
+          3.4,
+          0.59,
+          1.18
+        ],
+        "targetTheta": 1.4,
+        "firstEvent": {
+          "time": 0.46111111111111114,
+          "type": "clash",
+          "point": {
+            "x": 1.7157876497977265,
+            "y": 0.5202199689671662,
+            "z": 1.1153519143142447
+          },
+          "strength": 0.21904131704905327,
+          "recoilSpeed": 1.8189362238341154
+        }
+      }
+    },
+    {
+      "name": "distant target is not hit",
+      "passed": true,
+      "detail": {
+        "travel": [
+          1.8352916336118246,
+          -0.8868289759092033
+        ],
+        "maxRise": 0.620043424386087,
+        "finalHeight": 0.5281520608910869,
+        "hits": 0,
+        "clashes": 0,
+        "minStamina": 180.11111111111055,
+        "maxBodyPitch": 0,
+        "contactSamples": 59
+      }
+    },
+    {
+      "name": "shared repeat-hit gate is not duplicated",
+      "passed": true,
+      "detail": "Multiple paw capsules share the ordinary attacker repeat-hit gate."
+    },
+    {
+      "name": "opposites do not spend stamina",
+      "passed": true,
+      "detail": "Gravity/support still act; canceled input supplies no drive or cost."
+    },
+    {
+      "name": "ordinary shared stamina charges once",
+      "passed": true,
+      "detail": {
+        "w": 157.1111111111099,
+        "wa": 139.95555555555165
+      }
+    },
+    {
+      "name": "arm lengths and attachments remain consistent",
+      "passed": true,
+      "detail": {
+        "max_upper_length_error": 2.911706544761472e-07,
+        "max_forearm_length_error": 2.512475080207466e-07,
+        "minimum_paw_to_head_clearance": 0.08399999999999996,
+        "minimum_arm_to_head_sphere_gap": 0.015780468863284908,
+        "max_body_pitch": 0,
+        "note": "Paw/head uses a lateral envelope; arm/head uses an enclosing head sphere. Final Tripo surface/rig/contact fit is unperformed."
+      }
+    },
+    {
+      "name": "primitive limbs and paws clear head",
+      "passed": true,
+      "detail": {
+        "max_upper_length_error": 2.911706544761472e-07,
+        "max_forearm_length_error": 2.512475080207466e-07,
+        "minimum_paw_to_head_clearance": 0.08399999999999996,
+        "minimum_arm_to_head_sphere_gap": 0.015780468863284908,
+        "max_body_pitch": 0,
+        "note": "Paw/head uses a lateral envelope; arm/head uses an enclosing head sphere. Final Tripo surface/rig/contact fit is unperformed."
+      }
+    },
+    {
+      "name": "complete motion remains clear of caption overlays",
+      "passed": true,
+      "detail": [
+        [
+          0.349909311751047,
+          0.650090688248953,
+          0.2584527563506941,
+          0.7655472436493059
+        ],
+        [
+          0.3528994215695801,
+          0.6471005784304199,
+          0.247,
+          0.777
+        ],
+        [
+          0.38231467477507214,
+          0.6176853252249279,
+          0.3080070811718778,
+          0.7159929188281222
+        ],
+        [
+          0.3732358833836393,
+          0.6267641166163607,
+          0.31085578926058244,
+          0.7131442107394176
+        ],
+        [
+          0.3516304605872558,
+          0.6483695394127442,
+          0.2480255533042952,
+          0.7759744466957048
+        ],
+        [
+          0.34441993527779335,
+          0.6555800647222066,
+          0.25994836586729225,
+          0.7640516341327077
+        ],
+        [
+          0.3467638887399132,
+          0.6532361112600868,
+          0.25174417829476897,
+          0.7722558217052311
+        ],
+        [
+          0.3495635368462864,
+          0.6504364631537136,
+          0.2682249882923898,
+          0.7557750117076103
+        ],
+        [
+          0.3464131828310707,
+          0.6535868171689293,
+          0.2514222522517123,
+          0.7725777477482878
+        ],
+        [
+          0.38230730514090616,
+          0.6176926948590938,
+          0.30803841984511027,
+          0.7159615801548898
+        ],
+        [
+          0.35661759346900357,
+          0.6433824065309964,
+          0.2639972054066242,
+          0.7600027945933758
+        ],
+        [
+          0.38086101611533224,
+          0.6191389838846678,
+          0.30576155894125434,
+          0.7182384410587457
+        ],
+        [
+          0.3449375746376728,
+          0.6550624253623272,
+          0.2875157883532241,
+          0.7364842116467759
+        ],
+        [
+          0.4013899167705855,
+          0.5986100832294146,
+          0.28792336152430587,
+          0.7360766384756942
+        ],
+        [
+          0.36241569663023926,
+          0.6375843033697608,
+          0.25270320363678694,
+          0.7712967963632131
+        ],
+        [
+          0.3751265953662401,
+          0.6248734046337598,
+          0.247,
+          0.777
+        ],
+        [
+          0.26919851451183807,
+          0.7308014854881619,
+          0.247,
+          0.777
+        ]
+      ]
+    },
+    {
+      "name": "controls media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "40.000000",
+        "frames": "960",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "controls full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    },
+    {
+      "name": "combat media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "12.500000",
+        "frames": "300",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "combat full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    },
+    {
+      "name": "design media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "4.000000",
+        "frames": "96",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "design full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    }
+  ],
+  "media": [
+    {
+      "id": "orange-tabby-controls-v02",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v02.mp4",
+      "sha256": "74c3e8fa9b241193bde2ce688184d6375aeebcf58bb7b0297c624a5cb7935800",
+      "bytes": 10300658,
+      "duration_seconds": 40,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v02",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v02.mp4",
+      "sha256": "55837112a34652f8d8a7aaa2fa9771f46f072fc49cfe6851a446aa3b0378bd06",
+      "bytes": 3286251,
+      "duration_seconds": 12.5,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v02",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v02.mp4",
+      "sha256": "52a10d0bdd9114e4fcc7761df26832e6e6c60b2a91525224686287fc79e83bce",
+      "bytes": 448765,
+      "duration_seconds": 4,
+      "role": "authored design turntable"
+    }
+  ],
+  "geometry": {
+    "max_upper_length_error": 2.911706544761472e-07,
+    "max_forearm_length_error": 2.512475080207466e-07,
+    "minimum_paw_to_head_clearance": 0.08399999999999996,
+    "minimum_arm_to_head_sphere_gap": 0.015780468863284908,
+    "max_body_pitch": 0,
+    "note": "Paw/head uses a lateral envelope; arm/head uses an enclosing head sphere. Final Tripo surface/rig/contact fit is unperformed."
+  },
+  "review": {
+    "standing_and_huge_hands": "user directed",
+    "exact_motion": "pending",
+    "production_base": null,
+    "runtime_cat": null
+  },
+  "limitations": [
+    "Experimental proxy solver adapter, not actual game footage or a selectable character.",
+    "Upright body is constrained, not a balance simulation.",
+    "Paw/standing hurt shapes are provisional; final Tripo mesh fit and arm clearance remain to validate.",
+    "No new cat ability or shared balance change.",
+    "Lateral travel/heading drift remains visible. Final mass, hurt shapes and contact geometry are not validated.",
+    "Existing game regression baseline remains applicable to unchanged source; no cat runtime integration was tested."
+  ],
+  "visual_review": {
+    "status": "assistant inspected; exact motion acceptance pending",
+    "proof": "docs/previews/orange-tabby/review-page-v02.png",
+    "playback": "In-app review page played the encoded 4-second standing-paw turntable to its end. All three files passed complete FFmpeg decoding.",
+    "notes": [
+      "Triangular ears corrected for frontal readability on the primitive.",
+      "Sword visual includes its body-pivot height, matching the solver convention.",
+      "No actual game selection/integration or final asset verification has occurred."
+    ]
+  }
+}

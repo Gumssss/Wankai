@@ -1,0 +1,539 @@
+{
+  "version": "orange-tabby-motion-v03",
+  "date": "2026-10-19",
+  "checks": [
+    {
+      "name": "existing runtime and beagle assets preserved",
+      "passed": true,
+      "detail": {
+        "files": 37,
+        "changed": []
+      }
+    },
+    {
+      "name": "selected originals unchanged",
+      "passed": true,
+      "detail": [
+        "assets/concepts/orange-tabby/references/orange-tabby-original.png",
+        "assets/concepts/orange-tabby/references/paw-weapon-original.png"
+      ]
+    },
+    {
+      "name": "current source provenance exact",
+      "passed": true,
+      "detail": {
+        "source": "src/physics.js",
+        "sha256": "eba2ff82dbd78697367689431fe6112942917681b93fe2b89ff6669f386e0072",
+        "productionModified": false,
+        "adaptations": [
+          "seated detached giant-paw profile",
+          "virtual floating-paw contact frame and derivatives",
+          "provisional seated hurt capsules",
+          "bounded common-heading rate feedback"
+        ],
+        "reused": [
+          "current gravity/180 Hz ground support",
+          "finite swing drive and reverse braking",
+          "shared stamina/fatigue",
+          "swept damage and repeat-hit gating",
+          "directional damage",
+          "clash impulses/recoil"
+        ],
+        "scriptedTranslation": false,
+        "normalLaunchImpulse": false
+      }
+    },
+    {
+      "name": "ordinary input matrix present",
+      "passed": true,
+      "detail": [
+        "w",
+        "s",
+        "a",
+        "d",
+        "wa",
+        "wd",
+        "sa",
+        "sd",
+        "release-reverse",
+        "yaw-reverse",
+        "landing",
+        "opposites",
+        "vertical-hit",
+        "horizontal-hit",
+        "sword-clash",
+        "near-miss"
+      ]
+    },
+    {
+      "name": "body retains the seated orientation",
+      "passed": true,
+      "detail": {
+        "contactVelocityFiniteDifferenceError": 9.179219416787644e-06,
+        "allBodiesUpright": true
+      }
+    },
+    {
+      "name": "both swing directions produce support",
+      "passed": true,
+      "detail": {
+        "w": {
+          "travel": [
+            6.036532270596469,
+            -1.1397185581573344
+          ],
+          "maxRise": 2.116982611758444,
+          "finalHeight": 1.6610265243023412,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 64
+        },
+        "s": {
+          "travel": [
+            -5.965532815943568,
+            -1.0443729805122808
+          ],
+          "maxRise": 2.1188017024224073,
+          "finalHeight": 1.6618378517146062,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 63
+        }
+      }
+    },
+    {
+      "name": "contact point velocity agrees with transform",
+      "passed": true,
+      "detail": 9.179219416787644e-06
+    },
+    {
+      "name": "vertical hit is powered and contact confirmed",
+      "passed": true,
+      "detail": {
+        "target": [
+          2.5,
+          0.59,
+          2.05
+        ],
+        "theta": 0.4,
+        "firstEvent": {
+          "time": 0.41111111111111115,
+          "type": "hit",
+          "point": {
+            "x": 1.3888829211472813,
+            "y": 1.8635541009235546,
+            "z": 1.9299999999999997
+          },
+          "normal": {
+            "x": 0.9034012673777398,
+            "y": -0.4175486404370821,
+            "z": 0.09756681284862029
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 7,
+          "speed": 4.260267905886834,
+          "acceleration": 8.556508198645929,
+          "turnShare": 0,
+          "strength": 0.23333333333333334
+        }
+      }
+    },
+    {
+      "name": "horizontal hit is turning dominated",
+      "passed": true,
+      "detail": {
+        "target": [
+          1.8,
+          0.59,
+          2.8
+        ],
+        "theta": 0.4,
+        "firstEvent": {
+          "time": 0.6,
+          "type": "hit",
+          "point": {
+            "x": 1.8975718693792794,
+            "y": 1.7127026079068388,
+            "z": 1.6288194317683922
+          },
+          "normal": {
+            "x": -0.07933098692280288,
+            "y": -0.294896018983463,
+            "z": 0.9522305038705489
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 1,
+          "speed": 2.0109554894005854,
+          "acceleration": 5.730632838816319,
+          "turnShare": 0.8554157826258009,
+          "strength": 0.12
+        }
+      }
+    },
+    {
+      "name": "weapon interception and recoil are functional",
+      "passed": true,
+      "detail": {
+        "target": [
+          4.2,
+          0.59,
+          2.05
+        ],
+        "targetTheta": 1.4,
+        "firstEvent": {
+          "time": 0.35000000000000003,
+          "type": "clash",
+          "point": {
+            "x": 1.5696539371121307,
+            "y": 0.5474421939285932,
+            "z": 2.0032866645723493
+          },
+          "strength": 0.43814523311081127,
+          "recoilSpeed": 2.2064042017117504
+        }
+      }
+    },
+    {
+      "name": "distant target is not hit",
+      "passed": true,
+      "detail": {
+        "travel": [
+          4.159548876475338,
+          -1.6364638574330153
+        ],
+        "maxRise": 2.11501379360869,
+        "finalHeight": 1.2599665466739478,
+        "hits": 0,
+        "clashes": 0,
+        "minStamina": 180.11111111111055,
+        "maxBodyPitch": 0,
+        "initialOverlap": 0,
+        "contactSamples": 63
+      }
+    },
+    {
+      "name": "shared repeat-hit gate is not duplicated",
+      "passed": true,
+      "detail": "Multiple paw capsules share the ordinary attacker repeat-hit gate."
+    },
+    {
+      "name": "opposites do not spend stamina",
+      "passed": true,
+      "detail": "Gravity/support still act; canceled input supplies no drive or cost."
+    },
+    {
+      "name": "ordinary shared stamina charges once",
+      "passed": true,
+      "detail": {
+        "w": 157.1111111111099,
+        "wa": 139.95555555555165
+      }
+    },
+    {
+      "name": "hands have no visible connectors",
+      "passed": true,
+      "detail": {
+        "connector_mesh_count": 0,
+        "minimum_lateral_hand_body_gap": 0.28149999999999986,
+        "palm_to_head_lateral_gap": 0.45999999999999985,
+        "palm_width": 1.98,
+        "previous_palm_width": 1.012,
+        "hand_scale": [
+          4.5,
+          4.5,
+          4.5
+        ],
+        "body_posture": "seated",
+        "note": "Paws are deliberately detached. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed."
+      }
+    },
+    {
+      "name": "giant hands clear the seated body",
+      "passed": true,
+      "detail": {
+        "connector_mesh_count": 0,
+        "minimum_lateral_hand_body_gap": 0.28149999999999986,
+        "palm_to_head_lateral_gap": 0.45999999999999985,
+        "palm_width": 1.98,
+        "previous_palm_width": 1.012,
+        "hand_scale": [
+          4.5,
+          4.5,
+          4.5
+        ],
+        "body_posture": "seated",
+        "note": "Paws are deliberately detached. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed."
+      }
+    },
+    {
+      "name": "palms are almost twice the previous width",
+      "passed": true,
+      "detail": {
+        "connector_mesh_count": 0,
+        "minimum_lateral_hand_body_gap": 0.28149999999999986,
+        "palm_to_head_lateral_gap": 0.45999999999999985,
+        "palm_width": 1.98,
+        "previous_palm_width": 1.012,
+        "hand_scale": [
+          4.5,
+          4.5,
+          4.5
+        ],
+        "body_posture": "seated",
+        "note": "Paws are deliberately detached. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed."
+      }
+    },
+    {
+      "name": "seated pose references preserved and attributed",
+      "passed": true,
+      "detail": [
+        {
+          "id": "seated-pose-commons",
+          "path": "assets/concepts/orange-tabby/references/seated-pose-commons-original.jpg",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Orange_Tabby_Cat_Sitting_Down.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Orange_Tabby_Cat_Sitting_Down.jpg/960px-Orange_Tabby_Cat_Sitting_Down.jpg",
+          "author": "Asabae2752",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "role": "selected full seated gesture reference: low haunches, lifted chest, tucked feet",
+          "file_status": "Unmodified 960px source preview; not the full-resolution master",
+          "sha256": "f855ac0f61d726476346ebe0d98c928890c717062d60b227b426e901084233b4"
+        },
+        {
+          "id": "seated-pose-pixabay",
+          "path": "assets/concepts/orange-tabby/references/seated-pose-pixabay-original.jpg",
+          "source_url": "https://pixabay.com/photos/cat-sitting-orange-tabby-orange-1114726/",
+          "download_url": "https://cdn.pixabay.com/photo/2015/12/30/20/21/cat-1114726_1280.jpg",
+          "author": "elljay",
+          "license": "Pixabay Content License",
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "role": "secondary frontal seated silhouette and curled-tail reference",
+          "file_status": "Unmodified 1280px source preview",
+          "sha256": "5cfa33eb0cb5c9ac1fb12df08d73a0cc37e857844591ca9a5ca1a6b5ced7dab3"
+        }
+      ]
+    },
+    {
+      "name": "combat starts without overlap",
+      "passed": true,
+      "detail": {
+        "vertical-hit": 0,
+        "horizontal-hit": 0,
+        "sword-clash": 0,
+        "near-miss": 0
+      }
+    },
+    {
+      "name": "complete motion remains clear of caption overlays",
+      "passed": true,
+      "detail": [
+        [
+          0.33754275194221484,
+          0.6624572480577852,
+          0.25899803867089444,
+          0.7650019613291056
+        ],
+        [
+          0.3448656454046036,
+          0.6551343545953964,
+          0.247,
+          0.777
+        ],
+        [
+          0.3594069758846985,
+          0.6405930241153015,
+          0.33671706368074694,
+          0.6872829363192531
+        ],
+        [
+          0.33951565818543605,
+          0.660484341814564,
+          0.33940069925673994,
+          0.68459930074326
+        ],
+        [
+          0.35866949757070077,
+          0.6413305024292992,
+          0.2490224510972449,
+          0.774977548902755
+        ],
+        [
+          0.3373175415557914,
+          0.6626824584442086,
+          0.2656809868001782,
+          0.7583190131998219
+        ],
+        [
+          0.3453136277082508,
+          0.6546863722917492,
+          0.2509088824359716,
+          0.7730911175640285
+        ],
+        [
+          0.341051273510355,
+          0.658948726489645,
+          0.2773605377191514,
+          0.7466394622808485
+        ],
+        [
+          0.33897410968790037,
+          0.6610258903120996,
+          0.25288454859492554,
+          0.7711154514050744
+        ],
+        [
+          0.37426103175357706,
+          0.6257389682464229,
+          0.3367763150626524,
+          0.6872236849373476
+        ],
+        [
+          0.34149098869318195,
+          0.658509011306818,
+          0.2690938125253858,
+          0.7549061874746142
+        ],
+        [
+          0.36563258661663356,
+          0.6343674133833664,
+          0.29971926848453256,
+          0.7242807315154675
+        ],
+        [
+          0.3588124153593245,
+          0.6411875846406755,
+          0.28192902161426175,
+          0.7420709783857382
+        ],
+        [
+          0.3726318622139466,
+          0.6273681377860534,
+          0.2639924841690524,
+          0.7600075158309476
+        ],
+        [
+          0.3476376839609737,
+          0.6523623160390263,
+          0.2744359538128157,
+          0.7495640461871843
+        ],
+        [
+          0.36738481349928476,
+          0.6326151865007152,
+          0.247,
+          0.777
+        ],
+        [
+          0.22649478263953693,
+          0.7735052173604631,
+          0.247,
+          0.777
+        ]
+      ]
+    },
+    {
+      "name": "controls media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "40.000000",
+        "frames": "960",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "controls full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    },
+    {
+      "name": "combat media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "12.500000",
+        "frames": "300",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "combat full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    },
+    {
+      "name": "design media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "4.000000",
+        "frames": "96",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "design full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    }
+  ],
+  "media": [
+    {
+      "id": "orange-tabby-controls-v03",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v03.mp4",
+      "sha256": "3f7edcf6c14bd89f73d022589f61fe825d53fc9d0cba1d48476380911308c0d3",
+      "bytes": 14000233,
+      "duration_seconds": 40,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v03",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v03.mp4",
+      "sha256": "11c2b8c5bd0747ab931ee041d81857c51733a76944dda73ad8a9b481c046a7d3",
+      "bytes": 4221824,
+      "duration_seconds": 12.5,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v03",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v03.mp4",
+      "sha256": "d76bd806e370abf863aff3f61bd0fc907e8da6fcf0e2582db623ced64a5967bc",
+      "bytes": 436466,
+      "duration_seconds": 4,
+      "role": "authored design turntable"
+    }
+  ],
+  "geometry": {
+    "connector_mesh_count": 0,
+    "minimum_lateral_hand_body_gap": 0.28149999999999986,
+    "palm_to_head_lateral_gap": 0.45999999999999985,
+    "palm_width": 1.98,
+    "previous_palm_width": 1.012,
+    "hand_scale": [
+      4.5,
+      4.5,
+      4.5
+    ],
+    "body_posture": "seated",
+    "note": "Paws are deliberately detached. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed."
+  },
+  "review": {
+    "seated_detached_larger_hands": "user directed",
+    "exact_motion": "pending",
+    "production_base": null,
+    "runtime_cat": null
+  },
+  "limitations": [
+    "Experimental proxy solver adapter, not actual game footage or a selectable character.",
+    "Seated body posture is constrained; invisible constraints transmit paw contacts without visible arms.",
+    "Paw/seated hurt shapes are provisional; final Tripo mesh fit, spacing and coverage remain to validate.",
+    "No new cat ability or shared balance change.",
+    "Large paw proxies cause about 2.12 units of rise, lateral drift and gravity-driven movement even on canceled input; tuning is unaccepted. Final mass, hurt shapes and contacts remain unvalidated.",
+    "Existing game regression baseline remains applicable to unchanged source; no cat runtime integration was tested."
+  ]
+}

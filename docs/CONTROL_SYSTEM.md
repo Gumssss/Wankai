@@ -1,6 +1,6 @@
 # Weapon control system
 
-Reviewed against the source on 18 October 2026. These rules apply to the current `main` prototype; final control feel and balance still need playtesting. See the [project status](PROJECT_STATUS.md) for open work.
+Reviewed against local source and existing verification records on 20 October 2026. Character/weapon separation, orange tabby + giant paws, and the full-window preparation page are local and not yet pushed/merged; the earlier timed-hover baseline is merged in main. This documentation review does not rerun gameplay tests. These rules apply to the prototype; final control feel and balance still need playtesting. See the [project status](PROJECT_STATUS.md) for open work.
 
 The [approved motion video](control-concept-combinations.mp4) shows the intended input rule, including continued motion after ground contact and simultaneous swing and horizontal steering. It is a concept animation; the game uses its own physics and camera rendering.
 
@@ -68,12 +68,24 @@ Weapon clashes apply physical impulses. Clear impacts also make both fighters re
 
 The same clear impact emits the existing sound/particles. Body hits additionally trigger hit pause, damage numbers, a readout, and damage-based knockback. Extra clash pause/readout remains a proposal. `tests/clash-recoil.test.js` checks both heading directions, momentum components, gentle/sustained contacts, separation/cooldown, arena bounds, and rematch reset. Recoil strength still needs hands-on acceptance.
 
-The previous fixed-target controller is retained at Git checkpoint `8cc6441`; the current continuous controller predates the armory checkpoint. Current controls need hands-on playtesting with all four loadouts, especially while standing on the weapon and while turning and swinging together. The sword complaint remains open in [SWORD_TRIAL.md](SWORD_TRIAL.md).
+The previous fixed-target controller is retained at Git checkpoint `8cc6441`; the current continuous controller predates the armory checkpoint. Current controls need hands-on playtesting with all eight valid character/weapon loadouts, especially while supported by the weapon and while turning and swinging together. The sword complaint remains open in [SWORD_TRIAL.md](SWORD_TRIAL.md).
+
+## Character and equipment selection
+
+The live selector is a dedicated full-window **出战准备** page. P1 is on the left, P2 on the right; each player's character/weapon choices are above their own rotatable actual-model preview. Each player presses Ready independently, then the shared Start/save commits both drafts together. Ready alone does not commit or start. Editing a choice cancels only that player's readiness; reselecting the same choice retains it. Back or Escape returns to the menu and discards drafts; rematch retains committed choices. Solo shows/configures P1 while preserving hidden P2's committed selection; practice also configures its passive dummy. Narrow screens stack complete P1/P2 panels with vertical scrolling.
+
+Basic fighter supports sword/polearm/hammer; beagle supports those and long ears; orange tabby supports its paired giant paws: eight valid loadouts and 64 ordered pairings. Defaults remain basic fighter + sword versus basic fighter + polearm. Player colours are independent of character. The preparation screen hides the mounted arena/HUD, clears held game inputs on entry, focuses its heading and restores the launching menu control on return. Hidden/invalid arena dimensions preserve the last valid camera projection until the arena is visible again. [Current screenshot](screenshots/preparation-stage-v04.jpg) and [screen verification](selection-concepts/v04-preparation-stage/verification.json).
+
+Beagle with ordinary equipment uses rigid natural cosmetic ears: they follow the upright body and provide no attacks, blocks or powered support. The floating weapon keeps its original W/S+A/D motor controls and ground-driven travel. Character hurt shapes/boundaries remain beagle-sized. F/Right Shift is ignored for ordinary equipment. See [selection implementation](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) and [chaptered gameplay videos](previews/character-weapon-motion/index.html).
 
 ## Beagle parallel ears and hover skill — 19 October 2026
 
-The active beagle controller keeps the body upright. W/S powers parallel-ear strokes; A/D uses a slower 1.15 rad/s steering target with finite motor assistance. Both axes combine as in the normal-controls video. The rejected flip controller is inactive.
+The active **beagle + long ears** controller keeps the body upright. W/S powers parallel-ear strokes; A/D uses a slower 1.15 rad/s steering target with finite motor assistance. Both axes combine as in the normal-controls video. The rejected flip controller is inactive.
 
 Press **F** (P2 **Right Shift**) to activate a separate **five-second** skill: settle the ears horizontally, spread them, spin the body and ears together and rise into a low hover. A/D can reverse the rotor; W/S strokes pause during deployment/retraction. Releasing F does not cancel it; timer expiry removes lift and retracts the ears. The hover height is 0.35 world units above the floor, with bounded thrust ramping with rotor readiness. The skill and its A/D steering cost **no stamina**, work at zero stamina and do not weaken with fatigue; ordinary stamina may recover during it. Repeated presses cannot extend it, and holding cannot auto-repeat. A new activation requires an edge after retraction. Pause freezes the timer, and rematch resets it. Other loadouts ignore skill keys.
 
 The measured sockets and all eighteen solid ear capsules follow the same pitch/spread/lag/heading frame as the actual GLB and fallback. Swept contacts include deployment motion. The ordinary hit, block, directional damage, repeat-hit and clash recoil rules remain. See [current skill handoff](BEAGLE_SPIN_SKILL.md) for tuning and checks; the older flip and motion-study files are historical.
+
+## Orange tabby giant paws — 20 October 2026
+
+Choose 橘猫 → 猫爪. P1 W/S and P2 Up/Down continuously swing both detached paws; A/D and Left/Right steer the common heading. W+A, W+D, S+A and S+D combine both axes. S/Down paw-floor support visibly lifts the seated cat above its low resting hover; release preserves momentum, followed by descent and recovery. The pair shares the existing 200 stamina budget, hit gates and clash/recoil rules. F/Right Shift is ignored for this loadout. Reset/rematch restores the accepted neutral phase, low hover, resources and inputs. See [cat gameplay handoff](characters/orange-tabby/GAMEPLAY.md) for the exact model/controller and before/after evidence.

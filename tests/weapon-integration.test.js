@@ -4,6 +4,8 @@ import { Quaternion, Vector3 } from 'three';
 import { GameSession } from '../src/game-session.js';
 import { ArenaPhysics, CONFIG, closestSegments, staffFrame, weaponSegments, weaponPointFrame, hurtSegments, WEAPONS, v3 } from '../src/physics.js';
 import { setWeaponRotation } from '../src/weapon-visuals.js';
+import {WEAPON_CATALOG} from '../src/weapon-catalog.js';
+const selection=weaponId=>({characterId:WEAPON_CATALOG.find(w=>w.id===weaponId).characterId||'basic-fighter',weaponId});
 
 function sessionWithoutAudio() {
   const session = new GameSession();
@@ -14,8 +16,7 @@ function sessionWithoutAudio() {
 test('players select independently, including matching weapons, and retain selections in every mode', () => {
   for (const first of Object.keys(WEAPONS)) for (const second of Object.keys(WEAPONS)) {
     const session = sessionWithoutAudio();
-    session.setWeapon(first, 0);
-    session.setWeapon(second, 1);
+    session.setLoadouts([selection(first),selection(second)]);
     assert.deepEqual(session.getSnapshot().weapons, [first, second]);
     for (const mode of ['duel', 'duel-fixed', 'practice', 'solo']) {
       session.startRound(mode);
@@ -34,7 +35,7 @@ test('players select independently, including matching weapons, and retain selec
 test('all duel loadouts begin with separated weapons, including two level swords', () => {
   for (const first of Object.keys(WEAPONS)) for (const second of Object.keys(WEAPONS)) {
     const world = new ArenaPhysics();
-    world.reset(false, false, first, second);
+    world.reset(false, false, selection(first), selection(second));
     const [a, b] = world.players;
     for (const sa of weaponSegments(a)) for (const sb of weaponSegments(b)) {
       const separation = closestSegments(sa.a, sa.b, sb.a, sb.b).distance;
@@ -55,7 +56,7 @@ test('unknown weapon choices and player ids leave the chosen loadout intact', ()
 test('every floating weapon visual tracks its physical axis continuously through overhead and support', () => {
   for (const weapon of Object.keys(WEAPONS).filter(id => !WEAPONS[id].attachment)) for (const phi of [-Math.PI, 0, 0.73, 3.8]) {
     const world = new ArenaPhysics();
-    world.reset(false, true, weapon);
+    world.reset(false, true, selection(weapon));
     const p = world.players[0]; p.phi = phi;
     for (const pole of [-Math.PI * 2, -Math.PI, 0, Math.PI, Math.PI * 2]) {
       let previous;
@@ -76,7 +77,7 @@ test('the same swing input has the same angular direction on either side of stra
   for (const weapon of Object.keys(WEAPONS)) for (const direction of [-1, 1]) {
     const velocities = [];
     for (const offset of [-0.001, 0, 0.001]) {
-      const world = new ArenaPhysics(); world.reset(false, true, weapon);
+      const world = new ArenaPhysics(); world.reset(false, true, selection(weapon));
       const p = world.players[0]; p.p.y = 1000; p.theta = Math.PI + offset;
       for (let step = 0; step < 18; step++) world.step([{ theta: direction }], CONFIG.step);
       assert.ok(direction * p.wt > 0, 'the chosen swing direction changed near ground support');
@@ -145,7 +146,7 @@ test('outer head contacts can block a weapon and support the fighter before the 
 test('hammer is slower to start and reverse than the sword without producing movement in midair', () => {
   const states = {};
   for (const weapon of ['sword', 'hammer']) {
-    const world = new ArenaPhysics(); world.reset(false, true, weapon);
+    const world = new ArenaPhysics(); world.reset(false, true, selection(weapon));
     const p = world.players[0]; p.p.y = 1000; p.theta = 0;
     for (let step = 0; step < 18; step++) world.step([{ theta: 1, phi: 1 }]);
     states[weapon] = { start: p.wp };
@@ -160,14 +161,14 @@ test('hammer is slower to start and reverse than the sword without producing mov
 
 test('all loadouts remain finite and within the arena under sustained mixed input', () => {
   for (const first of Object.keys(WEAPONS)) for (const second of Object.keys(WEAPONS)) {
-    const world = new ArenaPhysics(); world.reset(true, false, first, second);
+    const world = new ArenaPhysics(); world.reset(true, false, selection(first), selection(second));
     for (let step = 0; step < 5400; step++) {
       const phase = Math.floor(step / 180);
       world.step([{ theta: phase % 2 ? -1 : 1, phi: phase % 3 ? 1 : -1 },
         { theta: phase % 3 ? -1 : 1, phi: phase % 2 ? -1 : 1 }]);
       for (const p of world.players) {
         for (const value of [p.p.x, p.p.y, p.p.z, p.wt, p.wp, p.health]) assert.ok(Number.isFinite(value));
-        if(p.weapon==='beagle') {
+        if(p.weapon==='long-ears') {
           assert.ok(Number.isFinite(p.bodyPitch+p.bodyRate));
           for(const shape of hurtSegments(p))for(const point of [shape.a,shape.b]) {
             assert.ok(Math.hypot(point.x,point.z)+shape.radius<=world.arenaRadius+.02);

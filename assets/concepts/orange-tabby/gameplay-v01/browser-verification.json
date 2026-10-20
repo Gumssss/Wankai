@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-20",
+  "game": "http://127.0.0.1:5173/",
+  "review": "docs/previews/orange-tabby/review-gameplay-v01.html",
+  "picker": "Selected \u6a58\u732b, confirmed character, chose \u732b\u722a, confirmed loadout and started actual solo round. New three-character count, cat ownership labels, unavailable unreviewed common combinations and cat control help visible.",
+  "capture": "Foreground Chrome recorded the actual game after background throttling was diagnosed. Complete all17chaptercapture succeeded.",
+  "playback": {
+    "duration": 63.133333,
+    "currentTime": 0.156726,
+    "readyState": 4,
+    "paused": false,
+    "error": null
+  },
+  "screenshot": "docs/previews/orange-tabby/gameplay-recording-v01.jpg",
+  "ui_scope": "Solo picker/start and real runtime capture inspected. P1/P2/modes/clone/camera behavior covered by automated tests; no separate full native Electron match claimed."
+}

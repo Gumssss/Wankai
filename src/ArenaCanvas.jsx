@@ -4,19 +4,28 @@ import { ACESFilmicToneMapping, PCFShadowMap, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { ArenaView } from './scene.js';
 import { FREE_CAMERA } from './free-camera.js';
-import { BEAGLE } from './beagle-profile.js';
+import {resolveLoadout,loadoutKey} from './loadouts.js';
 
 function ArenaEnvironment({ group }) { return <primitive object={group} dispose={null} />; }
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
 function ImpactEffects({ group }) { return <primitive object={group} dispose={null} />; }
 
-function ArenaScene({ session, mode, weapon, secondWeapon }) {
+function ArenaScene({ session, mode, loadouts }) {
+  const [first,second]=loadouts;
   const { gl, camera, scene, size } = useThree();
-  const view = useMemo(() => new ArenaView(gl, camera, mode, weapon, secondWeapon), [gl, camera, mode, weapon, secondWeapon]);
+  const view = useMemo(() => new ArenaView(gl, camera, mode, first, second), [gl, camera, mode, first, second]);
   const revision = useRef(session.visualRevision);
   const point = useMemo(() => new Vector3(), []);
   const headingForward = useMemo(() => new Vector3(), []);
   const headingRight = useMemo(() => new Vector3(), []);
+
+  // Local review recorders may inspect the actual game view without replacing
+  // the runtime renderer or advancing a second physics world.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    session.view = view;
+    return () => { if (session.view === view) delete session.view; };
+  }, [session, view]);
 
   useEffect(() => {
     view.resize(size.width, size.height);
@@ -24,34 +33,25 @@ function ArenaScene({ session, mode, weapon, secondWeapon }) {
 
   useEffect(() => {
     let cancelled = false;
-    const types = [...new Set(mode === 'solo' ? [weapon] : [weapon, secondWeapon])];
-    for (const type of types) {
-      const weaponUrl = `${import.meta.env.BASE_URL}models/${type === 'beagle' ? BEAGLE.model : `${type}.glb`}`;
-      new GLTFLoader().load(weaponUrl, gltf => {
-        if (cancelled) {
-          gltf.scene.traverse(object => {
-            object.geometry?.dispose();
-            const materials = Array.isArray(object.material) ? object.material : [object.material];
-            for (const material of materials) if (material) {
-              for (const value of Object.values(material)) if (value?.isTexture) value.dispose();
-              material.dispose();
-            }
-          });
-          return;
+    const jobs=new Map();
+    for(const selection of mode==='solo'?[first]:[first,second]){
+      const resolved=resolveLoadout(selection);
+      if(resolved.bodyModel)jobs.set(resolved.bodyModel,{kind:'character',id:resolved.bodyModel});
+      if(resolved.weaponModel)jobs.set(resolved.weaponModel,{kind:'weapon',id:resolved.weaponId});
+    }
+    for(const [filename,job] of jobs){
+      new GLTFLoader().load(`${import.meta.env.BASE_URL}models/${filename}`,gltf=>{
+        if(cancelled){
+          const resources=new Set();gltf.scene.traverse(o=>{if(o.geometry)resources.add(o.geometry);for(const mat of Array.isArray(o.material)?o.material:[o.material])if(mat){resources.add(mat);for(const value of Object.values(mat))if(value?.isTexture)resources.add(value);}});resources.forEach(r=>r.dispose());return;
         }
-        try {
-          view.setWeaponModel(gltf.scene, type);
-          gltf.scene.traverse(object => {
-            const materials = Array.isArray(object.material) ? object.material : [object.material];
-            for (const material of materials) material?.dispose();
-          });
-        } catch (error) { console.warn(`Could not attach the ${type} model; using the original shape.`, error); }
-      }, undefined, error => {
-        if (!cancelled) console.warn(`Could not load the ${type} model; using the original shape.`, error);
-      });
+        try{
+          if(job.kind==='character')view.setCharacterModel(gltf.scene,job.id);else view.setWeaponModel(gltf.scene,job.id);
+          gltf.scene.traverse(o=>{for(const mat of Array.isArray(o.material)?o.material:[o.material])mat?.dispose();});
+        }catch(error){if(job.kind==='character')view.showCharacterFallback(job.id);console.warn(`Could not attach ${filename}; using its fallback.`,error);}
+      },undefined,error=>{if(!cancelled){if(job.kind==='character')view.showCharacterFallback(job.id);console.warn(`Could not load ${filename}; using its fallback.`,error);}});
     }
     return () => { cancelled = true; };
-  }, [view, mode, weapon, secondWeapon]);
+  }, [view, mode, first, second]);
 
   useEffect(() => {
     const onContextLost = event => { event.preventDefault(); session.contextLost(); };
@@ -175,7 +175,9 @@ function ArenaScene({ session, mode, weapon, secondWeapon }) {
   </>;
 }
 
-export function ArenaCanvas({ session, mode, weapon, secondWeapon = 'polearm', onReady }) {
+export function ArenaCanvas({ session, mode, loadouts, onReady }) {
+  const key=loadouts.map(loadoutKey).join('|');
+  const selections=useMemo(()=>loadouts.map(p=>({...p})),[key]);
   return (
     <Canvas
       shadows
@@ -193,7 +195,7 @@ export function ArenaCanvas({ session, mode, weapon, secondWeapon = 'polearm', o
       }}
     >
       <color attach="background" args={[0xebe9dc]} />
-      <ArenaScene session={session} mode={mode} weapon={weapon} secondWeapon={secondWeapon} />
+      <ArenaScene session={session} mode={mode} loadouts={selections} />
     </Canvas>
   );
 }

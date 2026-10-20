@@ -1,4 +1,5 @@
 import { PerspectiveCamera, Vector3, MathUtils } from 'three';
+import {CHARACTERS} from './character-catalog.js';
 import { CONFIG, clamp, staffFrame, weaponStats, weaponSegments, hurtSegments } from './physics.js';
 
 // Shared by solo exploration and each player's split-screen view.
@@ -76,7 +77,7 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
   camera.position.y += shakeY;
   camera.lookAt(rig.focus);
   camera.updateMatrixWorld();
-  if (rig.frameFighter || player.weapon === 'beagle') fitFighter(rig, player, elapsed, firstFrame);
+  if (rig.frameFighter || player.characterId === 'beagle' || player.characterId === 'orange-tabby') fitFighter(rig, player, elapsed, firstFrame);
 }
 
 function fitFighter(rig, player, dt, firstFrame) {
@@ -88,8 +89,12 @@ function fitFighter(rig, player, dt, firstFrame) {
   for (const x of [-0.5, 0.5]) for (const y of [-0.6, 1.65]) for (const z of [-0.5, 0.5]) {
     points.push({ x: player.p.x + x, y: player.p.y + y, z: player.p.z + z });
   }
-  if (player.weapon === 'beagle') for (const s of [...weaponSegments(player),...hurtSegments(player)]) for (const p of [s.a, s.b])
-    for (const x of [-s.radius, s.radius]) for (const y of [-s.radius, s.radius]) for (const z of [-s.radius, s.radius])
+  if(player.characterId==='beagle'||player.characterId==='orange-tabby'){
+    const character=CHARACTERS[player.characterId],bounds=character.bounds,angle=player.phi+(player.facingOffset||0),c=Math.cos(angle),s=Math.sin(angle);
+    for(const x of [bounds.min[0],bounds.max[0]])for(const y of [bounds.min[1],bounds.max[1]])for(const z of [bounds.min[2],bounds.max[2]])points.push({x:player.p.x+x*c-z*s,y:player.p.y+y-character.bodyFloor,z:player.p.z+x*s+z*c});
+  }
+  if (player.characterId === 'beagle'||player.characterId==='orange-tabby') for (const s of [...weaponSegments(player),...hurtSegments(player)]) for (const p of [s.a, s.b])
+    for (const x of [-s.radius-(player.characterId==='orange-tabby'?.14:0), s.radius+(player.characterId==='orange-tabby'?.14:0)]) for (const y of [-s.radius-(player.characterId==='orange-tabby'?.14:0), s.radius+(player.characterId==='orange-tabby'?.14:0)]) for (const z of [-s.radius-(player.characterId==='orange-tabby'?.14:0), s.radius+(player.characterId==='orange-tabby'?.14:0)])
       points.push({ x: p.x + x, y: p.y + y, z: p.z + z });
   for (const p of points) {
     const point = rig.framePoint.set(p.x, p.y, p.z)

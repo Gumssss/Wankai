@@ -1,0 +1,13 @@
+{
+  "version": "orange-tabby-prepared-v01",
+  "date": "2026-10-20",
+  "endpoint": "Optimized actual Tripo asset and measured motion-review packet before runtime integration",
+  "authorization": "User: cool, based on the game-character-pipeline skill, do you think we can then implement it in the game? Continue with the existing Tripo model; prepare the required concrete asset/motion review.",
+  "source": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+  "source_sha256": "4241a26dbfb8f87e4c16c34b07c9319dd368523263b18b50ae3cdaa2e0485912",
+  "appearance_locks": ["seated compact golden tabby", "cute W smile and half-lidded eyes", "two enormous detached feline paws", "original relative proportions, tail, markings and 2K atlas"],
+  "work": ["split three existing disconnected components", "optimize toward 25000 triangles", "calibrate seated body height to 1.45 game units", "root, body and independent rigid paw controls", "measure simplified contacts from the exported geometry", "reimport using Three.js GLTFLoader", "labeled actual-model ordinary motion and combat replay videos"],
+  "motion_proposal": {"rest_theta": 1.5707963267948966, "virtual_pivot_height_above_body_base": 0.8, "ordinary_hover_height": 0.35, "W_S": "finite continuous paired paw swing", "A_D": "common heading steering", "ability": null, "body": "seated and upright", "lift_source": "bounded external spring/damper lift, explicitly proposed as ordinary behavior"},
+  "runtime_changes": false,
+  "review": "Motion B and prepared asset E pending the completed videos; existing primitive v04 is unaccepted research."
+}

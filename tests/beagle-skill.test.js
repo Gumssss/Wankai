@@ -99,7 +99,7 @@ test('active and retracting skills stay finite against every loadout, including 
    for(const p of w.players){
     assert.ok(Number.isFinite(p.p.x+p.p.y+p.p.z+p.wt+p.wp));
     assert.ok(p.stamina>=0&&p.stamina<=200);
-    if(p.weapon==='beagle'){assert.equal(p.bodyPitch,0);assert.ok(p.earSpread>=0&&p.earSpread<=Math.PI/2);}
+    if(p.weapon==='long-ears'){assert.equal(p.bodyPitch,0);assert.ok(p.earSpread>=0&&p.earSpread<=Math.PI/2);}
    }
   }
  }

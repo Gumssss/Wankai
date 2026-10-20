@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-20",
+  "environment": {
+    "runtime": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M4"
+  },
+  "source_sha256": "9f635633d64d3b40691d76456c3d0a1746394a1552ef5e4e172ac2cb451fe98f",
+  "method": "Production ArenaPhysics only, original 180 Hz step, 500 warmup + 500 measured steps per case, deterministic mixed control stress, practice healing avoids winner early exit; no renderer/session/GC isolation.",
+  "results": [
+    {
+      "id": "two-cat-start",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        }
+      ],
+      "warmup_steps": 500,
+      "measured_steps": 500,
+      "median_step_ms": 1.6928330000000642,
+      "p95_step_ms": 3.964040999999952,
+      "max_step_ms": 10.870249999999942,
+      "mean_step_ms": 1.9626568320000035,
+      "steps_over_180hz_budget": 8,
+      "budget_step_ms": 5.555555555555555,
+      "hits": 0,
+      "clashes": 0,
+      "finite": true,
+      "final_positions": [
+        {
+          "x": -5.035970825978259,
+          "y": 0.9400000516912883,
+          "z": -2.2878433223070624
+        },
+        {
+          "x": 3.250294684909521,
+          "y": 1.81095643841181,
+          "z": 4.258787686723559
+        }
+      ]
+    },
+    {
+      "id": "two-cat-close",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        }
+      ],
+      "warmup_steps": 500,
+      "measured_steps": 500,
+      "median_step_ms": 1.3563750000002983,
+      "p95_step_ms": 2.8079579999998714,
+      "max_step_ms": 5.885916000000179,
+      "mean_step_ms": 1.5536246440000059,
+      "steps_over_180hz_budget": 1,
+      "budget_step_ms": 5.555555555555555,
+      "hits": 0,
+      "clashes": 0,
+      "finite": true,
+      "final_positions": [
+        {
+          "x": -8.081953394705813,
+          "y": 0.9400000731110714,
+          "z": -2.8034192840214316
+        },
+        {
+          "x": 4.413503240215185,
+          "y": 1.9311042980715305,
+          "z": 5.062024549590594
+        }
+      ]
+    },
+    {
+      "id": "cat-beagle-close",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        }
+      ],
+      "warmup_steps": 500,
+      "measured_steps": 500,
+      "median_step_ms": 2.2835830000003625,
+      "p95_step_ms": 5.127166999999645,
+      "max_step_ms": 12.008708000000297,
+      "mean_step_ms": 2.6460664660000037,
+      "steps_over_180hz_budget": 16,
+      "budget_step_ms": 5.555555555555555,
+      "hits": 0,
+      "clashes": 0,
+      "finite": true,
+      "final_positions": [
+        {
+          "x": -16.83892516730782,
+          "y": 0.9399999999262663,
+          "z": -6.456833406469027
+        },
+        {
+          "x": 6.9335158185331425,
+          "y": 0.59,
+          "z": 14.054054655506157
+        }
+      ]
+    },
+    {
+      "id": "cat-sword-close",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "warmup_steps": 500,
+      "measured_steps": 500,
+      "median_step_ms": 2.2622919999994338,
+      "p95_step_ms": 4.960624999999709,
+      "max_step_ms": 23.043499999999767,
+      "mean_step_ms": 2.5591001699999616,
+      "steps_over_180hz_budget": 17,
+      "budget_step_ms": 5.555555555555555,
+      "hits": 0,
+      "clashes": 0,
+      "finite": true,
+      "final_positions": [
+        {
+          "x": -2.4859708259782627,
+          "y": 0.9400000516912883,
+          "z": -2.2878433223070624
+        },
+        {
+          "x": 3.696499173946575,
+          "y": 0.7592895330701069,
+          "z": -0.9207357807441473
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Not a target-FPS claim: browser rendering, hit pause, camera and system contention are excluded.",
+    "Synthetic states and deterministic sequences sample a subset of contacts; hands-on performance and balance remain separate."
+  ]
+}

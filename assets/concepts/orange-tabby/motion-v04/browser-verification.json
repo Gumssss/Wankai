@@ -1,0 +1,46 @@
+{
+  "version": "orange-tabby-v04",
+  "method": "In-app browser native keyboard holds; read visible HUD after release",
+  "page": "docs/previews/orange-tabby/try-v04.html",
+  "cases": [
+    {
+      "input": "W",
+      "held_seconds": 1.3,
+      "result": "Forward swing and contact response; phase 384 degrees, stamina 174; release coasts",
+      "passed": true
+    },
+    {
+      "input": "S",
+      "held_seconds": 1,
+      "result": "Reverse phase -166 degrees; stamina 180",
+      "passed": true
+    },
+    {
+      "input": "A",
+      "held_seconds": 1,
+      "result": "Heading -68 degrees, stable 0.35 hover, stamina 192",
+      "passed": true
+    },
+    {
+      "input": "D",
+      "held_seconds": 1,
+      "result": "Heading +69 degrees, stable 0.35 hover, stamina 192",
+      "passed": true
+    },
+    {
+      "input": "W+D",
+      "held_seconds": 1.4,
+      "result": "Both phase and heading change; phase 412 degrees, heading 99 degrees; stamina 161",
+      "passed": true
+    },
+    {
+      "input": "Reset",
+      "result": "Height 0.35, phase 77 degrees, heading zero, stamina 200",
+      "passed": true
+    }
+  ],
+  "screenshot": {
+    "path": "docs/previews/orange-tabby/keyboard-preview-v04.png",
+    "sha256": "0b692e4157a402a1bc5590df8e1167da6decb761cee49c6065698f70756ca224"
+  }
+}

@@ -1,15 +1,19 @@
-/** Experimental attached-ear adapter for the CURRENT game's control/contact code.
- * The production source is read, asserted, and adapted only in memory.
+/** Historical experimental attached-ear adapter for the merged timed-hover baseline.
+ * The pinned production source is read, asserted, and adapted only in memory.
  * Inputs, not authored poses or launch impulses, drive these review sequences.
  */
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import path from 'node:path';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const OUT=path.join(ROOT,'output/beagle-functional-preview');
 await mkdir(OUT,{recursive:true});
-const source=await readFile(path.join(ROOT,'src/physics.js'),'utf8');
+// This study injects obsolete ears/dummy weapon IDs. Keep its source checkpoint
+// reproducible rather than bypassing current loadout compatibility validation.
+const baseline='a591070fff8a64709dd0d775c140988e3d9b4ff1';
+const source=execFileSync('git',['show',`${baseline}:src/physics.js`],{cwd:ROOT,encoding:'utf8'});
 function replaceOnce(text,from,to){
  if(text.split(from).length!==2)throw Error('Prototype adapter source changed: '+from.slice(0,70));
  return text.replace(from,to);
@@ -130,7 +134,7 @@ for(const r of records){
  if(r.mode==='movement'&&r.stats.maxBodyRise<.4)throw Error('Insufficient real contact lift: '+r.id);
 }
 const report={purpose:'Historical v07 proxy preview using an experimental attached-ear frame. Production now uses the measured v05 beagle profile; this replay retains the earlier proxy proportions.',
- provenance:{base:'src/physics.js',sha256:createHash('sha256').update(source).digest('hex'),
+ provenance:{base:'src/physics.js',baselineCommit:baseline,sha256:createHash('sha256').update(source).digest('hex'),
   adaptations:['experimental ears/dummy profiles','fixed anatomical head sockets instead of floating weapon offset'],
   reused:['180 Hz integration','continuous W/S and A/D motor rules','stamina/fatigue','gravity and damping','ground/rim impulses','swept contacts','damage/repeat-hit gating','weapon clashes/recoil'],
   noAuthoredMotion:true,noLaunchImpulse:true,productionSourceModified:false},

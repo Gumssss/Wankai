@@ -2,13 +2,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ArenaPhysics, CONFIG, STAMINA, WEAPONS, damageForImpact, staffFrame, v3 } from '../src/physics.js';
 import { GameSession } from '../src/game-session.js';
+import {WEAPON_CATALOG} from '../src/weapon-catalog.js';
+const selection=weaponId=>({characterId:WEAPON_CATALOG.find(w=>w.id===weaponId).characterId||'basic-fighter',weaponId});
 
 const near = (actual, expected, tolerance = 1e-7) => assert.ok(Math.abs(actual - expected) < tolerance,
   `Expected ${actual} to be near ${expected}`);
 
 function solo(weapon = 'polearm', stamina = STAMINA.max) {
   const world = new ArenaPhysics();
-  world.reset(false, true, weapon);
+  world.reset(false, true, selection(weapon));
   Object.assign(world.players[0], { p: v3(0, 10000, 0), theta: 0, stamina });
   return world;
 }
@@ -140,7 +142,7 @@ test('exhaustion weakens floating-weapon acceleration and turning while preservi
 
 test('an exhausted fighter can still move through ground support with every weapon', () => {
   for (const weapon of Object.keys(WEAPONS)) {
-    const world = new ArenaPhysics(); world.reset(false, true, weapon);
+    const world = new ArenaPhysics(); world.reset(false, true, selection(weapon));
     const p = world.players[0]; p.stamina = 0; p.theta = 1.6;
     advance(world, 2, { theta: 1 });
     assert.equal(p.stamina, 0);

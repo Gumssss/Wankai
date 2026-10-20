@@ -1,0 +1,124 @@
+{
+  "artifact": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+  "sha256": "4241a26dbfb8f87e4c16c34b07c9319dd368523263b18b50ae3cdaa2e0485912",
+  "bytes": 3319720,
+  "glb_version": 2,
+  "asset": {
+    "version": "2.0",
+    "generator": "Tripo"
+  },
+  "triangles": 96044,
+  "vertices": 51645,
+  "meshes": 1,
+  "primitives": [
+    {
+      "mesh": 0,
+      "primitive": 0,
+      "material": 0,
+      "triangles": 96044,
+      "vertices": 51645,
+      "position_accessor": 0
+    }
+  ],
+  "materials": [
+    {
+      "name": "tripo_material_32b6fafd-9aa5-4015-ac81-22825a8b0a0a",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.5
+      }
+    }
+  ],
+  "images": [
+    {
+      "index": 0,
+      "mimeType": "image/jpeg",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 512872,
+      "embedded": true
+    }
+  ],
+  "skins": 0,
+  "animations": 0,
+  "nodes": [
+    {
+      "name": "tripo_node_32b6fafd-9aa5-4015-ac81-22825a8b0a0a",
+      "mesh": 0
+    }
+  ],
+  "extensions_used": [
+    "KHR_materials_volume",
+    "FB_ngon_encoding"
+  ],
+  "components_after_read_only_position_welding": [
+    {
+      "mesh": 0,
+      "primitive": 0,
+      "triangles": 33070,
+      "vertices": 17549,
+      "bounds_min": [
+        -0.5,
+        0.002243027091026306,
+        0.018072154372930527
+      ],
+      "bounds_max": [
+        -0.1332855224609375,
+        0.3726806640625,
+        0.2135925590991974
+      ],
+      "center": [
+        -0.31664276123046875,
+        0.18746184557676315,
+        0.11583235673606396
+      ]
+    },
+    {
+      "mesh": 0,
+      "primitive": 0,
+      "triangles": 31834,
+      "vertices": 17040,
+      "bounds_min": [
+        0.1328582763671875,
+        0.002166762948036194,
+        0.01791185513138771
+      ],
+      "bounds_max": [
+        0.5,
+        0.3725128173828125,
+        0.21357721090316772
+      ],
+      "center": [
+        0.31642913818359375,
+        0.18733979016542435,
+        0.11574453301727772
+      ]
+    },
+    {
+      "mesh": 0,
+      "primitive": 0,
+      "triangles": 31140,
+      "vertices": 17056,
+      "bounds_min": [
+        -0.12061312049627304,
+        0.0,
+        -0.2135925590991974
+      ],
+      "bounds_max": [
+        0.12022397667169571,
+        0.30475616455078125,
+        0.04681776836514473
+      ],
+      "center": [
+        -0.00019457191228866577,
+        0.15237808227539062,
+        -0.08338739536702633
+      ]
+    }
+  ],
+  "analysis_note": "Components use triangle indices plus coincident-position seam welding to five decimals. Raw source bytes are untouched. Bounds are in mesh-local source coordinates, not game dimensions.",
+  "inspection_status": "technical source inspection; user model appearance selection pending"
+}

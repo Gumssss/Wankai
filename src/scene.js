@@ -6,6 +6,9 @@ import { BEAGLE } from './beagle-profile.js';
 import {beagleEarYaw} from './beagle-skill.js';
 import { instantiateBeagle, poseBeagle, makeBeagleFallback } from './beagle-model.js';
 import { weaponPointFrame, v3 } from './physics.js';
+import {resolveLoadout} from './loadouts.js';
+import {CAT} from './orange-tabby-profile.js';
+import {instantiateOrangeTabby,poseOrangeTabby,makeOrangeTabbyFallback,poseOrangeTabbyFallback} from './orange-tabby-model.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const PALETTE = [0xc4684f, 0x568d92];
@@ -26,8 +29,10 @@ export class ArenaView {
     this.camera = camera;
     this.solo = mode === 'solo';
     this.duel = mode === 'duel';
-    this.weapon = weapon;
-    this.secondWeapon = secondWeapon;
+    this.loadouts=[resolveLoadout(weapon),resolveLoadout(secondWeapon)];
+    this.weapon = this.loadouts[0].weaponId;
+    this.secondWeapon = this.loadouts[1].weaponId;
+    this.characterLoaded=new Set();
     this.swordPitch = new THREE.Quaternion();
     this.weaponLoaded = new Set();
     this.arenaScale = arenaScaleForMode(mode);
@@ -191,7 +196,7 @@ export class ArenaView {
   }
 
   makeFighter(id) {
-    const weaponType = id === 0 ? this.weapon : this.secondWeapon;
+    const loadout=this.loadouts[id],weaponType=loadout.weaponId,earWeapon=loadout.controller==='ears',pawWeapon=loadout.controller==='paws';
     const weapon = WEAPONS[weaponType];
     const root = new THREE.Group();
     this.actors.add(root);
@@ -220,7 +225,7 @@ export class ArenaView {
     tip.position.y = weapon.length;
     const fallbackHead = new THREE.Group();
     staff.add(fallbackHead);
-    for (const collider of weaponType === 'beagle' ? [] : weapon.colliders?.slice(1) || []) {
+    for (const collider of earWeapon||pawWeapon ? [] : weapon.colliders?.slice(1) || []) {
       const a = new THREE.Vector3(...collider.a), b = new THREE.Vector3(...collider.b);
       const direction = b.clone().sub(a);
       const part = this.mesh(new THREE.CapsuleGeometry(collider.radius, direction.length(), 4, 8),
@@ -243,34 +248,55 @@ export class ArenaView {
     trail.frustumCulled = false;
     this.actors.add(trail);
     const trails = [{ mesh: trail, positions, history: [], anchor: undefined }];
-    let beagleFallback;
-    if (weaponType === 'beagle') {
+    let beagleFallback,catFallback;
+    if (loadout.characterId === 'beagle') {
       for (const child of root.children) child.visible = false;
-      staff.visible = false;
-      beagleFallback = makeBeagleFallback(id);root.add(beagleFallback.root);
-      trails[0].anchor = BEAGLE.anchors.L;
+      staff.visible = !earWeapon;
+      beagleFallback = makeBeagleFallback(id,earWeapon);beagleFallback.root.visible=false;root.add(beagleFallback.root);
+    }
+    if(pawWeapon){
+      for(const child of root.children)child.visible=false;
+      staff.visible=false;contact.visible=false;
+      catFallback=makeOrangeTabbyFallback(id);catFallback.root.visible=false;root.add(catFallback.root);
+    }
+    if(earWeapon||pawWeapon){
+      trails[0].anchor = earWeapon?BEAGLE.anchors.L:undefined;
+      if(pawWeapon)trails[0].pawSide='L';
       const other = trail.clone();other.geometry = trail.geometry.clone();other.material = trail.material.clone();
       const otherPositions = new Float32Array(positions.length);
       other.geometry.setAttribute('position', new THREE.BufferAttribute(otherPositions, 3));
       this.actors.add(other);
-      trails.push({ mesh: other, positions: otherPositions, history: [], anchor: BEAGLE.anchors.R });
+      trails.push({ mesh: other, positions: otherPositions, history: [], anchor:earWeapon?BEAGLE.anchors.R:undefined,pawSide:pawWeapon?'R':undefined });
     }
+    const pawContacts=pawWeapon?['L','R'].map(side=>{const cue=contact.clone();cue.geometry=contact.geometry.clone();cue.material=contact.material.clone();cue.visible=false;this.actors.add(cue);return {side,mesh:cue};}):[];
     return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, fallbackHead, marker, contact, trail, positions,
-      trails, beagleFallback, maxTrail, weaponType, baseColor: new THREE.Color(PALETTE[id]) };
+      trails, beagleFallback,catFallback,pawContacts,pawWeapon, maxTrail, weaponType, characterId:loadout.characterId,bodyModel:loadout.bodyModel,earWeapon,baseColor: new THREE.Color(PALETTE[id]) };
+  }
+
+  setCharacterModel(source,modelName){
+    if(this.disposed||this.characterLoaded.has(modelName))return;
+    for(const [id,fighter] of this.players.entries()){
+      if(fighter.bodyModel!==modelName)continue;
+      if(fighter.pawWeapon){
+        fighter.cat=instantiateOrangeTabby(source,id);fighter.root.add(fighter.cat.host);fighter.catFallback.root.visible=false;
+      }else{
+        fighter.beagle=instantiateBeagle(source,id,{rigged:fighter.earWeapon});
+        fighter.root.add(fighter.beagle.host);fighter.beagleFallback.root.visible=false;
+      }
+    }
+    this.characterLoaded.add(modelName);
+  }
+
+  showCharacterFallback(modelName){
+    if(this.disposed)return;
+    for(const fighter of this.players)if(fighter.bodyModel===modelName&&!fighter.beagle&&!fighter.cat){
+      const fallback=fighter.catFallback||fighter.beagleFallback;if(fallback)fallback.root.visible=true;
+    }
   }
 
   setWeaponModel(source, type = 'polearm') {
     if (this.disposed || this.weaponLoaded.has(type)) return;
-    if (type === 'beagle') {
-      for (const [id, fighter] of this.players.entries()) {
-        if (fighter.weaponType !== type) continue;
-        fighter.beagle = instantiateBeagle(source, id);
-        fighter.root.add(fighter.beagle.host);
-        fighter.beagleFallback.root.visible = false;
-      }
-      this.weaponLoaded.add(type);
-      return;
-    }
+    if (type === 'beagle'||type==='long-ears')return this.setCharacterModel(source,BEAGLE.model);
     for (const [id, fighter] of this.players.entries()) {
       if (fighter.weaponType !== type) continue;
       const weapon = source.clone(true);
@@ -312,6 +338,8 @@ export class ArenaView {
   }
 
   resize(width, height) {
+    // The arena stays mounted while the preparation page hides its container.
+    if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return;
     this.width = width;
     this.height = height;
     const aspect = this.width / Math.max(1, this.height);
@@ -341,10 +369,12 @@ export class ArenaView {
     for (const p of players) {
       const model = this.players[p.id];
       model.root.position.copy(vec(p.p));
-      // Only the visible face turns. Contact physics still treats the body as a sphere.
+      // The outer root owns common heading for body and anatomical weapons.
       model.root.rotation.y = -fighterHeading(p);
       model.bodyMat.color.copy(model.baseColor).lerp(new THREE.Color(0xffefd6), p.hitFlash * 0.8);
       model.skinMat.color.set(0xe7c199).lerp(new THREE.Color(0xffffff), p.hitFlash * 0.8);
+      if(model.cat)poseOrangeTabby(model.cat,p);
+      if(model.catFallback)poseOrangeTabbyFallback(model.catFallback,p);
       if (model.beagle) poseBeagle(model.beagle, p, this.trailTimeTotal || 0);
       if (model.beagleFallback) {
         model.beagleFallback.body.rotation.z = -(p.bodyPitch || 0);
@@ -356,12 +386,22 @@ export class ArenaView {
       setWeaponRotation(model.staff.quaternion, p.theta, p.phi, this.swordPitch);
       model.marker.position.set(p.p.x, 0.02, p.p.z);
       model.marker.material.opacity = clamp(0.5 - (p.p.y - CONFIG.bodyFloor) * 0.09, 0.16, 0.5);
-      model.contact.visible = p.staffGrounded;
+      model.contact.visible = !model.pawWeapon&&p.staffGrounded;
       model.contact.position.set(frame.point.x, 0.023, frame.point.z);
+      for(const {side,mesh} of model.pawContacts){
+        let lowest;
+        for(const shape of CAT.colliders.slice(side==='L'?0:24,side==='L'?24:48)){
+          const f=weaponPointFrame(p,v3(...shape.a)),height=f.point.y-shape.radius;
+          if(!lowest||height<lowest.height)lowest={height,point:f.point};
+        }
+        mesh.visible=!!p.staffGrounded&&lowest?.height<.06;
+        if(lowest)mesh.position.set(lowest.point.x,.023,lowest.point.z);
+      }
       for (const trail of model.trails) {
         if (recordTrail) {
-          const near = weaponPointFrame(p, v3(0, weaponStats(p).length * .72, 0), trail.anchor).point;
-          const tip = weaponPointFrame(p, v3(0, weaponStats(p).length, 0), trail.anchor).point;
+          const lateral=trail.pawSide?CAT.pawAnchors[trail.pawSide][2]:0;
+          const near = weaponPointFrame(p, trail.pawSide?v3(-.45,.95,lateral):v3(0, weaponStats(p).length * .72, 0), trail.anchor).point;
+          const tip = weaponPointFrame(p, trail.pawSide?v3(-1.4,.95,lateral):v3(0, weaponStats(p).length, 0), trail.anchor).point;
           trail.history.unshift([vec(near), vec(tip)]);
           if (trail.history.length > model.maxTrail) trail.history.pop();
         }

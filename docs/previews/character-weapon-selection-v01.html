@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>丸棍竞技场 · 角色与武器选择概念</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./character-weapon-selection-v01.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark"><i></i><b></b></span><span>丸棍竞技场<small>W A N K A I / A R E N A</small></span></a>
+    <div class="top-center">出战准备 <span>/</span> BUILD YOUR LOADOUT</div>
+    <div class="preview-badge">界面概念 · V02</div>
+  </header>
+  <nav class="progress" aria-label="出战选择步骤">
+    <button data-step="character"><span class="step-number">01</span><b>选择角色</b><small>CHARACTER</small></button>
+    <span class="progress-line"></span>
+    <button data-step="weapon"><span class="step-number">02</span><b>选择武器</b><small>WEAPON</small></button>
+    <span class="progress-line"></span>
+    <button data-step="ready"><span class="step-number">03</span><b>确认出战</b><small>READY</small></button>
+  </nav>
+  <main>
+    <aside>
+      <div class="player-switch" role="group" aria-label="当前配置玩家"><button data-player="0" class="active">P1 <span>赤方</span><i>正在配置</i></button><button data-player="1">P2 <span>青方</span><i>待配置</i></button></div>
+      <div class="section-heading"><span class="eyebrow" id="step-eyebrow">STEP 01 / CHARACTER</span><h2 id="step-title">先选你喜欢的角色<span>。</span></h2><p id="step-description">角色决定外观，下一步再为它选择武器。</p></div>
+      <div class="library-title"><b>角色列表</b><span>CHARACTERS</span><small>01 可选 / 01 开发中</small></div>
+      <div class="character-grid" role="group" aria-label="角色列表">
+        <button class="character-card selected" id="choose-beagle" aria-pressed="true"><div class="portrait"><img id="beagle-portrait" alt="自然垂耳比格犬头像"><span class="selection-check">✓</span></div><strong>比格犬</strong><small>BEAGLE</small></button>
+        <button class="character-card unavailable" disabled><div class="portrait cat-portrait"><svg viewBox="0 0 120 110" aria-hidden="true"><path d="M25 42 20 8 45 26Q60 19 75 26L100 8 95 42Q112 100 60 102 8 100 25 42" fill="#e8ae64" stroke="#ba8750" stroke-width="2"/><path d="M46 30 51 47M60 25V44M74 30 69 47" stroke="#c7833c" stroke-width="6" stroke-linecap="round"/><path d="M31 60Q41 51 50 60M70 60Q80 51 89 60" fill="none" stroke="#655840" stroke-width="3"/><path d="M41 72Q60 65 79 72L82 86Q60 105 38 86Z" fill="#fff7e7"/><path d="m56 74 8 0-4 5Z" fill="#b77c6b"/><path d="M60 79V84M60 84 54 87M60 84 66 87" fill="none" stroke="#695b49" stroke-width="2"/></svg><span class="development">开发中</span></div><strong>橘猫</strong><small>ORANGE TABBY</small></button>
+        <div class="character-card empty"><span>＋</span><strong>更多角色</strong><small>TO BE CONTINUED</small></div>
+      </div>
+      <div class="library-title weapons-title"><b>武器列表</b><span>WEAPONS</span><small id="weapon-count">选择角色后挑选武器</small></div>
+      <div class="weapon-grid" role="group" aria-label="武器列表"></div>
+      <div class="selection-detail" aria-live="polite"><div><span id="detail-category">CHARACTER IDENTITY</span><strong id="detail-title">同一个比格犬，不同的打法。</strong></div><p id="detail-copy">选择普通武器时保留自然长度耳朵；选择长耳时，切换为当前的长耳战斗形态。</p></div>
+      <div class="next-row"><button id="back" class="back-button">← 返回</button><button id="next" class="primary-button">确认角色，选择武器 <span>→</span></button></div>
+    </aside>
+    <section class="showcase" aria-label="角色与装备的三维组合预览">
+      <div class="hero-heading"><span class="eyebrow">CHARACTER / 001</span><h1>比格犬<span>BEAGLE</span></h1><p id="appearance-label">原始比例 · 自然垂耳</p></div>
+      <span class="model-tag" id="model-tag">角色本体</span>
+      <div id="stage"><canvas aria-label="比格犬装备模型"></canvas><span id="load-status" role="status">正在载入实际模型…</span></div>
+      <div class="stage-controls"><span class="drag-icon">↔</span> 拖动旋转模型 <span>·</span> 滚轮缩放<button id="reset-view">重置视角 ↗</button></div>
+      <div class="loadout"><span class="player-marker">P1</span><div><small>当前搭配 / LOADOUT</small><b id="loadout-title">比格犬 <span>＋</span> 待选武器</b></div><span id="ear-pill">自然长度耳朵</span></div>
+    </section>
+  </main>
+  <footer><span><i></i> 角色与武器独立选择 <b>·</b> 两位玩家可选相同搭配</span><span id="footer-note">预览设计 · 尚未接入游戏选择流程</span></footer>
+  <script type="module" src="./character-weapon-selection-v01.mjs"></script>
+</body>
+</html>

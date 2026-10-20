@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-19",
+  "user_request": "Always prepare front, side and back before Tripo model generation.",
+  "files": [
+    {
+      "project_path": "skills/game-character-pipeline/SKILL.md",
+      "installed_path": "/Users/haojun/.codex/skills/game-character-pipeline/SKILL.md",
+      "sha256": "5cb42e8ff9f0303e24f50b8bc2e12d344304c7c252a5bb50ef2a43971c520cec",
+      "copies_match": true
+    },
+    {
+      "project_path": "skills/game-character-pipeline/references/production.md",
+      "installed_path": "/Users/haojun/.codex/skills/game-character-pipeline/references/production.md",
+      "sha256": "b3428605b3fea44ca2239e70a97a914b9c1041a4fdffcc441f10210b4f2cb904",
+      "copies_match": true
+    },
+    {
+      "project_path": "skills/game-character-pipeline/references/motion-and-reviews.md",
+      "installed_path": "/Users/haojun/.codex/skills/game-character-pipeline/references/motion-and-reviews.md",
+      "sha256": "c545812fbd5cacdd1d47b1b20d84cf7815d4db3b70e69ae867ed712f36a4ad76",
+      "copies_match": true
+    }
+  ],
+  "validation": "quick_validate.py passed for repository and installed skill; git diff --check passed",
+  "operational_clarification": "Use multi-view for one model, not batch images for separate models."
+}

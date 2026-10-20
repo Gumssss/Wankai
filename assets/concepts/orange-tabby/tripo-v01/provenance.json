@@ -1,0 +1,105 @@
+{
+  "id": "orange-tabby-tripo-v01",
+  "tool": "Tripo Studio via signed-in Chrome computer use",
+  "operation": {
+    "id": "orange-tabby-tripo-v01",
+    "service": "Tripo Studio",
+    "date": "2026-10-19",
+    "request": "one initial model from the prepared three-view set",
+    "authorization": "Explicit user request to prepare the images, input them into Tripo, and generate the model; preparation/settings delegated. One candidate only, no speculative paid retries or additional purchases.",
+    "status": "complete; raw textured GLB downloaded and inspected",
+    "workspace_url": "https://studio.tripo3d.ai/workspace/generate",
+    "inputs": [
+      {
+        "path": "assets/concepts/orange-tabby/tripo-input-v02/front.png",
+        "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+        "bytes": 1326587,
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "view": "front",
+        "slot": "Front"
+      },
+      {
+        "path": "assets/concepts/orange-tabby/tripo-input-v02/left.png",
+        "sha256": "576d5ab3f0e9bec18c62ed834feaa0b289e9ac3e204ecb7bba34a2f4ff36dfd5",
+        "bytes": 1484238,
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "view": "left",
+        "slot": "Left"
+      },
+      {
+        "path": "assets/concepts/orange-tabby/tripo-input-v02/back.png",
+        "sha256": "c6ed80b72f66b05ee77cc56e7bd129259f3ef2a7340a8be387995288d381cf9b",
+        "bytes": 1457806,
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "view": "back",
+        "slot": "Back"
+      }
+    ],
+    "settings": {
+      "mode": "HD Model, Multi-view to one model",
+      "model": "H3.1 – Best Quality",
+      "texture": true,
+      "texture_resolution": "2K",
+      "ultra_mesh_quality": false,
+      "topology": "Triangle",
+      "polycount_target": 100000,
+      "remove_lighting": false,
+      "pbr": false,
+      "generate_in_parts": false,
+      "privacy": "Private",
+      "slots": {
+        "Front": "front.png",
+        "Left": "left.png",
+        "Right": null,
+        "Back": "back.png"
+      }
+    },
+    "configuration_decisions": [
+      "Batch Images to 3D was identified as separate models and abandoned before any submission; no batch charge.",
+      "Texture enabled automatically disabled Generate in Parts; prioritize accepted colors and separate disconnected geometry locally after mesh review.",
+      "2K texture and a 100k-triangle source target chosen for this first editable source; final game budget remains a later Blender stage."
+    ],
+    "quoted_credits": 25,
+    "credits_before": 3015,
+    "credits_after": 2990,
+    "observed_credits": 25,
+    "operation_id": "37bbff57-418a-4f36-90a7-b1f154966c9d",
+    "source_download": {
+      "path": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+      "sha256": "4241a26dbfb8f87e4c16c34b07c9319dd368523263b18b50ae3cdaa2e0485912",
+      "bytes": 3319720,
+      "original_download": "/Users/haojun/Downloads/orange-tabby-tripo-v01-source.glb"
+    },
+    "proof_of_setup": "assets/concepts/orange-tabby/tripo-input-v02/tripo-ready.jpg",
+    "model_appearance_acceptance": "pending user review of actual mesh",
+    "runtime_integration": false,
+    "source_url": "https://studio.tripo3d.ai/workspace/generate/37bbff57-418a-4f36-90a7-b1f154966c9d",
+    "source_inspection": "assets/concepts/orange-tabby/tripo-v01/source-inspection.json",
+    "observed_export_credits": 0,
+    "verification": "assets/concepts/orange-tabby/tripo-v01/verification.json",
+    "blender_inspection": "assets/concepts/orange-tabby/tripo-v01/blender-inspection.json",
+    "inspection_scene": "assets/concepts/orange-tabby/tripo-v01/source-inspection.blend",
+    "review_renders": [
+      "assets/concepts/orange-tabby/tripo-v01/mesh-front.png",
+      "assets/concepts/orange-tabby/tripo-v01/mesh-left.png",
+      "assets/concepts/orange-tabby/tripo-v01/mesh-back.png"
+    ]
+  },
+  "source": {
+    "path": "assets/concepts/orange-tabby/tripo-v01/orange-tabby-tripo-v01-source.glb",
+    "sha256": "4241a26dbfb8f87e4c16c34b07c9319dd368523263b18b50ae3cdaa2e0485912",
+    "bytes": 3319720
+  },
+  "raw_source_preserved": true,
+  "local_edits": "none; Blender import, static review lighting/cameras and render-only inspection scene",
+  "inspection_script": "assets/concepts/orange-tabby/tripo-v01/render-inspection.py",
+  "inspection_script_sha256": "aeb152e53b21ca97c7a17ccad1822ef2d2e15aaa8680daa636277c62bb25f164",
+  "verification": "assets/concepts/orange-tabby/tripo-v01/verification.json",
+  "model_selection": "pending user actual-base appearance review"
+}

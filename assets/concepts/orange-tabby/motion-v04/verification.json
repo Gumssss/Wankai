@@ -1,0 +1,755 @@
+{
+  "version": "orange-tabby-motion-v04",
+  "date": "2026-10-19",
+  "checks": [
+    {
+      "name": "existing runtime and beagle assets preserved",
+      "passed": true,
+      "detail": {
+        "files": 37,
+        "changed": []
+      }
+    },
+    {
+      "name": "selected originals unchanged",
+      "passed": true,
+      "detail": [
+        "assets/concepts/orange-tabby/references/orange-tabby-original.png",
+        "assets/concepts/orange-tabby/references/paw-weapon-original.png"
+      ]
+    },
+    {
+      "name": "current source provenance exact",
+      "passed": true,
+      "detail": {
+        "source": "src/physics.js",
+        "sha256": "eba2ff82dbd78697367689431fe6112942917681b93fe2b89ff6669f386e0072",
+        "productionModified": false,
+        "adaptations": [
+          "floating seated-body and detached giant-paw profile",
+          "bounded continuous hover using beagle gain 25/damping 9/thrust cap g+12",
+          "air-supported paw gravity compensation",
+          "virtual floating-paw contact frame and derivatives",
+          "provisional seated hurt capsules",
+          "beagle normal steering target 1.15 rad/s and finite feedback .70"
+        ],
+        "reused": [
+          "current gravity/180 Hz ground support",
+          "finite swing drive and reverse braking",
+          "shared stamina/fatigue",
+          "swept damage and repeat-hit gating",
+          "directional damage",
+          "clash impulses/recoil"
+        ],
+        "scriptedTranslation": false,
+        "normalLaunchImpulse": false
+      }
+    },
+    {
+      "name": "ordinary input matrix present",
+      "passed": true,
+      "detail": [
+        "hover-idle",
+        "w",
+        "s",
+        "a",
+        "d",
+        "wa",
+        "wd",
+        "sa",
+        "sd",
+        "release-reverse",
+        "yaw-reverse",
+        "landing",
+        "opposites",
+        "vertical-hit",
+        "horizontal-hit",
+        "sword-clash",
+        "near-miss"
+      ]
+    },
+    {
+      "name": "body retains the seated orientation",
+      "passed": true,
+      "detail": {
+        "contactVelocityFiniteDifferenceError": 9.179219416787644e-06,
+        "allBodiesUpright": true,
+        "idleBaseClearance": 0.35,
+        "idlePawGroundGap": 1.145659027575606
+      }
+    },
+    {
+      "name": "both swing directions produce support",
+      "passed": true,
+      "detail": {
+        "w": {
+          "minBaseClearance": 0.35,
+          "travel": [
+            9.520932083976696,
+            -0.8393914250929772
+          ],
+          "maxRise": 1.7340965173631497,
+          "finalHeight": 0.8993245494530403,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 33
+        },
+        "s": {
+          "minBaseClearance": 0.35,
+          "travel": [
+            -9.463707432040065,
+            -0.7154076243571832
+          ],
+          "maxRise": 1.7352391853036506,
+          "finalHeight": 0.8997591276649107,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 157.1111111111099,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 33
+        }
+      }
+    },
+    {
+      "name": "contact point velocity agrees with transform",
+      "passed": true,
+      "detail": 9.179219416787644e-06
+    },
+    {
+      "name": "vertical hit is powered and contact confirmed",
+      "passed": true,
+      "detail": {
+        "target": [
+          2.5,
+          0.59,
+          2.05
+        ],
+        "theta": 0.4,
+        "firstEvent": {
+          "time": 0.5111111111111112,
+          "type": "hit",
+          "point": {
+            "x": 1.5362679186423212,
+            "y": 2.1045767116898557,
+            "z": 1.9299999999999997
+          },
+          "normal": {
+            "x": 0.7836086395587386,
+            "y": -0.613544824259661,
+            "z": 0.09757176145322215
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 10,
+          "speed": 5.248993286291132,
+          "acceleration": 8.139991353971428,
+          "turnShare": 0,
+          "strength": 0.3333333333333333
+        }
+      }
+    },
+    {
+      "name": "horizontal hit is turning dominated",
+      "passed": true,
+      "detail": {
+        "target": [
+          2.5,
+          0.59,
+          -1
+        ],
+        "theta": 1.4,
+        "firstEvent": {
+          "time": 0.9500000000000001,
+          "type": "hit",
+          "point": {
+            "x": 1.7543139552657152,
+            "y": 1.9634490714953736,
+            "z": -1.76186631150231
+          },
+          "normal": {
+            "x": 0.6062673074640544,
+            "y": -0.4987542940733871,
+            "z": 0.619422397111731
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 1,
+          "speed": 2.3188087992344513,
+          "acceleration": 0.0174442224092495,
+          "turnShare": 1,
+          "strength": 0.12
+        }
+      }
+    },
+    {
+      "name": "weapon interception and recoil are functional",
+      "passed": true,
+      "detail": {
+        "target": [
+          4.2,
+          0.59,
+          2.05
+        ],
+        "targetTheta": 1.4,
+        "firstEvent": {
+          "time": 0.5277777777777778,
+          "type": "clash",
+          "point": {
+            "x": 1.5338595377659408,
+            "y": 0.5431683421084474,
+            "z": 1.9899996990609075
+          },
+          "strength": 0.42861843606526556,
+          "recoilSpeed": 2.189556813252259
+        }
+      }
+    },
+    {
+      "name": "distant target is not hit",
+      "passed": true,
+      "detail": {
+        "minBaseClearance": 0.34875270339724707,
+        "travel": [
+          7.036950751611482,
+          -1.40454294466402
+        ],
+        "maxRise": 1.681517378753806,
+        "finalHeight": 0.34875270339724707,
+        "hits": 0,
+        "clashes": 0,
+        "minStamina": 180.11111111111055,
+        "maxBodyPitch": 0,
+        "initialOverlap": 0,
+        "contactSamples": 18
+      }
+    },
+    {
+      "name": "shared repeat-hit gate is not duplicated",
+      "passed": true,
+      "detail": "Multiple paw capsules share the ordinary attacker repeat-hit gate."
+    },
+    {
+      "name": "opposites do not spend stamina",
+      "passed": true,
+      "detail": "Gravity/support still act; canceled input supplies no drive or cost."
+    },
+    {
+      "name": "ordinary shared stamina charges once",
+      "passed": true,
+      "detail": {
+        "w": 157.1111111111099,
+        "wa": 139.95555555555165
+      }
+    },
+    {
+      "name": "hands have no visible connectors",
+      "passed": true,
+      "detail": {
+        "connector_mesh_count": 0,
+        "minimum_lateral_hand_body_gap": 0.28149999999999986,
+        "palm_to_head_lateral_gap": 0.45999999999999985,
+        "palm_width": 1.98,
+        "previous_palm_width": 1.012,
+        "hand_scale": [
+          4.5,
+          4.5,
+          4.5
+        ],
+        "body_posture": "seated in a low hover",
+        "hover_height": 0.35,
+        "note": "Paws are deliberately detached and air-supported. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed.",
+        "idle_body_mesh_clearance": 0.3299999237060547,
+        "idle_paw_mesh_clearance": 1.0104070901870728
+      }
+    },
+    {
+      "name": "giant hands clear the seated body",
+      "passed": true,
+      "detail": {
+        "connector_mesh_count": 0,
+        "minimum_lateral_hand_body_gap": 0.28149999999999986,
+        "palm_to_head_lateral_gap": 0.45999999999999985,
+        "palm_width": 1.98,
+        "previous_palm_width": 1.012,
+        "hand_scale": [
+          4.5,
+          4.5,
+          4.5
+        ],
+        "body_posture": "seated in a low hover",
+        "hover_height": 0.35,
+        "note": "Paws are deliberately detached and air-supported. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed.",
+        "idle_body_mesh_clearance": 0.3299999237060547,
+        "idle_paw_mesh_clearance": 1.0104070901870728
+      }
+    },
+    {
+      "name": "palms are almost twice the previous width",
+      "passed": true,
+      "detail": {
+        "connector_mesh_count": 0,
+        "minimum_lateral_hand_body_gap": 0.28149999999999986,
+        "palm_to_head_lateral_gap": 0.45999999999999985,
+        "palm_width": 1.98,
+        "previous_palm_width": 1.012,
+        "hand_scale": [
+          4.5,
+          4.5,
+          4.5
+        ],
+        "body_posture": "seated in a low hover",
+        "hover_height": 0.35,
+        "note": "Paws are deliberately detached and air-supported. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed.",
+        "idle_body_mesh_clearance": 0.3299999237060547,
+        "idle_paw_mesh_clearance": 1.0104070901870728
+      }
+    },
+    {
+      "name": "seated pose references preserved and attributed",
+      "passed": true,
+      "detail": [
+        {
+          "id": "seated-pose-commons",
+          "path": "assets/concepts/orange-tabby/references/seated-pose-commons-original.jpg",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Orange_Tabby_Cat_Sitting_Down.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Orange_Tabby_Cat_Sitting_Down.jpg/960px-Orange_Tabby_Cat_Sitting_Down.jpg",
+          "author": "Asabae2752",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "role": "selected full seated gesture reference: low haunches, lifted chest, tucked feet",
+          "file_status": "Unmodified 960px source preview; not the full-resolution master",
+          "sha256": "f855ac0f61d726476346ebe0d98c928890c717062d60b227b426e901084233b4"
+        },
+        {
+          "id": "seated-pose-pixabay",
+          "path": "assets/concepts/orange-tabby/references/seated-pose-pixabay-original.jpg",
+          "source_url": "https://pixabay.com/photos/cat-sitting-orange-tabby-orange-1114726/",
+          "download_url": "https://cdn.pixabay.com/photo/2015/12/30/20/21/cat-1114726_1280.jpg",
+          "author": "elljay",
+          "license": "Pixabay Content License",
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "role": "secondary frontal seated silhouette and curled-tail reference",
+          "file_status": "Unmodified 1280px source preview",
+          "sha256": "5cfa33eb0cb5c9ac1fb12df08d73a0cc37e857844591ca9a5ca1a6b5ced7dab3"
+        }
+      ]
+    },
+    {
+      "name": "combat starts without overlap",
+      "passed": true,
+      "detail": {
+        "vertical-hit": 0,
+        "horizontal-hit": 0,
+        "sword-clash": 0,
+        "near-miss": 0
+      }
+    },
+    {
+      "name": "body and paw meshes clearly hover at rest",
+      "passed": true,
+      "detail": {
+        "connector_mesh_count": 0,
+        "minimum_lateral_hand_body_gap": 0.28149999999999986,
+        "palm_to_head_lateral_gap": 0.45999999999999985,
+        "palm_width": 1.98,
+        "previous_palm_width": 1.012,
+        "hand_scale": [
+          4.5,
+          4.5,
+          4.5
+        ],
+        "body_posture": "seated in a low hover",
+        "hover_height": 0.35,
+        "note": "Paws are deliberately detached and air-supported. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed.",
+        "idle_body_mesh_clearance": 0.3299999237060547,
+        "idle_paw_mesh_clearance": 1.0104070901870728
+      }
+    },
+    {
+      "name": "idle and opposite inputs remain stationary and free",
+      "passed": true,
+      "detail": {
+        "hover-idle": {
+          "minBaseClearance": 0.35,
+          "travel": [
+            0,
+            0
+          ],
+          "maxRise": 0.35,
+          "finalHeight": 0.35,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 200,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 0
+        },
+        "opposites": {
+          "minBaseClearance": 0.35,
+          "travel": [
+            0,
+            0
+          ],
+          "maxRise": 0.35,
+          "finalHeight": 0.35,
+          "hits": 0,
+          "clashes": 0,
+          "minStamina": 200,
+          "maxBodyPitch": 0,
+          "initialOverlap": 0,
+          "contactSamples": 0
+        }
+      }
+    },
+    {
+      "name": "actual GLB and browser controller checks pass",
+      "passed": true,
+      "detail": {
+        "version": "orange-tabby-v04-loader-and-controls",
+        "checks": [
+          {
+            "name": "real GLB has independently driven body and hands",
+            "passed": true,
+            "detail": [
+              "FloatingPawLeft",
+              "FloatingPawRight"
+            ]
+          },
+          {
+            "name": "orange and green identity colors survived GLB export",
+            "passed": true,
+            "detail": [
+              {
+                "name": "Orange reference volume",
+                "r": 0.8468732237815857,
+                "g": 0.366252601146698,
+                "b": 0.07818742096424103
+              },
+              {
+                "name": "Green eyes",
+                "r": 0.23839756846427917,
+                "g": 0.37123769521713257,
+                "b": 0.13013647496700287
+              },
+              {
+                "name": "Green eyes",
+                "r": 0.23839756846427917,
+                "g": 0.37123769521713257,
+                "b": 0.13013647496700287
+              },
+              {
+                "name": "Orange reference volume",
+                "r": 0.8468732237815857,
+                "g": 0.366252601146698,
+                "b": 0.07818742096424103
+              },
+              {
+                "name": "Orange reference volume",
+                "r": 0.8468732237815857,
+                "g": 0.366252601146698,
+                "b": 0.07818742096424103
+              },
+              {
+                "name": "Orange reference volume",
+                "r": 0.8468732237815857,
+                "g": 0.366252601146698,
+                "b": 0.07818742096424103
+              },
+              {
+                "name": "Orange reference volume",
+                "r": 0.8468732237815857,
+                "g": 0.366252601146698,
+                "b": 0.07818742096424103
+              },
+              {
+                "name": "Orange reference volume",
+                "r": 0.8468732237815857,
+                "g": 0.366252601146698,
+                "b": 0.07818742096424103
+              },
+              {
+                "name": "Orange reference volume",
+                "r": 0.8468732237815857,
+                "g": 0.366252601146698,
+                "b": 0.07818742096424103
+              }
+            ]
+          },
+          {
+            "name": "loaded hand centers match physical transforms through pitch and yaw",
+            "passed": true,
+            "detail": 9.155133597044475e-16
+          },
+          {
+            "name": "ordinary hover is stable without input or stamina cost",
+            "passed": true,
+            "detail": {
+              "position": {
+                "x": 0,
+                "y": 0.94,
+                "z": 0
+              },
+              "stamina": 200
+            }
+          },
+          {
+            "name": "A and D steer in opposite directions while staying afloat",
+            "passed": true,
+            "detail": {
+              "left": -2.097861317168901,
+              "right": 2.097861317168901
+            }
+          },
+          {
+            "name": "W and S produce oppositely directed contact travel",
+            "passed": true,
+            "detail": {
+              "forward": {
+                "x": 6.2997188532559285,
+                "y": 1.591353756288792,
+                "z": -1.1057624710060265
+              },
+              "backward": {
+                "x": -4.007079791527005,
+                "y": 1.1077226039160994,
+                "z": -0.7722457840292581
+              }
+            }
+          },
+          {
+            "name": "release retains motion rather than snapping to a rest angle",
+            "passed": true,
+            "detail": {
+              "before": 8.786526828156637,
+              "after": 8.801509080486996,
+              "rate": 2.6968054194647757
+            }
+          },
+          {
+            "name": "browser and video use the same solver adapter",
+            "passed": true,
+            "detail": "Only import URLs differ."
+          }
+        ],
+        "productionIntegration": false
+      }
+    },
+    {
+      "name": "complete motion remains clear of caption overlays",
+      "passed": true,
+      "detail": [
+        [
+          0.39188736910472444,
+          0.6081126308952756,
+          0.3889220314220062,
+          0.6350779685779938
+        ],
+        [
+          0.3377438766985029,
+          0.6622561233014971,
+          0.2602000607064351,
+          0.7637999392935649
+        ],
+        [
+          0.34675699835635665,
+          0.6532430016436434,
+          0.247,
+          0.777
+        ],
+        [
+          0.33893832330920837,
+          0.6610616766907916,
+          0.3531922980257557,
+          0.6708077019742443
+        ],
+        [
+          0.33667391251228485,
+          0.6633260874877152,
+          0.3604881273381736,
+          0.6635118726618264
+        ],
+        [
+          0.3534554734919465,
+          0.6465445265080535,
+          0.24930945160795892,
+          0.7746905483920411
+        ],
+        [
+          0.3376386560323569,
+          0.6623613439676431,
+          0.2605804268236762,
+          0.7634195731763238
+        ],
+        [
+          0.3440704750183341,
+          0.6559295249816659,
+          0.2553232155941599,
+          0.7686767844058402
+        ],
+        [
+          0.33943073748401814,
+          0.6605692625159818,
+          0.27067920568184306,
+          0.753320794318157
+        ],
+        [
+          0.3380030400619631,
+          0.6619969599380369,
+          0.24981901993221062,
+          0.7741809800677895
+        ],
+        [
+          0.3682564413319747,
+          0.6317435586680253,
+          0.352949308064055,
+          0.671050691935945
+        ],
+        [
+          0.33777875788858386,
+          0.6622212421114162,
+          0.26027153229959976,
+          0.7637284677004003
+        ],
+        [
+          0.39188736910472444,
+          0.6081126308952756,
+          0.3889220314220062,
+          0.6350779685779938
+        ],
+        [
+          0.3526324531434726,
+          0.6473675468565274,
+          0.2772384661487328,
+          0.7467615338512672
+        ],
+        [
+          0.37042266322561884,
+          0.6295773367743811,
+          0.37418820367564654,
+          0.6498117963243535
+        ],
+        [
+          0.32498597534665497,
+          0.675014024653345,
+          0.2894807974929172,
+          0.7345192025070828
+        ],
+        [
+          0.32737161124862035,
+          0.6726283887513796,
+          0.247,
+          0.777
+        ],
+        [
+          0.22807205394640617,
+          0.7719279460535938,
+          0.247,
+          0.777
+        ]
+      ]
+    },
+    {
+      "name": "controls media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "44.000000",
+        "frames": "1056",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "controls full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    },
+    {
+      "name": "combat media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "12.500000",
+        "frames": "300",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "combat full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    },
+    {
+      "name": "design media format and duration",
+      "passed": true,
+      "detail": {
+        "duration": "4.000000",
+        "frames": "96",
+        "codec": "h264"
+      }
+    },
+    {
+      "name": "design full decode",
+      "passed": true,
+      "detail": "All frames decode."
+    }
+  ],
+  "media": [
+    {
+      "id": "orange-tabby-controls-v04",
+      "path": "docs/previews/orange-tabby/orange-tabby-controls-v04.mp4",
+      "sha256": "9d5229cbe69e513647347fdc55af69d061853eb5e7a726983cf990b03194e82e",
+      "bytes": 10524882,
+      "duration_seconds": 44,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-combat-v04",
+      "path": "docs/previews/orange-tabby/orange-tabby-combat-v04.mp4",
+      "sha256": "d36d3deb80aaeaaf8db35c0e9c1d01a53fbc2b638022be35cffb7d054b04091a",
+      "bytes": 4603891,
+      "duration_seconds": 12.5,
+      "role": "isolated current-game proxy solver replay"
+    },
+    {
+      "id": "orange-tabby-design-v04",
+      "path": "docs/previews/orange-tabby/orange-tabby-design-v04.mp4",
+      "sha256": "51cee10b09439e3d6d07b1877a3b62a34579e13af7967acff4b786c7f9165045",
+      "bytes": 453351,
+      "duration_seconds": 4,
+      "role": "authored design turntable"
+    }
+  ],
+  "geometry": {
+    "connector_mesh_count": 0,
+    "minimum_lateral_hand_body_gap": 0.28149999999999986,
+    "palm_to_head_lateral_gap": 0.45999999999999985,
+    "palm_width": 1.98,
+    "previous_palm_width": 1.012,
+    "hand_scale": [
+      4.5,
+      4.5,
+      4.5
+    ],
+    "body_posture": "seated in a low hover",
+    "hover_height": 0.35,
+    "note": "Paws are deliberately detached and air-supported. Invisible solver constraints couple their contacts to the seated body. Final mesh fit is unperformed.",
+    "idle_body_mesh_clearance": 0.3299999237060547,
+    "idle_paw_mesh_clearance": 1.0104070901870728
+  },
+  "review": {
+    "floating_giant_paws": "user directed",
+    "exact_motion": "pending",
+    "production_base": null,
+    "runtime_cat": null
+  },
+  "limitations": [
+    "Experimental proxy solver adapter, not actual game footage or a selectable character.",
+    "The seated body uses continuous bounded external hover lift; paw gravity is compensated. This is a new ordinary-hover proposal, distinct from the beagle timed F skill.",
+    "Paw/seated hurt shapes are provisional; final Tripo mesh fit, spacing and coverage remain to validate.",
+    "No new cat ability or shared balance change.",
+    "Ordinary bounded hover and paw gravity compensation are new proposals. W/S contacts still produce about 1.74 units of maximum height and lateral drift; final mass, contacts and balance remain unvalidated.",
+    "Existing game regression baseline remains applicable to unchanged source; no cat runtime integration was tested."
+  ]
+}

@@ -1,22 +1,35 @@
 # Character Creation Workflow Skill Specification
 
-Prepared 19 October 2026. Status: implemented as the [game-character-pipeline skill](../skills/game-character-pipeline/SKILL.md), with the user's required Tripo generation and move-video rules. A matching copy is installed in the account's Codex skills directory. This document retains the detailed workflow specification.
+Prepared 19 October 2026; revised 20 October after the creator authorized stage-scoped operation and clearer delivery/evidence boundaries. Status: implemented in the [portable game-character-pipeline source](../skills/game-character-pipeline/SKILL.md), preserving the required Tripo generation and move-video rules. The installed account copy is synchronized, with all five modified files verified byte-for-byte. Structural checks and four independent read-only scope dry runs passed; the validation limits are recorded below. The [skills guide](SKILLS.md#stage-scoped-pipeline-and-applied-refinements) explains the applied changes and why one umbrella pipeline remains appropriate.
 
 The intended skill takes a character idea, supplied reference, image-search request or image-generation request through design, motion validation, reconstruction references, a Tripo-generated 3D base, Blender preparation and playable integration. It preserves the user’s visual choices and the game’s mechanical rules at every stage.
 
-This specification generalizes the [beagle design record](BEAGLE_DESIGN_PROCESS.md). The improved sequence is **understand the game → define the character → present every proposed move through video and validate unfamiliar mechanics → approve reconstruction inputs → generate the base in Tripo or resume its approved Tripo base → prepare and approve the actual asset in Blender → integrate → playtest and record**. Appearance and mechanics can develop in parallel, but geometry-dependent movement must be demonstrated before final proportions and rigging are locked.
+This specification generalizes the [beagle design record](BEAGLE_DESIGN_PROCESS.md). The full production map is **understand the game → define the character → present proposed moves through video and validate unfamiliar mechanics → approve reconstruction inputs → generate the base in Tripo or resume its approved Tripo base → prepare the actual asset in Blender → integrate → playtest and record**. Use only the relevant stages within the requested scope; the map does not require a pause after every stage. Appearance and mechanics can develop in parallel, while geometry-dependent movement must be demonstrated before final production proportions and rigging are locked.
 
 **User requirement, 19 October:** always use videos to present the assistant’s understanding of any character move. This applies to ordinary moves, combined inputs, abilities, transitions and recovery, including moves that reuse an existing controller.
 
 **User requirement, 19 October:** always use Tripo to generate a new character’s 3D base. Blender refines, optimizes and rigs that selected base. An approved existing Tripo base can be retained for revisions; a local edit does not automatically require generating the character again.
 
-Skill name: **game-character-pipeline**. Its role is to coordinate the complete production workflow. Existing character-design, create-game-assets, rigging and model-loading skills remain focused supporting capabilities. Its entrypoint contains the essential rules and routes to four supporting references for production, motion/reviews, document templates and beagle lessons.
+**Current delivery preference, 20 October:** once implementation is available in the game, the creator wants to review it there and does not need the recording shown again. Retain required motion/actual-game evidence and open the implemented game for review. This preference changes presentation after implementation; the approved pre-implementation movement videos, consistent front/side/back inputs and complete W/S/A/D plus four-combination coverage still apply. For UI-only work, preserve accepted assets/movement and verify the actual screen and interaction flow.
+
+Skill name: **game-character-pipeline**. Its role is to coordinate the requested stage or authorized production range. Existing character-design, create-game-assets, rigging and model-loading skills remain focused supporting capabilities. Its entrypoint contains the essential rules and routes to four references for production, motion/reviews, document templates and beagle lessons; load only the sections needed for the current work.
 
 ## Scope and starting point
 
 The workflow applies to a new playable 3D character, a substantial revision to an existing one, or a requested stage of that production process. Tripo is the required base-generation step, followed by Blender preparation as needed, a compatible runtime export and inspection in the actual game. Primitive Blender blockouts remain useful for motion videos; they do not replace the Tripo-generated production base.
 
-Respect the requested endpoint. A concept request ends with a concept; a model request does not automatically authorize gameplay changes. A complete character implementation includes the relevant asset, controls, contacts, selection/reset paths and playable verification. Resume an existing character at its earliest unfinished stage rather than generating a new design every time.
+Infer the requested endpoint from the user's instruction and preserve it. A concept request ends with a concept; a model request does not automatically authorize gameplay changes. A playable-character request or authorization spanning several stages permits continuing through that range, reusing completed work and approvals. A complete implementation includes the relevant asset, controls, contacts, selection/reset paths and playable verification. Stop at the requested endpoint, an explicit user stop, a genuinely missing decision/authorization or an unresolved required capability; do not add routine review stops.
+
+| Request | Route and endpoint |
+| --- | --- |
+| Find or generate a reference image only | Deliver the selected reference/image with relevant visual locks. No automatic Tripo, gameplay design or integration. |
+| Prepare reconstruction inputs only | Reuse the approved seed and deliver the requested consistent views; stop before an unrequested generation. |
+| Generate or refine a model only | Complete the requested asset stages and their applicable prerequisites/reviews; deliver the actual model without automatically implementing gameplay. |
+| Integrate an approved asset/controller | Resume at the missing runtime work, keeping accepted references, model, motion and decisions. Do not restart completed production. |
+| Create a playable character | Continue across the authorized stages, requesting only genuinely missing decisions and respecting operation/spending limits. |
+| Change a UI screen with unchanged motion/assets/contacts | Verify screenshots, interaction and navigation, focus, responsive bounds, model loading and appropriate focused checks/build. Reuse motion evidence; no new Tripo generation or movement recording is required. |
+
+At a scoped endpoint or explicit stop, record a short checkpoint in the existing character record: delivered artifact/version, completed/current stage, approvals and constraints, unfinished work and next action. Suggest the next stage without executing it outside the request or requiring approval of the suggestion. On resume, read that checkpoint and selected/current pointers, then enter the earliest unfinished stage within the new scope. A completed stage is a completed scoped task; it does not imply a playable or accepted character. No new checkpoint file or full document set is mandatory.
 
 Read the repository instructions, current design/status/control documents, existing assets and relevant source before choosing the route. Identify the engine, platform, camera, world scale, import conventions, performance budget, ordinary movement/combat rules and player controls. Preserve local changes and established approved choices.
 
@@ -34,7 +47,7 @@ For Wankai, the minimum context is [project status](PROJECT_STATUS.md), [design 
 8. **Keep authorization persistent within its scope.** Reuse already given approvals and budgets. Do not repeatedly ask for permission to inspect, repair, export, test or document work already authorized.
 9. **Preserve sources and accepted checkpoints.** Keep originals, editable files, export versions and rejected studies distinct. Current-model and current-runtime pointers must be explicit.
 10. **Make completion verifiable.** Technical checks, visual review and hands-on acceptance answer different questions. Report each separately, including the remaining limitations.
-11. **Present every proposed move through video.** Before implementing a new or changed move, show the intended behavior in a labeled video for motion review. Written descriptions, static poses and interactive prototypes may accompany it but do not replace the video. Show actual gameplay video again after implementation.
+11. **Present every proposed move through video.** Before implementing a new or changed move, show the intended behavior in a labeled video for motion review. Written descriptions, static poses and interactive prototypes may accompany it but do not replace the video. After implementation, retain actual-game evidence and use the creator's selected review route; the current preference is to open the playable game.
 12. **Generate production character bases in Tripo.** Do not substitute a Blender-only character or another generator because the form looks easy to model. Use Blender for the required refinement and rigging of the selected Tripo base. Resume an already approved Tripo source for later edits rather than regenerating it without a reason.
 
 These rules do not impose the beagle’s one-hinge construction, thirteen bones, 3.60-unit ears, F binding, five-second skill or 200 stamina on other characters. Those were project-specific outcomes. A new character inherits the game’s current defaults unless the user approves changing them.
@@ -45,7 +58,7 @@ These rules do not impose the beagle’s one-hinge construction, thirteen bones,
 
 Resolve whether the user is supplying an identity reference, requesting image search, requesting generation, or asking to revise an existing asset. Preserve supplied originals before editing. For a collage, choose the intended character/expression/outfit and derive a clean individual subject; do not combine every pose and costume.
 
-Write a provisional design brief and create the asset manifest before generating new concepts. Infer routine implementation details from the project; ask only for missing choices that materially affect identity, controls, scope or spending. Keep unknowns as proposed choices rather than silently recording them as approved.
+When new concepts are requested, record a proportional provisional brief and manifest before generating them; reuse an existing record rather than requiring new files. An approved-model edit or integration does not need another concept brief. Infer routine details from the project; ask only for missing choices that materially affect identity, controls, scope or spending. Keep unknowns as proposed choices rather than silently recording them as approved.
 
 For search, present a small relevant selection with original-source links and identify the selected reference. For generation, create a coherent initial concept from the provisional brief. Refine the brief after selecting the seed. If an exact supplied image is already the chosen direction, record that choice instead of reopening selection.
 
@@ -67,16 +80,16 @@ If the motion fails, revise the controller or geometry before polishing the mesh
 
 ### Stage 3 Prepare reconstruction images from the selected design
 
-Create a reconstruction packet from the approved seed and the dimensions that survived the motion check. Keep the same character, pose, scale, markings and materials across views. Use a neutral pose that separates important body parts and exposes the intended attachment areas. Any shortened or simplified generation feature must be documented with its planned Blender correction.
+Create a reconstruction packet from the approved seed and dimensions. Reuse relevant accepted motion/geometry checks; if unfamiliar functional anatomy still needs proving before final geometry, address that prerequisite within its authorized scope. A reference-image request does not become a complete motion-production task. Keep the same character, pose, scale, markings and materials across views. Use a neutral pose that separates important body parts and exposes the intended attachment areas. Document any shortened or simplified generation feature with its planned Blender correction.
 
-Three views are useful for a design turnaround, but are not a compulsory input count. Tripo’s current help recommends a front three-quarter image for a single-view attempt, and consistent multi-view inputs when hidden geometry matters. Front, side and back are an appropriate multi-view set when rear design and proportions need specifying. Its documented multi-view workflow accepts two to four views. See [Tripo’s multi-view guidance](https://www.tripo3d.ai/help/features/how-to-use-multi-view-input-effectively), checked 19 October 2026.
+The user explicitly requires a consistent front, side and back image set before every new Tripo model generation. Reuse matching approved views and generate missing angles from the selected seed. This is the project's workflow standard, even where Tripo itself supports a single-image route. Inspect current multi-view slots and settings before submission. See [Tripo’s multi-view guidance](https://www.tripo3d.ai/help/features/how-to-use-multi-view-input-effectively), checked 19 October 2026.
 
 Choose the actual input route after inspecting the currently available Tripo mode and requirements:
 
 | Need | Proposed production choice |
 | --- | --- |
-| Simple readable design; hidden surfaces can be inferred | Start with one clean front three-quarter image. |
-| Rear costume, tail, markings or weapon attachment matters | Add consistent front/side/back views in a supported multi-view mode. |
+| New Tripo model, including a simple readable design | Prepare separate consistent front, side and back images and use a compatible multi-view mode. |
+| Rear costume, tail, markings or weapon attachment matters | Specify those details consistently in the required front/side/back set. |
 | Important asymmetry remains hidden | Include the additional relevant side if the chosen mode supports it. |
 | An approved Tripo model already exists for this character | Inspect and edit or segment that source; do not generate images and a replacement model automatically. |
 | An existing reference model was made elsewhere | Use it as an approved reference for Tripo generation rather than silently bypassing the required Tripo step. |
@@ -130,11 +143,13 @@ Preserve shared combat and resource rules unless the user requests a change. Pai
 
 Run meaningful focused regressions, the relevant existing suite and the production build. Inspect actual gameplay in the relevant modes and against representative opponents, including another instance of the same character. Show hits and near misses, support, blocks, clashes, release/reversal, interruptions, expiry and recovery. In Wankai, include all mixed loadout pairings when contacts change, with solo/practice and both duel camera modes as relevant.
 
-**Review F — playable acceptance:** provide a playable local scene and actual gameplay videos tied to the approved motion previews. Show each implemented move and relevant combinations, including its ending/recovery. Report verified mechanics, test/build results and what still needs hands-on judgment. A test pass cannot override a user report that the character is lying down or otherwise behaving incorrectly. Reproduce the report and return to the affected stage.
+For a UI-only change with unchanged assets, controls and contacts, use the screen/interaction route instead: screenshots, readiness/start/save/cancel flows, focus/navigation, responsive bounds, loading behavior and focused checks/build. Preserve the accepted motion/controller evidence. This route does not require regeneration, another full movement capture or a new character review.
+
+**Review F — playable acceptance:** provide a playable local scene and retain actual gameplay evidence tied to the approved motion previews, including each implemented move, relevant combinations and ending/recovery. Open the game for review when requested; do not require the creator to watch the same behavior in another recording after implementation. Report verified mechanics, test/build results and what still needs hands-on judgment. A test pass cannot override a user report that the character is lying down or otherwise behaving incorrectly. Reproduce the report and return to the affected stage.
 
 ### Stage 7 Record and deliver the accepted checkpoint
 
-Update the canonical current-state records, controls/help, model handoff, project status and changelog. Keep a concise history of decisions and rejected branches with their reasons. Identify the selected input, source model, Blender rig, runtime export and source revision.
+Update the canonical current-state records, controls/help, model handoff, project status and changelog. Reconcile current summaries and linked handoffs for availability, controls, selection flow and verification scope; appending a new paragraph does not correct contradictory current instructions below it. Keep a concise dated history of decisions and rejected branches with their reasons. Identify the selected input, source model, Blender rig, runtime export and source revision.
 
 Distinguish local implementation, technical verification, user acceptance, pushed/merged source and packaged release. Push, merge or publish only within the user’s authorization; reuse authorization already provided for that action and scope. Do not add an unnecessary new confirmation when it is already authorized.
 
@@ -147,13 +162,13 @@ Archive large originals and generated diagnostics according to repository policy
 - **Complete action:** include preparation, active motion and return to a useful state at normal speed. Show release, reversal, interruption, ability expiry, landing and recovery where relevant. Add slow motion for difficult contacts without replacing the normal-speed example.
 - **Inputs and combinations:** label keys or actions, movement direction and whether the example is ordinary movement or an ability. Show the relevant combined inputs, not only isolated single-key actions. One video may contain clearly labeled segments for several moves; separate files are not required for every input.
 - **Honest representation:** label authored concepts, blockout simulation, solver replay and actual gameplay distinctly. Identify test-launch forces and scripted translation. A polished concept video does not establish functioning game physics.
-- **After implementation:** capture the actual game and compare it with the approved preview, covering the same actions and recovery. A model viewer, written report, screenshots or passing tests cannot replace this footage.
+- **After implementation, when motion is in scope:** capture and retain actual gameplay matching the approved preview, including the same actions and recovery. A model viewer, written report, screenshots or passing tests cannot replace this motion evidence. Deliver through the user's selected review route; an explicit live-game preference does not require presenting the recording again or another video-viewing approval stop. This does not remove the pre-implementation motion review or automatically establish playable acceptance.
 - **Record and reuse:** save a playable video link/file, move and input coverage, timecodes when useful, model/controller versions, simulation type and user decision in the motion record. Reuse a previously approved video only when the relevant motion is unchanged; update affected segments when its behavior changes.
 - **Missing capability:** if video production is unavailable, report the missing deliverable and preserve independent work. Do not substitute static images or an interactive scene and treat the video review as complete.
 
-## Documents and records to create
+## Proportional records for the requested stages
 
-These are logical records. They can share files for a small asset, but the information must remain identifiable. Reuse an existing character’s records rather than producing duplicate briefs. Do not copy the beagle’s many historical study files as mandatory paperwork for every character.
+These are logical records for stages that are actually in scope. Keep the relevant information identifiable in existing files and combine sections for a small task. Do not create later-stage records merely because they appear in the full production map, or copy the beagle's many historical studies as mandatory paperwork. A scoped checkpoint can remain a short entry in the current record.
 
 | Record | When and required contents | Beagle precedent |
 | --- | --- | --- |
@@ -169,7 +184,7 @@ These are logical records. They can share files for a small asset, but the infor
 
 The reconstruction packet is approved files plus a description of their views and purpose; it does not require an extra standalone document if the brief/manifest already covers it. Environment setup is likewise a shared project record: reuse [BLENDER_SETUP.md](BLENDER_SETUP.md) when the environment already works, rather than reinstalling Blender for each character.
 
-A practical per-character layout is a documentation folder containing DESIGN.md, PLAN.md, MODEL.md, GAMEPLAY.md and HISTORY.md, with MOTION.md whenever moves are proposed, changed or implemented. Keep a manifest and per-version provenance/verification beside the concept assets, editable .blend sources in the authoring area, runtime GLBs in the game asset area and review pages/videos in the preview area. Follow repository conventions over these example names.
+A full production effort can use a documentation folder containing DESIGN.md, PLAN.md, MODEL.md, GAMEPLAY.md and HISTORY.md, with MOTION.md when moves are in scope. These are examples, not mandatory new files for every task. Keep relevant manifests/provenance/verification beside assets, editable .blend sources in the authoring area, runtime GLBs in the game area and review evidence in the preview area. Follow existing repository conventions.
 
 ## Approval records and revision behavior
 
@@ -177,7 +192,7 @@ For each user decision, record the stage, exact artifact/version or hash, date, 
 
 At a review, show the concrete result first. State what decision is needed and what the next action entails. Offer a clear recommended route with the actual files or playable link. If approval is required, wait for the answer before dependent work. Silence and elapsed time are not approval; independent checks and documentation may continue.
 
-Combine reviews when one concrete approval can answer them together. Skip a redundant review when the user already approved the exact result or explicitly delegated that choice. Reopen only the affected decision if the scope changes. Do not ask the user to approve the same smooth face again just because a contact fit or export was corrected.
+Reviews A–F identify decisions, not six obligatory interruptions. Combine them when one concrete approval answers them together. Skip a redundant review when the user already approved the exact result or explicitly delegated that choice; continue routine work across an authorized stage range. Reopen only the affected decision if identity, motion, operation/spending or requested scope changes. Do not ask the user to approve the same smooth face again because a contact fit or export was corrected. Preserve the separate boundaries of appearance approval, spending authorization, technical verification and playable acceptance.
 
 | Feedback or failure | Return to |
 | --- | --- |
@@ -190,8 +205,10 @@ Combine reviews when one concrete approval can answer them together. Skip a redu
 
 ## Steps and assumptions to avoid
 
+- Do not run all seven stages for an image-only/model-only request, repeat completed stages on resume, or require approval merely to cross a stage label within an already authorized range.
+- Do not create a fresh set of documents for a small edit, invent gameplay for an appearance request or force another movement recording for unchanged UI work.
 - Do not start by generating an attractive model and invent its functional controls afterward. New weapon anatomy can require different length, joints or clearance.
-- Do not require three views, a T-pose, a full humanoid skeleton or multi-view reconstruction for every character. Choose those details based on the design, current Tripo mode and game pipeline; Tripo base generation itself remains required.
+- Always prepare the user-required front/side/back set before new Tripo model generation. Do not impose a T-pose or full humanoid skeleton; choose pose and rig details from the character's design and game functions. Reusing an approved Tripo base for a local edit does not require a replacement generation.
 - Do not skip Tripo base generation, replace it with another generator or build the finished character entirely in Blender without an explicit change from the user. Blockouts and later Blender detail work are separate from base generation.
 - Do not send inconsistent angles, different poses/outfits, obstructed parts or a multi-character collage as one reconstruction target.
 - Do not regenerate the face/body for an approved local weapon edit unless that wider redesign is necessary and authorized.
@@ -209,9 +226,11 @@ Combine reviews when one concrete approval can answer them together. Skip a redu
 - Do not keep buying retries without correcting a diagnosed problem, or repeatedly ask for spending authorization already granted within scope.
 - Do not call an asset accepted because tests pass, call local work merged, or call a merged source checkpoint a packaged game release.
 
-## What the future skill package should contain
+## Skill package structure and future extraction
 
-The eventual SKILL.md should describe when to use the workflow, how to resume the appropriate stage, the essential invariants, required Tripo base generation, mandatory video presentation for every move, review behavior and completion criteria. Detailed image/Tripo guidance, video requirements, Blender/runtime checks and concise document templates can live in supporting references. Read those references only when their stage applies.
+The revised SKILL.md describes scope selection, stage-only delivery, authorized continuation, checkpoint/resume, required Tripo bases, motion evidence, review boundaries and completion criteria. It applies the creator's live-game delivery preference and distinguishes UI-only evidence from motion production. Detailed image/Tripo guidance, video requirements, Blender/runtime checks and record templates remain in supporting references; load them only when relevant. Keep Wankai's exact screen layout in project handoffs rather than making it a universal character-production requirement.
+
+Retain one umbrella skill now. Shared identity locks, current-version pointers, provenance and approval/spending scope connect the stages; splitting every stage would duplicate those rules and complicate resuming. Extract a focused stage skill later only when repeated use shows an independently useful, complex workflow with its own resources. Existing character-design, asset, rigging and loading specialists already cover focused capabilities; seven new pipeline skills are not needed.
 
 Use the beagle case as a short example of decisions and failure modes, with a project-relative link where available. The skill’s essential rules and templates must remain usable without this particular repository or its raw Tripo archive. Do not make a globally installed skill depend on the author’s absolute local file paths.
 
@@ -219,6 +238,6 @@ Reuse relevant specialist skills when available, inspect actual tool capabilitie
 
 Only add scripts for repeatable operations with a demonstrated benefit, such as checking an export or validating manifest paths. Avoid a generic mesh-editing script that assumes every future character has the beagle’s topology or a universal installer that changes the user’s environment.
 
-Before adopting the skill, validate its metadata and exercise realistic scenarios: a new reference-driven character, an already approved Tripo model needing one local edit, an unusual physics weapon, a character reusing familiar controls, an image-only request, unavailable Tripo access, insufficient spending authorization and a user rejection of motion despite passing tests. The expected behavior is correct scope, required Tripo generation for new bases, required move videos, useful review artifacts and a reliable return to the affected stage.
+Further adoption trials can exercise model-only delivery, explicit stop/resume, an approved Tripo model needing one local edit, unfamiliar physics anatomy, familiar controls, missing Tripo access, insufficient spending authorization and rejection despite passing tests. Expected behavior is a correct scoped endpoint, reused approvals/checkpoints, required Tripo/views and motion evidence only for the applicable work, useful artifacts and a reliable return to the affected stage.
 
-The portable skill source is [skills/game-character-pipeline](../skills/game-character-pipeline/SKILL.md). Its metadata, internal reference links and JSON template pass validation, and the installed files match the source hashes. The skill has not yet been exercised through a full new-character production run; it does not itself install Blender, create a Tripo account or spend generation credits.
+The portable source is [skills/game-character-pipeline](../skills/game-character-pipeline/SKILL.md). For the authorized revision, metadata/UI YAML parsing and field checks passed using Ruby's standard YAML library; internal relative links had no missing targets and JSON templates parsed. The installed copy's five modified files match byte-for-byte. Independent read-only dry runs of image-only, approved-model integration/live review, UI-only and delegated full-production requests respected the scoped endpoints and review boundaries. These trials performed no Tripo, generation or browser actions. The official `quick_validate.py` helper could not run because PyYAML was unavailable; it is not reported as passed. The workflow has supported continued orange-tabby production and local integration, which does not establish a fresh independent end-to-end trial of every branch. The skill does not itself install Blender, create a Tripo account or spend generation credits.

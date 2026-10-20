@@ -1,0 +1,8 @@
+Use case: precise-object-edit
+Asset type: final framing correction for a Tripo reference image
+
+Zoom OUT on this exact image. The two giant paws currently almost touch the left and right canvas edges. Keep the same 3:2 landscape canvas but make the COMPLETE CAT-AND-PAWS ASSEMBLY about 82 percent of its current width, centered horizontally. Apply the same uniform scale to every part. Leave broad empty pure-white space at the left and right: approximately 8 to 10 percent of the canvas width on each side.
+
+Keep every part of the character design and the relative positions and proportions unchanged: cute rounded W-shaped smile, heavy half-lidded graphic eyes, orange/cream cat face, tiny seated body, curled tail, two tiny hind feet, both giant detached paws, four toe beans and one central pad per paw. Both paws remain much wider than the head. Keep all three forms clearly separate. Preserve the soft smooth matte 3D object shading.
+
+Pure white background everywhere, no floor, no cast shadows, no gradient, no text, no other objects. The only change is uniform zooming out and extra white margin; do not redesign or independently rescale the paws or cat.

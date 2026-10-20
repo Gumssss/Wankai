@@ -1,0 +1,13 @@
+{
+  "version": "orange-tabby-prepared-v02",
+  "date": "2026-10-20",
+  "parent": "prepared-v01",
+  "original_source_sha256": "4241a26dbfb8f87e4c16c34b07c9319dd368523263b18b50ae3cdaa2e0485912",
+  "export_sha256": "3b3893335848deb1d65280e70eabad94005f4c532cd42f7720f92008dbf6cc00",
+  "edit": "Lower two invisible paw pivots from height 0.8 to body base 0; shift mesh-local vertices to preserve neutral world geometry.",
+  "neutral_world_vertex_error_in_blender": 0.0,
+  "appearance": "Original neutral geometry/proportions and atlas bytes preserved; no new model generation.",
+  "runtime_integrated": false,
+  "user_review": "v06 revised motion pending",
+  "new_service_charge": 0
+}

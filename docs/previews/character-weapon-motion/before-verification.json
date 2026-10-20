@@ -1,0 +1,296 @@
+{
+  "sourceSha256": "eba2ff82dbd78697367689431fe6112942917681b93fe2b89ff6669f386e0072",
+  "packs": [
+    {
+      "weapon": "sword",
+      "duration": 31.099999999999998,
+      "scenarios": [
+        {
+          "id": "W",
+          "rise": 2.748385989573621,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S",
+          "rise": 2.748385989573621,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "A",
+          "rise": 0.24079193664303056,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "D",
+          "rise": 0.24079193664303056,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "W+A",
+          "rise": 2.679715242561922,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "W+D",
+          "rise": 2.679715242561922,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S+A",
+          "rise": 2.679715242561922,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S+D",
+          "rise": 2.679715242561922,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "release-reverse",
+          "rise": 2.750081041099671,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "no-hover",
+          "rise": 0.244516386978043,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "vertical-hit",
+          "rise": 2.5743449549986708,
+          "hits": 2,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "horizontal-hit",
+          "rise": 0.08308906017948048,
+          "hits": 1,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "block-clash",
+          "rise": 2.726861304018659,
+          "hits": 0,
+          "clashes": 1,
+          "blockingContactSamples": 81
+        }
+      ]
+    },
+    {
+      "weapon": "polearm",
+      "duration": 31.099999999999998,
+      "scenarios": [
+        {
+          "id": "W",
+          "rise": 3.317970105356147,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S",
+          "rise": 3.328280219868826,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "A",
+          "rise": 0.2157778525251538,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "D",
+          "rise": 0.2157778525251538,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "W+A",
+          "rise": 3.2047847452204112,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "W+D",
+          "rise": 3.2047847452204112,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S+A",
+          "rise": 3.210896935812127,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S+D",
+          "rise": 3.21068911312541,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "release-reverse",
+          "rise": 3.317970105356147,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "no-hover",
+          "rise": 0.21702488839899992,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "vertical-hit",
+          "rise": 3.327971226404806,
+          "hits": 1,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "horizontal-hit",
+          "rise": 0.07883553266567978,
+          "hits": 1,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "block-clash",
+          "rise": 3.3143338753196456,
+          "hits": 0,
+          "clashes": 1,
+          "blockingContactSamples": 87
+        }
+      ]
+    },
+    {
+      "weapon": "hammer",
+      "duration": 31.099999999999998,
+      "scenarios": [
+        {
+          "id": "W",
+          "rise": 2.8434539673837804,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S",
+          "rise": 2.977398672995637,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "A",
+          "rise": 0.8215522090031541,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "D",
+          "rise": 0.8215522090031541,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "W+A",
+          "rise": 2.844104150383044,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "W+D",
+          "rise": 2.844104150383044,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S+A",
+          "rise": 2.9129380197637684,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "S+D",
+          "rise": 2.9129380197637684,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "release-reverse",
+          "rise": 2.9149660883179047,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "no-hover",
+          "rise": 1.1249511022439003,
+          "hits": 0,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "vertical-hit",
+          "rise": 2.7219732344039196,
+          "hits": 2,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "horizontal-hit",
+          "rise": 0.13583242589036582,
+          "hits": 1,
+          "clashes": 0,
+          "blockingContactSamples": 0
+        },
+        {
+          "id": "block-clash",
+          "rise": 2.8513106957381487,
+          "hits": 0,
+          "clashes": 1,
+          "blockingContactSamples": 87
+        }
+      ]
+    }
+  ]
+}

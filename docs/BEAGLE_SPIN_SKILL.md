@@ -1,5 +1,10 @@
 # Beagle normal movement and F hover skill
 
+**Current local entry, 20 October 2026:** open the [live game](http://127.0.0.1:5173/) for implemented behavior. Preparation is a full-window P1-left/P2-right stage, with each player's choices above their own actual-model preview, independent Ready and shared Start/Save. Back/Escape cancels drafts. Beagle may equip sword, polearm, hammer or long ears; only long ears activate F/Right Shift hover. Orange tabby + cat paws is also playable, giving eight valid loadouts and 64 ordered pairings. The creator prefers live review after implementation; the dated videos below remain evidence. [Current preparation and verification](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) · [latest UI checks](selection-concepts/v04-preparation-stage/verification.json).
+
+
+**Selection update, 19 October 2026:** this controller and F/Right Shift skill apply only to **beagle + long ears**. Beagle can now choose ordinary weapons with natural cosmetic ears; those combinations ignore the skill and use the ordinary floating-weapon controller. The separation is locally verified, not yet pushed/merged. See [implementation handoff](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md).
+
 Implemented on 19 October 2026 and included in this source checkpoint, following the normal-controls comparison video. The creator approved normal parallel-ear movement and requested that the separate spin skill now include a small hover, using F. This supersedes the earlier decision to defer all hover work. The approved smooth v05 model is unchanged. No new Tripo generation or asset export is needed.
 
 | Input | Behavior |
@@ -29,7 +34,7 @@ These are starting playtest values, not final balance. Impacts can reduce rotor 
 
 ## Physics and rendering
 
-The active game uses the upright contact solver from the accepted baseline instead of the rejected articulated flip path. Normal movement still comes from powered ear strokes and contacts. Only the F skill supplies lift.
+The active game uses the upright contact solver from the accepted baseline instead of the rejected articulated flip path. Normal movement still comes from powered ear strokes and contacts. For beagle + long ears, only the F skill supplies sustained hover thrust; ordinary ear-floor reactions still provide contact-driven rise.
 
 `beaglePointFrame` composes anchored pitch, per-ear sideways spread, damped lag and whole-body heading. Its Jacobians include deployment and lag velocities. The same pose drives skinned GLB bones, capsule fallback geometry, hits, clashes, ground/rim queries and camera framing. Contact sampling includes changes in spread and lag so deployment does not teleport a hitbox between endpoints.
 
@@ -42,4 +47,6 @@ The old `beagle-dynamics.js` module is retained as historical experiment code; t
 - Tests cover W/S+A/D movement, no normal rotor deployment, low hover, timer expiry/landing, zero-cost activation at zero stamina, hold/repress behavior, rotor reversal, independent F/Right Shift input, ordinary-weapon isolation, contact velocities, pair-level damage and sword clashes.
 - Actual GLB vertex tests include partial/full ear spread and lag at varied swings/headings, with sockets and body transforms compared against contact geometry.
 - Browser checking exercised F on the actual model and captured the deployed low hover with the timer running and stamina unchanged at 200/200. See [timed hover screenshot](screenshots/beagle-timed-hover.png).
-- `npm test`: **100 passed, 0 failed**; `npm run build` passes with the existing bundle-size warning. The native rig import and historical functional-preview commands also pass. This source checkpoint includes the implementation, tests, motion previews, design history and reusable character-production skill; it is not a packaged app release.
+- At the 19 October timed-hover checkpoint, `npm test` passed **100 tests, 0 failures** and `npm run build` passed with the existing bundle-size warning. The native rig import and historical functional-preview commands also pass. This source checkpoint includes the implementation, tests, motion previews, design history and reusable character-production skill; it is not a packaged app release.
+
+The later cat integration checkpoint passed the full 132-test suite. Subsequent selection UI work ran 14 focused checks, then the full-window preparation pass ran 17 focused checks and the build; these were not new full-suite runs. Use the [latest preparation verification](selection-concepts/v04-preparation-stage/verification.json) and [project status](PROJECT_STATUS.md) for current evidence scope.

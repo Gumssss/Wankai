@@ -18,6 +18,10 @@ These are logical records, not a requirement to make nine separate documents for
 
 Update shared project status, controls/help and changelog at a playable handoff. Reuse an existing environment setup record instead of reinstalling tools for each character.
 
+## Stage checkpoints
+
+For a stage-only task or explicit stop, add a short entry to the existing handoff/manifest with the requested endpoint, current stage, delivered artifact/version, approvals and constraints already in force, unfinished work/pending decisions and next action. A few lines suffice; do not create a new document or populate every record above for each stop. Preserve partial work honestly without marking the whole character complete. On resume, use this checkpoint and selected/current pointers to continue the requested range without repeating completed work or re-requesting existing approval. Once an authorized production task can continue, a stage boundary alone is not a reason to stop.
+
 ## Suggested layout
 
 Follow existing conventions first. A new layout can place DESIGN.md, PLAN.md, MOTION.md, MODEL.md, GAMEPLAY.md and HISTORY.md under docs/characters/character-id/. Keep the manifest and per-version provenance/verification beside concepts/inputs, editable Blender files and raw downloads in the authoring/archive area, runtime exports in the game's asset area and review videos/pages in its preview area.
@@ -77,7 +81,7 @@ landing/recovery, reset and relevant opponent/mode combinations.
 What was demonstrated, what remains unproven, and affected scope.
 ```
 
-Keep the plan and motion record separate when repeated iterations would bury the current contract. Every proposed/changed move needs a before video; implemented behavior needs actual-game footage. An appearance-only task has no invented motion requirement.
+Keep the plan and motion record separate when repeated iterations would bury the current contract. Every proposed/changed move in scope needs a before video; implemented motion needs retained actual-game footage. User-facing delivery may open the live game instead of presenting that footage again. An appearance-only or UI-only task has no invented motion requirement.
 
 ## Model and runtime handoff outline
 
@@ -116,6 +120,12 @@ Use this as a field guide; adapt it to the repository's manifest rather than rep
 {
   "schema_version": 1,
   "character_id": null,
+  "workflow": {
+    "requested_endpoint": null,
+    "current_stage": null,
+    "next_action": null,
+    "pending_decisions": []
+  },
   "selected": {
     "reference": null,
     "tripo_base": null,
@@ -141,6 +151,7 @@ Populate list entries with these fields where applicable:
 - **Move:** action/input combinations, preview file/timecodes, authored/simulated/gameplay type, model/controller version, actual-game video, demonstrated functions and open limitations.
 - **Review:** stage, artifact/version/hash, date, actual user instruction or delegated authority, accepted scope, constraints and superseded decision. Do not invent approval from silence.
 - **Verification:** artifact/version/hash, command/scenario, actual result and measured error, evidence paths and remaining limitations. Keep technical pass, appearance selection and playable acceptance distinct.
+- **Workflow:** requested endpoint/range, actual current stage and next action, with genuinely pending decisions. Reuse the existing review/asset entries for approvals and delivered artifacts instead of duplicating them into a second schema.
 
 Record observed credits as unknown when unavailable; do not substitute a displayed quote for a measured charge. Only mark a stage complete after the artifact/action exists and required review is satisfied.
 

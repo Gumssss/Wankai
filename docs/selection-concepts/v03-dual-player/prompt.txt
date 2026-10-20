@@ -1,0 +1,19 @@
+Use case: ui-mockup.
+Create ONE high-fidelity, practical desktop game character/equipment selection mockup, wide landscape 16:10 around 1600x1000. This is an image for reviewing the layout before any implementation.
+Reference image 1: current Wankai picker screenshot, for the existing cream/sage/terracotta/teal game UI style, typography, card treatments and beagle+sword appearance. CHANGE its old asymmetric layout.
+Reference image 2: exact beagle visual identity reference: smooth caramel/cream 3D, heavy half-lidded eyes, floppy ears, tiny body.
+Reference image 3: exact orange-tabby identity reference: tiny seated smiling smooth orange cat, with two enormous detached floating paw weapons and pink pads. Preserve this identity, pose, expression and paw scale. In the UI preview use a neutral light sage studio floor, not the reference's gray background.
+
+CRITICAL LAYOUT: two EQUAL-width player columns, permanently visible simultaneously, with a subtle central divider. P1 is the ENTIRE LEFT HALF; P2 is the ENTIRE RIGHT HALF. Each column has the same hierarchy: CHARACTER AND WEAPON SELECTION at the TOP of its own column, then a LARGE SELECTED 3D CHARACTER + EQUIPPED WEAPON PREVIEW directly BELOW within the SAME column. Thus TOP LEFT = P1 choices, BOTTOM LEFT = P1 preview; TOP RIGHT = P2 choices, BOTTOM RIGHT = P2 preview. Do not put selection and preview side by side within a column. No P1/P2 switching tabs. Both selectors visible at the same time.
+
+Layout details:
+- Quiet full-window warm cream background, restrained rounded panels, dark olive-charcoal text, thin sage rules. P1 selected borders/buttons terracotta red, P2 selected borders/buttons muted teal. Keep the original game's elegant compact style.
+- Small global heading '出战准备', subtitle '选择角色与武器', top-right '双人对战' and a close X.
+- Separate clear column headings 'P1 赤方' on LEFT and 'P2 青方' on RIGHT.
+- The upper area in EACH column repeats its own three compact character cards under '角色': '基础丸人', '比格犬', '橘猫'. Use appropriate little character portraits. Below it, five compact weapon icon cards under '武器': '短剑', '长柄刀', '铁战锤', '长耳', '猫爪'. Clear checkmarks/colored outlines for selected cards; pale subdued disabled cards for incompatible weapons. Keep controls compact so preview occupies about the lower half of the screen.
+- Example selected LEFT P1: 比格犬 + 短剑. Highlight beagle and sword in terracotta. Its lower preview shows the smooth tiny beagle with a floating sword, matching reference1 actual-model style, fully framed.
+- Example selected RIGHT P2: 橘猫 + 猫爪. Highlight cat and cat paws in teal; other equipment muted. Its lower preview shows the cute seated tiny orange cat between the two huge separate floating paws, exactly like reference3, all three parts fully framed. Paw pads face generally toward the viewer. No wrists or connecting arms.
+- Each lower preview has a subtle floor shadow, selected-loadout caption ('比格犬 · 短剑' LEFT; '橘猫 · 猫爪' RIGHT), a small '拖动旋转 · 滚轮缩放' hint, and its own '准备就绪' button with the player's accent.
+- One shared dark-olive '开始对战 →' button centered in a slim footer beneath BOTH columns, with a small note '双方准备后开始'.
+- No repeated giant headings, no large marketing text, no extra stats, no invented abilities, no browser chrome, no arrows/annotation labels outside the UI, no watermark.
+Use legible, accurately typeset Chinese text and P1/P2 labels. Professional feasible UI screenshot, not a poster, not hand-drawn. Preserve the models and game vibe; only reorganize the picker to the requested four-quadrant arrangement.

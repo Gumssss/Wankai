@@ -1,0 +1,39 @@
+{
+  "id": "orange-tabby-tripo-input-v02",
+  "strategy": "front, left and back into one multi-view model; no collage or batch submission",
+  "views": [
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/front.png",
+      "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+      "bytes": 1326587,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "front",
+      "slot": "Front"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/left.png",
+      "sha256": "576d5ab3f0e9bec18c62ed834feaa0b289e9ac3e204ecb7bba34a2f4ff36dfd5",
+      "bytes": 1484238,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "left",
+      "slot": "Left"
+    },
+    {
+      "path": "assets/concepts/orange-tabby/tripo-input-v02/back.png",
+      "sha256": "c6ed80b72f66b05ee77cc56e7bd129259f3ef2a7340a8be387995288d381cf9b",
+      "bytes": 1457806,
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "view": "back",
+      "slot": "Back"
+    }
+  ],
+  "operation": "assets/concepts/orange-tabby/tripo-v01/operation.json",
+  "verification": "assets/concepts/orange-tabby/tripo-input-v02/verification.json",
+  "selected_seed": "beagle-style-reference-v03"
+}

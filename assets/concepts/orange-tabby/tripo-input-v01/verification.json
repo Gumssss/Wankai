@@ -1,0 +1,74 @@
+{
+  "artifact": {
+    "path": "assets/concepts/orange-tabby/tripo-input-v01/orange-tabby-tripo-input-v01.png",
+    "sha256": "9cf78ef97e8219ec1576c0fb2b6b95b51f2afb8462af157f4b24a36222399be2",
+    "bytes": 1326587,
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB"
+  },
+  "date": "2026-10-19",
+  "checks": {
+    "png_decodes": true,
+    "resolution_at_least_256": true,
+    "file_under_20_MB": true,
+    "saved_copy_matches_default": true,
+    "selected_upload_preserved": true,
+    "v03_project_seed_preserved": true,
+    "foreground_has_outer_side_margins": true,
+    "outer_border_visually_white": true
+  },
+  "read_only_pixel_measurements": {
+    "colored_foreground_bounds": [
+      134,
+      264,
+      1399,
+      706
+    ],
+    "left_margin_fraction": 0.0872,
+    "right_margin_fraction": 0.0885,
+    "near_white_border_fraction": 0.9996,
+    "background_samples": [
+      [
+        253,
+        253,
+        253
+      ],
+      [
+        255,
+        255,
+        255
+      ],
+      [
+        254,
+        254,
+        254
+      ],
+      [
+        245,
+        245,
+        244
+      ],
+      [
+        254,
+        254,
+        254
+      ],
+      [
+        254,
+        254,
+        254
+      ]
+    ],
+    "method": "Colorful foreground estimate; does not measure exact semantic outlines or prove unchanged relative proportions."
+  },
+  "visual_inspection": {
+    "identity": "same selected rounded-square tabby face, graphic half-lidded eyes and centered cute rounded cat smile",
+    "geometry_intent": "tiny seated body, two tucked hind feet, curled tail and exactly two enormous detached paws, with four toe beans plus central pad each",
+    "presentation": "full subject within frame with clear white gaps, no floor, cast shadows, text or labels; rounded paw thickness remains visible",
+    "style": "smooth matte orange/cream shapes with pink accents; no fur strands",
+    "comparison": "Design and major relative scale visually retained through image cleanup; generative edits are not pixel-identical."
+  },
+  "appearance_review": "selected seed approved by user; clean derivative prepared for review",
+  "tripo_mesh_review": "not applicable: no mesh generated in this image-only stage"
+}

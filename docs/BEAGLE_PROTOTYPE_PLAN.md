@@ -1,5 +1,8 @@
 # Beagle Ear Movement Prototype Plan
 
+**Current status, 20 October 2026:** the beagle is playable locally with upright normal controls and its separate timed long-ear hover skill. Beagle also supports three ordinary weapons with cosmetic natural ears. Front/back flips are inactive, not an outstanding step in this prototype plan. Use the [live game](http://127.0.0.1:5173/) and [current full-window preparation flow](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) for implemented review; retain the dated prototype stages below as history. The accepted rig/controls are described in [MODEL_V05](BEAGLE_MODEL_V05.md) and [SPIN_SKILL](BEAGLE_SPIN_SKILL.md).
+
+
 **18 October 2026 implementation:** The approved smooth Tripo v05 model is now
 playable as **比格犬·双耳** in the armory. Its upright movement/combat baseline
 matches the latest functional v07 videos. See [current model and runtime

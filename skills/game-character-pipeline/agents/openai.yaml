@@ -1,4 +1,4 @@
 interface:
   display_name: "Game Character Pipeline"
-  short_description: "Create playable characters with Tripo and move videos"
-  default_prompt: "Use $game-character-pipeline to develop this character with Tripo, review every move through video, refine it in Blender, and integrate the approved result into the game."
+  short_description: "Create or resume characters at the requested stage"
+  default_prompt: "Use $game-character-pipeline for the character-production stage requested here, reuse accepted work, and stop at that endpoint with a resumable checkpoint."

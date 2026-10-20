@@ -2,6 +2,10 @@
 // Contact impulses use the staff Jacobian: rotation and translation respond
 // together. No locomotion force is added by the input controller.
 import { BEAGLE } from './beagle-profile.js';
+import {CHARACTERS} from './character-catalog.js';
+import {normalizeLoadout,isEarLoadout,isPawLoadout} from './loadouts.js';
+import {CAT} from './orange-tabby-profile.js';
+import {BEAGLE_COMMON_OFFSETS} from './character-attachments.js';
 import { BEAGLE_SKILL, beaglePointFrame, updateBeagleSkill, applyBeagleHover } from './beagle-skill.js';
 export const CONFIG = Object.freeze({
   step: 1 / 180,
@@ -50,7 +54,8 @@ export const SOLO_ARENA_SCALE = 3;
 export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' ? SOLO_ARENA_SCALE : 1;
 
 export const WEAPONS = Object.freeze({
-  beagle: BEAGLE,
+  'cat-paws': CAT.weapon,
+  'long-ears': BEAGLE,
   polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius,
     inertia: CONFIG.inertia, motorAcceleration: CONFIG.motorAcceleration,
     brakeAcceleration: CONFIG.polarBrakeAcceleration, maxAngularSpeed: CONFIG.maxAngularSpeed,
@@ -85,7 +90,9 @@ export const WEAPONS = Object.freeze({
     ]) }),
 });
 
-export const weaponStats = player => WEAPONS[player.weapon] || WEAPONS.polearm;
+const beagleFloating=Object.freeze(Object.fromEntries(Object.entries(BEAGLE_COMMON_OFFSETS).map(([id,offset])=>[id,Object.freeze({...WEAPONS[id],offset})])));
+export const characterStats=player=>CHARACTERS[player.characterId] || CHARACTERS['basic-fighter'];
+export const weaponStats=player=>player.characterId==='beagle'&&beagleFloating[player.weapon] ? beagleFloating[player.weapon] : WEAPONS[player.weapon] || WEAPONS.polearm;
 
 export const v3 = (x = 0, y = 0, z = 0) => ({ x, y, z });
 const add = (a, b) => v3(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -97,12 +104,15 @@ export const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const unit = (a, fallback = v3(1, 0, 0)) => length(a) > 1e-8 ? mul(a, 1 / length(a)) : fallback;
 const invMass = 1 / CONFIG.mass;
 
-export function makePlayer(id, weapon = 'polearm') {
+export function makePlayer(id, selection = 'polearm') {
+  const {characterId,weaponId:weapon}=normalizeLoadout(selection);
+  const paws=isPawLoadout({characterId,weapon});
   const phi = id === 0 ? 0 : Math.PI;
   return {
     id,
+    characterId,
     weapon,
-    p: v3(id === 0 ? -2.2 : 2.2, CONFIG.bodyFloor, 0),
+    p: v3(id === 0 ? -2.2 : 2.2, CONFIG.bodyFloor+(paws?CAT.hoverHeight:0), 0),
     v: v3(),
     // The long polearm starts raised so two fighters can face each other
     // without their weapons overlapping before either player acts.
@@ -121,7 +131,7 @@ export function makePlayer(id, weapon = 'polearm') {
     health: CONFIG.maxHealth,
     stamina: STAMINA.max,
     staminaRestTime: 0,
-    grounded: true,
+    grounded: !paws,
     staffGrounded: false,
     contactSpeed: 0,
     lastHitAt: -10,
@@ -152,6 +162,14 @@ export function staffFrame(player, distance = weaponStats(player).length) {
 // The broad hammer head needs off-axis contacts. These derivatives use the
 // same yaw × pitch rotation as the visible model, including at either pole.
 export function weaponPointFrame(player, local, anchor) {
+  if(isPawLoadout(player)){
+    const st=Math.sin(player.theta),ct=Math.cos(player.theta),sp=Math.sin(player.phi),cp=Math.cos(player.phi);
+    const x=local.x*ct+local.y*st,z=local.z;
+    const r=v3(x*cp-z*sp,-CAT.bodyFloor-local.x*st+local.y*ct,x*sp+z*cp);
+    const dx=-local.x*st+local.y*ct;
+    const jt=v3(dx*cp,-local.x*ct-local.y*st,dx*sp),jp=v3(-r.z,0,r.x);
+    return {r,jt,jp,point:add(player.p,r),velocity:add(player.v,add(mul(jt,player.wt),mul(jp,player.wp)))};
+  }
   const weapon = weaponStats(player);
   const attached = weapon.attachment === 'ears';
   const socket = attached ? (anchor || [0, (weapon.anchors.L[1] + weapon.anchors.R[1]) / 2, 0]) : [0, 0, 0];
@@ -184,24 +202,17 @@ export function weaponSegments(player) {
 const segmentFrame = (player, segment, fraction) => weaponPointFrame(player,
   add(segment.localA, mul(sub(segment.localB, segment.localA), fraction)), segment.anchor);
 
-export function bodyRadius(player) { return weaponStats(player).bodyRadius || CONFIG.bodyRadius; }
+export function bodyRadius(player) { return characterStats(player).bodyRadius; }
 
 export function bodyPointFrame(player, local) {
-  if (player.weapon === 'beagle') return beaglePointFrame(player, local);
+  if (isEarLoadout(player)) return beaglePointFrame(player, local);
   const heading=fighterHeading(player),cp=Math.cos(heading),sp=Math.sin(heading);
   const r=v3(local.x*cp-local.z*sp,local.y,local.x*sp+local.z*cp);
   return {r,point:add(player.p,r),velocity:player.v,jt:v3(),jp:v3()};
 }
 
 export function hurtSegments(player) {
-  const local = player.weapon === 'beagle' ? [
-    { a: [0, -.32, 0], b: [0, -.07, 0], radius: .27 },
-    { a: [-.02, .57, 0], b: [.08, .57, 0], radius: .55 },
-    ...[-1, 1].map(side => ({ a: [.16, -.13, side * .30], b: [.16, -.13, side * .30], radius: .15 })),
-  ] : [
-    { a: [0, -.19, 0], b: [0, .18, 0], radius: CONFIG.bodyRadius },
-    { a: [0, .76, 0], b: [0, .76, 0], radius: CONFIG.bodyRadius },
-  ];
+  const local = characterStats(player).hurtShapes;
   return local.map(shape => ({ ...shape, localA: v3(...shape.a), localB: v3(...shape.b),
     a: bodyPointFrame(player,v3(...shape.a)).point, b: bodyPointFrame(player,v3(...shape.b)).point }));
 }
@@ -267,7 +278,7 @@ function drivePolarAngle(p, dt, power) {
   // and lift the fighter through contact, while release preserves free motion.
   const center = weapon.offset + weapon.length / 2;
   const radiusSquared = center ** 2 + weapon.length ** 2 / 12;
-  const gravityAcceleration = CONFIG.gravity * center / radiusSquared * Math.sin(p.theta);
+  const gravityAcceleration = isPawLoadout(p)?0:CONFIG.gravity * center / radiusSquared * Math.sin(p.theta);
   const motor = motorAcceleration(p.wt, p.polarInput, weapon, power, dt, weapon.brakeAcceleration);
   p.wt = clamp((p.wt + (gravityAcceleration + motor) * dt) * Math.exp(-CONFIG.damping * dt),
     -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
@@ -370,13 +381,15 @@ export class ArenaPhysics {
   }
 
   reset(practice = false, solo = false, firstWeapon = 'polearm', secondWeapon = 'polearm', arenaScale = solo ? SOLO_ARENA_SCALE : 1) {
-    if (!WEAPONS[firstWeapon]) throw new Error(`Unknown weapon: ${firstWeapon}`);
-    if (!WEAPONS[secondWeapon]) throw new Error(`Unknown weapon: ${secondWeapon}`);
+    firstWeapon=normalizeLoadout(firstWeapon);
+    secondWeapon=normalizeLoadout(secondWeapon);
     this.players = solo ? [makePlayer(0, firstWeapon)] : [makePlayer(0, firstWeapon), makePlayer(1, secondWeapon)];
     // Two level swords would overlap at the original starting marks.
-    if (!solo && firstWeapon === 'sword' && secondWeapon === 'sword') {
-      this.players[0].p.x = -2.85;
-      this.players[1].p.x = 2.85;
+    if (!solo && firstWeapon.weaponId === 'sword' && secondWeapon.weaponId === 'sword') {
+      const reach=this.players.map(p=>{const w=weaponStats(p);return w.offset+w.length+w.radius;});
+      const separation=Math.max(2.85,(reach[0]+reach[1]+.06)/2);
+      this.players[0].p.x = -separation;
+      this.players[1].p.x = separation;
     }
     if (solo) this.players[0].p.x = 0;
     this.time = 0;
@@ -393,7 +406,7 @@ export class ArenaPhysics {
     if (practice) {
       this.players[0].p.x = -1.45;
       this.players[1].p.x = 1.45;
-      this.players[1].theta = 0.28;
+      if(!isPawLoadout(this.players[1]))this.players[1].theta = 0.28;
     }
   }
 
@@ -406,19 +419,20 @@ export class ArenaPhysics {
       const weapon = weaponStats(p);
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
-      const turnInput = clamp(input.phi || 0, -1, 1);
-      if (p.weapon === 'beagle') {
+      const rawTurnInput = clamp(input.phi || 0, -1, 1);
+      const turnInput = isPawLoadout(p)?(p.polarInput||rawTurnInput?clamp((rawTurnInput*CAT.normalTurnSpeed-p.wp)*CAT.steeringGain,-1,1):0):rawTurnInput;
+      if (isEarLoadout(p)) {
         p.bodyPitch=0;p.bodyRate=0;
         updateBeagleSkill(p,input.skill,dt);
         if(p.skillActive || p.earSpread>.001)p.polarInput=0;
       }
-      updateStamina(p, turnInput, dt);
+      updateStamina(p, isPawLoadout(p)?rawTurnInput:turnInput, dt);
       const power = staminaPower(p.stamina);
       // Yaw keeps its existing reversal strength; pitch uses the stronger brake.
       const motorP = motorAcceleration(p.wp, turnInput, weapon, power, dt, weapon.motorAcceleration);
       const previousT = p.wt, previousP = p.wp;
       const damp = Math.exp(-CONFIG.damping * dt);
-      if(p.weapon==='beagle'){
+      if(isEarLoadout(p)){
         const rotor=p.skillActive || p.earSpread>.001;
         if(rotor){
           const error=Math.atan2(Math.sin(-Math.PI/2-p.theta),Math.cos(-Math.PI/2-p.theta));
@@ -443,7 +457,11 @@ export class ArenaPhysics {
       const smooth = 1 - Math.exp(-dt / 0.09);
       p.driveT += ((p.wt - previousT) / dt - p.driveT) * smooth;
       p.driveP += ((p.wp - previousP) / dt - p.driveP) * smooth;
-      if(p.weapon==='beagle')applyBeagleHover(p,dt,CONFIG.gravity);
+      if(isEarLoadout(p))applyBeagleHover(p,dt,CONFIG.gravity);
+      if(isPawLoadout(p)){
+        const lift=clamp(CONFIG.gravity+CAT.hoverGain*(CAT.bodyFloor+CAT.hoverHeight-p.p.y)-CAT.hoverDamping*p.v.y,0,CONFIG.gravity+12);
+        p.v.y+=lift*dt;
+      }
       p.v.y -= CONFIG.gravity * dt;
       p.v.x *= Math.exp(-0.15 * dt);
       p.v.z *= Math.exp(-0.15 * dt);
@@ -490,9 +508,10 @@ export class ArenaPhysics {
   }
 
   solveBodyGround(p, dt, friction) {
-    p.grounded = p.p.y <= CONFIG.bodyFloor + 0.025;
-    if (p.p.y < CONFIG.bodyFloor) {
-      p.p.y = CONFIG.bodyFloor;
+    const floor=characterStats(p).bodyFloor;
+    p.grounded = p.p.y <= floor + 0.025;
+    if (p.p.y < floor) {
+      p.p.y = floor;
       p.v.y = Math.max(0, p.v.y);
     }
     if (p.grounded && friction) {
@@ -526,7 +545,7 @@ export class ArenaPhysics {
   }
 
   solveBodyWall(p) {
-    if(p.weapon==='beagle'){
+    if(p.characterId==='beagle'){
       for(const shape of hurtSegments(p))for(const point of [shape.a,shape.b]){
         const distance=Math.hypot(point.x,point.z),overlap=distance+shape.radius-this.arenaRadius;
         if(overlap<=0)continue;

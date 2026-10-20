@@ -2,6 +2,8 @@
 
 **Historical experiment, inactive as of 19 October.** The creator reported that the character was lying down and later set front/back flips aside. The active game uses upright normal movement and a separate timed hover skill. See the [current skill handoff](BEAGLE_SPIN_SKILL.md) and [complete design process](BEAGLE_DESIGN_PROCESS.md). The remainder of this page records the experiment at its original checkpoint.
 
+Delivery note, reviewed 20 October: the later merged PR #2 source retains the experimental dynamics as inactive history. The original 18 October local/unpushed status below describes that earlier checkpoint; it does not mean the retained source is absent from the later repository, or that flips are active now.
+
 The approved smooth v05 model received experimental playable body rotation. This followed the
 upright checkpoint merged in [PR #1](https://github.com/Gumssss/Wankai/pull/1).
 The extension is local and has not been pushed or packaged.

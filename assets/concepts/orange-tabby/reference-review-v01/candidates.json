@@ -1,0 +1,42 @@
+[
+  {
+    "id": "standing-cat-cartoon-sthyouneed",
+    "title": "Cat Standing Up On Two Legs Meme",
+    "artist": "Sthyouneed",
+    "source_url": "https://www.redbubble.com/i/art-print/Cat-Standing-Up-On-Two-Legs-Meme-by-Sthyouneed/151421147.1G4ZT",
+    "preview_url": "https://ih1.redbubble.net/image.5210167218.1147/aps%2C504x498%2Csmall%2Ctransparent-pad%2C600x600%2Cf8f8f8.jpg",
+    "identity_verification": "Cartoon standing orange-tabby meme illustration; the source does not explicitly identify this cat as Rocky. Closest matching cartoon candidate, not a verified official Rocky depiction.",
+    "inspection": "Opened the actual preview in the browser: rounded head and body, large black eyes, tiny white paws, pink ears/nose, orange tabby stripes and white bib.",
+    "role": "appearance/style candidate only, pending user approval",
+    "license": "Reuse terms not established; artist/source retained; no production use or generation submitted",
+    "date": "2026-10-19",
+    "status": "not selected; user requires a sitting pose"
+  },
+  {
+    "id": "seated-orange-tabby-rosy-cheeks",
+    "title": "A cute, cartoon-style orange tabby cat with rosy cheeks",
+    "artist": "MkImagesDesign / Mark Kim",
+    "source_url": "https://www.etsy.com/listing/4307198314/a-cute-cartoon-style-orange-tabby-cat",
+    "preview_url": "https://i.etsystatic.com/59689678/r/il/a526ee/6918984519/il_fullxfull.6918984519_hfn5.jpg",
+    "role": "proposed sitting-pose and cute cartoon-style reference; not Rocky",
+    "inspection": "Actual preview opened: clearly seated on rounded haunches, front paws together on floor, large round head, closed happy eyes, pink cheeks, striped tail. Not standing bipedally.",
+    "status": "not selected; user asks for a famous cat and finds this illustration too cartoonish",
+    "reuse_terms": "Not established; no purchase, generation or production use submitted",
+    "date": "2026-10-19"
+  },
+  {
+    "id": "hosico-seated-photo",
+    "name": "Hosico",
+    "identity": "Internet-famous golden cat, verified through his own website",
+    "identity_source": "https://hosicocat.com/about",
+    "source_url": "https://www.boredpanda.com/cute-hosico-cat/",
+    "preview_url": "https://static.boredpanda.com/blog/wp-content/uploads/2017/03/Hosico-Cat-58b920b850cad__880.jpg",
+    "role": "proposed famous-cat identity and seated anatomy reference; a real photo, not a generated or approved style image",
+    "inspection": "Actual photo opened: seated golden cat with rounded cheeks, green eyes, upright ears, front paws together and visible haunches.",
+    "style_proposal": "historical: natural proportions and softly detailed 3D fur superseded by the accepted beagle's smooth exaggerated style",
+    "status": "identity used for authorized v01 trial; v01 style rejected; current beagle-style v02 uses only loose golden-cat/cheek inspiration",
+    "fan_art_gallery": "https://hosicocat.com/fan_art",
+    "reuse_terms": "Not established; no production use, purchase or generation submitted",
+    "date": "2026-10-19"
+  }
+]

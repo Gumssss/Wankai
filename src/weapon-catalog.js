@@ -1,20 +1,23 @@
 export const WEAPON_CATALOG = Object.freeze([
-  { id: 'beagle', name: '比格犬·双耳', english: 'BEAGLE / TWIN EARS', role: '长耳 · 撑地',
-    description: '双耳就是兵器。W / S 前后挥耳撑地，A / D 同时转向；按 F 展耳旋转并低空悬停 5 秒，不耗耐力，结束后自动落地。',
-    strength: '双耳覆盖更宽，可撑地、挥击与格挡', weakness: '耳朵长，转向时要留出空间，共用一条耐力',
-    reach: '长', response: '稳' },
-  { id: 'sword', name: '短剑', english: 'SHORT SWORD', role: '近身 · 快挥',
+  { id: 'sword', available:true, name: '短剑', english: 'SHORT SWORD', role: '近身 · 快挥',
     description: '起挥快，刹车和换向也更灵活。靠近对手，抓住空隙连续变招。',
     strength: '快速起挥与调整', weakness: '距离短，需要贴近对手',
     reach: '短', response: '快' },
-  { id: 'polearm', name: '长柄刀', english: 'CURVED POLEARM', role: '长距 · 控场',
+  { id: 'polearm', available:true, name: '长柄刀', english: 'CURVED POLEARM', role: '长距 · 控场',
     description: '用更长的武器保持距离，提前挥动，封住对手靠近的路线。',
     strength: '更长的触及范围', weakness: '起挥与反向调整较慢',
     reach: '长', response: '稳' },
-  { id: 'hammer', name: '铁战锤', english: 'IRON WAR HAMMER', role: '重击 · 破势',
+  { id: 'hammer', available:true, name: '铁战锤', english: 'IRON WAR HAMMER', role: '重击 · 破势',
     description: '铁制宽头带来更强的碰撞与重击。提前蓄势，抓准一击的时机。',
     strength: '锤头重击伤害更高，宽头可格挡', weakness: '起挥和收招慢，挥空后更难调整',
     reach: '中', response: '慢' },
+  { id: 'long-ears', available:true, characterId:'beagle', name: '长耳', english: 'LONG EARS', role: '长耳 · 撑地',
+    description: '双耳就是兵器。W / S 前后挥耳撑地，A / D 同时转向；按 F 展耳旋转并低空悬停 5 秒，不耗耐力，结束后自动落地。',
+    strength: '双耳覆盖更宽，可撑地、挥击与格挡', weakness: '耳朵长，转向时要留出空间，共用一条耐力',
+    reach: '长', response: '稳' },
+  {id:'cat-paws',name:'猫爪',english:'CAT PAWS',role:'巨爪 · 撑地',available:true,characterId:'orange-tabby',
+    description:'W / S 连续挥动双爪，S 触地后撑起橘猫；A / D 转向，可与前后挥爪组合。松手保留惯性，落下后回到低空悬浮。',
+    strength:'双爪可挥击、撑地与格挡，共用一条耐力',weakness:'巨爪需要空间，挥空后要等待回转',reach:'宽',response:'稳'},
 ]);
 
-export const weaponName = id => WEAPON_CATALOG.find(weapon => weapon.id === id)?.name ?? '武器';
+export const weaponName = id => WEAPON_CATALOG.find(weapon => weapon.id === (id === 'beagle' ? 'long-ears' : id))?.name ?? '武器';

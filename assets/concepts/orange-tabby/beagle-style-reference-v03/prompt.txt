@@ -1,0 +1,10 @@
+Use case: precise-object-edit
+Asset type: subtle facial-expression revision of an approved 3D game-character concept
+
+Edit the supplied cat image. The user likes this design and wants just a slightly cuter smile, giving the cat a sweeter personality than the beagle's cool smirk.
+
+Change only the facial expression: replace the small one-sided, knowing smirk with a tiny gentle symmetrical closed-mouth cat smile, centered under the pink nose. Use two soft shallow upward mouth curves, a rounded little cat-mouth shape, with subtly lifted corners. The expression feels content, affectionate and quietly happy. Soften the upper eyelid angles just a little so the eyes look relaxed and friendly rather than smug; keep the same graphic white eyes, large dark pupils and heavy rounded eyelid construction. A subtle change, not a wide-eyed redesign.
+
+Preserve everything else exactly: orange tabby identity and markings, huge rounded-square head, small pink nose, cream muzzle, smooth matte beagle-family material style, tiny seated body and tucked hind feet, curled tail, low floating pose, two enormous detached paws larger than the head, four pink toe beans and one central pad per paw, paw placements and scale, image framing, plain gray studio background, lighting and shadows.
+
+No open mouth, teeth, tongue, wink, added blush, heart symbols or accessories. No fur strands, no arms, no wrist connectors. Keep the same landscape 3:2 full-character composition.

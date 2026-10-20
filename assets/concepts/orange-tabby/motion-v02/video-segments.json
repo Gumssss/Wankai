@@ -1,0 +1,121 @@
+[
+  {
+    "id": "w",
+    "group": "controls",
+    "start": 0,
+    "end": 3.0,
+    "title": "W / front swing"
+  },
+  {
+    "id": "s",
+    "group": "controls",
+    "start": 3.0,
+    "end": 6.0,
+    "title": "S / back swing"
+  },
+  {
+    "id": "a",
+    "group": "controls",
+    "start": 6.0,
+    "end": 9.0,
+    "title": "A / left heading sweep"
+  },
+  {
+    "id": "d",
+    "group": "controls",
+    "start": 9.0,
+    "end": 12.0,
+    "title": "D / right heading sweep"
+  },
+  {
+    "id": "wa",
+    "group": "controls",
+    "start": 12.0,
+    "end": 15.0,
+    "title": "W + A / front swing + steering"
+  },
+  {
+    "id": "wd",
+    "group": "controls",
+    "start": 15.0,
+    "end": 18.0,
+    "title": "W + D / front swing + steering"
+  },
+  {
+    "id": "sa",
+    "group": "controls",
+    "start": 18.0,
+    "end": 21.0,
+    "title": "S + A / back swing + steering"
+  },
+  {
+    "id": "sd",
+    "group": "controls",
+    "start": 21.0,
+    "end": 24.0,
+    "title": "S + D / back swing + steering"
+  },
+  {
+    "id": "release-reverse",
+    "group": "controls",
+    "start": 24.0,
+    "end": 29.0,
+    "title": "Release, coast, brake, reverse"
+  },
+  {
+    "id": "yaw-reverse",
+    "group": "controls",
+    "start": 29.0,
+    "end": 33.0,
+    "title": "Steering release and reversal"
+  },
+  {
+    "id": "landing",
+    "group": "controls",
+    "start": 33.0,
+    "end": 37.0,
+    "title": "Standing landing and recovery"
+  },
+  {
+    "id": "opposites",
+    "group": "controls",
+    "start": 37.0,
+    "end": 40.0,
+    "title": "Opposite keys cancel powered input"
+  },
+  {
+    "id": "vertical-hit",
+    "group": "combat",
+    "start": 0,
+    "end": 3.0,
+    "title": "Vertical giant-paw hit / W"
+  },
+  {
+    "id": "horizontal-hit",
+    "group": "combat",
+    "start": 3.0,
+    "end": 6.0,
+    "title": "Horizontal giant-paw hit / D"
+  },
+  {
+    "id": "sword-clash",
+    "group": "combat",
+    "start": 6.0,
+    "end": 10.0,
+    "title": "Giant paw blocks sword / clash recoil"
+  },
+  {
+    "id": "near-miss",
+    "group": "combat",
+    "start": 10.0,
+    "end": 12.5,
+    "title": "Same giant-paw swing / clear miss"
+  },
+  {
+    "id": "standing-paws",
+    "group": "design",
+    "start": 0,
+    "end": 4.0,
+    "title": "Standing cat / enormous attached paws"
+  }
+]

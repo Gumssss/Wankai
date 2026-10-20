@@ -1,0 +1,362 @@
+[
+  {
+    "id": "hover-idle",
+    "group": "controls",
+    "title": "Idle / paws floating beside the cat",
+    "detail": "Low body hover and raised paw weapons / no input",
+    "duration": 4,
+    "start": 1,
+    "bounds": [
+      -2.324467658996582,
+      2.5115675926208496,
+      -1.4163792133331299,
+      0.8592101335525513
+    ],
+    "end": 96,
+    "scale": 16.604349548211886,
+    "center": [
+      0.09354996681213379,
+      -0.2785845398902893
+    ]
+  },
+  {
+    "id": "w",
+    "group": "controls",
+    "title": "W / front swing",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 97,
+    "bounds": [
+      -2.456583023071289,
+      2.540707588195801,
+      -1.7753832340240479,
+      1.711631417274475
+    ],
+    "end": 168,
+    "scale": 16.604349548211886,
+    "center": [
+      0.04206228256225586,
+      -0.03187590837478638
+    ]
+  },
+  {
+    "id": "s",
+    "group": "controls",
+    "title": "S / back swing",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 169,
+    "bounds": [
+      -2.718503475189209,
+      2.6682167053222656,
+      -1.88912034034729,
+      1.9005706310272217
+    ],
+    "end": 240,
+    "scale": 16.604349548211886,
+    "center": [
+      -0.02514338493347168,
+      0.00572514533996582
+    ]
+  },
+  {
+    "id": "a",
+    "group": "controls",
+    "title": "A / left heading sweep",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 241,
+    "bounds": [
+      -2.324467658996582,
+      2.742164134979248,
+      -1.8451220989227295,
+      1.9886947870254517
+    ],
+    "end": 312,
+    "scale": 16.604349548211886,
+    "center": [
+      0.208848237991333,
+      0.07178634405136108
+    ]
+  },
+  {
+    "id": "d",
+    "group": "controls",
+    "title": "D / right heading sweep",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 313,
+    "bounds": [
+      -2.7910549640655518,
+      2.5115675926208496,
+      -1.8460417985916138,
+      1.9898152351379395
+    ],
+    "end": 384,
+    "scale": 16.604349548211886,
+    "center": [
+      -0.13974368572235107,
+      0.07188671827316284
+    ]
+  },
+  {
+    "id": "wa",
+    "group": "controls",
+    "title": "W + A / front swing + steering",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 385,
+    "bounds": [
+      -2.93991756439209,
+      2.7633862495422363,
+      -2.4455127716064453,
+      2.4970703125
+    ],
+    "end": 456,
+    "scale": 16.604349548211886,
+    "center": [
+      -0.08826565742492676,
+      0.025778770446777344
+    ]
+  },
+  {
+    "id": "wd",
+    "group": "controls",
+    "title": "W + D / front swing + steering",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 457,
+    "bounds": [
+      -2.6898319721221924,
+      2.883021354675293,
+      -2.399599552154541,
+      2.4946951866149902
+    ],
+    "end": 528,
+    "scale": 16.604349548211886,
+    "center": [
+      0.09659469127655029,
+      0.04754781723022461
+    ]
+  },
+  {
+    "id": "sa",
+    "group": "controls",
+    "title": "S + A / back swing + steering",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 529,
+    "bounds": [
+      -2.954103946685791,
+      2.7540533542633057,
+      -2.505246639251709,
+      2.44492506980896
+    ],
+    "end": 600,
+    "scale": 16.604349548211886,
+    "center": [
+      -0.10002529621124268,
+      -0.03016078472137451
+    ]
+  },
+  {
+    "id": "sd",
+    "group": "controls",
+    "title": "S + D / back swing + steering",
+    "detail": "Both detached giant paws swing together; seated body hovers; finite swing and slow steering",
+    "duration": 3,
+    "start": 601,
+    "bounds": [
+      -2.621281385421753,
+      2.902987003326416,
+      -2.414855480194092,
+      2.5111498832702637
+    ],
+    "end": 672,
+    "scale": 16.604349548211886,
+    "center": [
+      0.14085280895233154,
+      0.04814720153808594
+    ]
+  },
+  {
+    "id": "release-reverse",
+    "group": "controls",
+    "title": "Release, coast, brake, reverse",
+    "detail": "W -> release -> S -> release / floating paw pair / momentum continues",
+    "duration": 5,
+    "start": 673,
+    "bounds": [
+      -2.6146652698516846,
+      2.5650644302368164,
+      -1.8020867109298706,
+      1.830202579498291
+    ],
+    "end": 792,
+    "scale": 16.604349548211886,
+    "center": [
+      -0.024800419807434082,
+      0.014057934284210205
+    ]
+  },
+  {
+    "id": "yaw-reverse",
+    "group": "controls",
+    "title": "Steering release and reversal",
+    "detail": "A -> release -> D -> release / slow beagle-style heading / hovering giant paws",
+    "duration": 4,
+    "start": 793,
+    "bounds": [
+      -2.769237756729126,
+      2.742403268814087,
+      -1.8452306985855103,
+      1.8239670991897583
+    ],
+    "end": 888,
+    "scale": 16.604349548211886,
+    "center": [
+      -0.013417243957519531,
+      -0.010631799697875977
+    ]
+  },
+  {
+    "id": "landing",
+    "group": "controls",
+    "title": "Hover recovery after a drop",
+    "detail": "External 0.70-unit drop; spring lift recovers, then W resumes",
+    "duration": 4,
+    "start": 889,
+    "bounds": [
+      -2.600806951522827,
+      2.5455148220062256,
+      -1.900301456451416,
+      1.7065708637237549
+    ],
+    "end": 984,
+    "scale": 16.604349548211886,
+    "center": [
+      -0.02764606475830078,
+      -0.09686529636383057
+    ]
+  },
+  {
+    "id": "opposites",
+    "group": "controls",
+    "title": "Opposite keys cancel powered input",
+    "detail": "W + S, then A + D / gravity and passive contacts still act",
+    "duration": 3,
+    "start": 985,
+    "bounds": [
+      -2.324467658996582,
+      2.5115675926208496,
+      -1.4163792133331299,
+      0.8592101335525513
+    ],
+    "end": 1056,
+    "scale": 16.604349548211886,
+    "center": [
+      0.09354996681213379,
+      -0.2785845398902893
+    ]
+  },
+  {
+    "id": "vertical-hit",
+    "group": "combat",
+    "title": "Vertical giant-paw hit / W",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "duration": 3,
+    "start": 1057,
+    "bounds": [
+      -2.7896625995635986,
+      4.786735534667969,
+      -1.5998140573501587,
+      3.1004533767700195
+    ],
+    "end": 1128,
+    "scale": 15.766096215078166,
+    "center": [
+      0.9985364675521851,
+      0.7503196597099304
+    ]
+  },
+  {
+    "id": "horizontal-hit",
+    "group": "combat",
+    "title": "Horizontal giant-paw hit / D",
+    "detail": "Actual proxy contacts, damage and ordinary shared stamina",
+    "duration": 3,
+    "start": 1129,
+    "bounds": [
+      -4.227622032165527,
+      1.9134528636932373,
+      -1.2195203304290771,
+      2.708883285522461
+    ],
+    "end": 1200,
+    "scale": 13.17703518977455,
+    "center": [
+      -1.157084584236145,
+      0.7446814775466919
+    ]
+  },
+  {
+    "id": "sword-clash",
+    "group": "combat",
+    "title": "Giant paw blocks sword / clash recoil",
+    "detail": "Actual weapon contact deflects; both fighters recoil and recover",
+    "duration": 4,
+    "start": 1201,
+    "bounds": [
+      -4.192989349365234,
+      1.8464598655700684,
+      -1.6395151615142822,
+      3.1247670650482178
+    ],
+    "end": 1296,
+    "scale": 15.980820885744235,
+    "center": [
+      -1.173264741897583,
+      0.7426259517669678
+    ]
+  },
+  {
+    "id": "near-miss",
+    "group": "combat",
+    "title": "Same giant-paw swing / clear miss",
+    "detail": "Distant target stays untouched; no invisible extra weapon reach",
+    "duration": 2.5,
+    "start": 1297,
+    "bounds": [
+      -3.6524674892425537,
+      3.423380136489868,
+      -2.6597979068756104,
+      3.9667599201202393
+    ],
+    "end": 1356,
+    "scale": 22.227447637721927,
+    "center": [
+      -0.11454367637634277,
+      0.6534810066223145
+    ]
+  },
+  {
+    "id": "actual-tripo-cat",
+    "group": "design",
+    "title": "Selected Tripo cat / prepared asset",
+    "detail": "Original appearance / independent floating paws / 25,000 triangles",
+    "duration": 4,
+    "start": 1357,
+    "bounds": [
+      -2.933626413345337,
+      2.6008076667785645,
+      -1.841752052307129,
+      1.9112873077392578
+    ],
+    "end": 1452,
+    "scale": 12.588811270595846,
+    "center": [
+      -0.16640937328338623,
+      0.03476762771606445
+    ]
+  }
+]

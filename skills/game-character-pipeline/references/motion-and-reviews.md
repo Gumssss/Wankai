@@ -2,7 +2,9 @@
 
 ## Mandatory video presentation
 
-Every proposed or changed character move must be presented through video before its runtime implementation. This includes standard movement reused by a new character, simultaneous inputs, attacks, abilities and transitions. After implementation, provide actual gameplay footage of the same behavior. Images, prose and an interactive prototype supplement the video; none replaces it.
+For a task that proposes or changes character motion, present the moves through video before their runtime implementation. This includes standard movement reused by a new character, simultaneous inputs, attacks, abilities and transitions. After implementation, capture and retain actual gameplay footage of the same behavior. Images, prose and an interactive prototype supplement this motion evidence; none replaces it. These requirements do not add motion work to a reference-only, reconstruction-input-only or UI-only request.
+
+Separate evidence capture from user-facing delivery. When the user asks to inspect the implemented game instead of another recording, open the live game and summarize the relevant verification. Keep footage available in the records without forcing it into the reply or requiring the user to watch it. Before-implementation motion approval and hands-on acceptance remain distinct.
 
 An appearance-only request does not require inventing gameplay. For an unchanged move, a matching previously approved video can be reused with its model/controller version identified. Update affected segments when geometry or behavior changes enough to alter the action.
 
@@ -10,16 +12,26 @@ Before final modeling, use a cheap blockout, solver replay or authored concept t
 
 ## What the video must show
 
-- Label the move, input/action, travel/turn direction and ordinary-versus-ability role.
-- Show which body and weapon parts move and how attachments stay connected. Use a side, top or rear view when needed to explain leverage, coverage or facing.
-- Show preparation, active motion and return to useful control at normal speed. Include release/reversal, interruptions, expiry, landing and recovery where relevant. Add slow motion for unclear contacts without replacing normal speed.
-- Cover relevant simultaneous inputs, not only isolated keys. A single video with clearly labeled time segments can cover multiple actions.
-- Keep camera direction and scale comparable when comparing options; identify independent shots/resets.
-- Label authored concept, blockout simulation, solver replay and actual gameplay distinctly. Disclose scripted travel, test-launch forces or pose-viewer floor adjustments where they affect interpretation.
-- After implementation, capture the actual game with matching input examples and enough framing to judge contact and recovery. Compare any deviation with the approved preview.
-- Save a playable file/link and inspect the encoded result for framing, timing, input captions and successful playback. Record move/input coverage, timecodes, model/controller versions, simulation type and review decision.
+The user selected the **beagle functional v07 demonstration format** as the standard for character motion reviews. In Wankai, the supplied example is `beagle-functional-combat-v07.mp4`: vertical strike, horizontal strike and sword clash, each at normal speed followed by a 0.25× replay of the same recorded event. Its reference delivery is 1600×900 at 30 fps; adapt resolution when needed while preserving the evidence below.
+
+- Use a compact live W/A/S/D diagram (or the game's actual controls), with every held key highlighted, including combined inputs. Keep the move/chapter and playback speed legible. Distinguish ordinary actions from abilities.
+- Leave most of the frame for the character, weapon, opponent and floor. Prefer thin title/phase bands and small HUD elements over large explanatory panels. Keep shared stamina and opponent health visible when applicable; show recorded damage, impact flashes, deflection and recoil.
+- Make the causal chain visible: **input → weapon motion → contact → body response or damage → recovery**. Show ground-support cues and a world-space travel trace. For a lift move, show the resting-height reference, paw/weapon-floor contact, ascent, clear airborne separation, descent and return to control. A small hover/bounce does not demonstrate a requested launch.
+- Preserve a stable floor/grid and camera height through the lift; horizontal tracking is allowed. Do not follow vertical body motion so closely that ascent becomes ambiguous. Frame the complete action and use a lower side-view replay to reveal leverage/contact. Keep direction and scale comparable for comparisons; identify separate resets.
+- Show preparation, active motion, release/reversal and useful recovery at **1× first**. Then replay the same critical contact or support phase at a clearly labeled slower speed (typically 0.25× for impacts, 0.5× for broader movement). Slow motion supplements normal speed; it must not use a different, stronger setup.
+- Cover all relevant simultaneous inputs, interruptions, expiry, landing and ability lifecycle. A single chaptered video can cover multiple actions.
+- Label authored concept, blockout simulation, solver replay and actual gameplay accurately. Disclose external test launches, scripted travel and render-only floor adjustments. Never use them as proof of input/contact-driven lift.
+- After implementation, capture matching actions in the actual game and compare with the approved preview. Save playable files/links; inspect the encoded framing, key timing, normal/slow speed labels, feedback and successful playback. Record timecodes, exact model/controller versions and review decisions.
 
 If video generation/capture is unavailable, report the missing deliverable and continue independent permitted work. Do not pass the motion review using only static poses, text or an interactive scene.
+
+## Complete movement coverage
+
+For a movement review, deliver **one self-contained main movement video** with every ordinary direction and valid simultaneous movement combination. Present it before implementation unless that exact review is already approved. A focused clip of the newly changed action is additional evidence; showing only that clip or splitting a required direction into an optional second clip does not complete the movement review. After integration, retain the matching actual-game coverage and honor the selected live-game or video delivery format.
+
+For Wankai, the mandatory normal-speed matrix is **W, S, A, D, W+A, W+D, S+A and S+D**. Label each case separately, highlight every held key, and hold the input long enough to show the weapon action and resulting travel, turn or support/lift. Combined cases must show genuinely simultaneous inputs on the same fighter, not successive single-key shots. Include release/reversal, recovery and opposite-key cancellation as additional chapters; they do not substitute for any of the eight cases. Adapt this coverage to the actual bindings and combinations in another game.
+
+Before presenting the main video, record a coverage checklist with encoded timecodes for every required case and verify its actual held-input interval and visible response. Present that complete file prominently for the required motion review, even when the user is discussing just W/S or one lift/attack. Preserve already accepted motion while fixing coverage or presentation. Reuse unchanged evidence for subsequent UI-only work.
 
 ## Gameplay contract before the video
 
@@ -31,18 +43,20 @@ For Wankai, cover W, S, A, D, W+A, W+D, S+A and S+D, release/reversal, ground su
 
 A prescribed body path or test launch can explain a pose but cannot prove contact-driven travel. A finite hinge motor, passive hinge and fixed relative-angle animation produce different control behavior; identify the one being demonstrated.
 
+When the selected move requires support-driven lift, verify the physical chain as well as its readability: contact must precede the supporting upward impulse, the body must rise visibly above its rest height, and release/landing must recover. Measure height from the floor and from the resting pose. Declared idle hover is separate from the contact-driven rise. If the user cannot see the requested lift, return to leverage/controller and camera evidence even when numerical checks passed. Preserve that character's agreed input mapping rather than assigning every character the beagle's controls or dimensions.
+
 ## Review milestones
 
-Prepare concrete review artifacts first, then request the decision needed before dependent work. Record artifact/version, user instruction, accepted scope and constraints. Reuse existing approvals and delegated choices. Combine reviews when the same completed artifact answers them together; avoid repeated permission for routine cleanup, export or tests.
+Apply only the milestones in the requested stage/range; the table does not authorize later stages. Prepare concrete review artifacts first, then request a genuinely missing decision before dependent work. Record artifact/version, user instruction, accepted scope and constraints. Reuse existing approvals and delegated choices. Combine reviews when the same completed artifact answers them together; avoid repeated permission for routine cleanup, export or tests. For a stage-only endpoint, deliver the artifact and checkpoint without requiring approval to proceed to an unrequested stage.
 
 | Review | Concrete result | Decision covered |
 | --- | --- | --- |
 | A Direction | Selected image/reference and brief with identity locks and gameplay role. | Character direction and intended ordinary/ability distinction. |
 | B Motion | Labeled move videos, demonstrated functions, dimensions and unproven mechanics. | New or changed motion before runtime implementation/final geometry. |
-| C Reconstruction | Exact generation images, selected Tripo operation and spending scope. | Inputs and operation, not an unseen output's appearance. |
+| C Reconstruction | Exact clean front/side/back images, selected Tripo multi-view operation and spending scope. | Inputs and operation, not an unseen output's appearance. |
 | D Base | Actual downloaded textured 3D candidate and proposed Blender edits. | Selected base appearance. |
 | E Asset | Reimported runtime asset, viewer, move videos/extreme checks and measured report. | Finished asset for integration. |
-| F Playable | Actual local game and gameplay videos, test results and known limitations. | Playable behavior and recovery; balance can remain a stated trial. |
+| F Playable | Actual local game, retained gameplay evidence, test results and known limitations; present through the user's selected review format. | Playable behavior and recovery; balance can remain a stated trial. |
 
 Image approval does not imply rig or playable acceptance. Spending authorization does not imply appearance approval. Silence, dismissal or elapsed time does not supply required approval. Independent read-only checks and already authorized reversible work can continue while a decision is pending.
 

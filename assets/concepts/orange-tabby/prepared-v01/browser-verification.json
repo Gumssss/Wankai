@@ -1,0 +1,84 @@
+{
+  "version": "orange-tabby-prepared-v01 / motion-v05",
+  "date": "2026-10-20",
+  "surface": "Local in-app browser, actual textured GLTFLoader model and isolated solver preview",
+  "page": "http://127.0.0.1:8766/docs/previews/orange-tabby/try-v05.html",
+  "checks": [
+    {
+      "name": "Actual texture/material loads with visible face, stripes and paw pads",
+      "passed": true,
+      "evidence": "docs/previews/orange-tabby/browser-model-v05.jpg"
+    },
+    {
+      "name": "Native W hold drives paired paw swing",
+      "passed": true,
+      "observed": {
+        "hold_seconds": 1,
+        "released_body_height": 0.4,
+        "theta_degrees": 351,
+        "heading_degrees": 7,
+        "stamina": 180
+      }
+    },
+    {
+      "name": "Native A hold steers while maintaining hover",
+      "passed": true,
+      "observed": {
+        "hold_seconds": 1,
+        "released_body_height": 0.35,
+        "theta_degrees": 90,
+        "heading_degrees": -68,
+        "stamina": 192
+      }
+    },
+    {
+      "name": "Reset/reload restores neutral hover and full stamina",
+      "passed": true,
+      "observed": {
+        "body_height": 0.35,
+        "theta_degrees": 90,
+        "heading_degrees": 0,
+        "stamina": 200
+      }
+    },
+    {
+      "name": "Encoded MP4s load with no browser media error",
+      "passed": true,
+      "observed": {
+        "readyState": [
+          4,
+          4,
+          4
+        ],
+        "duration_seconds": [
+          4,
+          44,
+          12.5
+        ]
+      }
+    },
+    {
+      "name": "Combat MP4 visibly starts playing through native control",
+      "passed": true,
+      "observed": {
+        "currentTime": 0.272511,
+        "paused": false,
+        "duration": 12.5,
+        "error": null
+      }
+    },
+    {
+      "name": "Final frontal-camera movement MP4 plays through native browser controls",
+      "passed": true,
+      "observed": {
+        "currentTime": 0.239857,
+        "paused": false,
+        "duration": 44,
+        "error": null
+      },
+      "evidence": "docs/previews/orange-tabby/browser-review-v05.jpg"
+    }
+  ],
+  "runtimeIntegration": false,
+  "userAcceptance": "pending combined B/E review"
+}

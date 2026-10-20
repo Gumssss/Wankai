@@ -79,7 +79,7 @@ test('head hurtbox follows the broader beagle and its camera contains the full e
    assert.ok(Math.abs(screen.x)<.75&&screen.y<.53&&screen.y>-.75,'ear left its pane');
   }
  }
- assert.equal(WEAPONS.beagle,BEAGLE);
+ assert.equal(WEAPONS['long-ears'],BEAGLE);
 });
 
 test('a powered ear meets a sword under the ordinary clash and recoil rules',()=>{

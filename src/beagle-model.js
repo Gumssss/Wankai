@@ -8,7 +8,7 @@ const PLAYER_COLORS=[0xc4684f,0x568d92];
 const SPREAD_AXIS=new Vector3(0,0,1),PIVOT_HEIGHT=.85-BEAGLE.bodyFloor;
 
 // SkeletonUtils is essential: ordinary Object3D.clone shares skinned controls.
-export function instantiateBeagle(source,id=0){
+export function instantiateBeagle(source,id=0,{rigged=true}={}){
  const model=clone(source),host=new Group(),materials=new Map(),bones={},rest={};
  host.name='Beagle_Character';host.position.y=-BEAGLE.bodyFloor;host.add(model);
  model.traverse(o=>{
@@ -25,14 +25,15 @@ export function instantiateBeagle(source,id=0){
   };
   o.material=Array.isArray(o.material)?o.material.map(own):own(o.material);
  });
- for(const name of ['L_ear_swing','R_ear_swing','body_pitch','L_lid','R_lid'])
+ for(const name of rigged?['L_ear_swing','R_ear_swing','body_pitch','L_lid','R_lid']:[])
   if(!bones[name])throw Error('Beagle control missing: '+name);
- return {host,model,bones,rest,id,rotation:new Quaternion(),materials:[...materials.values()],
+ return {host,model,bones,rest,id,rigged,rotation:new Quaternion(),materials:[...materials.values()],
   colors:[...materials.values()].map(m=>m.color.clone()),pitch:new Quaternion()};
 }
 
 export function poseBeagle(instance,player,time=0){
  const {bones,rest,rotation,pitch}=instance;
+ if(!instance.rigged){instance.materials.forEach((m,i)=>m.color.copy(instance.colors[i]).lerp(WHITE,(player.hitFlash||0)*.65));return;}
  for(const side of ['L','R'])bones[side+'_ear_swing'].quaternion.copy(rest[side+'_ear_swing'])
   .multiply(rotation.setFromAxisAngle(SPREAD_AXIS,-beagleEarYaw(player,BEAGLE.anchors[side])))
   .multiply(pitch.setFromAxisAngle(HINGE_AXIS,player.theta-BEAGLE.earBindPitch));
@@ -44,9 +45,9 @@ export function poseBeagle(instance,player,time=0){
  instance.materials.forEach((m,i)=>m.color.copy(instance.colors[i]).lerp(WHITE,(player.hitFlash||0)*.65));
 }
 
-// A local geometric fallback uses the same anchored contact profile while the
-// exported model is loading or if an asset cannot be read offline.
-export function makeBeagleFallback(id=0){
+// A local geometric fallback uses the same anchored contact profile if an
+// exported asset cannot be read offline. Keep it hidden during normal loading.
+export function makeBeagleFallback(id=0,weaponEars=true){
  const root=new Group(),body=new Group(),tan=new MeshStandardMaterial({color:0xc6803d,roughness:.9}),
  white=new MeshStandardMaterial({color:0xfff7e8,roughness:.9}),dark=new MeshStandardMaterial({color:0x29231f}),
  accent=new MeshStandardMaterial({color:PLAYER_COLORS[id],roughness:.9});
@@ -66,6 +67,10 @@ export function makeBeagleFallback(id=0){
   volume([.08,.07-BEAGLE.bodyFloor,side*.19],[.14,.07,.13],white);
  }
  const hinges={};
+ if(!weaponEars){
+  for(const side of [-1,1])volume([0,.95-BEAGLE.bodyFloor,side*.73],[.25,.60,.23],tan);
+  return {root,body,hinges};
+ }
  for(const side of ['L','R']){
   const hinge=new Group();hinge.position.set(...BEAGLE.anchors[side]);hinge.position.y-=PIVOT_HEIGHT;body.add(hinge);hinges[side]=hinge;
   for(const c of BEAGLE.colliders.filter(c=>c.ear===side)){

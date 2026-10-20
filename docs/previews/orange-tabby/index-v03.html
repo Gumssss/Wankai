@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Seated cat · floating giant paws v03</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f4f2e9;color:#263d35;font:17px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:40px 24px 80px}h1{font-size:40px;line-height:1.15;margin:12px 0 20px}h2{font-size:24px;margin:35px 0 12px}.tag{color:#9c5a2e;font-size:13px;letter-spacing:.13em;font-weight:750}.lead{font-size:21px}.note{padding:15px 22px;background:#e7e9dd;border-left:4px solid #c77c3d;border-radius:5px}video{display:block;width:100%;background:#dfe5e3;border-radius:14px;margin:15px 0}button{font:inherit;font-size:13px;line-height:1.4;border:1px solid #c3ccbe;border-radius:22px;background:#fafaf3;padding:9px 14px;margin:4px;cursor:pointer}button:hover{background:#dce8df}a{color:#276d6e}small,figcaption{color:#61726a;font-size:14px}figure{margin:20px 0}.reference{width:240px;max-width:100%;border-radius:12px}footer{margin-top:35px;color:#61726a;font-size:14px}</style>
+<main><div class="tag">WANKAI / USER-DIRECTED REVISION / MODEL STUDY v03</div>
+<h1>Seated orange tabby · enormous floating paws</h1>
+<p class="lead">A low seated body, tucked feet and curled tail. Two white paw weapons float beside it with clear gaps and no arms or connecting mesh. Each palm is wider than the head and almost twice the previous hand width.</p>
+<h2>Hand size and seated silhouette · 4 seconds</h2>
+<video id="design" controls preload="metadata" poster="seated-floating-paws-v03.png" src="orange-tabby-design-v03.mp4"></video>
+<small>Authored design turntable of the revised primitive model. Original orange-tabby face and markings retained.</small>
+<h2>Sitting-pose reference</h2>
+<figure><img class="reference" src="../../../assets/concepts/orange-tabby/references/seated-pose-commons-original.jpg" alt="Orange cat sitting with low haunches, lifted chest and tucked feet"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Orange_Tabby_Cat_Sitting_Down.jpg">Orange Tabby Cat Sitting Down</a> by Asabae2752 · <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Unmodified source preview. Used for seated gesture. <a href="https://pixabay.com/photos/cat-sitting-orange-tabby-orange-1114726/">Secondary frontal reference by elljay</a>.</figcaption></figure>
+<h2>Ordinary controls and recovery · 40 seconds</h2>
+<video id="controls" controls preload="metadata" poster="w-v03.png" src="orange-tabby-controls-v03.mp4"></video>
+<small>Current game solver with an isolated floating-paw proxy adapter. W/S, A/D, all four combinations, release/reversal, landing and opposite-input cancellation. Invisible constraints transmit contacts; the body retains its seated shape. This is prototype footage.</small>
+<p class="note">The much larger paw volumes currently produce about 2.12 units of rise, lateral drift and gravity-driven movement after release or canceled input. This behavior needs tuning before production; the size and pose are ready to inspect here.</p>
+<h2>Hits, sword interception and clash · 12.5 seconds</h2>
+<video id="combat" controls preload="metadata" poster="sword-clash-v03.png" src="orange-tabby-combat-v03.mp4"></video>
+<small>Contact-confirmed vertical/horizontal hits, sword clash with recoil and a distant miss. Shared stamina, damage and repeat-hit rules use the current solver. Contact geometry remains provisional.</small>
+<h2>Jump to a move</h2><div><button data-video="controls" data-seek="0">W / front swing</button>
+<button data-video="controls" data-seek="3">S / back swing</button>
+<button data-video="controls" data-seek="6">A / left heading sweep</button>
+<button data-video="controls" data-seek="9">D / right heading sweep</button>
+<button data-video="controls" data-seek="12">W + A / front swing + steering</button>
+<button data-video="controls" data-seek="15">W + D / front swing + steering</button>
+<button data-video="controls" data-seek="18">S + A / back swing + steering</button>
+<button data-video="controls" data-seek="21">S + D / back swing + steering</button>
+<button data-video="controls" data-seek="24">Release, coast, brake, reverse</button>
+<button data-video="controls" data-seek="29">Steering release and reversal</button>
+<button data-video="controls" data-seek="33">Seated landing and recovery</button>
+<button data-video="controls" data-seek="37">Opposite keys cancel powered input</button>
+<button data-video="combat" data-seek="0">Vertical giant-paw hit / W</button>
+<button data-video="combat" data-seek="3">Horizontal giant-paw hit / D</button>
+<button data-video="combat" data-seek="6">Giant paw blocks sword / clash recoil</button>
+<button data-video="combat" data-seek="10">Same giant-paw swing / clear miss</button>
+<button data-video="design" data-seek="0">Seated cat / enormous detached paws</button></div>
+<p><a href="../../characters/orange-tabby/DESIGN.md">Current design</a> · <a href="../../characters/orange-tabby/MOTION_V03.md">Video coverage and measured findings</a> · <a href="index-v02.html">Historical standing v02</a> · <a href="index-v01.html">Historical attached-paw v01</a></p>
+<footer>Editable Blender study and original references are retained. Production base and runtime integration remain pending. No Tripo operation submitted.</footer>
+</main><script>document.querySelectorAll('button[data-video]').forEach(b=>b.onclick=()=>{let v=document.getElementById(b.dataset.video);document.querySelectorAll('video').forEach(x=>{if(x!==v)x.pause()});v.currentTime=Number(b.dataset.seek);v.play();v.scrollIntoView({behavior:'smooth',block:'center'})});</script></html>

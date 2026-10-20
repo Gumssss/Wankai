@@ -1,0 +1,95 @@
+{
+  "version": "orange-tabby-gameplay-v01",
+  "date": "2026-10-20",
+  "approval": "User approved actual-model v07 and requested integration.",
+  "regression": {
+    "command": "npm test",
+    "tests": 132,
+    "passed": 132,
+    "failed": 0,
+    "log": "output/orange-tabby-gameplay-v01/regression-final.log"
+  },
+  "build": {
+    "command": "npm run build",
+    "passed": true,
+    "log": "output/orange-tabby-gameplay-v01/build.log",
+    "advisory": "Existing >500kB chunk advisory; build successful."
+  },
+  "motion_parity": {
+    "scenarios": 13,
+    "sample_rate_hz": 60,
+    "solver_rate_hz": 180,
+    "tolerance": 1e-07,
+    "source": "assets/concepts/orange-tabby/motion-v06/game-solver-replay.json"
+  },
+  "asset": {
+    "path": "public/models/orange-tabby-prepared-v02.glb",
+    "sha256": "3b3893335848deb1d65280e70eabad94005f4c532cd42f7720f92008dbf6cc00",
+    "same_approved_bytes": true
+  },
+  "camera": {
+    "actual_geometry": true,
+    "states": 756,
+    "description": "Actual body and paw vertex projections across solo/split, P1/P2, narrow/wide panes, pitch/yaw/rise and independent orbit."
+  },
+  "availability": {
+    "valid_loadouts": 8,
+    "pairings": 64,
+    "cat_scope": "Approved giant paws only"
+  },
+  "delivery": {
+    "local": true,
+    "pushed": false,
+    "merged": false,
+    "released": false
+  },
+  "actual_capture": {
+    "passed": 73,
+    "report": "assets/concepts/orange-tabby/gameplay-v01/verification.json",
+    "original": "output/orange-tabby-gameplay-v01/actual-gameplay.webm",
+    "simulation_and_keys": "output/orange-tabby-gameplay-v01/capture-report.json"
+  },
+  "media": {
+    "primary": {
+      "path": "docs/previews/orange-tabby/orange-tabby-gameplay-v01.mp4",
+      "sha256": "1f3305ac9cc08b26cbb43cb8cfb0a069788fae561e9fc01242131a1b77ce1450",
+      "bytes": 5136495,
+      "duration": 63.133333,
+      "frames": 1894,
+      "fps": 30,
+      "resolution": [
+        1600,
+        900
+      ],
+      "full_decode": true
+    },
+    "verification": "assets/concepts/orange-tabby/gameplay-v01/media-verification.json",
+    "encoded_samples_inspected": true,
+    "slow_label_visually_inspected": true
+  },
+  "independent_audit": {
+    "blocking_bugs": 0,
+    "previous_fighters_parity": {
+      "scenarios": 14,
+      "steps": 5040,
+      "state_and_events": "Identical to pre-cat v06 physics snapshot; delegated read-only audit."
+    },
+    "performance": "assets/concepts/orange-tabby/gameplay-v01/physics-performance.json"
+  },
+  "runtime_hashes": {
+    "src/physics.js": "9f635633d64d3b40691d76456c3d0a1746394a1552ef5e4e172ac2cb451fe98f",
+    "src/game-session.js": "1135c9a5f7e216df0e3cb7549469163488b787e877768932c998da6401c9f87c",
+    "src/scene.js": "8bdeb84e55e28814320ecb12baa75e15fbf2c3f5e80cbf321c7e49a32debac35",
+    "src/ArenaCanvas.jsx": "c3599ea945c00eb900da601099b7c51ecfb4b5c33dd9a1623a9564708385bddd",
+    "src/App.jsx": "fc3d89fdd2b5422ec0592682b77e639a579a63a59b4e742d7556dbdc1e50021b",
+    "src/Armory.jsx": "7b54b12dd1708272cdcb9f969954860e302ae3d2d068dbb3f22fdfc2d18cce8b",
+    "src/LoadoutPreview.jsx": "a41220cdbf2d596a49d660be21b765c8f03c89d09dc2b166ae65ac4b4a3566b5",
+    "src/free-camera.js": "7123505b57756d23787697dc486a787c513393a1bf8bdd04efeb0ce23b7fcd32",
+    "src/loadouts.js": "e1aeed362e69cc48428f350e808cbd276352d55475fd3786668051c38e27c2c6",
+    "src/character-catalog.js": "c31e59c6278335a53e37d1078f461704bdfe4f622f5dc986a4802e64fb63866a",
+    "src/weapon-catalog.js": "5ef7b51aecaf3876bbb296830761935c97b1c10904c9e0503f8bcd27fd6ea6e6",
+    "src/orange-tabby-model.js": "5e8ea6765eba7adf4c7987275e2fdda2574b80525641fc60df99644db42f6cdb",
+    "src/orange-tabby-profile.js": "db23503455eed7657599cc695e81dd3109e10910c4edbbd47767ba69c68d54a6"
+  },
+  "browser": "assets/concepts/orange-tabby/gameplay-v01/browser-verification.json"
+}

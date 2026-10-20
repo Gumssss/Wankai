@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="UTF-8"><title>Beagle common weapon compatibility</title><link rel="icon" href="data:,"><style>body{margin:0;background:#eeeade;color:#30372e;font:14px system-ui}canvas{display:block;margin:auto;width:min(100vw,1280px);height:auto}#source{display:none}button{margin:15px;padding:10px}</style></head><body><canvas id="video" width="1280" height="720"></canvas><canvas id="source"></canvas><button id="play">Play / record</button><script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {clone} from 'three/addons/utils/SkeletonUtils.js';
+import {WEAPON_VISUALS,setWeaponRotation} from '../../../src/weapon-visuals.js';
+const params=new URLSearchParams(location.search),weapon=params.get('weapon')||'sword';
+const data=await fetch(`before-${weapon}.json`).then(r=>r.json()),loader=new GLTFLoader();
+const [body,first,second]=await Promise.all([loader.loadAsync('/models/beagle-smooth-appearance-v05.glb'),loader.loadAsync(`/models/${weapon}.glb`),loader.loadAsync('/models/polearm.glb')]);
+const canvas=document.querySelector('#video'),ctx=canvas.getContext('2d'),source=document.querySelector('#source');
+const renderer=new THREE.WebGLRenderer({canvas:source,antialias:true,preserveDrawingBuffer:true});renderer.setSize(1280,520);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
+const scene=new THREE.Scene();scene.background=new THREE.Color('#e6e7d7');const camera=new THREE.OrthographicCamera(-6.15,6.15,2.5,-2.5,.1,150);
+scene.add(new THREE.HemisphereLight(0xfff8e8,0x7c8c78,2.5));const light=new THREE.DirectionalLight(0xffffff,2.5);light.position.set(4,8,5);scene.add(light);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:'#e1e3d1',roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.02;scene.add(floor);const grid=new THREE.GridHelper(120,120,0xb7bca4,0xd0d6bd);scene.add(grid);
+const actors=[];
+for(let id=0;id<2;id++){
+ const character=new THREE.Group(),staff=new THREE.Group();scene.add(character,staff);
+ if(id===0){const dog=clone(body.scene);dog.position.y=-.59;character.add(dog);}else{
+  for(const [r,p,color]of [[.39,[0,0,0],0x568d92],[.37,[0,.76,0],0xe7c199]]){const m=new THREE.Mesh(new THREE.SphereGeometry(r,24,16),new THREE.MeshStandardMaterial({color}));m.position.set(...p);if(p[1]===0)m.scale.y=1.4;character.add(m);}
+ }
+ const item=clone((id===0?first:second).scene),kind=id===0?weapon:'polearm';item.quaternion.setFromUnitVectors(new THREE.Vector3(...WEAPON_VISUALS[kind].axis).normalize(),new THREE.Vector3(0,1,0));item.updateMatrixWorld(true);
+ const length={sword:1.45,polearm:2.35,hammer:1.9}[kind],scale=length/new THREE.Box3().setFromObject(item).getSize(new THREE.Vector3()).y;
+ const butt=new THREE.Vector3(...WEAPON_VISUALS[kind].butt).applyQuaternion(item.quaternion).multiplyScalar(scale);item.scale.setScalar(scale);item.position.copy(butt).multiplyScalar(-1);if(kind==='polearm')item.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.color.set(0x626a70);o.material.metalness=.24;o.material.roughness=.62;}});staff.add(item);actors.push({character,staff});
+}
+let time=0,recording=false,start=0,previous;
+const duration=data.scenarios.reduce((s,c)=>s+c.duration,0);
+function draw(t){
+ let elapsed=t,scenario=data.scenarios.at(-1),index=data.scenarios.length-1;
+ for(let i=0;i<data.scenarios.length;i++){if(elapsed<=data.scenarios[i].duration){scenario=data.scenarios[i];index=i;break;}elapsed-=data.scenarios[i].duration;}
+ const row=scenario.rows[Math.min(scenario.rows.length-1,Math.max(0,Math.floor(elapsed*60)))];
+ for(let id=0;id<2;id++){const a=actors[id],p=row.players[id];a.character.visible=!!p;a.staff.visible=!!p&&p.weapon!=='dummy';if(!p)continue;a.character.position.set(p.p.x,p.p.y,p.p.z);a.character.rotation.y=-p.phi;a.staff.position.set(p.base.x,p.base.y,p.base.z);setWeaponRotation(a.staff.quaternion,p.theta,p.phi);}
+ if(previous!==scenario){
+  const box=new THREE.Box3();for(const r of scenario.rows){const origin=r.players[0].p;for(const p of r.players){box.expandByPoint(new THREE.Vector3(p.p.x-origin.x,p.p.y-origin.y+1.7,p.p.z-origin.z));box.expandByPoint(new THREE.Vector3(p.p.x-origin.x,p.p.y-origin.y-.59,p.p.z-origin.z));for(const s of p.segments){box.expandByPoint(new THREE.Vector3(s.a.x-origin.x,s.a.y-origin.y,s.a.z-origin.z));box.expandByPoint(new THREE.Vector3(s.b.x-origin.x,s.b.y-origin.y,s.b.z-origin.z));}}}
+  scenario.center=box.getCenter(new THREE.Vector3());camera.position.copy(scenario.center).add(new THREE.Vector3(8,5.2,8));camera.lookAt(scenario.center);camera.updateMatrixWorld(true);
+  const projected=new THREE.Box3();for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z])projected.expandByPoint(new THREE.Vector3(x,y,z).applyMatrix4(camera.matrixWorldInverse));
+  const size=projected.getSize(new THREE.Vector3()),span=Math.max(3.4,size.y,size.x/(1280/520))*1.12;
+  camera.left=-span*1280/520/2;camera.right=-camera.left;camera.top=span/2;camera.bottom=-camera.top;camera.updateProjectionMatrix();previous=scenario;
+ }
+ const focus=scenario.center.clone().add(new THREE.Vector3(row.players[0].p.x,row.players[0].p.y,row.players[0].p.z));camera.position.copy(focus).add(new THREE.Vector3(8,5.2,8));camera.lookAt(focus);
+ renderer.render(scene,camera);ctx.fillStyle='#f5f2e9';ctx.fillRect(0,0,1280,720);ctx.drawImage(source,0,104,1280,520);
+ ctx.fillStyle='#829075';ctx.font='14px system-ui';ctx.fillText(`WANKAI / BEAGLE + ${weapon.toUpperCase()} / BEFORE INTEGRATION`,30,28);
+ ctx.fillStyle='#30372e';ctx.font='bold 25px system-ui';ctx.fillText(scenario.title,30,67);ctx.font='13px system-ui';ctx.fillStyle='#829075';ctx.fillText(`Chapter ${index+1}/${data.scenarios.length} · independent reset · 1× playback`,850,28);
+ const input=row.input,keys=[input.theta>0?'W':input.theta<0?'S':'',input.phi>0?'D':input.phi<0?'A':'',input.skill?'F':''].filter(Boolean).join(' + ')||'RELEASE';
+ ctx.fillStyle='#bd6048';ctx.font='bold 21px system-ui';ctx.fillText(keys,30,659);ctx.fillStyle='#667455';ctx.font='15px system-ui';ctx.fillText(`HP ${row.players[0].health}   Stamina ${Math.ceil(row.players[0].stamina)} / 200   Rise ${(row.players[0].p.y-.59).toFixed(2)}`,260,658);
+ const hits=scenario.events.filter(e=>e.time<=elapsed&&e.type==='hit'&&e.attacker===0),clashes=scenario.events.filter(e=>e.time<=elapsed&&e.type==='clash');
+ ctx.fillText(`Hits ${hits.length}   Clashes ${clashes.length}`,930,658);ctx.font='13px system-ui';ctx.fillText('Isolated 180 Hz solver replay · actual compact Tripo model · no authored travel / launch · natural ears are cosmetic',30,696);
+}
+function tick(now){if(recording){time=Math.max(0,Math.min(duration,(now-start)/1000));draw(time);if(time>=duration){recording=false;window.recorder.stop();}}else draw(time);requestAnimationFrame(tick);}requestAnimationFrame(tick);
+window.compatibilityReady=true;
+window.recordCompatibility=async()=>{if(recording)return;time=0;previous=null;const chunks=[];const stream=canvas.captureStream(30);window.recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:4500000});window.recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const done=new Promise(resolve=>{window.recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(chunks,{type:'video/webm'}));a.download=`before-${weapon}.webm`;a.click();resolve(true);};});window.recorder.start();start=performance.now();recording=true;return done;};
+document.querySelector('#play').onclick=window.recordCompatibility;
+</script></body></html>
