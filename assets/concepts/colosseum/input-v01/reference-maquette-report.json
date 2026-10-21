@@ -1,0 +1,48 @@
+{
+  "role": "Tripo reconstruction reference maquette only; not production base",
+  "outer_plan_guide": [
+    188,
+    156
+  ],
+  "arena_plan_guide": [
+    83,
+    48
+  ],
+  "north_outer_arc_bays": 38,
+  "bay_grid": 80,
+  "assumptions": "elliptical approximation, schematic survival profile and inner wall, simplified cavea; covered game floor",
+  "views": {
+    "front": [
+      0,
+      -280,
+      118
+    ],
+    "left": [
+      -280,
+      0,
+      118
+    ],
+    "back": [
+      0,
+      280,
+      118
+    ],
+    "right": [
+      280,
+      0,
+      118
+    ],
+    "interior-review": [
+      145,
+      -220,
+      190
+    ],
+    "plan-review": [
+      0,
+      0,
+      330
+    ]
+  },
+  "projection": "orthographic; four slot images at matching ~20 degree elevation, same camera scale 222",
+  "objects": 2110
+}

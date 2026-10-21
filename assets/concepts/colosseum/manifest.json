@@ -1,0 +1,695 @@
+{
+  "schema_version": 1,
+  "asset_id": "colosseum",
+  "workflow": {
+    "requested_endpoint": "selected Tripo base through Blender finishing and local game integration, as explicitly extended by creator",
+    "current_stage": "prepared and integrated locally; full suite/build and actual-game checks passed; live review open",
+    "next_action": "creator hands-on review of local game, cutaways and new podium contact height",
+    "pending_decisions": [
+      "hands-on visual/feel acceptance; no required approval blocks current delivery"
+    ]
+  },
+  "selected": {
+    "style_reference": "assets/concepts/colosseum/references/selected-warm-style-only.png",
+    "style_preview_candidate": "assets/concepts/colosseum/concept-turnaround-v01/colosseum-original-reference-v01.png",
+    "structural_reference_maquette": "assets/concepts/colosseum/input-v01/colosseum-reference-maquette-v01.blend",
+    "tripo_base": "assets/source/tripo/colosseum-v01/colosseum-tripo-v01-source.glb",
+    "blender_production_source": "assets/source/blender/colosseum-prepared-v01.blend",
+    "runtime_export": "public/models/colosseum-prepared-v01.glb",
+    "image_review_packet": "assets/concepts/colosseum/concept-turnaround-v01/provenance.json",
+    "tripo_candidate": "assets/source/tripo/colosseum-v01/colosseum-tripo-v01-source.glb",
+    "tripo_candidate_viewer": "https://studio.tripo3d.ai/workspace/generate/bfe660c5-848d-4ec6-b495-4aa6fa51a620",
+    "blender_inspection_scene": "assets/concepts/colosseum/tripo-v01/colosseum-tripo-v01-inspection.blend",
+    "blender_source": "assets/source/blender/colosseum-prepared-v01.blend",
+    "runtime_revision": "local uncommitted source"
+  },
+  "reviews": [
+    {
+      "stage": "direction",
+      "decision": "oval real structure preferred; cute warm concept style retained",
+      "authority": "explicit creator direction relayed in task"
+    },
+    {
+      "stage": "v01 packet appearance",
+      "decision": "superseded: creator requested restoring chosen warm rounded toy style",
+      "scope": "structural layout retained as guide; pale thin maquette appearance rejected"
+    },
+    {
+      "stage": "v02 representative",
+      "decision": "pending",
+      "artifact": "assets/concepts/colosseum/style-v02/colosseum-warm-rounded-style-v02.png"
+    },
+    {
+      "stage": "exact attached concept left/back image request",
+      "decision": "two parent-generated interpretations delivered for review and archived; acceptance not inferred",
+      "scope": "image stage only; no new generation/upload/Tripo operation by child",
+      "provenance": "assets/concepts/colosseum/concept-turnaround-v01/provenance.json"
+    },
+    {
+      "stage": "Tripo base v01",
+      "decision": "ready for creator selection; no approval inferred",
+      "artifact": "assets/source/tripo/colosseum-v01/colosseum-tripo-v01-source.glb",
+      "sha256": "7890a8fda3f0bf7b24ebac3da641b2c5c15bc283030c9c026e23a1c9c72d14e2",
+      "review_images": [
+        "assets/concepts/colosseum/tripo-v01/actual-model-hero.png",
+        "assets/concepts/colosseum/tripo-v01/actual-model-reverse.png",
+        "assets/concepts/colosseum/tripo-v01/actual-model-side.png",
+        "assets/concepts/colosseum/tripo-v01/actual-model-overhead.png"
+      ]
+    },
+    {
+      "stage": "preparation and integration scope",
+      "decision": "creator explicitly requested complete details in Blender, then implement in game; base selected for these revisions",
+      "scope": "routine cleanup/export/import/tests and local integration authorized; no new credits or Git delivery"
+    }
+  ],
+  "tripo_preflight": {
+    "date": "2026-10-20",
+    "url": "https://studio.tripo3d.ai/workspace/generate/bfe660c5-848d-4ec6-b495-4aa6fa51a620",
+    "signed_in": true,
+    "mode": "HD Model / multi-view",
+    "model": "H3.1 Best Quality",
+    "slots": [
+      "Front",
+      "Left",
+      "Right",
+      "Back"
+    ],
+    "view_mapping": {
+      "Front": "camera -Y",
+      "Left": "camera -X; profile icon faces viewer-right",
+      "Right": "camera +X",
+      "Back": "camera +Y"
+    },
+    "quote_credits": 25,
+    "quote_scope": "verified final selected three-image Front/Left/Back packet; Right optional and empty",
+    "settings": {
+      "triangle_target": 100000,
+      "texture_enabled": true,
+      "texture_size": "2K",
+      "topology": "Triangle",
+      "ultra_mesh": false,
+      "remove_lighting": false,
+      "pbr": false,
+      "generate_in_parts": false,
+      "8k_trial": false,
+      "privacy": "Private"
+    },
+    "upload_history": "Previous plain maquette inputs cleared. Selected original, left and back concept images uploaded to their matching slots; Right empty.",
+    "submitted": true,
+    "operation_id": "bfe660c5-848d-4ec6-b495-4aa6fa51a620",
+    "observed_credits_spent": 25,
+    "generation_authorization": "Creator explicitly asked: Can you use these three images, and put it in Tripo to generate the model please. One same quoted 25-credit H3.1 generation authorized; no retries or paid exports.",
+    "paid_export_quote": "no extra credit charge for GLB 2K current export",
+    "balance_before": 2990,
+    "balance_after": 2965,
+    "state": "complete",
+    "balance_after_download": 2965
+  },
+  "artifacts": [
+    {
+      "path": "assets/concepts/colosseum/input-v01/colosseum-back-v01.png",
+      "bytes": 1879062,
+      "sha256": "424373a5ad50048450d64e0b3b8770ca4415b223cc36bfbaa8b5f21e134ad134",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/input-v01/colosseum-front-v01.png",
+      "bytes": 1876310,
+      "sha256": "24f289689584ab429568f88396c16a7d755e3a9a93748a59135cbd2293e68193",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/input-v01/colosseum-interior-review-v01.png",
+      "bytes": 1974692,
+      "sha256": "d489af034e8298f93b54342c92aeea8719897c9f58820d6257cd535c6b9fc226",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/input-v01/colosseum-left-v01.png",
+      "bytes": 1894518,
+      "sha256": "ab8371a309cbadb59539ed85f9f4a14009973221bd1fb7cf1dddaaf0fbe5b208",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/input-v01/colosseum-plan-review-v01.png",
+      "bytes": 1951334,
+      "sha256": "d3514a46c558a5798063496431a9a3e5c17ed7f8d66d9099acd8579244387531",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/input-v01/colosseum-reference-maquette-v01.blend",
+      "bytes": 1114337,
+      "sha256": "3bf7c28c0bb15811c271d1653d7eb228c78aeb0a78082403ed09412bf7a88f35"
+    },
+    {
+      "path": "assets/concepts/colosseum/input-v01/colosseum-right-v01.png",
+      "bytes": 1900171,
+      "sha256": "ff6b611135fc3dc64f68c08c77afd3bf35ff6e99326be6b1162569377cbae242",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/input-v01/reference-maquette-report.json",
+      "bytes": 817,
+      "sha256": "44ce33efadf0dcafecf8db5922ead6b89f9531cf214ad7558d16e16776c8ffe8"
+    },
+    {
+      "path": "assets/concepts/colosseum/references/historical-plan-usf.gif",
+      "bytes": 217250,
+      "sha256": "4a594077a81a195b0a00c529599d117819d19b481a975d3fad7faa9dbfa7095d",
+      "size": [
+        1024,
+        810
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "assets/concepts/colosseum/references/interior-barry-strauss.jpg",
+      "bytes": 50920,
+      "sha256": "afbd70c15bef742f6efbcb045770b8540d12c1ae81915242e23efdaf3aad65eb",
+      "size": [
+        600,
+        450
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/references/selected-warm-style-only.png",
+      "bytes": 1979058,
+      "sha256": "3d412a166ce8470be09088bde440d3b452bfcd954ec2a8409f74c667512acc03",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/references/unesco-rome.webp",
+      "bytes": 185946,
+      "sha256": "e46600298c92b0814f2f2e7e370f5f16357ef0d5462a770f3eb30c2bcd7f5dd9",
+      "size": [
+        1200,
+        628
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/style-v02/colosseum-warm-rounded-style-v02.png",
+      "bytes": 1833137,
+      "sha256": "a2606beadd675019dade76c918209a3741632ecb66e6c8e08ee471f0677516f1",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/style-v02/prompt.txt",
+      "bytes": 2576,
+      "sha256": "b45444e9abba224d1900db172ecbe77e6fc6535cd0b854e13dca68107e814899"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-multiview-preflight-v01.png",
+      "bytes": 89464,
+      "sha256": "dcd8a9a9f9ab78263c93142e348d78b62b414519cf870a8c914f813c0eea5542",
+      "size": [
+        1512,
+        804
+      ],
+      "mode": "RGB"
+    },
+    {
+      "role": "original",
+      "source_path": "/var/folders/p0/s0ppwxqx5fj0d47znw3h3vnc0000gn/T/codex-clipboard-374c656f-d058-452d-ad70-e553f1bb15d6.png",
+      "path": "assets/concepts/colosseum/concept-turnaround-v01/colosseum-original-reference-v01.png",
+      "sha256": "f288be84389dfd8ab3d12d7f887155f297ce787d822881e4f1685fc5e91e72d4",
+      "bytes": 2093085,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "role": "left",
+      "source_path": "/Users/haojun/.codex/generated_images/01a15aed-7606-7d03-9bb7-e086aa41a0f7/exec-f107628c-0ab0-4ddc-8144-cf8bb376b182.png",
+      "path": "assets/concepts/colosseum/concept-turnaround-v01/colosseum-left-interpretation-v01.png",
+      "sha256": "33743713330b899b28da6d49231504a25eaf031f866fb9e17882a1ffbe68946b",
+      "bytes": 1927709,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "role": "back",
+      "source_path": "/Users/haojun/.codex/generated_images/01a15aed-7606-7d03-9bb7-e086aa41a0f7/exec-ccfb4210-637e-43ba-9c3a-2d8d84e53be4.png",
+      "path": "assets/concepts/colosseum/concept-turnaround-v01/colosseum-back-interpretation-v01.png",
+      "sha256": "5a5fe58136d5a6471d8429fee19bfd645dbcee22d96938170ee9faa305313529",
+      "bytes": 1887967,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/source/tripo/colosseum-v01/colosseum-tripo-v01-source.glb",
+      "bytes": 3955124,
+      "sha256": "7890a8fda3f0bf7b24ebac3da641b2c5c15bc283030c9c026e23a1c9c72d14e2"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/actual-model-hero.png",
+      "bytes": 1867307,
+      "sha256": "7626f268255a8d20c6376be4ef8dc19c5bc6f8c1b433f7516e41be96ea5b2ad7",
+      "size": [
+        1400,
+        1050
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/candidate-interior.png",
+      "bytes": 116610,
+      "sha256": "f7bf8a999a4efbf8417d476947998d7815461be250d3da2ee8d517e14de1567f",
+      "size": [
+        1512,
+        804
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/provenance.json",
+      "bytes": 3287,
+      "sha256": "f52ec09137675c69d011d968a0b5471cf46587d14ea6d3e02dac1abd1ae7103f"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/export-options.png",
+      "bytes": 116416,
+      "sha256": "f72d4454235fb3f07aa7f6758efeffc1b39061c7aa80f3049780cad2c7a36339",
+      "size": [
+        1512,
+        804
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/blender-inspection.json",
+      "bytes": 5031,
+      "sha256": "0b01a028008739513136eaaea693bdb0009a0aa72ad10619731cb3bb13b96663"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/colosseum-tripo-v01-inspection.blend",
+      "bytes": 4680523,
+      "sha256": "a43e259cfc342d842b0c0f67ba08b2f75b869f7cafaffca08540bb736ffd8f67"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/actual-model-side.png",
+      "bytes": 1778639,
+      "sha256": "1f8ba4976c26ef464acf21b8bcfe26c3d5463d5c30d9aab5881588f2c53e6b11",
+      "size": [
+        1400,
+        1050
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/source-report.json",
+      "bytes": 1063,
+      "sha256": "b84789541d25c42705bf457fabff62d7d2903392af33adaabd437cb54d989b62"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/candidate-rear.png",
+      "bytes": 117471,
+      "sha256": "166490bc735100a97b5d9844da866ca48cb21e667627458f8d07bad20e6722fb",
+      "size": [
+        1512,
+        804
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/candidate-opposite-side.png",
+      "bytes": 112157,
+      "sha256": "d0351646e426e5176d693d693c6f73609849aaf07f7b26fd37acb758ffd1d0c3",
+      "size": [
+        1512,
+        804
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/actual-model-overhead.png",
+      "bytes": 1791618,
+      "sha256": "d9679f2b55417f00060375642722dec504fa197cf59101eb6b3a51b2b5489ee6",
+      "size": [
+        1400,
+        1050
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/pre-submit-inputs-and-quote.png",
+      "bytes": 93407,
+      "sha256": "695c5a079ed4e72ca6212f3164dde89416f2bca3a034ee54d75996021cd16e73",
+      "size": [
+        1512,
+        804
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/actual-model-reverse.png",
+      "bytes": 1835237,
+      "sha256": "5e3521dac45af2a1df971f3249c7d9919cb7ddb1fbc4fd48ccd08d03c013f1a0",
+      "size": [
+        1400,
+        1050
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-v01/pre-submit-settings.png",
+      "bytes": 105401,
+      "sha256": "b53c9f873940f7619d8e858bf904edcc34a8ca8da191f45215569eda49dfcacf",
+      "size": [
+        1512,
+        804
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/source/blender/colosseum-prepared-v01.blend",
+      "bytes": 3754263,
+      "sha256": "1a4003a8928b278eca0037736e924b6532bad494559599eb0d9f472f93a75768"
+    },
+    {
+      "path": "public/models/colosseum-prepared-v01.glb",
+      "bytes": 3482856,
+      "sha256": "b15375cfff789df19bb587c84b6ef838287e306382f897d5f645f5a7c0857584"
+    },
+    {
+      "path": "assets/concepts/colosseum/prepared-v01/collision-placement-profile.json",
+      "bytes": 2844,
+      "sha256": "78149c1d86d9c5be92a31b7d8cc616404a5a8b426c342c4b282a6e8e5476d123"
+    },
+    {
+      "path": "assets/concepts/colosseum/prepared-v01/raw-measurements.json",
+      "bytes": 2277743,
+      "sha256": "4f93dcd9cf7dcd9fd5ff7f188e66a79433d80f25014a9cbcb084a1e9ecc16cbe"
+    },
+    {
+      "path": "assets/concepts/colosseum/prepared-v01/preparation-before.png",
+      "bytes": 1849709,
+      "sha256": "7c63970d61c15fbc6164f7469b78481dc1be034bfbaf913910f8ae10acddafcc"
+    },
+    {
+      "path": "assets/concepts/colosseum/prepared-v01/three-verification.json",
+      "bytes": 15696,
+      "sha256": "975184db4da33b7b9f7eb88e4a73542237d999a7097d8ada5f9da31fd9dd8a4b"
+    },
+    {
+      "path": "assets/concepts/colosseum/prepared-v01/preparation-after.png",
+      "bytes": 1843703,
+      "sha256": "f16f38a8b58bbbff3da153dd286da0fa667262e989e0eda58065d9af25f6beb6"
+    },
+    {
+      "path": "assets/concepts/colosseum/prepared-v01/preparation-report.json",
+      "bytes": 3616,
+      "sha256": "a0bb94d2c40ee4da70b7bfcf624618e0b345fbd9f78e6bb05d2f96ceb53d9288"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/fixed-final.png",
+      "bytes": 314107,
+      "sha256": "d05e410d5c153f4198529bb2d2a0edcad9175c026947c4138567b4997e25ce78"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/split-near-rim.json",
+      "bytes": 950,
+      "sha256": "b0b59d5eeea2ab2a2063a29f5e917f5067472f3bed97197318f76b46fec02444"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/fixed-final.json",
+      "bytes": 905,
+      "sha256": "e1cf8f6cbaf42bffa60e4add4031237ee90393d9b162d60e428fba3bc1c814b3"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/split-near-rim.png",
+      "bytes": 230570,
+      "sha256": "f222f55744172bd61f8f8557f0ad89a457c43a594a2331b259de9f85ade20aa8"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/fixed.json",
+      "bytes": 930,
+      "sha256": "a627d0bcd3f6ffd63aeb016e3f637581276ac76257db2d7adfdb3bd729688f45"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/beagle-cat-split.png",
+      "bytes": 208954,
+      "sha256": "90adbe7ec6f8e406029b39fd2be311128242ff35291b713cacdd9e3e78375286"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/solo-near-rim-final.png",
+      "bytes": 213633,
+      "sha256": "6233c5e3dd83ae70df71be5713a486f851fae8e355a6af75050b30fadd5b17d0"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/split-near-rim-final.json",
+      "bytes": 1220,
+      "sha256": "09d18aeb3b7075a8aea9b42a99e0f1117d5d5110b25fd0959cca691adbac8756"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/beagle-cat-split.json",
+      "bytes": 1124,
+      "sha256": "b83715b3c07f70615f97b58412279511d78456673e41d4a96b68aa8dc88dba29"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/split-center.json",
+      "bytes": 928,
+      "sha256": "9763e340a8aed645e6f5d25caffd79fd48df93fd00f777d3c038cbb131cf9099"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/solo-final.json",
+      "bytes": 637,
+      "sha256": "c9e1e2d2a771501bbe52a8056495f38b05d4037e6c5637d7fc2c9f981eb6580e"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/collider-overlay.png",
+      "bytes": 301937,
+      "sha256": "773823f783df8069228ec20711e1255b1ffebc99ec8022b7af4af2c8970d4c5d"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/solo-center.json",
+      "bytes": 618,
+      "sha256": "9ac848b5304a1e4bec597938df4d3fa8f243756a3c251f1975ce31e43dbc850f"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/solo-final.png",
+      "bytes": 119319,
+      "sha256": "71f49beebe206ab6b0c85f039a0b1422e8053ddf5a8ffd3243eeb6dcff310e6c"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/solo-near-rim-final.json",
+      "bytes": 627,
+      "sha256": "af5de55291bbc844b80b66ccd0b5b3c04c431b355147b81fd4da1be13366fe59"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/split-center.png",
+      "bytes": 183945,
+      "sha256": "9d0b1dcbb00ff20160b9f778b1d0d9beb37d7e54af730667353d66e96c2996df"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/contact-combat.json",
+      "bytes": 1181,
+      "sha256": "faa702bce30c67775d6d8f15ac56304915ee1a0f004e5b6066ccac9d3f054a3e"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/verification.json",
+      "bytes": 27633,
+      "sha256": "f53b1032059b96f0af06a6350c1b9010d74e3a0a061a661f0070748105d3d728"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/split-near-rim-final.png",
+      "bytes": 247037,
+      "sha256": "79dd58b23535c6a589847146a3e6889000869b10774a6b7c72c4bc32907e1e88"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/colosseum-actual-game-v01.webm",
+      "bytes": 2306723,
+      "sha256": "de13cc3f4904a2ff572bd4611ac68e94e36bc13fa390e09cd79c5493cb97ee9d"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/collider-overlay-final.png",
+      "bytes": 316647,
+      "sha256": "b9debd9d9edb95c105a1936fcbfa3d009ca21a2c26c6d01c6ecb655c0486e475"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/solo-center.png",
+      "bytes": 101350,
+      "sha256": "7ff2b4003e451521983657430ce5f9e08982487d7b5bf85e864972f96f6adcc3"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/media-verification.json",
+      "bytes": 214,
+      "sha256": "d68becbd7b4bc68ae6035e2b37a361a578ee9623e6941e055924a5b9fd6846a9"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/fixed.png",
+      "bytes": 299987,
+      "sha256": "15e310b24dd2cdd1f07b64bc3cb3640e96c2a347ca1f356d36b18f7b3d6d88ff"
+    },
+    {
+      "path": "assets/concepts/colosseum/gameplay-v01/live-game-final.png",
+      "bytes": 194834,
+      "sha256": "f04d76ea82bbf9bf32cf265814d0f407ca45d73c1a3981b8ecdac6dd4a2aacd7",
+      "role": "Normal game screenshot after preparation, Ready/Start, pause/resume and rematch verification; no fixture toolbar."
+    }
+  ],
+  "verification": {
+    "reference_render_process": "Blender 5.2.2 LTS; six successful CPU renders from one shared scene",
+    "v01_image_dimensions": [
+      1536,
+      1024
+    ],
+    "v01_roles": "four consistent slot images plus interior/plan review-only images; appearance superseded",
+    "v02_image_role": "single AI-stylized representative preview, not final multi-view packet",
+    "actual_tripo_geometry_inspected": true,
+    "in_game_verified": true,
+    "limitations": [
+      "interpreted simplified ruin profile, bay spacing, cavea and buttresses; not a measured archaeological reconstruction",
+      "mathematical ellipse approximation of oval plan",
+      "clear covered arena is a deliberate game provision",
+      "v02 generated image can alter architectural detail; final packet needs cross-view structural checks"
+    ],
+    "latest_copy_check": "All three named copies match source SHA-256; images open with Pillow. No geometry validation.",
+    "base_user_selected": true,
+    "source_report": "assets/concepts/colosseum/tripo-v01/source-report.json",
+    "blender_inspection": "assets/concepts/colosseum/tripo-v01/blender-inspection.json",
+    "source_hash_matches_download": true,
+    "visible_candidate_issues": [
+      "Smoothed/melted stone seams and some irregular or pinched small arch openings.",
+      "Some terraces, stairways and entrance surrounds are reconstructed softly or merge into adjacent masonry.",
+      "Decorative terracotta banners are largely texture detail on the shared mesh.",
+      "Floor and architecture are one joined mesh; future finishing should establish a separate usable floor and scale/pivot if this base is selected.",
+      "Base-color texture contains lighting/shading; current roughness is 0.5, so final materials still need review."
+    ],
+    "prepared_report": "assets/concepts/colosseum/prepared-v01/preparation-report.json",
+    "game_verification": "assets/concepts/colosseum/gameplay-v01/verification.json",
+    "runtime_user_accepted": false
+  },
+  "delivery": {
+    "requested_on": "2026-10-21",
+    "branch": "feat/arena-camera-updates",
+    "base_commit": "55857a024c5c035148d2979ce782466d9bb8b3e0",
+    "scope": "arena, floor, approved cameras and related evidence/source assets",
+    "merge": "not requested; leave for later integration",
+    "status": "validated source checkpoint prepared for separate branch push",
+    "verification": "assets/concepts/colosseum/delivery-v01/verification.json"
+  },
+  "operations": [
+    {
+      "tool": "Tripo Studio",
+      "model": "H3.1",
+      "mode": "HD Model multi-view",
+      "operation_id": "bfe660c5-848d-4ec6-b495-4aa6fa51a620",
+      "viewer_url": "https://studio.tripo3d.ai/workspace/generate/bfe660c5-848d-4ec6-b495-4aa6fa51a620",
+      "submitted_at_utc": "2026-10-20T21:02:22.737563+00:00",
+      "settings": {
+        "triangle_target": 100000,
+        "texture_enabled": true,
+        "texture_size": "2K",
+        "topology": "Triangle",
+        "ultra_mesh": false,
+        "remove_lighting": false,
+        "pbr": false,
+        "generate_in_parts": false,
+        "8k_trial": false,
+        "privacy": "Private"
+      },
+      "input_files": {
+        "Front": {
+          "path": "assets/concepts/colosseum/concept-turnaround-v01/colosseum-original-reference-v01.png",
+          "sha256": "f288be84389dfd8ab3d12d7f887155f297ce787d822881e4f1685fc5e91e72d4"
+        },
+        "Left": {
+          "path": "assets/concepts/colosseum/concept-turnaround-v01/colosseum-left-interpretation-v01.png",
+          "sha256": "33743713330b899b28da6d49231504a25eaf031f866fb9e17882a1ffbe68946b"
+        },
+        "Back": {
+          "path": "assets/concepts/colosseum/concept-turnaround-v01/colosseum-back-interpretation-v01.png",
+          "sha256": "5a5fe58136d5a6471d8429fee19bfd645dbcee22d96938170ee9faa305313529"
+        }
+      },
+      "quote_credits": 25,
+      "observed_balance_before": 2990,
+      "observed_balance_after": 2965,
+      "observed_credit_charge": 25,
+      "state": "complete; downloaded and inspected; base selection pending",
+      "authorization": "Creator explicitly asked: Can you use these three images, and put it in Tripo to generate the model please. One same quoted 25-credit H3.1 generation authorized; no retries or paid exports.",
+      "additional_paid_operations_authorized": false,
+      "completed_verified_at_utc": "2026-10-20T21:10:16.086189+00:00",
+      "output": {
+        "path": "assets/source/tripo/colosseum-v01/colosseum-tripo-v01-source.glb",
+        "sha256": "7890a8fda3f0bf7b24ebac3da641b2c5c15bc283030c9c026e23a1c9c72d14e2",
+        "bytes": 3955124,
+        "triangles": 95130,
+        "vertices": 57457,
+        "materials": 1,
+        "texture_size": [
+          2048,
+          2048
+        ],
+        "skins": 0,
+        "animations": 0
+      },
+      "export": {
+        "format": "GLB",
+        "texture": "2K current",
+        "additional_observed_credit_charge": 0,
+        "balance_after_download": 2965,
+        "source_download_path": "/Users/haojun/Downloads/colosseum-tripo-v01-source.glb"
+      },
+      "inspection": {
+        "browser": "rotated actual textured candidate to inspect open arena, interior, exterior/rear and opposite side",
+        "native": "Blender import and four renders only; no finishing edits",
+        "files": [
+          "source-report.json",
+          "blender-inspection.json"
+        ],
+        "visible_issues": [
+          "Smoothed/melted stone seams and some irregular or pinched small arch openings.",
+          "Some terraces, stairways and entrance surrounds are reconstructed softly or merge into adjacent masonry.",
+          "Decorative terracotta banners are largely texture detail on the shared mesh.",
+          "Floor and architecture are one joined mesh; future finishing should establish a separate usable floor and scale/pivot if this base is selected.",
+          "Base-color texture contains lighting/shading; current roughness is 0.5, so final materials still need review."
+        ],
+        "review_state": "not yet selected by creator"
+      }
+    }
+  ]
+}

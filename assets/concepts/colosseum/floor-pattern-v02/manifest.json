@@ -1,0 +1,45 @@
+{
+  "version": "floor-pattern-v02",
+  "status": "implemented-and-verified-locally",
+  "authorization": "User requested implement the plan",
+  "reference": "../floor-pattern-v01/roman-mosaic-floor-concept-v01.png",
+  "assetRole": "opaque full circular arena floor base-color texture",
+  "requestedDimensions": [
+    2048,
+    2048
+  ],
+  "generationTool": "built-in imagegen",
+  "palette": [
+    "pale sandy cream",
+    "dusty terracotta",
+    "muted honey ochre"
+  ],
+  "collisionRole": "none",
+  "technicalPlan": "Dedicated floor material and planar XZ UVs; original GLB/architecture atlas preserved",
+  "runtimeIntegration": true,
+  "sourceFile": "roman-floor-albedo-source.png",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "runtimeFile": "../../../../public/textures/colosseum-roman-floor-v01.jpg",
+  "runtimeDimensions": [
+    2048,
+    2048
+  ],
+  "normalization": "sips resize from generated1254 square to2048, JPEGquality90; no additional semantic editing",
+  "prompt": "prompt.txt",
+  "sourceOriginal": "/Users/haojun/.codex/generated_images/01a15af7-41e0-7c01-8e1a-b48b61c8d83e/exec-93a53337-701a-4b1a-b733-79e138b6413e.png",
+  "runtimeBytes": 1137001,
+  "runtimeSHA256": "099bf45874be74d1b0e33828099a6d23a1c0faff4f006514f00f4071af6419bb",
+  "textureSettings": {
+    "colorSpace": "sRGB",
+    "flipY": true,
+    "wrapping": "clamp-to-edge",
+    "minFilter": "linear mipmap linear",
+    "anisotropyCap": 8,
+    "roughness": 0.94,
+    "metalness": 0
+  },
+  "comparisonUrl": "http://127.0.0.1:5173/docs/previews/colosseum/floor-pattern-preview-v01.html"
+}

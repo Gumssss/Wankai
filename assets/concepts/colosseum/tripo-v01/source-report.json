@@ -1,0 +1,48 @@
+{
+  "path": "assets/source/tripo/colosseum-v01/colosseum-tripo-v01-source.glb",
+  "bytes": 3955124,
+  "sha256": "7890a8fda3f0bf7b24ebac3da641b2c5c15bc283030c9c026e23a1c9c72d14e2",
+  "glb_version": 2,
+  "declared_length_matches": true,
+  "meshes": 1,
+  "primitive_triangles": 95130,
+  "primitive_vertices": 57457,
+  "materials": [
+    {
+      "name": "tripo_material_7a28768b-03bb-44b5-8929-bf812fc0c76d",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.5
+      }
+    }
+  ],
+  "images": [
+    {
+      "name": "colosseum-tripo-v01-source_basecolor.jpg",
+      "mimeType": "image/jpeg",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 973320
+    }
+  ],
+  "skins": 0,
+  "animations": 0,
+  "nodes": [
+    {
+      "name": "tripo_node_7a28768b-03bb-44b5-8929-bf812fc0c76d",
+      "mesh": 0
+    }
+  ],
+  "generator": {
+    "version": "2.0",
+    "generator": "Tripo"
+  },
+  "ui_faces": 95130,
+  "ui_vertices": 57457,
+  "source_unmodified": true
+}

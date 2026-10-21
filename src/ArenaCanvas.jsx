@@ -4,7 +4,10 @@ import { ACESFilmicToneMapping, PCFShadowMap, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { ArenaView } from './scene.js';
 import { FREE_CAMERA } from './free-camera.js';
+import { FIXED_CAMERA } from './fixed-camera.js';
 import {resolveLoadout,loadoutKey} from './loadouts.js';
+import { ARENA_PROFILE } from './arena-profile.js';
+import {loadArenaFloorTexture} from './arena-floor.js';
 
 function ArenaEnvironment({ group }) { return <primitive object={group} dispose={null} />; }
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
@@ -21,6 +24,29 @@ function ArenaScene({ session, mode, loadouts }) {
 
   // Local review recorders may inspect the actual game view without replacing
   // the runtime renderer or advancing a second physics world.
+  useEffect(() => {
+    let cancelled = false;
+    let cancelFloorTexture;
+    const dispose = source => {
+      const resources = new Set();
+      source.traverse(o => { if(o.geometry) resources.add(o.geometry);
+        for(const mat of Array.isArray(o.material)?o.material:[o.material]) if(mat) {
+          resources.add(mat); for(const value of Object.values(mat)) if(value?.isTexture) resources.add(value);
+        }
+      });
+      for(const item of resources) item.dispose();
+    };
+    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/${ARENA_PROFILE.model}`, gltf => {
+      if(cancelled) { dispose(gltf.scene); return; }
+      try {
+        if(!view.setArenaModel(gltf.scene)) dispose(gltf.scene);
+        else cancelFloorTexture = loadArenaFloorTexture(view,`${import.meta.env.BASE_URL}textures/${ARENA_PROFILE.floorTexture}`,gl.capabilities.getMaxAnisotropy());
+      }
+      catch(error) { dispose(gltf.scene); view.showArenaFallback(); console.warn('Colosseum unavailable; using the local arena fallback.', error); }
+    }, undefined, error => { if(!cancelled) { view.showArenaFallback(); console.warn('Colosseum unavailable; using the local arena fallback.', error); } });
+    return () => { cancelled = true; cancelFloorTexture?.(); };
+  }, [view]);
+
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     session.view = view;
@@ -122,6 +148,7 @@ function ArenaScene({ session, mode, loadouts }) {
         gl.setViewport(x, 0, width, size.height);
         gl.setScissor(x, 0, width, size.height);
         if (id === 1) gl.shadowMap.autoUpdate = false;
+        view.prepareArenaCamera(view.duelCameras[id].camera, session.world.players);
         gl.render(scene, view.duelCameras[id].camera);
       }
       gl.shadowMap.autoUpdate = shadowAutoUpdate;
@@ -129,9 +156,11 @@ function ArenaScene({ session, mode, loadouts }) {
     } else {
       gl.setScissorTest(false);
       gl.setViewport(0, 0, size.width, size.height);
+      view.prepareArenaCamera(camera, session.world.players);
       gl.render(scene, camera);
     }
     gl.setViewport(0, 0, size.width, size.height);
+    view.restoreArenaCamera();
 
     const panes = splitView ? [
       { id: 0, camera: view.duelCameras[0].camera, viewport: { x: 0, width: size.width / 2, height: size.height } },
@@ -176,14 +205,17 @@ function ArenaScene({ session, mode, loadouts }) {
 }
 
 export function ArenaCanvas({ session, mode, loadouts, onReady }) {
+  const fixed = mode === 'duel-fixed';
   const key=loadouts.map(loadoutKey).join('|');
   const selections=useMemo(()=>loadouts.map(p=>({...p})),[key]);
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={mode === 'solo' ? { position: [-4, 3, -4], fov: FREE_CAMERA.fov, near: 0.1, far: 120 } : { position: [0, 15.4, 21], near: 0.1, far: 120 }}
-      orthographic={mode !== 'solo'}
+      camera={mode === 'solo' ? { position: [-4, 3, -4], fov: FREE_CAMERA.fov, near: 0.1, far: 120 } : fixed ?
+        { position: [...FIXED_CAMERA.position], fov: FIXED_CAMERA.fov, near: FIXED_CAMERA.near, far: FIXED_CAMERA.far } :
+        { position: [0, 15.4, 21], near: 0.1, far: 120 }}
+      orthographic={mode !== 'solo' && !fixed}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => {
         session.renderer = gl;

@@ -1,0 +1,52 @@
+{
+  "fixture": "duel-fixed",
+  "state": "playing",
+  "mode": "duel-fixed",
+  "environment": "ready",
+  "radius": 6.45,
+  "rimHeight": 0.84,
+  "uniformScale": [
+    1,
+    1,
+    1
+  ],
+  "textureDecoded": true,
+  "textureSize": [
+    2048,
+    2048
+  ],
+  "wallGroups": 8,
+  "occludedByCamera": [
+    []
+  ],
+  "players": [
+    {
+      "character": "basic-fighter",
+      "weapon": "sword",
+      "position": {
+        "x": -3.972289936365249,
+        "y": 0.59,
+        "z": 0.0711787054064251
+      },
+      "grounded": true,
+      "staffGrounded": true,
+      "health": 100,
+      "stamina": 200
+    },
+    {
+      "character": "basic-fighter",
+      "weapon": "polearm",
+      "position": {
+        "x": 4.304160031052621,
+        "y": 0.59,
+        "z": -0.07751414365390179
+      },
+      "grounded": true,
+      "staffGrounded": true,
+      "health": 100,
+      "stamina": 200
+    }
+  ],
+  "record": null,
+  "metrics": {}
+}

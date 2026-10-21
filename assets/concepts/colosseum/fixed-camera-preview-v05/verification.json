@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-21",
+  "status": "approved-and-implemented-locally",
+  "implementationRecord": "implementation.json",
+  "previewUrl": "http://127.0.0.1:5173/docs/previews/colosseum/fixed-camera-preview-v05.html",
+  "productFilesChangedForThisRevision": true,
+  "arenaRadius": 19.35,
+  "visualScale": 3,
+  "fixedCameraCount": 1,
+  "beforePosition": [12.48014371187149, 24, 31.20035927967872],
+  "proposedPosition": [30.88677987096443, 24, 13.237191373270472],
+  "target": [0, 1.4, 0],
+  "fovDegrees": 55,
+  "orbitDegrees": 45,
+  "orbitConvention": "Anticlockwise viewed from overhead, with north at -Z; positive right-handed rotation about world Y.",
+  "heightChanged": false,
+  "eyeToTargetDistance": 40.49662215852082,
+  "distanceRatioToBeforeView": 1,
+  "matchedPoseWorldTime": 8.250000000000012,
+  "matchedPoseImages": ["before-closer-raised.png", "proposed-anticlockwise-45.png"],
+  "optionalForegroundOverride": false,
+  "automaticCutawayAtCapturedPoses": [],
+  "browser": {"name": "Chrome", "environment": "ready", "comparisonSwitches": "verified", "consoleErrors": []},
+  "independentProjectionSamples": {
+    "aspects": [1.5, 1.8],
+    "floorScreenHeightPercent": 61.69,
+    "entireFloorFits": true,
+    "bodyAndHurtEnvelopes": "All tested samples fit.",
+    "limitations": [
+      "Extreme foreground weapon-tip cropping risk from the closer frame remains.",
+      "The new angle looks more along initial fighter separation, so central silhouettes and labels can overlap more.",
+      "Frustum samples do not guarantee every pose or occlusion."
+    ]
+  }
+}

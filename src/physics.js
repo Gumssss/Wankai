@@ -7,9 +7,10 @@ import {normalizeLoadout,isEarLoadout,isPawLoadout} from './loadouts.js';
 import {CAT} from './orange-tabby-profile.js';
 import {BEAGLE_COMMON_OFFSETS} from './character-attachments.js';
 import { BEAGLE_SKILL, beaglePointFrame, updateBeagleSkill, applyBeagleHover } from './beagle-skill.js';
+import { ARENA_PROFILE, arenaPlacement } from './arena-profile.js';
 export const CONFIG = Object.freeze({
   step: 1 / 180,
-  arenaRadius: 6.45,
+  arenaRadius: ARENA_PROFILE.radius,
   // Distance from the body pivot to the floating staff's inner end. This clears
   // the entire head (0.76 + 0.4) even when the staff points straight upward.
   staffOffset: 1.35,
@@ -51,7 +52,7 @@ export const CLASH = Object.freeze({
   maxRecoilSpeed: 3.2,
 });
 export const SOLO_ARENA_SCALE = 3;
-export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' ? SOLO_ARENA_SCALE : 1;
+export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' || mode === 'duel-fixed' ? SOLO_ARENA_SCALE : 1;
 
 export const WEAPONS = Object.freeze({
   'cat-paws': CAT.weapon,
@@ -398,6 +399,7 @@ export class ArenaPhysics {
     this.practice = practice;
     this.solo = solo;
     this.arenaRadius = CONFIG.arenaRadius * arenaScale;
+    this.arenaRimHeight = arenaPlacement(arenaScale).weaponContactHeight;
     this.contacts = this.players.map(() => ({ separated: 1 }));
     this.lastClash = -1;
     this.clashArmed = true;
@@ -508,7 +510,7 @@ export class ArenaPhysics {
   }
 
   solveBodyGround(p, dt, friction) {
-    const floor=characterStats(p).bodyFloor;
+    const floor=characterStats(p).bodyFloor + ARENA_PROFILE.floorHeight;
     p.grounded = p.p.y <= floor + 0.025;
     if (p.p.y < floor) {
       p.p.y = floor;
@@ -527,7 +529,7 @@ export class ArenaPhysics {
 
   solveWeaponGroundPoint(p, { local, radius, anchor }, dt) {
     let f = weaponPointFrame(p, local, anchor);
-    const penetration = radius - f.point.y;
+    const penetration = radius - (f.point.y - ARENA_PROFILE.floorHeight);
     if (penetration < -0.008) return;
     p.staffGrounded = true;
     const n = v3(0, 1, 0);
@@ -569,11 +571,12 @@ export class ArenaPhysics {
 
   solveWall(p, dt) {
     this.solveBodyWall(p);
-    // The rim is waist-high: elevated weapons may pass above it.
+    // The prepared podium is a low boundary. Its height scales uniformly with
+    // the full building; seating and upper arches remain decorative.
     for (const { local, radius, anchor } of surfacePoints(p)) {
       const f = weaponPointFrame(p, local, anchor);
       const r = Math.hypot(f.point.x, f.point.z);
-      if (f.point.y >= 0.48 || r <= this.arenaRadius - radius) continue;
+      if (f.point.y >= this.arenaRimHeight || r <= this.arenaRadius - radius) continue;
       const n = v3(-f.point.x / r, 0, -f.point.z / r);
       const bias = Math.min(4, (r - this.arenaRadius + radius) * 0.15 / dt);
       const j = Math.max(0, (bias - dot(f.velocity, n)) / effectiveMass(p, f, n));

@@ -1,0 +1,40 @@
+{
+  "mode": "duel",
+  "environment": "ready",
+  "floorTexture": "ready",
+  "patterned": true,
+  "textureSize": [
+    2048,
+    2048
+  ],
+  "position": [
+    0,
+    15.4,
+    21
+  ],
+  "displayRotation": 0,
+  "arenaRadius": 19.35,
+  "visualScale": 3,
+  "frozen": false,
+  "worldTime": 14.455555555556538,
+  "players": [
+    {
+      "id": 0,
+      "p": {
+        "x": -1.4513097756113165,
+        "y": 0.59,
+        "z": -0.24175626273219145
+      },
+      "phi": -0.06748968477917554
+    },
+    {
+      "id": 1,
+      "p": {
+        "x": 2.2,
+        "y": 0.94,
+        "z": 0
+      },
+      "phi": 3.141592653589793
+    }
+  ]
+}

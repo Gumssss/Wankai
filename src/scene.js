@@ -9,6 +9,10 @@ import { weaponPointFrame, v3 } from './physics.js';
 import {resolveLoadout} from './loadouts.js';
 import {CAT} from './orange-tabby-profile.js';
 import {instantiateOrangeTabby,poseOrangeTabby,makeOrangeTabbyFallback,poseOrangeTabbyFallback} from './orange-tabby-model.js';
+import { ARENA_PROFILE } from './arena-profile.js';
+import { attachArenaModel, prepareArenaCamera, restoreArenaOpacity } from './arena-model.js';
+import { FIXED_CAMERA } from './fixed-camera.js';
+import {applyArenaFloorTexture,setArenaFloorPatternEnabled,disposeArenaFloorTexture} from './arena-floor.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const PALETTE = [0xc4684f, 0x568d92];
@@ -28,7 +32,12 @@ export class ArenaView {
     this.renderer = renderer;
     this.camera = camera;
     this.solo = mode === 'solo';
+    this.fixed = mode === 'duel-fixed';
     this.duel = mode === 'duel';
+    // Apply one display basis to bodies, weapons, contacts, trails and impacts.
+    // The circular physics arena and both players' control state stay shared.
+    this.fixedDisplayRotation = this.fixed ? FIXED_CAMERA.actorRotation : 0;
+    this.actors.rotation.y = this.effectsRoot.rotation.y = this.fixedDisplayRotation;
     this.loadouts=[resolveLoadout(weapon),resolveLoadout(secondWeapon)];
     this.weapon = this.loadouts[0].weaponId;
     this.secondWeapon = this.loadouts[1].weaponId;
@@ -36,9 +45,11 @@ export class ArenaView {
     this.swordPitch = new THREE.Quaternion();
     this.weaponLoaded = new Set();
     this.arenaScale = arenaScaleForMode(mode);
-    this.arenaGeometry.scale.set(this.arenaScale, 1, this.arenaScale);
-    this.cameraBase = new THREE.Vector3(0, 15.4, 21);
-    this.target = new THREE.Vector3(0, 0, -0.3);
+    this.arenaGeometry.scale.setScalar(this.arenaScale);
+    this.environmentState = 'loading';
+    this.colosseum = null;
+    this.cameraBase = this.fixed ? new THREE.Vector3(...FIXED_CAMERA.position) : new THREE.Vector3(0, 15.4, 21);
+    this.target = this.fixed ? new THREE.Vector3(...FIXED_CAMERA.target) : new THREE.Vector3(0, 0, -0.3);
     this.camera.position.copy(this.solo ? new THREE.Vector3(-4, 3, -4) : this.cameraBase);
     this.camera.lookAt(this.target);
     this.soloCamera = this.solo ? createFreeCameraRig(camera) : null;
@@ -145,7 +156,7 @@ export class ArenaView {
     ring.castShadow = false;
     for (let i = 0; i < 44; i++) {
       const angle = i * Math.PI * 2 / 44;
-      const height = 0.35 + (i % 3) * 0.035;
+      const height = ARENA_PROFILE.weaponContactHeight;
       const block = this.mesh(new THREE.BoxGeometry(0.84, height, 0.38),
         material([0xd1ccb1, 0xc7c4a8, 0xdad3b7][i % 3]));
       block.position.set(Math.sin(angle) * 6.64, height * 0.5, Math.cos(angle) * 6.64);
@@ -178,6 +189,40 @@ export class ArenaView {
       }
     }
   }
+
+  setArenaModel(source) {
+    if (this.disposed || this.colosseum) return false;
+    const instance = attachArenaModel(source, this.arenaScale);
+    this.arena.add(instance.root);
+    this.colosseum = instance;
+    this.arenaGeometry.visible = false;
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), material(0xdddccb));
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.95 * this.arenaScale;
+    ground.receiveShadow = true;
+    this.arena.add(ground);
+    this.environmentState = 'ready';
+    return true;
+  }
+
+  showArenaFallback() { if (!this.colosseum && !this.disposed) this.environmentState = 'fallback'; }
+
+  setArenaFloorTexture(texture,maxAnisotropy) {
+    return !this.disposed && applyArenaFloorTexture(this.colosseum,texture,maxAnisotropy);
+  }
+
+  setArenaFloorPatternEnabled(enabled) { return setArenaFloorPatternEnabled(this.colosseum,enabled); }
+
+  displayPoint(point) {
+    const p = vec(point);
+    return this.fixedDisplayRotation ? p.applyAxisAngle(UP, this.fixedDisplayRotation) : p;
+  }
+
+  prepareArenaCamera(camera, players) {
+    const displayed = this.fixedDisplayRotation ? players.map(player => ({ p: this.displayPoint(player.p) })) : players;
+    return prepareArenaCamera(this.colosseum, camera, displayed);
+  }
+  restoreArenaCamera() { restoreArenaOpacity(this.colosseum); }
 
   makeBanner(x, z, color, side) {
     const pole = this.mesh(new THREE.CylinderGeometry(0.042, 0.055, 3.5, 8), material(0x726d50), this.banners);
@@ -347,7 +392,7 @@ export class ArenaView {
       rig.camera.aspect = Math.max(1, this.width / 2) / Math.max(1, this.height);
       rig.camera.updateProjectionMatrix();
     }
-    if (this.solo) {
+    if (this.camera.isPerspectiveCamera) {
       this.camera.aspect = aspect;
       this.camera.updateProjectionMatrix();
       return;
@@ -432,7 +477,7 @@ export class ArenaView {
     this.shake *= Math.exp(-16 * dt);
     if (this.solo && players[0]) updateFreeCamera(this.soloCamera, players[0], cameraDt);
     else this.camera.position.copy(this.cameraBase);
-    if (!this.reducedMotion && this.shake > 0.003) {
+    if (!this.fixed && !this.reducedMotion && this.shake > 0.003) {
       this.camera.position.x += (Math.random() - 0.5) * this.shake;
       this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
     }
@@ -489,7 +534,7 @@ export class ArenaView {
   }
 
   project(point, camera = this.camera, viewport = { x: 0, width: this.width, height: this.height }) {
-    const p = vec(point).project(camera);
+    const p = this.displayPoint(point).project(camera);
     return {
       x: viewport.x + (p.x * 0.5 + 0.5) * viewport.width,
       y: (-p.y * 0.5 + 0.5) * viewport.height,
@@ -506,6 +551,7 @@ export class ArenaView {
   dispose() {
     this.disposed = true;
     this.clearEffects();
+    disposeArenaFloorTexture(this.colosseum);
     const geometries = new Set(), materials = new Set(), textures = new Set(), skeletons = new Set();
     for (const root of [this.arena, this.actors, this.effectsRoot]) root.traverse(object => {
       if (object.geometry) geometries.add(object.geometry);

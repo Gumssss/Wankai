@@ -1,6 +1,8 @@
 # 丸棍竞技场
 
-> **当前交付分支（2026-10-20，未合并）：** `feat/orange-tabby-preparation` 包含橘猫与独立巨爪，共八种有效角色/武器搭配，以及铺满游戏窗口的「出战准备」页面：P1 在左、P2 在右，各自上方选择、下方预览实际模型，分别准备后统一开始。返回或 Esc 放弃草稿。普通比格犬耳朵仅作外观，F 悬停仅限长耳搭配。此次交付前完整测试 **143/143 通过**，生产构建通过；历史专项检查仍保留原记录。[当前界面与实现](docs/CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) · [橘猫实玩记录](docs/characters/orange-tabby/GAMEPLAY.md)。下方默认 `main` 下载命令仍取得上一已合并检查点；需取得新功能时使用本交付分支。
+**Fresh branch verification — 21 October:** `npm test` passed **158/158**, `npm run build` passed with the existing large-chunk advisory, the prepared-GLB verifier passed (613 floor samples, zero misses), and the staged diff check passed. Runtime source/assets match the approved working snapshot. See [delivery verification](assets/concepts/colosseum/delivery-v01/verification.json). No new browser playtest or new character integration is claimed for this publication-only task.
+
+> **Arena/camera review branch — 21 October 2026:** `feat/arena-camera-updates` starts from the merged orange-cat/character-preparation version on `main` (`55857a0`). It contains the prepared Colosseum, Roman-inspired floor texture, approved farther split cameras and fixed-camera v09. This branch is for separate review and later character integration; it is not merged or a packaged release. [Arena handoff and evidence](docs/environments/colosseum/HANDOFF.md).
 
 一个可以离线运行的 Electron 3D 物理对战原型。界面使用 React，角斗场由 React Three Fiber 和 Three.js 渲染，固定时间步的自定义约束物理计算撑地、挥棍与碰撞。菜单提供分屏双人对战、固定视角双人对战、木桩练习和单人自由视角。
 
@@ -8,11 +10,11 @@
 
 **交接分工（2026-10-20）：** 由作者自己一侧的集成代理检查、解决冲突、验证并合并到 `main`；贡献代理按本次请求提交交付分支及 PR，保留合并给集成代理。[当前截止点与合并负责人](docs/COLLABORATOR_AGENT_HANDOFF.md#current-cutoff-and-merge-owner) · [给集成代理的提示词](docs/COLLABORATOR_AGENT_HANDOFF.md#prompt-for-the-creators-integration-agent) · [角色技能的阶段用法](docs/SKILLS.md#collaborator-quickstart)。本次不合并或发布安装包。
 
-## 当前本地更新 / Latest local update — 2026-10-20
+## 已合并角色检查点 / Merged character checkpoint — 2026-10-20
 
 - 橘猫坐姿悬浮，装备两只无可见连接件的巨爪。W/S 挥爪、A/D 转向，可组合四个斜向操作；S 触地后撑起身体，使用统一耐力，没有额外 F 技能。[模型、动作与实玩交接](docs/characters/orange-tabby/GAMEPLAY.md)。
 - 全窗口准备页保留双方独立草稿和准备状态，统一开始/保存；单人仅配置 P1，练习可配置被动木桩。页面隐藏角斗场与 HUD，返回后恢复菜单焦点，开始后恢复实际对局。[界面截图](docs/screenshots/preparation-stage-v04.jpg) · [专项验证](docs/selection-concepts/v04-preparation-stage/verification.json)。
-- 上述功能在 `feat/orange-tabby-preparation` 交付分支，尚未合并或发布安装包。本次交付重新运行完整测试，143 项全部通过，构建通过；历史检查点的 132/14/17 项结果分别保留。
+- 上述橘猫与准备页功能已通过 [角色更新](https://github.com/Gumssss/Wankai/pull/3) 合并到 `main`。该角色检查点交付前 143 项测试和构建通过；历史检查记录保留。当前 arena/camera 分支在其上新增环境与镜头，本次不合并或发布安装包。
 
 ## 上一已合并检查点 / Previous merged checkpoint — 2026-10-19
 
