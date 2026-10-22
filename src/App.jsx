@@ -78,8 +78,46 @@ function HelpContent({ close }) {
 function App({session=defaultSession}) {
   const game = useSyncExternalStore(session.subscribe, session.getSnapshot);
   const [helpOpen, setHelpOpen] = useState(false);
+  const optionsRef = useRef(null);
+  useEffect(() => {
+    const closeOutside = event => {
+      if (optionsRef.current && !optionsRef.current.contains(event.target)) optionsRef.current.open = false;
+    };
+    window.addEventListener('pointerdown', closeOutside);
+    return () => window.removeEventListener('pointerdown', closeOutside);
+  }, []);
   const [armoryMode, setArmoryMode] = useState(null);
   const [ready, setReady] = useState(false);
+  const [introPhase, setIntroPhase] = useState('cover');
+  const intro = useRef({ phase: 'cover', elapsed: 0, transition: 0, angle: -.72 });
+  const finishIntro = () => {
+    if (intro.current.phase === 'returning') {
+      intro.current.orbitBase = intro.current.angle;
+      intro.current.elapsed = 0;
+      intro.current.phase = 'cover';
+      setIntroPhase('cover');
+    } else {
+      intro.current.idle = 0;
+      intro.current.phase = 'done';
+      setIntroPhase('done');
+    }
+  };
+  const beginIntro = () => {
+    if (!ready || intro.current.phase !== 'cover') return;
+    intro.current.transition = 0;
+    intro.current.phase = 'transition';
+    intro.current.startAngle = Math.atan2(Math.sin(intro.current.angle), Math.cos(intro.current.angle));
+    session.clearKeys();
+    setIntroPhase('transition');
+  };
+  useEffect(() => {
+    const onPointer = event => {
+      if (intro.current.phase === 'done' || session.error) return;
+      event.preventDefault(); event.stopPropagation(); beginIntro();
+    };
+    window.addEventListener('pointerdown', onPointer, true);
+    return () => window.removeEventListener('pointerdown', onPointer, true);
+  }, [ready]);
   const helpResume = useRef(false);
   const preparationTrigger = useRef(null);
   const active = game.state !== 'lobby';
@@ -110,6 +148,11 @@ function App({session=defaultSession}) {
 
   useEffect(() => {
     const onKeyDown = event => {
+      if (intro.current.phase !== 'done' && !session.error) {
+        event.preventDefault();
+        if (!event.repeat) beginIntro();
+        return;
+      }
       if (armoryMode !== null) {
         if (event.code === 'Escape') { event.preventDefault(); setArmoryMode(null); }
         return;
@@ -119,7 +162,18 @@ function App({session=defaultSession}) {
         if (!helpOpen) session.keyDown(event.code);
       }
       if (event.repeat || helpOpen || event.target.closest?.('dialog')) return;
-      if (event.code === 'Escape') { event.preventDefault(); session.pause(); }
+      if (event.code === 'Escape') {
+        event.preventDefault();
+        if (session.state === 'lobby' && intro.current.lastPose) {
+          intro.current.returnFrom = {...intro.current.lastPose};
+          intro.current.returnTime = 0;
+          intro.current.returnAngle = Math.atan2(intro.current.lastPose.x, intro.current.lastPose.z);
+          intro.current.phase = 'returning';
+          session.clearKeys();
+          if (optionsRef.current) optionsRef.current.open = false;
+          setIntroPhase('returning');
+        } else session.pause();
+      }
       if (event.code === 'KeyR' && session.state === 'playing') session.startRound();
       if (event.code === 'Enter' && session.state === 'lobby' && event.target.tagName !== 'BUTTON') {
         event.preventDefault(); openPreparation('duel');
@@ -138,7 +192,7 @@ function App({session=defaultSession}) {
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [helpOpen, armoryMode]);
+  }, [helpOpen, armoryMode, ready]);
 
   useEffect(() => {
     Object.defineProperty(window, '__arena', { configurable: true, value: Object.freeze({
@@ -158,21 +212,29 @@ function App({session=defaultSession}) {
   const viewIds = splitView ? [0, 1] : [0];
 
   return <>
-    <div className="arena-screen" hidden={armoryMode !== null}>
+    <div className={`arena-screen${active ? '' : ' lobby-screen'} intro-${introPhase}`} hidden={armoryMode !== null}>
     <header className="topbar">
-      <a className="brand" href="./" aria-label="丸棍竞技场首页" onClick={event => { event.preventDefault(); session.goHome(); }}><span className="brand-mark"><i></i><b></b></span><span>丸棍<span className="brand-light">竞技场</span><small>WAN GUN / ARENA</small></span></a>
-      <div className="header-center"><span className="status-dot"></span> 双人 · 物理 · 对战 <span className="version">VOL. 001</span></div>
+      <a className="brand" href="./" aria-label="丸棍竞技场首页" onClick={event => { event.preventDefault(); session.goHome(); }}><span className="brand-mark"><i></i><b></b></span><span><span className="brand-name">木昆</span><span className="brand-light">竞技场</span><small> MU KUN / ARENA</small></span></a>
       <nav aria-label="游戏选项">
-        {!active && <button className="text-button" onClick={() => openPreparation('browse')}>角色与武器</button>}
-        <button className="icon-button" onClick={() => session.toggleSound()} aria-label={game.soundEnabled ? '关闭声音' : '开启声音'} title="声音" aria-pressed={game.soundEnabled}>
-          <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path className="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>
-        </button>
-        <button className="text-button" onClick={openHelp}><span className="help-icon">?</span> 玩法说明</button>
+        <details className="options-menu" ref={optionsRef} onKeyDown={event => {
+          if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); optionsRef.current.open = false; optionsRef.current.querySelector('summary').focus(); }
+        }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }}>
+          <summary className="options-toggle" aria-label="展开游戏选项" title="游戏选项">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </summary>
+          <div className="options-dropdown">
+            <button onClick={() => session.toggleSound()} aria-pressed={game.soundEnabled}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/>{game.soundEnabled && <path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>}</svg>
+              {game.soundEnabled ? '关闭声音' : '开启声音'}
+            </button>
+            <button onClick={() => { optionsRef.current.open = false; openHelp(); }}><span className="help-icon">?</span>玩法说明</button>
+          </div>
+        </details>
       </nav>
     </header>
 
     <main id="game-shell" className={`${solo ? 'solo-mode' : ''} ${splitView ? 'split-mode' : ''}`}>
-      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : 'shared'}-${game.loadouts.map(loadoutKey).join('-')}`} session={session} mode={game.mode} loadouts={game.loadouts} onReady={() => setReady(true)} /></CanvasBoundary></div>
+      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : 'shared'}-${game.loadouts.map(loadoutKey).join('-')}`} session={session} mode={game.mode} loadouts={game.loadouts} intro={intro.current} onIntroComplete={finishIntro} onReady={() => setReady(true)} /></CanvasBoundary></div>
       {splitView && <><div className="view-divider" aria-hidden="true"></div><div className="view-name view-one">P1 · 赤丸自由视角</div><div className="view-name view-two">P2 · 青丸自由视角</div></>}
       <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '兵器与双耳，各有所长。'}</span></div>
       <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
@@ -187,10 +249,17 @@ function App({session=defaultSession}) {
       <div key={game.countdownText} id="countdown" className={/^[1-9]$/.test(game.countdownText) ? 'pop' : ''} style={game.countdownText === '抡起来' ? { fontSize: 56 } : undefined} aria-live="polite">{game.countdownText}</div>
       <div className={`hit-readout${game.readout ? ' visible' : ''}`}><span>{game.readout?.label ?? '有效命中'}</span><strong>−{game.readout?.damage ?? 0}</strong><small>{game.readout?.detail ?? ''}</small></div>
 
-      {game.state === 'lobby' && <section className="welcome-panel">
-        <div className="welcome-copy"><div className="eyebrow">LESS BUTTONS. MORE BONK.</div><h1>一棍定胜负<span>。</span></h1><p><br/></p></div>
-        <div className="welcome-actions"><button className="armory-menu-button" onClick={() => openPreparation('browse')}><span>角色与武器 · 选择搭配</span><small>P1 {loadoutName(game.loadouts[0])} / P2 {loadoutName(game.loadouts[1])}</small></button><button className="primary-button" onClick={() => openPreparation('duel')}>双人对战 · 分屏视角 <span>↗</span></button><button className="secondary-button" onClick={() => openPreparation('duel-fixed')}>双人对战 · 固定视角 <span>→</span></button><button className="secondary-button" onClick={() => openPreparation('practice')}>木桩练习 <span>→</span></button><button className="secondary-button" onClick={() => openPreparation('solo')}>单人自由视角 <span>→</span></button><small>先选角色，再选武器 · 双人共用键盘</small></div>
-      </section>}
+      {(introPhase === 'cover' || introPhase === 'transition') && ready && !game.error && <>
+        <h1 className={`intro-title ${introPhase === 'transition' ? 'leaving' : ''}`}>Gun !</h1>
+        <div className={`intro-prompt ${introPhase === 'transition' ? 'leaving' : ''}`}>按下任意地方开始游戏</div>
+      </>}
+      {game.state === 'lobby' && <nav className="lobby-actions" aria-label="主菜单">
+        <button className="secondary-button" onClick={() => openPreparation('browse')}><span className="lobby-button-content">角色与武器</span></button>
+        <button className="primary-button" onClick={() => openPreparation('duel')}><span className="lobby-button-content">双人对战·分</span></button>
+        <button className="secondary-button" onClick={() => openPreparation('duel-fixed')}><span className="lobby-button-content">双人对战·同</span></button>
+        <button className="secondary-button" onClick={() => openPreparation('practice')}><span className="lobby-button-content">木头练习</span></button>
+        <button className="secondary-button" onClick={() => openPreparation('solo')}><span className="lobby-button-content">单人自由视角</span></button>
+      </nav>}
       {active && <div className="match-tools"><button className="pill-button" onClick={() => session.pause()}>Ⅱ 暂停 <kbd>ESC</kbd></button><button className="pill-button" onClick={() => session.startRound()} title="重新开始当前对局">↻ 重开</button><button className="pill-button" onClick={() => session.goHome()} title="回到主菜单">返回</button></div>}
       {active && <div className="live-tip"><span className="status-dot"></span><span>{solo ? 'W / S 前后挥动 · A / D 水平转向 · 拖动鼠标转动视角' : game.practice ? '练习模式 · 青丸不主动出招，停止受击后恢复血量' : fixedDuel ? '固定视角 · 两位玩家共用同一画面 · P1 WASD / P2 方向键' : '自由视角 · P1：Q / E · P2：. / ?（无需 Shift）· 松开保持角度'}</span></div>}
       {!ready && !game.error && <div className="loading"><span className="loader"></span><p>正在布置角斗场…</p></div>}

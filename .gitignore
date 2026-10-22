@@ -13,3 +13,12 @@ assets/concepts/orange-tabby/**/*.blend[1-9]
 assets/source/tripo/beagle-*/
 assets/source/blender/beagle-tripo-appearance-v02.blend
 assets/source/textures/beagle-tripo-v03/
+
+# Yellow character authoring archive: retain final v03 and approved motion-v02.
+assets/source/yellow-blob/tripo-v01/
+assets/source/yellow-blob/prepared-v01/
+assets/source/yellow-blob/prepared-v02/
+assets/source/yellow-blob/**/*.blend[1-9]
+assets/source/yellow-staff/**/*.blend[1-9]
+assets/concepts/yellow-blob/motion-v01/
+assets/concepts/yellow-blob/tripo-before-generation.png

@@ -40,7 +40,7 @@
 .loadout-library-title > span { color: #8c987e; font-size: clamp(10px, .65vw, 16px); letter-spacing: 1.2px; }
 .loadout-library-title > small { margin-left: auto; color: #8c987e; font-size: clamp(10px, .65vw, 16px); }
 
-.loadout-character-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(8px, .7vw, 16px); margin-bottom: clamp(12px, 1vw, 20px); }
+.loadout-character-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(8px, .7vw, 16px); margin-bottom: clamp(12px, 1vw, 20px); }
 .loadout-character-grid > button { position: relative; min-width: 0; padding: clamp(6px, .5vw, 10px); text-align: left; border: 1px solid #d8ddca; border-radius: 6px; background: #f0f0e3; }
 .loadout-character-grid > button[aria-pressed="true"] { border-color: var(--selection-accent); box-shadow: inset 0 0 0 1px var(--selection-accent); background: color-mix(in srgb, var(--selection-accent) 5%, #faf8ef); }
 .loadout-character-grid > button:not(:disabled):hover,
@@ -56,7 +56,7 @@
 .loadout-character-grid b { display: block; margin: 7px 2px 3px; font-size: clamp(14px, .95vw, 24px); line-height: 1.2; }
 .loadout-character-grid small { display: block; margin: 0 2px; color: #8b977e; font-size: clamp(10px, .65vw, 17px); letter-spacing: .8px; line-height: 1.3; }
 
-.loadout-weapon-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(7px, .6vw, 14px); }
+.loadout-weapon-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(7px, .6vw, 14px); }
 .loadout-weapon-grid > button { position: relative; min-width: 0; min-height: clamp(98px, 7.4vw, 156px); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 5px; padding: clamp(6px, .6vw, 13px); border: 1px solid #d8ddca; border-radius: 6px; background: #f0f0e3; text-align: left; }
 .loadout-weapon-grid > button[aria-pressed="true"] { border-color: var(--selection-accent); box-shadow: inset 0 0 0 1px var(--selection-accent); background: color-mix(in srgb, var(--selection-accent) 5%, #faf8ef); }
 .loadout-weapon-grid > button > svg { width: 100%; height: clamp(38px, 3vw, 66px); flex: none; fill: none; stroke: none; }
@@ -129,6 +129,8 @@
   .loadout-footer { flex-shrink: 0; }
 }
 @media (max-width: 740px) {
+  .loadout-character-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .loadout-weapon-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
   .preparation-stage { width: 100%; height: 100dvh; padding: 16px 12px; gap: 18px; overflow-y: auto; overflow-x: hidden; }
   .loadout-header { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 6px 13px; }
   .loadout-back { grid-row: 1 / span 2; min-height: 44px; padding: 10px; font-size: 12px; }

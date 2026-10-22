@@ -107,6 +107,14 @@ test('solo keeps the staff physics with one fighter and survives rematch and ret
 
 test('sword selection applies to player one and survives a rematch', () => {
   const session = createSession();
+  assert.deepEqual(session.getSnapshot().loadouts, [
+    {characterId:'yellow-blob',weaponId:'yellow-staff'},
+    {characterId:'yellow-blob',weaponId:'yellow-staff'},
+  ]);
+  session.setLoadouts([
+    {characterId:'basic-fighter',weaponId:'sword'},
+    {characterId:'basic-fighter',weaponId:'polearm'},
+  ]);
   assert.equal(session.world.players[0].weapon, 'sword');
   assert.equal(session.world.players[1].weapon, 'polearm');
   assert.equal(session.getSnapshot().weapon, 'sword');

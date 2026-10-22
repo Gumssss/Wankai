@@ -4,8 +4,8 @@ import {BEAGLE} from './beagle-profile.js';
 import {CAT} from './orange-tabby-profile.js';
 
 export const DEFAULT_LOADOUTS=Object.freeze([
-  Object.freeze({characterId:'basic-fighter',weaponId:'sword'}),
-  Object.freeze({characterId:'basic-fighter',weaponId:'polearm'}),
+  Object.freeze({characterId:'yellow-blob',weaponId:'yellow-staff'}),
+  Object.freeze({characterId:'yellow-blob',weaponId:'yellow-staff'}),
 ]);
 const weapons=new Map(WEAPON_CATALOG.map(w=>[w.id,w]));
 
@@ -13,7 +13,7 @@ const weapons=new Map(WEAPON_CATALOG.map(w=>[w.id,w]));
 // scripts. Runtime state and the new picker always carry both canonical IDs.
 export function normalizeLoadout(value){
   if(typeof value==='string')value=value==='beagle'||value==='long-ears'
-    ?{characterId:'beagle',weaponId:'long-ears'}:{characterId:'basic-fighter',weaponId:value};
+    ?{characterId:'beagle',weaponId:'long-ears'}:value==='yellow-staff'?{characterId:'yellow-blob',weaponId:value}:{characterId:'basic-fighter',weaponId:value};
   const {characterId,weaponId}=value||{};
   const character=CHARACTERS[characterId],weapon=weapons.get(weaponId);
   if(!character?.available)throw new Error(`Unknown or unavailable character: ${characterId}`);
@@ -32,7 +32,7 @@ export const loadoutName=p=>`${characterName(p.characterId)} · ${weaponName(p.w
 export function resolveLoadout(value){
   const loadout=normalizeLoadout(value),ears=isEarLoadout(loadout),paws=isPawLoadout(loadout);
   return {...loadout,character:CHARACTERS[loadout.characterId],weapon:weapons.get(loadout.weaponId),
-    bodyModel:paws?CAT.model:loadout.characterId==='beagle'?(ears?BEAGLE.model:BEAGLE.appearanceModel):null,
+    bodyModel:paws?CAT.model:loadout.characterId==='beagle'?(ears?BEAGLE.model:BEAGLE.appearanceModel):CHARACTERS[loadout.characterId].model,
     weaponModel:ears||paws?null:`${loadout.weaponId}.glb`,controller:paws?'paws':ears?'ears':'floating',skill:ears?'ear-hover':null};
 }
 export const PLAYABLE_LOADOUTS=Object.freeze(Object.values(CHARACTERS).filter(c=>c.available)

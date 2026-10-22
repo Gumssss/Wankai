@@ -1,0 +1,306 @@
+{
+  "fps": 15,
+  "stats": {
+    "length": 1.8,
+    "offset": 1.25,
+    "radius": 0.115,
+    "inertia": 3.5,
+    "motorAcceleration": 28,
+    "brakeAcceleration": 36,
+    "maxAngularSpeed": 5,
+    "colliders": [
+      {
+        "a": [
+          0,
+          0.115,
+          0
+        ],
+        "b": [
+          0,
+          1.685,
+          0
+        ],
+        "radius": 0.115
+      }
+    ]
+  },
+  "chapters": [
+    {
+      "id": "FACE FRONT / OVERHEAD / BACK",
+      "speed": 1,
+      "start": 0,
+      "end": 3.6
+    },
+    {
+      "id": "W",
+      "speed": 1,
+      "start": 3.6,
+      "end": 7.2
+    },
+    {
+      "id": "S",
+      "speed": 1,
+      "start": 7.2,
+      "end": 10.8
+    },
+    {
+      "id": "S",
+      "speed": 0.25,
+      "start": 10.8,
+      "end": 12.8
+    },
+    {
+      "id": "A",
+      "speed": 1,
+      "start": 12.8,
+      "end": 16.4
+    },
+    {
+      "id": "D",
+      "speed": 1,
+      "start": 16.4,
+      "end": 20
+    },
+    {
+      "id": "W+A",
+      "speed": 1,
+      "start": 20,
+      "end": 23.6
+    },
+    {
+      "id": "W+D",
+      "speed": 1,
+      "start": 23.6,
+      "end": 27.2
+    },
+    {
+      "id": "S+A",
+      "speed": 1,
+      "start": 27.2,
+      "end": 30.8
+    },
+    {
+      "id": "S+D",
+      "speed": 1,
+      "start": 30.8,
+      "end": 34.4
+    },
+    {
+      "id": "W / release / S / recovery",
+      "speed": 1,
+      "start": 34.4,
+      "end": 38.4
+    },
+    {
+      "id": "Opposite keys cancel",
+      "speed": 1,
+      "start": 38.4,
+      "end": 40
+    },
+    {
+      "id": "vertical-hit",
+      "speed": 1,
+      "start": 40,
+      "end": 43.6
+    },
+    {
+      "id": "vertical-hit",
+      "speed": 0.25,
+      "start": 43.6,
+      "end": 45.6
+    },
+    {
+      "id": "horizontal-hit",
+      "speed": 1,
+      "start": 45.6,
+      "end": 49.2
+    },
+    {
+      "id": "horizontal-hit",
+      "speed": 0.25,
+      "start": 49.2,
+      "end": 51.2
+    },
+    {
+      "id": "clash",
+      "speed": 1,
+      "start": 51.2,
+      "end": 54.8
+    },
+    {
+      "id": "clash",
+      "speed": 0.25,
+      "start": 54.8,
+      "end": 56.8
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "FACE FRONT / OVERHEAD / BACK",
+      "rise": 2.7573529702661994,
+      "events": []
+    },
+    {
+      "id": "W",
+      "rise": 2.7598308949308805,
+      "events": []
+    },
+    {
+      "id": "S",
+      "rise": 2.7598308949308805,
+      "events": []
+    },
+    {
+      "id": "A",
+      "rise": 0.3211523423935535,
+      "events": []
+    },
+    {
+      "id": "D",
+      "rise": 0.3211523423935535,
+      "events": []
+    },
+    {
+      "id": "W+A",
+      "rise": 2.6809233067478826,
+      "events": []
+    },
+    {
+      "id": "W+D",
+      "rise": 2.6809233067478826,
+      "events": []
+    },
+    {
+      "id": "S+A",
+      "rise": 2.6809233067478826,
+      "events": []
+    },
+    {
+      "id": "S+D",
+      "rise": 2.6809233067478826,
+      "events": []
+    },
+    {
+      "id": "W / release / S / recovery",
+      "rise": 2.7598308949308805,
+      "events": []
+    },
+    {
+      "id": "Opposite keys cancel",
+      "rise": 0.3355977326144146,
+      "events": []
+    },
+    {
+      "id": "vertical-hit",
+      "rise": 2.628557979549071,
+      "events": [
+        {
+          "time": 0.16666666666666666,
+          "type": "clash",
+          "point": {
+            "x": 2.252947353971697,
+            "y": 2.259878629220811,
+            "z": 0.005309500000000003
+          },
+          "strength": 0.47080175421430964,
+          "recoilSpeed": 2.2641546811368842
+        },
+        {
+          "time": 0.2222222222222222,
+          "type": "hit",
+          "point": {
+            "x": 2.0622097766821272,
+            "y": 1.792230617881449,
+            "z": -0.028182256076345447
+          },
+          "normal": {
+            "x": 0.4435645478025523,
+            "y": -0.8934546521866947,
+            "z": 0.07063481024728192
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 19,
+          "speed": 7.1791869392330065,
+          "acceleration": 75.59527425077776,
+          "turnShare": 0,
+          "strength": 0.6333333333333333
+        }
+      ]
+    },
+    {
+      "id": "horizontal-hit",
+      "rise": 0.07929449942591726,
+      "events": [
+        {
+          "time": 0.17777777777777778,
+          "type": "hit",
+          "point": {
+            "x": 1.8735058131899052,
+            "y": 0.35793148682938863,
+            "z": -0.47668104327803984
+          },
+          "normal": {
+            "x": 0.2555592713806457,
+            "y": 0.08499203674939589,
+            "z": 0.9630502647840262
+          },
+          "attacker": 0,
+          "target": 1,
+          "damage": 12,
+          "speed": 8.420794899299283,
+          "acceleration": 42.49635446443774,
+          "turnShare": 1,
+          "strength": 0.4
+        }
+      ]
+    },
+    {
+      "id": "clash",
+      "rise": 2.7103180584662296,
+      "events": [
+        {
+          "time": 0.1111111111111111,
+          "type": "clash",
+          "point": {
+            "x": 0.4049864274800613,
+            "y": 1.403653116728807,
+            "z": 1.1496736303749108e-14
+          },
+          "strength": 1,
+          "recoilSpeed": 3.2
+        },
+        {
+          "time": 0.3,
+          "type": "clash",
+          "point": {
+            "x": 1.6623241108277909,
+            "y": 0.4917289820493414,
+            "z": 1.846071101858749e-14
+          },
+          "strength": 0.7372720448602466,
+          "recoilSpeed": 2.735386353016015
+        },
+        {
+          "time": 1.75,
+          "type": "clash",
+          "point": {
+            "x": 1.6886297237030785,
+            "y": 0.3292916099098061,
+            "z": 1.3261334189163714e-07
+          },
+          "strength": 1,
+          "recoilSpeed": 3.2
+        }
+      ]
+    }
+  ],
+  "type": "isolated current solver preview; no runtime integration; reset per chapter",
+  "encoded_review": {
+    "version": "v02",
+    "decoded_frames": 852,
+    "duration_seconds": 56.8,
+    "front_overhead_back_checked": true,
+    "user_approval": "direction contract confirmed; encoded revised video pending"
+  }
+}

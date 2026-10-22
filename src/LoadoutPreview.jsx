@@ -1,3 +1,4 @@
+import {instantiateYellowBlob,poseYellowBlob,makeYellowBlobFallback} from './yellow-blob-model.js';
 import {useEffect,useMemo,useState,useRef} from 'react';
 import {Canvas,useThree} from '@react-three/fiber';
 import {Box3,Group,Vector3,PlaneGeometry,Mesh,ShadowMaterial,PCFShadowMap,ACESFilmicToneMapping} from 'three';
@@ -21,10 +22,10 @@ function Preview({selection,id,attempt,onStatus}){
  },[camera,gl,invalidate]);
  useEffect(()=>{
   let cancelled=false;const sources=[],owned=new Group(),character=CHARACTERS[selection.characterId];
-  const full=selection.weaponId?resolveLoadout(selection):null,ears=full?.controller==='ears',cat=character.id==='orange-tabby';
+  const full=selection.weaponId?resolveLoadout(selection):null,ears=full?.controller==='ears',cat=character.id==='orange-tabby',yellow=character.id==='yellow-blob';
   const bodyHost=new Group();bodyHost.position.y=character.bodyFloor+(cat?CAT.hoverHeight:0);owned.add(bodyHost);
   const catFallback=cat?makeOrangeTabbyFallback(id):null;
-  const fallback=cat?catFallback.root:character.id==='beagle'?makeBeagleFallback(id,ears).root:createBasicFighter(id);bodyHost.add(fallback);
+  const fallback=yellow?makeYellowBlobFallback(id).root:cat?catFallback.root:character.id==='beagle'?makeBeagleFallback(id,ears).root:createBasicFighter(id);bodyHost.add(fallback);
   const player=selection.weaponId?makePlayer(id,selection):null;
   if(player){player.p=v3(0,bodyHost.position.y,0);player.phi=0;player.theta=cat?CAT.restTheta:ears?-1.55:.82;if(cat)poseOrangeTabbyFallback(catFallback,player);}
   let floatingHost,weaponFallback;
@@ -43,8 +44,8 @@ function Preview({selection,id,attempt,onStatus}){
     const source=result.value.scene;sources.push(source);if(cancelled)return;
     try{
      if(jobs[index].kind==='body'){
-      const instance=cat?instantiateOrangeTabby(source,id):instantiateBeagle(source,id,{rigged:ears});
-      bodyHost.add(instance.host);fallback.visible=false;if(player){if(cat)poseOrangeTabby(instance,player);else poseBeagle(instance,player,1);}
+      const instance=yellow?instantiateYellowBlob(source,id):cat?instantiateOrangeTabby(source,id):instantiateBeagle(source,id,{rigged:ears});
+      bodyHost.add(instance.host);fallback.visible=false;if(player){if(yellow)poseYellowBlob(instance,player);else if(cat)poseOrangeTabby(instance,player);else poseBeagle(instance,player,1);}
      }else{
       floatingHost.add(createWeaponModel(source,selection.weaponId,id));weaponFallback.visible=false;
      }

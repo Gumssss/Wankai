@@ -13,7 +13,7 @@ export const CONFIG = Object.freeze({
   // Distance from the body pivot to the floating staff's inner end. This clears
   // the entire head (0.76 + 0.4) even when the staff points straight upward.
   staffOffset: 1.35,
-  staffLength: 2.35,
+  staffLength: 2.00,
   staffRadius: 0.085,
   bodyRadius: 0.38,
   bodyFloor: 0.59,
@@ -54,6 +54,9 @@ export const SOLO_ARENA_SCALE = 3;
 export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' ? SOLO_ARENA_SCALE : 1;
 
 export const WEAPONS = Object.freeze({
+  'yellow-staff':Object.freeze({length:1.8,offset:1.25,radius:.115,inertia:3.5,
+    motorAcceleration:28,brakeAcceleration:36,maxAngularSpeed:5,
+    colliders:Object.freeze([{a:[0,.115,0],b:[0,1.685,0],radius:.115}])}),
   'cat-paws': CAT.weapon,
   'long-ears': BEAGLE,
   polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius,

@@ -1,5 +1,15 @@
 # Project review — 20 October 2026
 
+## Current branch delivery — 22 October 2026
+
+The current branch adds playable 黄团子 with the rounded yellow staff and makes that pairing the default for both players. The main menu now has five transparent PF频凡胡涂体 text buttons, a collapsible sound/help menu, and an orbiting cover with the Gun ! title. Any key/click enters through a continuous camera transition; Escape in the main menu returns to the cover. Idle camera breathing remains active. The final v03 character source, weapon source, runtime models and approved motion-v02 are included; raw Tripo downloads, superseded preparations and account screenshots stay local.
+
+PF频凡胡涂体 is user-supplied. Its bundled copyright notice is retained under `assets/fonts`; it does not establish commercial distribution permission. The existing local polearm length adjustment (2.35 → 2.00) is preserved; the legacy character-model test still expects 2.35. This known mismatch is reported in the PR rather than silently reverting the user's version.
+
+## Local addition — 21 October 2026
+
+On `codex/character-and-weapon-design`, the user approved yellow-blob motion-v02 and authorized integration. The picker now includes 黄团子 with its dedicated yellow rounded staff (nine valid loadouts). Face-forward W/S swings, A/D steering, model/fallback loading, independent instances and actual-game capture are implemented locally. See [yellow character handoff](characters/yellow-blob/GAMEPLAY.md). Its 17 focused tests and production build pass; full regression retains one pre-existing polearm-length mismatch (2.00 versus old 2.35 expectation). No commit, push, merge or release has been made for this addition; the delivery authorization described below belongs to the older orange-tabby work.
+
 **GitHub delivery branch:** the creator requested publishing the current work on `feat/orange-tabby-preparation`, based on merged PR #2 (`a591070`). Before committing this delivery, the complete suite passed **143/143 tests**, `npm run build` passed (existing large-chunk advisory), and the diff check passed. The branch includes the playable cat, selection/preparation flow, assets/evidence, stage-scoped skill and handoff updates. Use the remote branch/PR's actual head SHA for review. Merge remains the creator-side integration agent's responsibility; no merge or packaged release is included. Earlier local-only and scoped verification descriptions below retain their dated context.
 
 New collaborators and agents should start with the [project handoff](COLLABORATOR_AGENT_HANDOFF.md), which consolidates setup, architecture, current rules, active/deferred work and the contribution workflow. The approved orange-tabby model and giant-paw movement are now integrated locally; see [cat gameplay handoff](characters/orange-tabby/GAMEPLAY.md).
