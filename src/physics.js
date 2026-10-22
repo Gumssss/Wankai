@@ -7,9 +7,10 @@ import {normalizeLoadout,isEarLoadout,isPawLoadout} from './loadouts.js';
 import {CAT} from './orange-tabby-profile.js';
 import {BEAGLE_COMMON_OFFSETS} from './character-attachments.js';
 import { BEAGLE_SKILL, beaglePointFrame, updateBeagleSkill, applyBeagleHover } from './beagle-skill.js';
+import { ARENA_PROFILE, arenaPlacement } from './arena-profile.js';
 export const CONFIG = Object.freeze({
   step: 1 / 180,
-  arenaRadius: 6.45,
+  arenaRadius: ARENA_PROFILE.radius,
   // Distance from the body pivot to the floating staff's inner end. This clears
   // the entire head (0.76 + 0.4) even when the staff points straight upward.
   staffOffset: 1.35,
@@ -51,7 +52,11 @@ export const CLASH = Object.freeze({
   maxRecoilSpeed: 3.2,
 });
 export const SOLO_ARENA_SCALE = 3;
-export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' ? SOLO_ARENA_SCALE : 1;
+export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' || mode === 'duel-fixed' ? SOLO_ARENA_SCALE : 1;
+
+// These measured contacts were authored for the 2.35-unit model. The renderer
+// normalizes the unchanged GLB to staffLength, so scale its contacts identically.
+const polearmModelScale = CONFIG.staffLength / 2.35;
 
 export const WEAPONS = Object.freeze({
   'yellow-staff':Object.freeze({length:1.8,offset:1.25,radius:.115,inertia:3.5,
@@ -59,7 +64,7 @@ export const WEAPONS = Object.freeze({
     colliders:Object.freeze([{a:[0,.115,0],b:[0,1.685,0],radius:.115}])}),
   'cat-paws': CAT.weapon,
   'long-ears': BEAGLE,
-  polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius,
+  polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius * polearmModelScale,
     inertia: CONFIG.inertia, motorAcceleration: CONFIG.motorAcceleration,
     brakeAcceleration: CONFIG.polarBrakeAcceleration, maxAngularSpeed: CONFIG.maxAngularSpeed,
     // Keep the original shaft; measured additions follow the collar, blade,
@@ -70,7 +75,8 @@ export const WEAPONS = Object.freeze({
       { a: [0.041059, 1.640, 0.003758], b: [0.039410, 2.040, 0.008478], radius: 0.060 },
       { a: [-0.044368, 2.130, -0.015507], b: [-0.103840, 2.238, -0.036294], radius: 0.045 },
       { a: [-0.061360, 1.990, -0.021446], b: [-0.052864, 2.080, -0.018477], radius: 0.045 },
-    ]) }),
+    ].map(({a,b,radius,...contact}) => ({...contact,
+      a:a.map(value=>value*polearmModelScale), b:b.map(value=>value*polearmModelScale), radius:radius*polearmModelScale}))) }),
   sword: Object.freeze({ length: 1.45, offset: 1.2, radius: 0.09,
     inertia: 2.8, motorAcceleration: 38,
     brakeAcceleration: 48, maxAngularSpeed: 6.1,
@@ -401,6 +407,7 @@ export class ArenaPhysics {
     this.practice = practice;
     this.solo = solo;
     this.arenaRadius = CONFIG.arenaRadius * arenaScale;
+    this.arenaRimHeight = arenaPlacement(arenaScale).weaponContactHeight;
     this.contacts = this.players.map(() => ({ separated: 1 }));
     this.lastClash = -1;
     this.clashArmed = true;
@@ -511,7 +518,7 @@ export class ArenaPhysics {
   }
 
   solveBodyGround(p, dt, friction) {
-    const floor=characterStats(p).bodyFloor;
+    const floor=characterStats(p).bodyFloor + ARENA_PROFILE.floorHeight;
     p.grounded = p.p.y <= floor + 0.025;
     if (p.p.y < floor) {
       p.p.y = floor;
@@ -530,7 +537,7 @@ export class ArenaPhysics {
 
   solveWeaponGroundPoint(p, { local, radius, anchor }, dt) {
     let f = weaponPointFrame(p, local, anchor);
-    const penetration = radius - f.point.y;
+    const penetration = radius - (f.point.y - ARENA_PROFILE.floorHeight);
     if (penetration < -0.008) return;
     p.staffGrounded = true;
     const n = v3(0, 1, 0);
@@ -572,11 +579,12 @@ export class ArenaPhysics {
 
   solveWall(p, dt) {
     this.solveBodyWall(p);
-    // The rim is waist-high: elevated weapons may pass above it.
+    // The prepared podium is a low boundary. Its height scales uniformly with
+    // the full building; seating and upper arches remain decorative.
     for (const { local, radius, anchor } of surfacePoints(p)) {
       const f = weaponPointFrame(p, local, anchor);
       const r = Math.hypot(f.point.x, f.point.z);
-      if (f.point.y >= 0.48 || r <= this.arenaRadius - radius) continue;
+      if (f.point.y >= this.arenaRimHeight || r <= this.arenaRadius - radius) continue;
       const n = v3(-f.point.x / r, 0, -f.point.z / r);
       const bias = Math.min(4, (r - this.arenaRadius + radius) * 0.15 / dt);
       const j = Math.max(0, (bias - dot(f.velocity, n)) / effectiveMass(p, f, n));

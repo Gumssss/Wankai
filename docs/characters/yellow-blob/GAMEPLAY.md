@@ -1,5 +1,7 @@
 # 黄团子与黄色圆棍：本地游戏接入
 
+**Combined integration, 22 October:** the yellow-character/menu update is already merged into main through [the character delivery](https://github.com/Gumssss/Wankai/pull/5). Its approved model, staff, motion and new defaults are preserved in the Colosseum integration. The former polearm failure is fixed by matching its contacts to the retained 2.00-unit model; the combined 179-test suite and build pass. See [arena integration status](https://github.com/Gumssss/Wankai/pull/4). Earlier local-only statements and counts below describe their dated checkpoints.
+
 2026-10-21。用户审阅 motion-v02 后明确同意：“没问题，可以接入游戏”。当前分支 `codex/character-and-weapon-design`，本次已完成本地接入，未提交、推送、合并或发布安装包。
 
 ## 游戏行为

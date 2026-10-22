@@ -234,10 +234,10 @@ function App({session=defaultSession}) {
     </header>
 
     <main id="game-shell" className={`${solo ? 'solo-mode' : ''} ${splitView ? 'split-mode' : ''}`}>
-      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : 'shared'}-${game.loadouts.map(loadoutKey).join('-')}`} session={session} mode={game.mode} loadouts={game.loadouts} intro={intro.current} onIntroComplete={finishIntro} onReady={() => setReady(true)} /></CanvasBoundary></div>
+      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : fixedDuel ? 'fixed' : 'shared'}-${game.loadouts.map(loadoutKey).join('-')}`} session={session} mode={game.mode} loadouts={game.loadouts} intro={intro.current} onIntroComplete={finishIntro} onReady={() => setReady(true)} /></CanvasBoundary></div>
       {splitView && <><div className="view-divider" aria-hidden="true"></div><div className="view-name view-one">P1 · 赤丸自由视角</div><div className="view-name view-two">P2 · 青丸自由视角</div></>}
       <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '兵器与双耳，各有所长。'}</span></div>
-      <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
+      <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : fixedDuel ? '固定视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : fixedDuel ? 'SHARED VIEW' : '35° / FIXED VIEW'}</span></div>
       {active && (solo || splitView) && viewIds.map(id => <HeadingGuide key={id} id={id} split={splitView} />)}
       <section className="scoreboard" aria-label={solo ? '单人状态' : '对战血量'}>
         <FighterScore id={0} health={game.health[0]} stamina={game.stamina[0]} practice={game.practice} loadout={game.loadouts[0]} />

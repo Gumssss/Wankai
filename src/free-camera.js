@@ -4,7 +4,10 @@ import { CONFIG, clamp, staffFrame, weaponStats, weaponSegments, hurtSegments } 
 
 // Shared by solo exploration and each player's split-screen view.
 export const FREE_CAMERA = Object.freeze({ fov: 55, pitch: 0.52, distance: 6.2, yawOffset: Math.PI / 2 });
-export const SPLIT_CAMERA = Object.freeze({ ...FREE_CAMERA, pitch: 0.35, distance: 10.5, yawOffset: Math.PI / 12 });
+// Selected 12.5% closer preview; preserve the original 10.5/.35 eye height.
+const SPLIT_DISTANCE = 21;
+export const SPLIT_CAMERA = Object.freeze({ ...FREE_CAMERA,
+  pitch: Math.asin(Math.sin(0.35) * 10.5 / SPLIT_DISTANCE), distance: SPLIT_DISTANCE, yawOffset: Math.PI / 12 });
 
 export function createFreeCameraRig(camera = new PerspectiveCamera(FREE_CAMERA.fov, 1, 0.1, 120), frameFighter = false) {
   const settings = frameFighter ? SPLIT_CAMERA : FREE_CAMERA;

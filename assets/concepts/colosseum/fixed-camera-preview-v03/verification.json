@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-21",
+  "status": "preview-only-awaiting-creator-review",
+  "previewUrl": "http://127.0.0.1:5173/docs/previews/colosseum/fixed-camera-preview-v03.html",
+  "productFilesChangedForThisRevision": false,
+  "arenaRadius": 19.35,
+  "visualScale": 3,
+  "cameraCount": 1,
+  "fixed": true,
+  "beforePosition": [15, 11.4, 37.5],
+  "proposedPosition": [15, 24, 37.5],
+  "higherPosition": [15, 30, 37.5],
+  "target": [0, 1.4, 0],
+  "fovDegrees": 55,
+  "horizontalPositionChanged": false,
+  "matchedPoseWorldTime": 33.977777777780545,
+  "matchedPoseImages": ["before-lower.png", "proposed-raised.png", "alternative-higher.png"],
+  "optionalForegroundOverride": false,
+  "automaticCutawayAtCapturedPoses": [],
+  "browser": {"name": "Chrome", "environment": "ready", "comparisonSwitches": "verified", "consoleErrors": []},
+  "independentProjectionSamples": {
+    "aspects": [1.5, 1.8],
+    "downwardAnglesDegrees": {"before": 13.91, "proposed": 29.23, "higher": 35.30},
+    "floorScreenHeightPercent": {"before": 30.1, "proposed": 46.4, "higher": 48.9},
+    "floorAndFighterEarPawEnvelopes": "All fit sampled frames including tested +5-unit rises.",
+    "limitation": "Frustum samples do not guarantee all poses or occlusion."
+  }
+}

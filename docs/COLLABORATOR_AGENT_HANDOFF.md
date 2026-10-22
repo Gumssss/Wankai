@@ -1,5 +1,24 @@
 # Wankai Collaborator and Agent Handoff
 
+**Live integration review:** browser checks pass for intro entry/Escape return, yellow defaults, independent preparation/cancellation, fixed yellow combat/rematch, split beagle/cat controls and hover ownership, pause, practice, solo polearm and mobile bounds. No page errors; existing clock-deprecation warnings remain. [Combined verification and screenshots](../assets/concepts/integration-2026-10-22/verification.json).
+
+**Combined checkpoint — 22 October 2026:** integrates the yellow character/yellow staff and animated startup/menu from latest main (`ae91c42`) with the Colosseum, Roman-inspired floor and approved arena cameras (`701b7d5`). All four characters and nine valid loadouts are retained, including the new yellow defaults. Both sides of the menu/camera conflicts are preserved. The shortened 2.00-unit polearm now scales its measured contacts with the visible model; a regression reproduces and prevents the former invisible-tip hit. Fresh checks: **179/179 tests and production build pass** (existing chunk-size advisory). [Integration/merge status](https://github.com/Gumssss/Wankai/pull/4). Earlier local-only and branch-only notes below describe their dated checkpoints.
+
+**Fresh branch verification — 21 October:** `npm test` passed **158/158**, `npm run build` passed with the existing large-chunk advisory, the prepared-GLB verifier passed (613 floor samples, zero misses), and the staged diff check passed. Runtime source/assets match the approved working snapshot. See [delivery verification](../assets/concepts/colosseum/delivery-v01/verification.json). No new browser playtest or new character integration is claimed for this publication-only task.
+
+**Arena/camera delivery — 21 October 2026:** the creator requested a separate push of the latest arena and camera updates, leaving integration with another contributor's future character for later. Branch `feat/arena-camera-updates` is based on merged `main` at `55857a0`; the orange cat is the creator's existing work and is already in that baseline. The delta contains the Colosseum/environment sources, Roman-inspired floor, approved split/fixed cameras, matching contacts/tests and evidence. This delivery does not merge or release. Earlier local-only statements below describe their dated checkpoints.
+
+**Roman-inspired floor texture implemented — 21 October:** all modes use `public/textures/colosseum-roman-floor-v01.jpg` through dedicated floor material/planar UVs. Preserve the original GLB and wall atlas. Current cameras and physics are unchanged. Original-floor fallback and pending-load/resource cleanup are covered by tests. All 158 tests and build pass; actual mode/combat/rematch checks completed. See [Colosseum handoff](environments/colosseum/HANDOFF.md) and `assets/concepts/colosseum/floor-pattern-v02/` for source, exact imagegen prompt, comparison and implementation evidence. No Git delivery.
+
+**Fixed-camera v09 approved — 21 October:** the creator approved using the latest lower, closer preview in the game. Fixed duel uses perspective FOV 55°, eye [22.802009683082648, 12, 9.77228986417828] and target [0, 1.4, 0]. Its rendered pair rotates 45° anticlockwise about the arena centre as one display frame, including bodies, weapons and effects; HUD projection and camera cutaway targets use the same frame. Physics positions, headings, velocities and solver remain identical to split-screen, and rematches retain the view. The larger arena stays at uniform scale 3 / radius 19.35 / podium contact height 2.52. The camera stays fixed during play and impacts; solo, split and practice retain their settings. This tighter view can crop fighters and weapons near the foreground or side rim. See [Colosseum handoff](environments/colosseum/HANDOFF.md) for the accepted preview, implementation evidence and visibility limits. All 155 tests pass, production build passes with its existing chunk-size advisory, and diff check passes. Normal-game Chrome review verified both players’ swing/turn inputs and rematch; Chrome and the open in-app game tab show the implemented fixed view without console errors. Local work only; no commit/push.
+
+**Fixed-camera preview v05 approved and implemented — 21 October:** the creator approved the larger shared-camera view after raising it, moving it 12.5% closer and orbiting 45° anticlockwise. Local fixed duel now uses perspective FOV 55°, eye [30.88677987096443, 24, 13.237191373270472] and target [0, 1.4, 0]. Its visual model and physical boundary match split-screen at uniform scale 3 / radius 19.35 / podium contact height 2.52. The camera stays fixed during play and impacts. Solo, split and practice retain their camera settings; practice retains the smaller arena. See [Colosseum handoff](environments/colosseum/HANDOFF.md) for implementation evidence and visibility limits. No commit/push.
+
+**Closer split-camera preview approved — 21 October:** creator approved applying the exact 12.5%-closer preview. Local split defaults in `src/free-camera.js` are distance 21 and pitch `Math.asin(Math.sin(0.35) * 10.5 / 21)` (approximately 0.17230016); baseline eye height exactly matches the original 4.80042698 above the fighter. FOV, azimuth, independent orbit/fitting, cutaways and all other mode cameras retain their settings. The preceding distance-24 lower trial is superseded and remains in camera-study history. All 34 focused checks and the production build pass (existing chunk-size advisory); the normal game was checked in Chrome and the implemented camera image was saved. No commit/push.
+
+**Colosseum local extension — 20 October:** Blender-prepared arena and explicit floor/rim mapping are now implemented locally, preserving mode radii and using uniform whole-building scaling plus per-camera cutaways. Full suite 149/149 and build pass. Start with [Colosseum handoff](environments/colosseum/HANDOFF.md) for source/profile, evidence and caveats. This extension is uncommitted/unpushed and does not change earlier Git delivery records.
+
+
 ## Current local delivery — 20 October 2026
 
 **Delivery-branch update:** the creator has now requested a GitHub push. The delivery branch is `feat/orange-tabby-preparation`, based on `a591070fff8a64709dd0d775c140988e3d9b4ff1`; its complete current suite passed **143/143 tests** and `npm run build` passed before committing. The build retains its existing chunk-size advisory. The PR's actual head identifies the delivered revision. Merge remains assigned to the creator's integration agent; no merge or packaged release is part of this push. Local-only descriptions in the dated implementation checkpoints below describe their original stage.
@@ -88,7 +107,7 @@ Blender is needed only for asset authoring. The existing setup uses Blender 5.2.
 | Mode ID | Menu meaning | World and view |
 | --- | --- | --- |
 | duel | 双人对战 · 分屏视角 | One match, two independently controlled rear cameras; arena radius 19.35. |
-| duel-fixed | 双人对战 · 固定视角 | One shared elevated fixed view; arena radius 6.45. |
+| duel-fixed | 双人对战 · 固定视角 | Approved lower/closer v09 perspective shared view, starting pair rotated 45° anticlockwise; arena radius 19.35. |
 | practice | 木桩练习 | P1 fights an idle P2 dummy using the shared view; radius 6.45. |
 | solo | 单人自由视角 | One fighter, mouse orbit/zoom and radius 19.35. |
 
@@ -109,7 +128,7 @@ W/S select a continuous rotation direction, not a fixed up/down pose. Both axes 
 
 Weapon heading and camera heading are separate. Do not make A/D rotate the camera as an incidental change. Split-screen renders one simulation twice; it must not tick the game separately for each viewport. Mouse camera controls belong to solo. Loss of focus or a hidden tab clears input and pauses.
 
-The split cameras start behind each fighter with a 15-degree offset, 0.35-radian orbit pitch, 55-degree field of view and 10.5-unit distance. Framing guards protect the player's own fighter; they do not guarantee the opponent and full weapon are always visible.
+The split cameras start behind each fighter with the closer preview approved on 21 October: a 15-degree offset, approximately 0.17230016-radian orbit pitch, 55-degree field of view and 21-unit distance. Pitch is derived from `asin(sin(0.35) * 10.5 / 21)`, so the original baseline eye height remains exactly 4.80042698 units above the fighter. Framing guards protect the player's own fighter; they do not guarantee the opponent and full weapon are always visible.
 
 ### Loadouts and combat
 

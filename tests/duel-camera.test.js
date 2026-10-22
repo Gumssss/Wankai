@@ -39,17 +39,23 @@ test('fast turns, jumps and knockback keep each fighter inside their own split-s
   }
 });
 
-test('duel starts behind the fighter at the approved shallow angle, while weapon turning leaves camera azimuth alone', () => {
+test('duel pulls farther back at the original eye height, while weapon turning leaves camera azimuth alone', () => {
   const player = makePlayer(0, 'sword');
   const solo = createFreeCameraRig();
   const duel = createDuelCameraRig();
   for (const rig of [solo, duel]) updateFreeCamera(rig, player, 1 / 60);
   assert.equal(duel.camera.fov, 55);
   assert.equal(duel.pitch, SPLIT_CAMERA.pitch);
-  assert.ok(duel.distance > solo.distance);
+  assert.equal(duel.distance, 24 * 0.875, 'apply the reviewed 12.5% distance reduction');
   assert.ok(duel.position.x < player.p.x - 8, 'camera should sit behind the fighter');
-  assert.ok(Math.abs(duel.position.z - player.p.z) < 3, 'rear view should have only a small sideways offset');
-  assert.ok(duel.pitch < solo.pitch, 'rear view should use the approved shallower viewing angle');
+  const rear = duel.position.clone().sub(new Vector3(player.p.x, player.p.y, player.p.z));
+  assert.ok(Math.abs(Math.atan2(-rear.z, -rear.x) - SPLIT_CAMERA.yawOffset) < 1e-8,
+    'wider rear view retains the small sideways offset');
+  const originalHeight = Math.sin(0.35) * 10.5 + 1.2;
+  assert.ok(Math.abs(rear.y - originalHeight) < 1e-10, 'closer view must retain the original eye height exactly');
+  assert.ok(Math.hypot(rear.x, rear.z) > 20 && Math.hypot(rear.x, rear.z) < 21,
+    'move horizontally closer than the previous 24-unit view');
+  assert.ok(duel.pitch < solo.pitch, 'farther rear view keeps a low viewing angle');
   assert.ok(duel.focus.distanceTo(solo.focus) < 1e-8);
   const yaw = duel.yaw;
   const position = duel.position.clone();
@@ -114,7 +120,9 @@ test('a narrow resize makes room immediately and the camera eases back after the
   const player = makePlayer(0);
   const rig = createDuelCameraRig();
   updateFreeCamera(rig, player, 1 / 60);
-  rig.camera.aspect = 0.08;
+  // The selected wider default already fits at 0.08; squeeze farther to
+  // exercise the same emergency pullback and smooth recovery behavior.
+  rig.camera.aspect = 0.04;
   rig.camera.updateProjectionMatrix();
   updateFreeCamera(rig, player, 1 / 60);
   const pullback = rig.pullback;
@@ -145,5 +153,29 @@ test('both rear views show the far arena rim at the start in narrow and wide pan
     const rim = new Vector3(player.p.x + forward.x * distance, 0.2, player.p.z + forward.z * distance).project(rig.camera);
     assert.ok(Math.abs(rim.x) < 1 && rim.y > 0 && rim.y < 1, 'far rim should be visible in the upper half of the pane');
     assertFighterVisible(rig.camera, player);
+  }
+});
+
+test('selected wider view reveals substantially more playable floor than the previous close view', () => {
+  const radius = CONFIG.arenaRadius * SOLO_ARENA_SCALE;
+  for (const id of [0, 1]) for (const aspect of [0.54, 1.1]) {
+    const player = makePlayer(id);
+    const visibleFloor = previous => {
+      const rig = createDuelCameraRig();
+      rig.camera.aspect = aspect;
+      rig.camera.updateProjectionMatrix();
+      if (previous) { rig.pitch = 0.35; rig.distance = 10.5; }
+      updateFreeCamera(rig, player, 1 / 60);
+      let visible = 0;
+      for (let x = -19; x <= 19; x++) for (let z = -19; z <= 19; z++) {
+        if (x * x + z * z > radius * radius) continue;
+        const screen = new Vector3(x, 0, z).project(rig.camera);
+        if (Math.abs(screen.x) < 1 && Math.abs(screen.y) < 1 && Math.abs(screen.z) < 1) visible++;
+      }
+      assertFighterVisible(rig.camera, player);
+      return visible;
+    };
+    assert.ok(visibleFloor(false) > visibleFloor(true) * 1.6,
+      'closer view should still reveal more floor than the original close view');
   }
 });

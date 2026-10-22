@@ -5,6 +5,17 @@ import { ArenaPhysics, CONFIG, WEAPONS, closestSegments, staffFrame, weaponSegme
 const idle = [{}, {}];
 const near = (a, b, tolerance = 1e-7) => assert.ok(Math.abs(a - b) < tolerance, `${a} differs from ${b}`);
 
+test('the shortened polearm cannot hit a head beyond its visible tip', () => {
+  const world = new ArenaPhysics(); world.reset(true, false, 'polearm', 'sword');
+  const [a, b] = world.players;
+  Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: 0, v: v3(6, 0, 0) });
+  b.p = v3(4.02, 10 - .76, 0);
+  assert.ok(b.p.x - staffFrame(a).point.x > CONFIG.bodyRadius + WEAPONS.polearm.radius,
+    'target must be clearly beyond the visible polearm');
+  world.solveAttack(a, b, CONFIG.step);
+  assert.equal(b.health, 100, 'old longer contact geometry must not cause an invisible hit');
+});
+
 test('the half-speed trial limits both axes while retaining responsive starts and reverse braking', () => {
   for (const [weapon, cap] of [['sword', 6.1], ['polearm', 4.25], ['hammer', 3.4]]) {
     const world = new ArenaPhysics(); world.reset(false, true, weapon);
@@ -91,9 +102,11 @@ test('heading wrap does not sweep a weapon the long way around into an opponent 
 });
 
 test('measured sword guard and curved polearm tip can hit beyond their old thin shaft proxies', () => {
+  const tip = WEAPONS.polearm.colliders[3];
   for (const [weapon, target] of [
     ['sword', v3(-0.52, 10 + 1.2 + 0.428 - 0.76, 0.009696)],
-    ['polearm', v3(-0.51, 10 + 1.35 + 2.238 - 0.76, -0.036294)],
+    ['polearm', v3(tip.b[0] - CONFIG.bodyRadius - tip.radius + .01,
+      10 + WEAPONS.polearm.offset + tip.b[1] - .76, tip.b[2])],
   ]) {
     const world = new ArenaPhysics(); world.reset(true, false, weapon, 'sword');
     const [a, b] = world.players;
@@ -108,9 +121,11 @@ test('measured sword guard and curved polearm tip can hit beyond their old thin 
 });
 
 test('solid guard and curved-tip features also block beyond the old shaft-only contact', () => {
+  const guard = WEAPONS.sword.colliders[1], tip = WEAPONS.polearm.colliders[3];
   for (const [weapon, position] of [
-    ['sword', v3(-0.226, 10.02, 0.009696)],
-    ['polearm', v3(-0.21, 12.188, -0.036294)],
+    ['sword', v3(guard.a[0] - guard.radius - WEAPONS.polearm.radius + .01, 10.02, guard.a[2])],
+    ['polearm', v3(tip.b[0] - tip.radius - WEAPONS.polearm.radius + .01,
+      10 + tip.b[1] - .05, tip.b[2])],
   ]) {
     const world = new ArenaPhysics(); world.reset(false, false, weapon, 'polearm');
     const [a, b] = world.players;

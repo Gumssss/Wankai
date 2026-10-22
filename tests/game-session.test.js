@@ -58,7 +58,8 @@ test('fixed-camera duel keeps both players active, matches physics away from the
   assert.equal(fixed.getSnapshot().mode, 'duel-fixed');
   assert.equal(fixed.world.players.length, 2);
   assert.equal(fixed.practice, false);
-  assert.equal(fixed.world.arenaRadius, CONFIG.arenaRadius);
+  assert.equal(fixed.world.arenaRadius, CONFIG.arenaRadius * SOLO_ARENA_SCALE);
+  assert.equal(fixed.world.arenaRimHeight, split.world.arenaRimHeight);
   assert.equal(split.world.arenaRadius, CONFIG.arenaRadius * SOLO_ARENA_SCALE);
   for (const session of [split, fixed]) {
     advance(session, 2.5);
@@ -73,6 +74,7 @@ test('fixed-camera duel keeps both players active, matches physics away from the
   fixed.startRound();
   assert.equal(fixed.getSnapshot().mode, 'duel-fixed');
   assert.equal(fixed.world.time, 0);
+  assert.equal(fixed.world.arenaRadius, split.world.arenaRadius, 'rematch retains the larger fixed arena');
   fixed.goHome();
   assert.equal(fixed.getSnapshot().mode, 'duel');
 });
@@ -237,6 +239,6 @@ test('split-screen uses the solo-sized physical arena and retains its boundary o
   assert.equal(session.world.arenaRadius, radius);
   for (const mode of ['duel-fixed', 'practice', 'solo', 'duel']) {
     session.startRound(mode);
-    assert.equal(session.world.arenaRadius, ['duel', 'solo'].includes(mode) ? radius : CONFIG.arenaRadius);
+    assert.equal(session.world.arenaRadius, mode === 'practice' ? CONFIG.arenaRadius : radius);
   }
 });

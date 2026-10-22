@@ -1,5 +1,54 @@
 # 更新记录 / Changelog
 
+## 22 October 2026 — combined character, menu, arena and camera checkpoint
+
+- Integrate latest main's yellow character/staff, yellow default loadouts and animated intro/menu with the approved Colosseum/floor and split/fixed cameras. Preserve independent preparation, existing beagle/cat controllers and the single shared tick.
+- Resolve the App/Canvas conflicts by retaining the intro props and mode-specific fixed-camera canvas lifecycle together.
+- Reproduce and fix a polearm mismatch inherited from main: its visible length was 2.00 while contacts retained 2.35-unit measurements. Scale the contacts to match, retain the new length and update geometric fixtures. Added a regression where the old invisible tip caused 11 damage on a visible miss.
+- Fresh full suite: **179 passed, 0 failed**. Production build passes with the existing large-chunk advisory. Browser integration review and merge evidence are recorded with [the arena integration](https://github.com/Gumssss/Wankai/pull/4). Earlier verification counts and branch-only states remain historical.
+
+## 21 October 2026 — separate arena and camera delivery
+
+- Prepare `feat/arena-camera-updates` from merged `main` (`55857a0`) for the creator's requested push, preserving the original working folder.
+- Include the selected Colosseum Tripo/Blender sources, runtime arena/floor, measured floor/podium contacts, per-camera foreground cutaways and approved split/fixed-camera settings. Keep earlier studies/evidence as dated history.
+- Fresh publication checks: **158/158 tests pass**, production build passes (existing large-chunk advisory), prepared GLB verifier passes and diff check passes. This republishes the approved runtime snapshot; prior actual-game evidence is retained.
+- Existing orange-cat/character-preparation work is inherited from main. Another contributor's future character is outside this change. No merge or packaged release is part of this delivery.
+
+## 21 October 2026 — Roman-inspired arena floor texture
+
+- Added a dedicated matte floor texture with worn mosaic border and subtle laurel accents across all modes. Original Colosseum geometry, wall atlas, current cameras and physics are preserved.
+- Added planar floor UV mapping, original-floor loading fallback, canceled-load cleanup and a live original/pattern comparison page.
+- All 158 tests and production build pass; actual fixed/split/solo/practice views and normal-game combat/rematch checked. Local work only; no commit/push.
+
+## 21 October 2026 — approved lower and closer fixed-camera view v09
+
+- Apply the accepted v09 preview in fixed duel: eye [22.802009683082648, 12, 9.77228986417828], target [0, 1.4, 0] and 55° perspective FOV. The static camera keeps the approved azimuth.
+- Rotate fixed duel’s complete rendered pair/effects together 45° anticlockwise, with matching HUD/cutaway projection. Preserve the physics frame and split-screen simulation parity, the larger radius-19.35 arena, other modes, input/controllers and combat rules; rematches retain the view.
+- The tighter central framing can crop foreground/side-rim fighters and weapons. All 155 tests pass, production build passes with its existing chunk-size advisory, and diff check passes. Normal-game Chrome review verified both players’ swing/turn inputs and rematch; Chrome and the open in-app game tab show the implemented fixed view without console errors. Local work only; no commit/push.
+
+## 21 October 2026 — approved larger fixed-camera view
+
+- Applied camera-study v05 after creator approval: one shared perspective view, raised to height 24, 12.5% closer than the raised baseline, then orbited 45° anticlockwise.
+- Fixed duel now matches the split-screen arena at uniform scale 3, playable radius 19.35 and podium contact height 2.52. The camera remains still during play and impacts; its projection handles resize and mode changes.
+- Retained the other modes' camera settings and the smaller practice arena. Local implementation only; no commit/push.
+
+## 21 October 2026 — approved closer split-screen camera
+
+- Applied the exact 12.5%-closer preview after creator approval: distance 21 and derived pitch `asin(sin(0.35) * 10.5 / 21)` (approximately 0.17230016), preserving the original baseline eye height exactly.
+- Retained 55° FOV, rear azimuth, independent controls, fighter fitting, foreground cutaways and solo/fixed/practice cameras. The distance-24 lower trial remains a historical checkpoint below.
+- All 34 focused checks and the production build pass (existing chunk-size advisory); the normal game was checked in Chrome and the implemented camera image was saved. Local implementation only; no commit/push.
+
+## 21 October 2026 — farther split-screen camera at the original height
+
+- Refined the creator-selected Wider view after feedback that it was too high: orbit pitch 0.15, distance 24 keeps approximately the original eye height while pulling back horizontally. Existing 55° FOV, 15° rear offset, independent controls and fighter fitting remain.
+- Retained solo/fixed/practice views and the previous split view in the local comparison page. Camera-containing wall sectors now seed foreground cutaways so the lower view stays clear from inside stonework. 34 focused regressions, actual-game checks and production build pass. Local only.
+
+## 20 October 2026 — Colosseum environment, local implementation
+
+- Prepared the selected Tripo base in Blender: level floor/centered origin, packed matte materials, local podium cleanup and named wall/collision helpers.
+- Integrated self-contained arena GLB in all modes, preserving play radii with uniform building scale, explicit floor/rim contacts and independent foreground cutaways for each camera.
+- Verified Three.js reimport, 613 floor samples, 149 tests, build and actual gameplay/UI flows. [Evidence and limits](docs/environments/colosseum/HANDOFF.md). No Git delivery or release.
+
 ## 20 October 2026 — GitHub delivery branch
 
 - Collect playable orange tabby + giant paws, independent character/weapon selection, full-window preparation, required source/evidence assets, updated skill and handoff records on `feat/orange-tabby-preparation` for the requested GitHub push.
