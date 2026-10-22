@@ -3,6 +3,12 @@ import {CAT} from './orange-tabby-profile.js';
 
 const shape=(a,b,radius)=>Object.freeze({a:Object.freeze(a),b:Object.freeze(b),radius});
 export const CHARACTER_CATALOG=Object.freeze([
+  Object.freeze({id:'yellow-blob',name:'黄团子',english:'YELLOW BLOB',available:true,
+    description:'圆润的黄色伙伴，使用同色圆棍，沿面朝方向前后挥动、撑地与格挡。',
+    model:'yellow-blob-static-v03.glb',bodyFloor:.59,bodyRadius:.70,
+    bounds:{min:[-.587,0,-.701],max:[.587,1.7,.701]},
+    hurtShapes:Object.freeze([shape([0,-.15,0],[0,.18,0],.55),shape([0,.72,0],[0,.76,0],.35)]),
+    weaponIds:Object.freeze(['yellow-staff'])}),
   Object.freeze({id:'basic-fighter',name:'基础丸人',english:'BASIC FIGHTER',available:true,
     description:'最初的丸人，使用漂浮兵器撑地与对战。',model:null,bodyFloor:.59,bodyRadius:.38,
     bounds:{min:[-.39,0,-.335],max:[.39,1.75,.335]},

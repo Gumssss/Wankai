@@ -27,7 +27,7 @@ export function createWeaponModel(source,type,id=0){
  return weapon;
 }
 export function createWeaponFallback(type){
- const root=new Group(),material=new MeshStandardMaterial({color:0x818675,roughness:.8});
+ const root=new Group(),material=new MeshStandardMaterial({color:type==='yellow-staff'?0xfdce3a:0x818675,roughness:.8});
  for(const c of WEAPONS[type].colliders){const a=new Vector3(...c.a),b=new Vector3(...c.b),direction=b.clone().sub(a);const m=new Mesh(new CapsuleGeometry(c.radius,direction.length(),4,8),material);m.position.copy(a.add(b).multiplyScalar(.5));m.quaternion.setFromUnitVectors(new Vector3(0,1,0),direction.normalize());m.castShadow=true;root.add(m);}
  return root;
 }

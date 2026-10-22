@@ -1,5 +1,7 @@
 # Weapon control system
 
+**Integration update — 22 October 2026:** the new yellow character uses its dedicated yellow staff and is the default for both players. The intro/menu supports entry, Escape return and continuous camera transitions. All nine loadouts share the existing 100 HP / 200 stamina and single simulation tick; only beagle + long ears activates hover. Approved Colosseum split/fixed views remain. The polearm retains the incoming length 2.00, with all measured contact coordinates/radii scaled from the original 2.35-unit measurements to match the visible GLB. Hit, block, miss and support regressions verify that correction. See [integration status](https://github.com/Gumssss/Wankai/pull/4).
+
 Reviewed against local source and existing verification records on 20 October 2026. Character/weapon separation, orange tabby + giant paws, and the full-window preparation page are local and not yet pushed/merged; the earlier timed-hover baseline is merged in main. This documentation review does not rerun gameplay tests. These rules apply to the prototype; final control feel and balance still need playtesting. See the [project status](PROJECT_STATUS.md) for open work.
 
 The [approved motion video](control-concept-combinations.mp4) shows the intended input rule, including continued motion after ground contact and simultaneous swing and horizontal steering. It is a concept animation; the game uses its own physics and camera rendering.

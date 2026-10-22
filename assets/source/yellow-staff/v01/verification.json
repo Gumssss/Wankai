@@ -1,0 +1,24 @@
+{
+  "length": 1.8,
+  "radius": 0.115,
+  "cap_axial_radius": 0.19,
+  "character_preview_height": 1.7,
+  "color_sample_srgb": [
+    0.9921569228172302,
+    0.8078432083129883,
+    0.22745099663734436
+  ],
+  "material_linear_color": [
+    0.9822506855699038,
+    0.6172066844094343,
+    0.04231141646131474
+  ],
+  "boundary_edges": 0,
+  "vertices": 2050,
+  "quads_and_triangles": 2112,
+  "export_axis": "+Y",
+  "export_origin": "bottom end",
+  "scope": "weapon mesh and proportion review; no gameplay integration",
+  "reimport_meshes": 1,
+  "bytes": 74924
+}

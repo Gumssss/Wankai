@@ -14,7 +14,7 @@ export const CONFIG = Object.freeze({
   // Distance from the body pivot to the floating staff's inner end. This clears
   // the entire head (0.76 + 0.4) even when the staff points straight upward.
   staffOffset: 1.35,
-  staffLength: 2.35,
+  staffLength: 2.00,
   staffRadius: 0.085,
   bodyRadius: 0.38,
   bodyFloor: 0.59,
@@ -54,10 +54,17 @@ export const CLASH = Object.freeze({
 export const SOLO_ARENA_SCALE = 3;
 export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' || mode === 'duel-fixed' ? SOLO_ARENA_SCALE : 1;
 
+// These measured contacts were authored for the 2.35-unit model. The renderer
+// normalizes the unchanged GLB to staffLength, so scale its contacts identically.
+const polearmModelScale = CONFIG.staffLength / 2.35;
+
 export const WEAPONS = Object.freeze({
+  'yellow-staff':Object.freeze({length:1.8,offset:1.25,radius:.115,inertia:3.5,
+    motorAcceleration:28,brakeAcceleration:36,maxAngularSpeed:5,
+    colliders:Object.freeze([{a:[0,.115,0],b:[0,1.685,0],radius:.115}])}),
   'cat-paws': CAT.weapon,
   'long-ears': BEAGLE,
-  polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius,
+  polearm: Object.freeze({ length: CONFIG.staffLength, offset: CONFIG.staffOffset, radius: CONFIG.staffRadius * polearmModelScale,
     inertia: CONFIG.inertia, motorAcceleration: CONFIG.motorAcceleration,
     brakeAcceleration: CONFIG.polarBrakeAcceleration, maxAngularSpeed: CONFIG.maxAngularSpeed,
     // Keep the original shaft; measured additions follow the collar, blade,
@@ -68,7 +75,8 @@ export const WEAPONS = Object.freeze({
       { a: [0.041059, 1.640, 0.003758], b: [0.039410, 2.040, 0.008478], radius: 0.060 },
       { a: [-0.044368, 2.130, -0.015507], b: [-0.103840, 2.238, -0.036294], radius: 0.045 },
       { a: [-0.061360, 1.990, -0.021446], b: [-0.052864, 2.080, -0.018477], radius: 0.045 },
-    ]) }),
+    ].map(({a,b,radius,...contact}) => ({...contact,
+      a:a.map(value=>value*polearmModelScale), b:b.map(value=>value*polearmModelScale), radius:radius*polearmModelScale}))) }),
   sword: Object.freeze({ length: 1.45, offset: 1.2, radius: 0.09,
     inertia: 2.8, motorAcceleration: 38,
     brakeAcceleration: 48, maxAngularSpeed: 6.1,

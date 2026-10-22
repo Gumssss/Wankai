@@ -1,4 +1,8 @@
-# Project review — 21 October 2026
+# Project review — 22 October 2026
+
+**Live integration review:** browser checks pass for intro entry/Escape return, yellow defaults, independent preparation/cancellation, fixed yellow combat/rematch, split beagle/cat controls and hover ownership, pause, practice, solo polearm and mobile bounds. No page errors; existing clock-deprecation warnings remain. [Combined verification and screenshots](../assets/concepts/integration-2026-10-22/verification.json).
+
+**Combined checkpoint — 22 October 2026:** integrates the yellow character/yellow staff and animated startup/menu from latest main (`ae91c42`) with the Colosseum, Roman-inspired floor and approved arena cameras (`701b7d5`). All four characters and nine valid loadouts are retained, including the new yellow defaults. Both sides of the menu/camera conflicts are preserved. The shortened 2.00-unit polearm now scales its measured contacts with the visible model; a regression reproduces and prevents the former invisible-tip hit. Fresh checks: **179/179 tests and production build pass** (existing chunk-size advisory). [Integration/merge status](https://github.com/Gumssss/Wankai/pull/4). Earlier local-only and branch-only notes below describe their dated checkpoints.
 
 **Fresh branch verification — 21 October:** `npm test` passed **158/158**, `npm run build` passed with the existing large-chunk advisory, the prepared-GLB verifier passed (613 floor samples, zero misses), and the staged diff check passed. Runtime source/assets match the approved working snapshot. See [delivery verification](../assets/concepts/colosseum/delivery-v01/verification.json). No new browser playtest or new character integration is claimed for this publication-only task.
 
@@ -14,6 +18,16 @@
 
 **Colosseum integrated locally — 20 October:** selected Tripo arena prepared in Blender and loaded in all four modes. Level floor/explicit circular boundary, uniformly scaled architecture, measured podium contacts and independent per-camera cutaways are implemented. 149 tests and build pass; actual-game evidence and remaining hands-on review are in [Colosseum handoff](environments/colosseum/HANDOFF.md). No commit/push/merge/release.
 
+
+## Character delivery before combined integration — 22 October 2026
+
+The current branch adds playable 黄团子 with the rounded yellow staff and makes that pairing the default for both players. The main menu now has five transparent PF频凡胡涂体 text buttons, a collapsible sound/help menu, and an orbiting cover with the Gun ! title. Any key/click enters through a continuous camera transition; Escape in the main menu returns to the cover. Idle camera breathing remains active. The final v03 character source, weapon source, runtime models and approved motion-v02 are included; raw Tripo downloads, superseded preparations and account screenshots stay local.
+
+PF频凡胡涂体 is user-supplied. Its bundled copyright notice is retained under `assets/fonts`; it does not establish commercial distribution permission. The existing local polearm length adjustment (2.35 → 2.00) is preserved; the legacy character-model test still expects 2.35. That delivery reported the mismatch without reverting the user's version. The combined checkpoint above now corrects the contact scaling and stale expectation while retaining length 2.00.
+
+## Local addition — 21 October 2026
+
+On `codex/character-and-weapon-design`, the user approved yellow-blob motion-v02 and authorized integration. The picker now includes 黄团子 with its dedicated yellow rounded staff (nine valid loadouts). Face-forward W/S swings, A/D steering, model/fallback loading, independent instances and actual-game capture are implemented locally. See [yellow character handoff](characters/yellow-blob/GAMEPLAY.md). Its 17 focused tests and production build pass; full regression retains one pre-existing polearm-length mismatch (2.00 versus old 2.35 expectation). No commit, push, merge or release has been made for this addition; the delivery authorization described below belongs to the older orange-tabby work.
 
 **GitHub delivery branch:** the creator requested publishing the current work on `feat/orange-tabby-preparation`, based on merged PR #2 (`a591070`). Before committing this delivery, the complete suite passed **143/143 tests**, `npm run build` passed (existing large-chunk advisory), and the diff check passed. The branch includes the playable cat, selection/preparation flow, assets/evidence, stage-scoped skill and handoff updates. Use the remote branch/PR's actual head SHA for review. Merge remains the creator-side integration agent's responsibility; no merge or packaged release is included. Earlier local-only and scoped verification descriptions below retain their dated context.
 

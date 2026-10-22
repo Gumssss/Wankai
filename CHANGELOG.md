@@ -1,5 +1,12 @@
 # 更新记录 / Changelog
 
+## 22 October 2026 — combined character, menu, arena and camera checkpoint
+
+- Integrate latest main's yellow character/staff, yellow default loadouts and animated intro/menu with the approved Colosseum/floor and split/fixed cameras. Preserve independent preparation, existing beagle/cat controllers and the single shared tick.
+- Resolve the App/Canvas conflicts by retaining the intro props and mode-specific fixed-camera canvas lifecycle together.
+- Reproduce and fix a polearm mismatch inherited from main: its visible length was 2.00 while contacts retained 2.35-unit measurements. Scale the contacts to match, retain the new length and update geometric fixtures. Added a regression where the old invisible tip caused 11 damage on a visible miss.
+- Fresh full suite: **179 passed, 0 failed**. Production build passes with the existing large-chunk advisory. Browser integration review and merge evidence are recorded with [the arena integration](https://github.com/Gumssss/Wankai/pull/4). Earlier verification counts and branch-only states remain historical.
+
 ## 21 October 2026 — separate arena and camera delivery
 
 - Prepare `feat/arena-camera-updates` from merged `main` (`55857a0`) for the creator's requested push, preserving the original working folder.

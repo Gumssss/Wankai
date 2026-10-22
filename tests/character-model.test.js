@@ -29,6 +29,6 @@ test('actual ordinary weapon geometry and capsule profiles remain outside the co
    item.traverse(o=>{if(o.isMesh)for(let i=0;i<o.geometry.attributes.position.count;i+=9){const vertex=o.getVertexPosition(i,new Vector3()).applyMatrix4(o.matrixWorld);assert.ok(vertex.length()>envelope+.035-1e-6,`${type} mesh clips body`);}});
    for(const s of weaponSegments(p)){const a=new Vector3(s.a.x,s.a.y,s.a.z),b=new Vector3(s.b.x,s.b.y,s.b.z),d=b.clone().sub(a),t=Math.max(0,Math.min(1,-a.dot(d)/d.lengthSq()));assert.ok(a.addScaledVector(d,t).length()-s.radius>envelope+.035-1e-6,`${type} capsule clips body`);}
   }
-  assert.equal(weaponStats(p).length,{sword:1.45,polearm:2.35,hammer:1.9}[type]);
+  assert.equal(weaponStats(p).length,{sword:1.45,polearm:2,hammer:1.9}[type]);
  }
 });
