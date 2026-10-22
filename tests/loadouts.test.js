@@ -7,8 +7,8 @@ import {BEAGLE_COMMON_OFFSETS} from '../src/character-attachments.js';
 
 const basic=weaponId=>({characterId:'basic-fighter',weaponId}),beagle=weaponId=>({characterId:'beagle',weaponId});
 function session(){const game=new GameSession();for(const name of ['unlock','tick','tone','swing','impact'])game.sound[name]=()=>{};return game;}
-test('separate catalogues expose eight valid loadouts and enforce signature ownership',()=>{
- assert.equal(PLAYABLE_LOADOUTS.length,8);
+test('separate catalogues expose nine valid loadouts and enforce signature ownership',()=>{
+ assert.equal(PLAYABLE_LOADOUTS.length,9);
  assert.deepEqual(normalizeLoadout('beagle'),beagle('long-ears'));
  assert.deepEqual(normalizeLoadout('sword'),basic('sword'));
  assert.equal(canEquip('basic-fighter','long-ears'),false);

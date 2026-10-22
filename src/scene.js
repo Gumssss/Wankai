@@ -1,3 +1,5 @@
+import {instantiateYellowBlob,poseYellowBlob,makeYellowBlobFallback} from './yellow-blob-model.js';
+import {createWeaponFallback} from './model-assets.js';
 import * as THREE from 'three';
 import { CONFIG, arenaScaleForMode, WEAPONS, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
 import { WEAPON_VISUALS, setWeaponRotation } from './weapon-visuals.js';
@@ -248,7 +250,13 @@ export class ArenaView {
     trail.frustumCulled = false;
     this.actors.add(trail);
     const trails = [{ mesh: trail, positions, history: [], anchor: undefined }];
-    let beagleFallback,catFallback;
+    let beagleFallback,catFallback,yellowFallback,weaponBackup;
+    if(loadout.characterId==='yellow-blob'){
+      for(const child of root.children)child.visible=false;
+      yellowFallback=makeYellowBlobFallback(id);yellowFallback.root.visible=false;root.add(yellowFallback.root);
+      for(const part of [rod,grip,cap,tip,fallbackHead])part.visible=false;
+      weaponBackup=createWeaponFallback(weaponType);staff.add(weaponBackup);
+    }
     if (loadout.characterId === 'beagle') {
       for (const child of root.children) child.visible = false;
       staff.visible = !earWeapon;
@@ -270,14 +278,16 @@ export class ArenaView {
     }
     const pawContacts=pawWeapon?['L','R'].map(side=>{const cue=contact.clone();cue.geometry=contact.geometry.clone();cue.material=contact.material.clone();cue.visible=false;this.actors.add(cue);return {side,mesh:cue};}):[];
     return { root, body, head, bodyMat, skinMat, staff, rod, grip, cap, tip, fallbackHead, marker, contact, trail, positions,
-      trails, beagleFallback,catFallback,pawContacts,pawWeapon, maxTrail, weaponType, characterId:loadout.characterId,bodyModel:loadout.bodyModel,earWeapon,baseColor: new THREE.Color(PALETTE[id]) };
+      trails, beagleFallback,catFallback,yellowFallback,weaponBackup,pawContacts,pawWeapon, maxTrail, weaponType, characterId:loadout.characterId,bodyModel:loadout.bodyModel,earWeapon,baseColor: new THREE.Color(PALETTE[id]) };
   }
 
   setCharacterModel(source,modelName){
     if(this.disposed||this.characterLoaded.has(modelName))return;
     for(const [id,fighter] of this.players.entries()){
       if(fighter.bodyModel!==modelName)continue;
-      if(fighter.pawWeapon){
+      if(fighter.characterId==='yellow-blob'){
+        fighter.yellow=instantiateYellowBlob(source,id);fighter.root.add(fighter.yellow.host);fighter.yellowFallback.root.visible=false;
+      }else if(fighter.pawWeapon){
         fighter.cat=instantiateOrangeTabby(source,id);fighter.root.add(fighter.cat.host);fighter.catFallback.root.visible=false;
       }else{
         fighter.beagle=instantiateBeagle(source,id,{rigged:fighter.earWeapon});
@@ -289,8 +299,8 @@ export class ArenaView {
 
   showCharacterFallback(modelName){
     if(this.disposed)return;
-    for(const fighter of this.players)if(fighter.bodyModel===modelName&&!fighter.beagle&&!fighter.cat){
-      const fallback=fighter.catFallback||fighter.beagleFallback;if(fallback)fallback.root.visible=true;
+    for(const fighter of this.players)if(fighter.bodyModel===modelName&&!fighter.beagle&&!fighter.cat&&!fighter.yellow){
+      const fallback=fighter.yellowFallback||fighter.catFallback||fighter.beagleFallback;if(fallback)fallback.root.visible=true;
     }
   }
 
@@ -327,6 +337,7 @@ export class ArenaView {
         object.material = Array.isArray(object.material) ? object.material.map(copyMaterial) : copyMaterial(object.material);
       });
       fighter.staff.add(weapon);
+      if(fighter.weaponBackup)fighter.weaponBackup.visible=false;
       fighter.rod.visible = false;
       fighter.cap.visible = false;
       fighter.tip.visible = false;
@@ -373,6 +384,8 @@ export class ArenaView {
       model.root.rotation.y = -fighterHeading(p);
       model.bodyMat.color.copy(model.baseColor).lerp(new THREE.Color(0xffefd6), p.hitFlash * 0.8);
       model.skinMat.color.set(0xe7c199).lerp(new THREE.Color(0xffffff), p.hitFlash * 0.8);
+      if(model.yellow)poseYellowBlob(model.yellow,p);
+      if(model.yellowFallback)poseYellowBlob(model.yellowFallback,p);
       if(model.cat)poseOrangeTabby(model.cat,p);
       if(model.catFallback)poseOrangeTabbyFallback(model.catFallback,p);
       if (model.beagle) poseBeagle(model.beagle, p, this.trailTimeTotal || 0);

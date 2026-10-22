@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ACESFilmicToneMapping, PCFShadowMap, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { ArenaView } from './scene.js';
+import { advanceLobbyCamera } from './lobby-camera.js';
 import { FREE_CAMERA } from './free-camera.js';
 import {resolveLoadout,loadoutKey} from './loadouts.js';
 
@@ -10,7 +11,7 @@ function ArenaEnvironment({ group }) { return <primitive object={group} dispose=
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
 function ImpactEffects({ group }) { return <primitive object={group} dispose={null} />; }
 
-function ArenaScene({ session, mode, loadouts }) {
+function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
   const [first,second]=loadouts;
   const { gl, camera, scene, size } = useThree();
   const view = useMemo(() => new ArenaView(gl, camera, mode, first, second), [gl, camera, mode, first, second]);
@@ -111,6 +112,19 @@ function ArenaScene({ session, mode, loadouts }) {
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
     view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending', Math.min(delta, 0.06), splitView, session.getCameraInputs());
 
+    // Keep the same viewport and camera controller through the menu handoff.
+    if (intro && session.state === 'lobby' && camera.isOrthographicCamera) {
+      const pose = advanceLobbyCamera(intro, delta, view.reducedMotion);
+      camera.position.set(pose.x, pose.y, pose.z);
+      camera.lookAt(view.target);
+      camera.zoom = pose.zoom;
+      camera.updateProjectionMatrix();
+      if (pose.complete || pose.returned) onIntroComplete?.();
+    } else if (camera.isOrthographicCamera && camera.zoom !== 1) {
+      camera.zoom = 1;
+      camera.updateProjectionMatrix();
+    }
+
     // Advance the one match once, then draw that same scene through both cameras.
     if (splitView) {
       const leftWidth = size.width / 2;
@@ -175,7 +189,7 @@ function ArenaScene({ session, mode, loadouts }) {
   </>;
 }
 
-export function ArenaCanvas({ session, mode, loadouts, onReady }) {
+export function ArenaCanvas({ session, mode, loadouts, onReady, intro, onIntroComplete }) {
   const key=loadouts.map(loadoutKey).join('|');
   const selections=useMemo(()=>loadouts.map(p=>({...p})),[key]);
   return (
@@ -195,7 +209,7 @@ export function ArenaCanvas({ session, mode, loadouts, onReady }) {
       }}
     >
       <color attach="background" args={[0xebe9dc]} />
-      <ArenaScene session={session} mode={mode} loadouts={selections} />
+      <ArenaScene session={session} mode={mode} loadouts={selections} intro={intro} onIntroComplete={onIntroComplete} />
     </Canvas>
   );
 }
