@@ -85,7 +85,7 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
 }
-.lobby-actions > button {
+:is(.lobby-actions, .victory-actions, .pause-actions) > button {
   min-width: 0;
   min-height: 68px;
   padding: 16px 4px;
@@ -100,7 +100,7 @@
   color: var(--ink);
   transition: background-color .3s ease, color .3s ease;
 }
-.lobby-actions > button > .lobby-button-content {
+:is(.lobby-actions, .victory-actions, .pause-actions) > button > .lobby-button-content {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -116,17 +116,17 @@
   text-shadow: 0 1px 0 #b8b7a1, 0 2px 0 #a5a58f, 0 3px 0 #8b917c;
   transition: transform .3s ease, text-shadow .3s ease;
 }
-.lobby-actions > button:hover,
-.lobby-actions > button:focus-visible,
-.lobby-actions > .primary-button:hover,
-.lobby-actions > .primary-button:focus-visible {
+:is(.lobby-actions, .victory-actions, .pause-actions) > button:hover,
+:is(.lobby-actions, .victory-actions, .pause-actions) > button:focus-visible,
+:is(.lobby-actions, .victory-actions, .pause-actions) > .primary-button:hover,
+:is(.lobby-actions, .victory-actions, .pause-actions) > .primary-button:focus-visible {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
   color: var(--ink);
 }
-.lobby-actions > button:hover > .lobby-button-content,
-.lobby-actions > button:focus-visible > .lobby-button-content {
+:is(.lobby-actions, .victory-actions, .pause-actions) > button:hover > .lobby-button-content,
+:is(.lobby-actions, .victory-actions, .pause-actions) > button:focus-visible > .lobby-button-content {
   transform: translateY(-4px) scale(1.06);
   text-shadow: 0 1px 0 #b8b7a1, 0 2px 0 #a5a58f, 0 3px 0 #8b917c,
     0 7px 5px #30372e35, 0 12px 14px #30372e25;
@@ -136,7 +136,7 @@
 }
 @media (max-width: 740px) {
   .lobby-actions { width: calc(100% - 24px); gap: 6px; }
-  .lobby-actions > button { padding: 10px 4px; font-size: 17px; min-height: 64px; }
+  :is(.lobby-actions, .victory-actions, .pause-actions) > button { padding: 10px 4px; font-size: 17px; min-height: 64px; }
   .lobby-actions .lobby-button-content > span { display: none; }
 }
 
@@ -167,11 +167,12 @@
 }
 .intro-title {
   position: absolute;
-  top: 9%; left: 0; right: 0;
+  top: 42%; left: 0; right: 0;
+  transform: translateY(-50%);
   z-index: 4;
   margin: 0;
   text-align: center;
-  font-size: clamp(80px, 12vw, 168px);
+  font-size: clamp(112px, 17vw, 238px);
   line-height: 1.1;
   color: #49503e;
   text-shadow: 0 2px 0 #b8b7a1, 0 4px 0 #8b917c, 0 10px 22px #30372e20;
@@ -214,3 +215,37 @@
 }
 .intro-cover .intro-title { animation: intro-menu-in .8s ease both; }
 @keyframes intro-menu-out { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+
+/* Match portraits share the character selection artwork. */
+.fighter-avatar { width: 58px; height: 64px; }
+.fighter-avatar > img, .fighter-avatar > svg { width: 100%; height: 100%; object-fit: contain; display: block; }
+@media (max-width: 740px) {
+  .fighter-avatar { display: block; width: 36px; height: 44px; }
+}
+
+/* Fade the supplied Werwer portrait into both selection and match backgrounds. */
+.loadout-portrait > img.portrait-soft-edge,
+.fighter-avatar > img.portrait-soft-edge {
+  object-fit: contain;
+  -webkit-mask-image: radial-gradient(ellipse closest-side at center, #000 64%, #000b 80%, transparent 100%);
+  mask-image: radial-gradient(ellipse closest-side at center, #000 64%, #000b 80%, transparent 100%);
+}
+
+.victory-overlay { width: min(620px, 92vw); max-height: 92dvh; padding: clamp(20px, 4vh, 42px); text-align: center; background: #f8f6ec; }
+.victory-overlay h2 { margin: 0 0 12px; font-family: "PF Hutu", "PingFang SC", sans-serif; font-weight: 400; font-size: clamp(36px, 5vw, 60px); color: #49503e; text-shadow: 0 2px 0 #b8b7a1; }
+.victory-portrait { height: min(46dvh, 360px); margin: 0 auto 16px; transform-origin: 50% 90%; animation: victory-cheer 2.4s ease-in-out infinite; }
+.victory-portrait > img, .victory-portrait > svg { width: 100%; height: 100%; object-fit: contain; }
+.victory-actions { display: flex; justify-content: center; gap: clamp(16px, 4vw, 44px); }
+.victory-actions > button { border: 0; flex: 1; }
+@keyframes victory-cheer { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-7px); } }
+@media (prefers-reduced-motion: reduce) { .victory-portrait { animation: none; } }
+@media (max-width: 420px) { .victory-actions { flex-direction: column; gap: 4px; } }
+
+.victory-overlay { position: fixed; z-index: 20; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 0; border-radius: 0; background: transparent; box-shadow: none; pointer-events: none; opacity: .65; }
+.victory-overlay .victory-actions > button { pointer-events: auto; }
+
+.modal.pause-menu { width: min(560px, 92vw); padding: 24px; text-align: center; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.modal.pause-menu::backdrop { background: transparent; backdrop-filter: none; }
+.modal.pause-menu h2 { margin: 0 0 30px; font-family: "PF Hutu", "PingFang SC", sans-serif; font-size: clamp(48px, 6vw, 76px); font-weight: 400; color: #49503e; text-shadow: 0 2px 0 #b8b7a1, 0 3px 0 #8b917c; }
+.pause-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.pause-actions > button { border: 0; }

@@ -1,5 +1,5 @@
 export const WEAPON_CATALOG = Object.freeze([
-  {id:'yellow-staff',name:'黄色圆棍',english:'YELLOW STAFF',role:'圆棍 · 撑地',available:true,characterId:'yellow-blob',
+  {id:'yellow-staff',name:'奶木昆',english:'YELLOW STAFF',role:'圆棍 · 撑地',available:true,characterId:'yellow-blob',
     description:'W / S 沿人物正面、头顶、背后挥棍；A / D 转向，可组合输入。圆棍触地带动身体移动。',
     strength:'中等长度，挥击、撑地与格挡兼顾',weakness:'悬浮圆棍需要回转空间，共用耐力',reach:'中',response:'稳'},
   { id: 'sword', available:true, name: '短剑', english: 'SHORT SWORD', role: '近身 · 快挥',

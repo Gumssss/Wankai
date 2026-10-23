@@ -180,3 +180,104 @@
   .loadout-weapon-grid small { font-size: 9px; line-height: 1.35; }
   .loadout-drag { display: none; }
 }
+
+/* Split-screen preparation follows the cover/menu typography and open layout. */
+.preparation-stage.styled-duel {
+  background: radial-gradient(ellipse at 50% 42%, #f2efdf 0, #eae5d3 100%);
+  --playful-font: "PF Hutu", "PingFang SC", sans-serif;
+  --playful-depth: 0 1px 0 #b8b7a1, 0 2px 0 #9ca38b;
+}
+.styled-duel .loadout-header { padding: 2px 6px 8px; }
+.styled-duel .loadout-heading-copy { text-align: center; }
+.styled-duel .loadout-heading-copy h1 {
+  font-family: var(--playful-font); font-weight: 400;
+  font-size: clamp(28px, 3vw, 48px); color: #49503e;
+  text-shadow: var(--playful-depth);
+}
+.styled-duel .loadout-heading-copy p { font-size: 12px; color: #808570; letter-spacing: 1px; }
+.styled-duel .loadout-header > span { border: 0; background: transparent; padding: 0; color: #7e846f; }
+.styled-duel .loadout-player-panel { border: 0; border-radius: 0; padding-top: 0; }
+.styled-duel .loadout-player-panel + .loadout-player-panel { border-left: 1px solid #969c7f30; padding-left: 18px; }
+.styled-duel .loadout-player-heading {
+  margin: 0; padding: 8px 2px; border: 0; background: transparent;
+}
+.styled-duel .loadout-player-label { font-family: var(--playful-font); font-weight: 400; font-size: clamp(24px, 2vw, 34px); }
+.styled-duel .loadout-ready-status { color: #7f866e; }
+.styled-duel .loadout-library-title b,
+.styled-duel .loadout-character-grid b,
+.styled-duel .loadout-weapon-grid b,
+.styled-duel .loadout-current b {
+  font-family: var(--playful-font); font-weight: 400;
+}
+.styled-duel .loadout-library-title b { font-size: 20px; color: #59644b; }
+.styled-duel .loadout-library-title > span { display: none; }
+.styled-duel .loadout-character-grid > button,
+.styled-duel .loadout-weapon-grid > button {
+  background: transparent; border: 1px solid transparent; border-radius: 14px;
+  text-align: center; box-shadow: none;
+  transition: transform .25s ease, filter .25s ease, border-color .25s ease;
+}
+.styled-duel .loadout-character-grid > button[aria-pressed="true"],
+.styled-duel .loadout-weapon-grid > button[aria-pressed="true"] {
+  background: transparent; border-color: transparent;
+  box-shadow: 0 2px 0 var(--selection-accent);
+  color: var(--selection-accent);
+}
+.styled-duel .loadout-character-grid > button:not(:disabled):hover,
+.styled-duel .loadout-weapon-grid > button:not(:disabled):hover {
+  transform: translateY(-3px); background: transparent;
+  border-color: #8a947333; filter: drop-shadow(0 5px 5px #30372e18);
+}
+.styled-duel .loadout-portrait { background: transparent; border-radius: 50%; }
+.styled-duel .loadout-character-grid b { font-size: clamp(17px, 1.4vw, 25px); }
+.styled-duel .loadout-character-grid small { display: none; }
+.styled-duel .loadout-weapon-grid > button { align-items: center; min-height: 86px; }
+.styled-duel .loadout-weapon-grid b { font-size: clamp(14px, 1.1vw, 20px); }
+.styled-duel .loadout-weapon-grid small { font-size: 10px; color: #818771; }
+.styled-duel .loadout-weapon-grid > button:disabled { opacity: .32; }
+.styled-duel .loadout-showcase {
+  border: 0; border-radius: 50% 50% 18px 18px;
+  background: radial-gradient(ellipse at 50% 75%, #c9c8ab35, transparent 67%);
+}
+.styled-duel .loadout-current { border: 0; text-align: center; padding: 0; bottom: 10px; }
+.styled-duel .loadout-current b { font-size: clamp(18px, 1.6vw, 28px); color: #657051; }
+.styled-duel .loadout-drag { top: 8px; bottom: auto; right: 12px; font-size: 10px; }
+.styled-duel .loadout-back,
+.styled-duel .loadout-ready-button,
+.styled-duel .loadout-start > .primary-button {
+  font-family: var(--playful-font); font-weight: 400;
+  background: transparent; border: 1px solid transparent;
+  box-shadow: none; text-shadow: var(--playful-depth);
+  transition: transform .3s ease, text-shadow .3s ease;
+}
+.styled-duel .loadout-back { font-size: 19px; color: #49503e; }
+.styled-duel .loadout-ready-button { font-size: clamp(21px, 1.8vw, 30px); }
+.styled-duel .loadout-ready-button[aria-pressed="true"] { color: var(--selection-accent); text-shadow: 0 3px 8px #30372e20; }
+.styled-duel .loadout-start > .primary-button { font-size: clamp(26px, 2.3vw, 38px); color: #49503e; }
+.styled-duel .loadout-back:hover,
+.styled-duel .loadout-ready-button:not(:disabled):hover,
+.styled-duel .loadout-start > .primary-button:not(:disabled):hover {
+  background: transparent; box-shadow: none; transform: translateY(-3px) scale(1.04);
+  text-shadow: var(--playful-depth), 0 7px 9px #30372e30;
+}
+.styled-duel .loadout-footer { border: 0; background: transparent; padding-block: 0; }
+.styled-duel .loadout-start-hint { font-size: 11px; }
+@media (max-height: 820px) and (min-width: 741px) {
+  .styled-duel .loadout-header { padding-bottom: 0; }
+  .styled-duel .loadout-heading-copy h1 { font-size: 30px; }
+  .styled-duel .loadout-library-title b { font-size: 17px; }
+  .styled-duel .loadout-weapon-grid > button { min-height: 76px; }
+}
+@media (max-width: 740px) {
+  .styled-duel .loadout-heading-copy { text-align: left; }
+  .styled-duel .loadout-heading-copy h1 { font-size: 27px; }
+  .styled-duel .loadout-heading-copy p { font-size: 10px; }
+  .styled-duel .loadout-back { font-size: 16px; }
+  .styled-duel .loadout-player-panel + .loadout-player-panel { border-left: 0; border-top: 1px solid #969c7f30; padding-left: var(--panel-inset); padding-top: 15px; }
+  .styled-duel .loadout-weapon-grid > button { min-height: 94px; }
+}
+
+.loadout-ready-doodle { display: block; width: 48px; height: 40px; overflow: visible; fill: none; stroke: var(--selection-accent); stroke-linecap: round; stroke-linejoin: round; transform: rotate(-9deg); }
+.loadout-ready-doodle path:first-child { stroke-width: 6; }
+.loadout-ready-doodle path:nth-child(2) { stroke-width: 2.5; opacity: .65; }
+.loadout-ready-doodle path:last-child { stroke-width: 1.8; opacity: .45; }

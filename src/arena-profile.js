@@ -1,3 +1,6 @@
+// Switch to 'colosseum' to restore the imported arena.
+export const ACTIVE_ARENA_STYLE = 'classic';
+
 // Measured/regularized in assets/concepts/colosseum/prepared-v01/.
 // One game unit per GLB unit, Y up, level playable floor at the root origin.
 export const ARENA_PROFILE = Object.freeze({
