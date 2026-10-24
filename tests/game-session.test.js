@@ -239,6 +239,6 @@ test('split-screen uses the solo-sized physical arena and retains its boundary o
   assert.equal(session.world.arenaRadius, radius);
   for (const mode of ['duel-fixed', 'practice', 'solo', 'duel']) {
     session.startRound(mode);
-    assert.equal(session.world.arenaRadius, mode === 'practice' ? CONFIG.arenaRadius : radius);
+    assert.equal(session.world.arenaRadius, radius);
   }
 });

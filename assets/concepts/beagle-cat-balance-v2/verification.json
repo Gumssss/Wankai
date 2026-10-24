@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-23",
+  "scope": "Creator-confirmed Beagle/Cat balance and damage ownership",
+  "health": {
+    "beagle": 80,
+    "cat": 150,
+    "basic": 100,
+    "yellow": 110
+  },
+  "beagle": {
+    "weaponSpan": [
+      1.8,
+      3.6
+    ],
+    "physicalCapsules": 12,
+    "visualCapsules": 18,
+    "innerEar": "visual only in every state"
+  },
+  "cat": {
+    "linearScale": 2,
+    "floorClearance": 0.02,
+    "bodyClearance": 0.08,
+    "bodyFloor": 0.59,
+    "hoverHeight": 0.35
+  },
+  "verification": {
+    "tests": 224,
+    "failed": 0,
+    "fullSuiteLog": "/tmp/beagle-cat-full.log",
+    "pairings": 81,
+    "stamina": [
+      200,
+      40,
+      0
+    ],
+    "slotOrders": 2,
+    "matchupRuns": 486,
+    "meshAndContactFrames": "Actual prepared GLB measured and transformed through swing/heading extremes; original GLB unchanged",
+    "camera": "Actual cat vertices across 756 solo/split camera and pose states; full Beagle visual envelope retained",
+    "feedback": "Actual same-character trade: P1\u2192P2 7 damage, P2\u2192P1 20; independent full-name readouts in desktop/390px views",
+    "build": "pass; existing >500kB chunk advisory",
+    "pressure": "proportional to own maximum; environmental, no player hit event",
+    "video": {
+      "actualChapters": 28,
+      "ordinarySpeed": 1,
+      "sameEventReplays": 6,
+      "replaySpeed": 0.25,
+      "dimensions": [
+        1600,
+        900
+      ],
+      "fps": 30,
+      "duration": 127.366667,
+      "decode": "pass"
+    },
+    "finalTargetedChecks": {
+      "tests": 18,
+      "pass": 18,
+      "log": "/tmp/beagle-cat-delivery-check.log"
+    },
+    "runtimeErrors": [],
+    "liveRematch": "P1 Beagle/long ears 80 HP, P2 Cat/paws 150 HP; both 200 stamina; selected names preserved after restart"
+  },
+  "sourceHashes": {
+    "src/beagle-profile.js": "71778cff481dd85d13c058ed46c5b0202e8904d743038a71b9823ee28f389631",
+    "src/orange-tabby-profile.js": "f2e1910b9de8d1f6729a89e0bd37b3c2844394e89eb5922cc685bf9956e7237d",
+    "src/orange-tabby-model.js": "886455fa9fafd907ed6f19d1006b121142660e4504938a0a26543318c34f6d07",
+    "src/combat-settings.js": "aa10deda5da0fbb361a079d89780568f3c2ef96afad4b8b8f6a1bd31b469b7d6",
+    "src/physics.js": "f2b4936554b55f44d3dca72d1570476b39b56505a4a01286505d416ccce20dfe",
+    "src/game-session.js": "08ad4cff2d7693e1520e924ecc7326fcd712ea747cc2e027adb46e61e515f5fa",
+    "src/player-identity.js": "a0406f6d15bcbdc4bc31ed48b759868d75a4d17b22ccfb3e17fadbe0617a6660",
+    "src/App.jsx": "6bfd56b0686fa04a45fd0de2a4acc0864a50befedeca653656b28b0dd4067542",
+    "src/scene.js": "a3c6eedf167abd318bb9388fc13012f667087c3ec33fc83b6bf41b05cd4690df",
+    "src/style.css": "ed87d107884ad2d6a4d461f0eb9d7f1fa302ce69b2aed17b4f6baea0855878a8"
+  },
+  "evidence": {
+    "preview": "motion-comparison.mp4",
+    "previewCoverage": "preview-coverage.json",
+    "liveDesktop": "trade-desktop-final.png",
+    "liveMobile": "trade-mobile-final.png",
+    "actualGame": "actual-gameplay-complete.mp4",
+    "actualGameReport": "actual-gameplay-report.json",
+    "audit": "balance-trial-v2.json",
+    "rawActualGame": "actual-gameplay.webm",
+    "actualGameValidation": "actual-gameplay-validation.json",
+    "actualGameCoverage": "actual-gameplay-coverage.json",
+    "liveSplit": "split-desktop.png",
+    "liveGame": "live-game.png"
+  },
+  "unchanged": [
+    "stamina costs/recovery/fatigue",
+    "skill lifecycle",
+    "controller tuning",
+    "damage formulas",
+    "body size/mass/hover height"
+  ],
+  "limits": [
+    "Automated and constructed scenarios establish implementation correctness, not human matchup fairness."
+  ],
+  "publishing": "Local working checkout; no commit, push or release"
+}

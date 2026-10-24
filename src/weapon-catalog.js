@@ -15,7 +15,7 @@ export const WEAPON_CATALOG = Object.freeze([
     strength: '锤头重击伤害更高，宽头可格挡', weakness: '起挥和收招慢，挥空后更难调整',
     reach: '中', response: '慢' },
   { id: 'long-ears', available:true, characterId:'beagle', name: '长耳', english: 'LONG EARS', role: '长耳 · 撑地',
-    description: '双耳就是兵器。W / S 前后挥耳撑地，A / D 同时转向；按 F 展耳旋转并低空悬停 5 秒，不耗耐力，结束后自动落地。',
+    description: '长耳外侧一半可命中、格挡与撑地，内侧仅展示。W / S 前后挥耳撑地，A / D 同时转向；按 F 展耳旋转并低空悬停最多 5 秒，需 40 耐力启动、每秒消耗 16，结束或耗尽后自动落地。',
     strength: '双耳覆盖更宽，可撑地、挥击与格挡', weakness: '耳朵长，转向时要留出空间，共用一条耐力',
     reach: '长', response: '稳' },
   {id:'cat-paws',name:'猫爪',english:'CAT PAWS',role:'巨爪 · 撑地',available:true,characterId:'orange-tabby',

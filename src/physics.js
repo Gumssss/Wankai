@@ -2,12 +2,16 @@
 // Contact impulses use the staff Jacobian: rotation and translation respond
 // together. No locomotion force is added by the input controller.
 import { BEAGLE } from './beagle-profile.js';
+import { CombatContacts } from './combat-contacts.js';
 import {CHARACTERS} from './character-catalog.js';
 import {normalizeLoadout,isEarLoadout,isPawLoadout} from './loadouts.js';
 import {CAT} from './orange-tabby-profile.js';
 import {BEAGLE_COMMON_OFFSETS} from './character-attachments.js';
 import { BEAGLE_SKILL, beaglePointFrame, updateBeagleSkill, applyBeagleHover } from './beagle-skill.js';
-import { ARENA_PROFILE, arenaPlacement } from './arena-profile.js';
+import { ARENA_PROFILE, COMBAT_ARENA, arenaPlacement } from './arena-profile.js';
+import {STAMINA,staminaPower,ROTOR_RESOURCE,HOVER_DRAG,HAMMER_HEAD_DAMAGE,ROUND_RULES} from './combat-settings.js';
+import {pressureAt,updateRound} from './round-rules.js';
+export {STAMINA,staminaPower} from './combat-settings.js';
 export const CONFIG = Object.freeze({
   step: 1 / 180,
   arenaRadius: ARENA_PROFILE.radius,
@@ -30,18 +34,9 @@ export const CONFIG = Object.freeze({
   // existing ground solver's timestep or adding a forgiving collision margin.
   contactTravelFraction: 0.5,
   maxContactSubsteps: 64,
-  grip: 1.28,
+  grip: COMBAT_ARENA.grip,
   maxHealth: 100,
   turnDamageScale: 0.5,
-});
-export const STAMINA = Object.freeze({
-  max: 200,
-  swingDrain: 20,
-  turnDrain: 8,
-  recoveryDelay: 0.5,
-  recoveryRate: 30,
-  lowThreshold: 25,
-  minPower: 0.4,
 });
 export const CLASH = Object.freeze({
   minSpeed: 2.5,
@@ -51,8 +46,8 @@ export const CLASH = Object.freeze({
   minRecoilSpeed: 1.8,
   maxRecoilSpeed: 3.2,
 });
-export const SOLO_ARENA_SCALE = 3;
-export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' || mode === 'duel-fixed' ? SOLO_ARENA_SCALE : 1;
+export const SOLO_ARENA_SCALE = COMBAT_ARENA.scale;
+export const arenaScaleForMode = () => COMBAT_ARENA.scale;
 
 // These measured contacts were authored for the 2.35-unit model. The renderer
 // normalizes the unchanged GLB to staffLength, so scale its contacts identically.
@@ -92,10 +87,10 @@ export const WEAPONS = Object.freeze({
     // Native +Y coordinates, normalized to 1.9 units. The hanging cloth is visual only.
     colliders: Object.freeze([
       { a: [0, 0.0951, 0], b: [0, 1.2746, 0], radius: 0.0951 },
-      { a: [0.019, 1.2175, 0], b: [-0.019, 1.7692, 0], radius: 0.1427, damageScale: 1.3 },
-      { a: [-0.3805, 1.5029, 0], b: [-0.2473, 1.8358, 0], radius: 0.1046, damageScale: 1.3 },
-      { a: [-0.3805, 1.5029, 0], b: [-0.1997, 1.2175, 0], radius: 0.0951, damageScale: 1.3 },
-      { a: [0.1807, 1.4363, 0], b: [0.2188, 1.6646, 0], radius: 0.1332, damageScale: 1.3 },
+      { a: [0.019, 1.2175, 0], b: [-0.019, 1.7692, 0], radius: 0.1427, damageScale: HAMMER_HEAD_DAMAGE },
+      { a: [-0.3805, 1.5029, 0], b: [-0.2473, 1.8358, 0], radius: 0.1046, damageScale: HAMMER_HEAD_DAMAGE },
+      { a: [-0.3805, 1.5029, 0], b: [-0.1997, 1.2175, 0], radius: 0.0951, damageScale: HAMMER_HEAD_DAMAGE },
+      { a: [0.1807, 1.4363, 0], b: [0.2188, 1.6646, 0], radius: 0.1332, damageScale: HAMMER_HEAD_DAMAGE },
     ]) }),
 });
 
@@ -121,7 +116,7 @@ export function makePlayer(id, selection = 'polearm') {
     id,
     characterId,
     weapon,
-    p: v3(id === 0 ? -2.2 : 2.2, CONFIG.bodyFloor+(paws?CAT.hoverHeight:0), 0),
+    p: v3(id === 0 ? -COMBAT_ARENA.spawnDistance : COMBAT_ARENA.spawnDistance, CONFIG.bodyFloor+(paws?CAT.hoverHeight:0), 0),
     v: v3(),
     // The long polearm starts raised so two fighters can face each other
     // without their weapons overlapping before either player acts.
@@ -134,10 +129,12 @@ export function makePlayer(id, selection = 'polearm') {
     wp: 0,
     bodyPitch: 0, bodyRate: 0, vaulting: false, earPush: false,
     skillActive: false, skillRemaining: 0, skillWasHeld: false, skillRequested: false,
+    skillStepTime:0,skillBusy:false,zoneOutside:0,
     earSpread: 0, earSpreadRate: 0, earLag: 0, earLagRate: 0,
     driveT: 0,
     driveP: 0,
-    health: CONFIG.maxHealth,
+    maxHealth: CHARACTERS[characterId].maxHealth,
+    health: CHARACTERS[characterId].maxHealth,
     stamina: STAMINA.max,
     staminaRestTime: 0,
     grounded: !paws,
@@ -153,13 +150,11 @@ export function makePlayer(id, selection = 'polearm') {
 
 export const fighterHeading = player => player.phi + player.facingOffset;
 
-function recoilFromClash(player, speed) {
-  const heading = fighterHeading(player);
-  const forward = v3(Math.cos(heading), 0, Math.sin(heading));
-  // Guarantee a readable backward step, even if the fighter was moving forward.
-  // Keep lateral/vertical motion and any already faster backward momentum.
-  const correction = Math.max(0, dot(player.v, forward) + speed);
-  player.v = sub(player.v, mul(forward, correction));
+function recoilFromClash(player, speed, away) {
+  // Arcade recoil acts along the pair's separation axis. It cannot turn an
+  // outward-facing backward clash into an approach; tangent/vertical survive.
+  const correction = Math.max(0, speed-dot(player.v,away));
+  player.v = add(player.v, mul(away, correction));
 }
 
 // distance is measured along the solid staff, from its floating inner end.
@@ -198,15 +193,20 @@ export function weaponPointFrame(player, local, anchor) {
   };
 }
 
-export function weaponSegments(player) {
+function transformedWeaponSegments(player,visual=false) {
   const weapon = weaponStats(player);
-  const colliders = weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
+  const colliders = (visual?weapon.visualColliders:null) || weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
   return colliders.map(collider => {
     const localA = v3(...collider.a), localB = v3(...collider.b);
     return { ...collider, localA, localB,
       a: weaponPointFrame(player, localA, collider.anchor).point, b: weaponPointFrame(player, localB, collider.anchor).point };
   });
 }
+
+export const weaponSegments=player=>transformedWeaponSegments(player);
+// Camera/visual consumers must retain decorative inner ears. Never use this
+// envelope for damage, clashes, support or rim response.
+export const visualWeaponSegments=player=>transformedWeaponSegments(player,true);
 
 const segmentFrame = (player, segment, fraction) => weaponPointFrame(player,
   add(segment.localA, mul(sub(segment.localB, segment.localA), fraction)), segment.anchor);
@@ -250,13 +250,11 @@ function impulse(p, frame, force, pose = p) {
   p.wp += dot(frame.jp, force) / phiInertia(pose);
 }
 
-export const staminaPower = stamina => STAMINA.minPower + (1 - STAMINA.minPower) *
-  clamp(stamina / STAMINA.lowThreshold, 0, 1);
-
 function updateStamina(p, turnInput, dt) {
-  const cost = p.skillActive ? 0 : Math.abs(p.polarInput) * STAMINA.swingDrain + Math.abs(turnInput) * STAMINA.turnDrain;
-  if (cost > 0) {
-    p.stamina = Math.max(0, p.stamina - cost * dt);
+  const activeTime=p.skillStepTime||0;
+  const cost = (Math.abs(p.polarInput)*STAMINA.swingDrain+Math.abs(turnInput)*STAMINA.turnDrain)*(dt-activeTime)+activeTime*ROTOR_RESOURCE.drain;
+  if (cost > 0 || p.skillBusy) {
+    p.stamina = Math.max(0, p.stamina - cost);
     p.staminaRestTime = 0;
   } else {
     // Only the part of this step after the recovery delay can refill stamina.
@@ -341,45 +339,6 @@ function contactMotion(player, start) {
     travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi) + Math.abs(spread) + Math.abs(lag)) };
 }
 
-// Inspect intermediate rigid poses, including curved rotation and heading wrap.
-// Only contacts are sampled: motors, stamina, gravity and ground support still
-// advance once per fixed tick. No extra radius is added to any shape.
-function contactAlongMotion(a, b, previous, detect) {
-  if (!previous) {
-    const contact = detect(a, b);
-    return contact && { ...contact, poseA: a, poseB: b };
-  }
-  const startA = previous[a.id], startB = previous[b.id];
-  const motionA = contactMotion(a, startA), motionB = contactMotion(b, startB);
-  const samples = clamp(Math.ceil((motionA.travel + motionB.travel) /
-    (Math.min(motionA.radius, motionB.radius) * CONFIG.contactTravelFraction)), 1, CONFIG.maxContactSubsteps);
-  const at = (player, start, motion, t) => ({ ...player,
-    p: add(start.p, mul(sub(player.p, start.p), t)),
-    theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t,
-    earSpread:(start.earSpread||0)+motion.spread*t,earLag:(start.earLag||0)+motion.lag*t });
-  const inspect = t => {
-    const poseA = at(a, startA, motionA, t), poseB = at(b, startB, motionB, t);
-    const contact = detect(poseA, poseB);
-    return contact && { ...contact, poseA, poseB };
-  };
-  for (let index = 0; index <= samples; index++) {
-    let contact = inspect(index / samples);
-    if (!contact) continue;
-    // Refine the first sampled overlap so impulses use the incoming side of
-    // the surface, not a normal already flipped by a tip passing through it.
-    if (index > 0) {
-      let low = (index - 1) / samples, high = index / samples;
-      for (let pass = 0; pass < 6; pass++) {
-        const middle = (low + high) / 2, earlier = inspect(middle);
-        if (earlier) { high = middle; contact = earlier; }
-        else low = middle;
-      }
-    }
-    return contact;
-  }
-  return null;
-}
-
 export class ArenaPhysics {
   constructor() { this.reset(); }
 
@@ -389,7 +348,7 @@ export class ArenaPhysics {
     player.polarInput = Math.sign(direction || 0);
   }
 
-  reset(practice = false, solo = false, firstWeapon = 'polearm', secondWeapon = 'polearm', arenaScale = solo ? SOLO_ARENA_SCALE : 1) {
+  reset(practice = false, solo = false, firstWeapon = 'polearm', secondWeapon = 'polearm', arenaScale = COMBAT_ARENA.scale) {
     firstWeapon=normalizeLoadout(firstWeapon);
     secondWeapon=normalizeLoadout(secondWeapon);
     this.players = solo ? [makePlayer(0, firstWeapon)] : [makePlayer(0, firstWeapon), makePlayer(1, secondWeapon)];
@@ -404,25 +363,29 @@ export class ArenaPhysics {
     this.time = 0;
     this.events = [];
     this.winner = null;
+    this.endReason = null;
+    this.bodyContacts=0;
     this.practice = practice;
     this.solo = solo;
     this.arenaRadius = CONFIG.arenaRadius * arenaScale;
     this.arenaRimHeight = arenaPlacement(arenaScale).weaponContactHeight;
+    this.pressure=pressureAt(0,this.arenaRadius,!practice&&!solo);
     this.contacts = this.players.map(() => ({ separated: 1 }));
+    this.combat = new CombatContacts(this, { weaponSegments, hurtSegments, closestSegments,
+      weaponPointFrame, weaponStats, effectiveMass, impulse, invMass, damageForImpact, clamp,
+      contactMotion, recoilFromClash, config: CONFIG, clash: CLASH });
     this.lastClash = -1;
     this.clashArmed = true;
     this.clashSeparated = CLASH.separationDelay;
     this.lastHit = null;
-    if (practice) {
-      this.players[0].p.x = -1.45;
-      this.players[1].p.x = 1.45;
-      if(!isPawLoadout(this.players[1]))this.players[1].theta = 0.28;
-    }
   }
 
   step(inputs, dt = CONFIG.step) {
     if (this.winner !== null) return;
     this.events.length = 0;
+    this.bodyContacts=0;
+    if(!this.practice&&!this.solo&&this.time>=ROUND_RULES.duration-1e-8){updateRound(this,0);return;}
+    if(!this.practice&&!this.solo)dt=Math.min(dt,Math.max(0,ROUND_RULES.duration-this.time));
     this.time += dt;
     const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, earSpread:p.earSpread, earLag:p.earLag }));
     for (const p of this.players) {
@@ -430,14 +393,14 @@ export class ArenaPhysics {
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
       const rawTurnInput = clamp(input.phi || 0, -1, 1);
-      const turnInput = isPawLoadout(p)?(p.polarInput||rawTurnInput?clamp((rawTurnInput*CAT.normalTurnSpeed-p.wp)*CAT.steeringGain,-1,1):0):rawTurnInput;
       if (isEarLoadout(p)) {
         p.bodyPitch=0;p.bodyRate=0;
         updateBeagleSkill(p,input.skill,dt);
         if(p.skillActive || p.earSpread>.001)p.polarInput=0;
       }
-      updateStamina(p, isPawLoadout(p)?rawTurnInput:turnInput, dt);
+      updateStamina(p, rawTurnInput, dt);
       const power = staminaPower(p.stamina);
+      const turnInput = isPawLoadout(p)?(p.polarInput||rawTurnInput?clamp((rawTurnInput*CAT.normalTurnSpeed*power-p.wp)*CAT.steeringGain,-1,1):0):rawTurnInput;
       // Yaw keeps its existing reversal strength; pitch uses the stronger brake.
       const motorP = motorAcceleration(p.wp, turnInput, weapon, power, dt, weapon.motorAcceleration);
       const previousT = p.wt, previousP = p.wp;
@@ -446,12 +409,13 @@ export class ArenaPhysics {
         const rotor=p.skillActive || p.earSpread>.001;
         if(rotor){
           const error=Math.atan2(Math.sin(-Math.PI/2-p.theta),Math.cos(-Math.PI/2-p.theta));
-          const target=clamp(error*8,-weapon.maxAngularSpeed,weapon.maxAngularSpeed);
-          p.wt+=clamp(target-p.wt,-BEAGLE_SKILL.pitchAcceleration*dt,BEAGLE_SKILL.pitchAcceleration*dt);
+          const target=clamp(error*8,-weapon.maxAngularSpeed*power,weapon.maxAngularSpeed*power);
+          p.wt+=clamp(target-p.wt,-BEAGLE_SKILL.pitchAcceleration*power*dt,BEAGLE_SKILL.pitchAcceleration*power*dt);
         }else drivePolarAngle(p,dt,power);
         if(p.skillActive){
-          const target=(turnInput || Math.sign(p.wp) || 1)*BEAGLE_SKILL.spinSpeed;
-          p.wp+=clamp(target-p.wp,-weapon.motorAcceleration*dt,weapon.motorAcceleration*dt);
+          const target=(turnInput || Math.sign(p.wp) || 1)*BEAGLE_SKILL.spinSpeed*power;
+          const acceleration=weapon.motorAcceleration*(target*p.wp<0?1:power);
+          p.wp+=clamp(target-p.wp,-acceleration*dt,acceleration*dt);
         }else{
           const assist=(p.polarInput || turnInput) ? clamp((turnInput*BEAGLE_SKILL.normalTurnSpeed*power-p.wp)*BEAGLE_SKILL.steeringGain,-1,1) : 0;
           const motor=motorAcceleration(p.wp,assist,weapon,power,dt,weapon.motorAcceleration);
@@ -473,8 +437,12 @@ export class ArenaPhysics {
         p.v.y+=lift*dt;
       }
       p.v.y -= CONFIG.gravity * dt;
-      p.v.x *= Math.exp(-0.15 * dt);
-      p.v.z *= Math.exp(-0.15 * dt);
+      const hovering=isPawLoadout(p)||(isEarLoadout(p)&&p.skillActive&&p.earSpread>Math.PI/2*.65);
+      const height=characterStats(p).bodyFloor+(isPawLoadout(p)?CAT.hoverHeight:BEAGLE_SKILL.hoverHeight);
+      const support=hovering?clamp(1-Math.max(0,p.p.y-height)/HOVER_DRAG.fadeHeight,0,1):0;
+      const drag=HOVER_DRAG.air+(HOVER_DRAG.supported-HOVER_DRAG.air)*support;
+      p.v.x *= Math.exp(-drag * dt);
+      p.v.z *= Math.exp(-drag * dt);
       // Azimuth retains free rotation and inertia independently of the up/down target.
       p.phi = (p.phi + p.wp * dt) % (Math.PI * 2);
       p.p = add(p.p, mul(p.v, dt));
@@ -494,13 +462,22 @@ export class ArenaPhysics {
       if (!this.solo) this.solveBodies();
     }
     if (!this.solo) {
-      this.solveStaffClash(dt, previous);
-      this.solveAttack(this.players[0], this.players[1], dt, previous);
-      this.solveAttack(this.players[1], this.players[0], dt, previous);
+      const changed = this.combat.resolve(previous, dt);
+      // Contacts can change the remaining trajectory. Restore environmental
+      // constraints without repeating gravity, motors, stamina or friction.
+      if (changed) for (let pass = 0; pass < 5; pass++) {
+        for (const p of this.players) {
+          this.solveBodyGround(p, dt, false);
+          this.solveStaffGround(p, dt);
+          this.solveWall(p, dt);
+        }
+        this.solveBodies();
+      }
     }
     for (const p of this.players) {
       // Body separation can push a fighter slightly past the rim on the last
       // contact pass. Reapply the body boundary after pair contacts finish.
+      this.solveBodyGround(p,dt,false);
       this.solveBodyWall(p);
       const speed = length(p.v);
       if (speed > 15) p.v = mul(p.v, 15 / speed);
@@ -509,12 +486,9 @@ export class ArenaPhysics {
       p.wt = clamp(p.wt, -limit, limit);
       p.wp = clamp(p.wp, -limit, limit);
       p.contactSpeed = length(staffFrame(p).velocity);
-      if (this.practice && p.id === 1 && this.time - p.lastHitAt > 2.5) p.health = CONFIG.maxHealth;
+      if (this.practice && p.id === 1 && this.time - p.lastHitAt > 2.5) p.health = p.maxHealth;
     }
-    if (!this.practice && !this.solo) {
-      const dead = this.players.map(p => p.health <= 0);
-      if (dead[0] || dead[1]) this.winner = dead[0] && dead[1] ? -1 : dead[0] ? 1 : 0;
-    }
+    updateRound(this,dt);
   }
 
   solveBodyGround(p, dt, friction) {
@@ -525,7 +499,7 @@ export class ArenaPhysics {
       p.v.y = Math.max(0, p.v.y);
     }
     if (p.grounded && friction) {
-      const d = Math.exp(-4.3 * dt);
+      const d = Math.exp(-COMBAT_ARENA.groundFriction * dt);
       p.v.x *= d;
       p.v.z *= d;
     }
@@ -555,25 +529,19 @@ export class ArenaPhysics {
   }
 
   solveBodyWall(p) {
-    if(p.characterId==='beagle'){
+    // The same authored upright solids define every character's body contacts
+    // and circular boundary. Decorative ears/paws are weapon geometry only.
+    for(let pass=0;pass<3;pass++){
+      let worst=null;
       for(const shape of hurtSegments(p))for(const point of [shape.a,shape.b]){
         const distance=Math.hypot(point.x,point.z),overlap=distance+shape.radius-this.arenaRadius;
-        if(overlap<=0)continue;
-        const n=v3(-point.x/distance,0,-point.z/distance);
-        p.p=add(p.p,mul(n,overlap));
-        const speed=dot(p.v,n);
-        if(speed<0)p.v=sub(p.v,mul(n,1.16*speed));
+        if(overlap>0&&(!worst||overlap>worst.overlap))worst={point,distance,overlap};
       }
-      return;
-    }
-    const bodyLimit = this.arenaRadius - bodyRadius(p);
-    const distance = Math.hypot(p.p.x, p.p.z);
-    if (distance > bodyLimit) {
-      const n = v3(p.p.x / distance, 0, p.p.z / distance);
-      p.p.x = n.x * bodyLimit;
-      p.p.z = n.z * bodyLimit;
-      const outward = dot(p.v, n);
-      if (outward > 0) p.v = sub(p.v, mul(n, outward * 1.16));
+      if(!worst)break;
+      const n=v3(-worst.point.x/worst.distance,0,-worst.point.z/worst.distance);
+      p.p=add(p.p,mul(n,worst.overlap));
+      const speed=dot(p.v,n);
+      if(speed<0)p.v=sub(p.v,mul(n,1.16*speed));
     }
   }
 
@@ -594,109 +562,45 @@ export class ArenaPhysics {
 
   solveBodies() {
     const [a, b] = this.players;
-    if (Math.abs(a.p.y - b.p.y) > 1.35) return;
-    const delta = v3(b.p.x - a.p.x, 0, b.p.z - a.p.z);
-    const dist = length(delta), penetration = bodyRadius(a) + bodyRadius(b) - dist;
-    if (penetration <= 0) return;
-    const n = unit(delta);
-    a.p = sub(a.p, mul(n, penetration * 0.5));
-    b.p = add(b.p, mul(n, penetration * 0.5));
-    const closing = dot(sub(a.v, b.v), n);
-    if (closing > 0) {
-      a.v = sub(a.v, mul(n, closing * 0.55));
-      b.v = add(b.v, mul(n, closing * 0.55));
+    if(!a||!b)return;
+    for(let pass=0;pass<8;pass++){
+      let best=null;
+      for(const first of hurtSegments(a))for(const second of hurtSegments(b)){
+        const c=closestSegments(first.a,first.b,second.a,second.b),depth=first.radius+second.radius-c.distance;
+        if(depth<=1e-7||(best&&depth<best.depth-1e-9))continue;
+        const key=[c.a.x+c.b.x,c.a.y+c.b.y,c.a.z+c.b.z].map(n=>n.toFixed(9)).join(',');
+        if(depth>1e-7&&(!best||depth>best.depth+1e-9||(Math.abs(depth-best.depth)<=1e-9&&key<best.key)))best={c,depth,key};
+      }
+      if(!best)break;
+      this.bodyContacts++;
+      // Coincident centre lines have no geometric normal. Relative velocity,
+      // then the difference of headings, give an antisymmetric fallback: a
+      // slot swap must reverse the normal instead of choosing P1's heading.
+      const ha=fighterHeading(a),hb=fighterHeading(b);
+      const headingDifference=v3(Math.cos(ha)-Math.cos(hb),0,Math.sin(ha)-Math.sin(hb));
+      const signature=p=>`${p.characterId}:${p.weapon}:${p.theta}`;
+      const sign=signature(a)<=signature(b)?1:-1;
+      const fallback=unit(sub(b.p,a.p),unit(sub(a.v,b.v),unit(headingDifference,v3(Math.cos(ha)*sign,0,Math.sin(ha)*sign))));
+      const n=unit(sub(best.c.b,best.c.a),fallback);
+      // A floor-supported lower body cannot be pushed through the floor by a
+      // landing opponent. Transfer that blocked vertical correction upward.
+      let first=.5,second=.5;
+      const floorA=characterStats(a).bodyFloor+ARENA_PROFILE.floorHeight,floorB=characterStats(b).bodyFloor+ARENA_PROFILE.floorHeight;
+      if(n.y>1e-6&&a.p.y<=floorA+1e-6){first=0;second=1;}
+      if(n.y<-1e-6&&b.p.y<=floorB+1e-6){first=1;second=0;}
+      a.p=sub(a.p,mul(n,best.depth*first));b.p=add(b.p,mul(n,best.depth*second));
+      a.p.y=Math.max(floorA,a.p.y);b.p.y=Math.max(floorB,b.p.y);
+      const closing=dot(sub(a.v,b.v),n);
+      if(closing>0){a.v=sub(a.v,mul(n,closing*first));b.v=add(b.v,mul(n,closing*second));}
     }
   }
 
   solveStaffClash(dt, previous) {
-    const [a, b] = this.players;
-    const best = contactAlongMotion(a, b, previous, (poseA, poseB) => {
-      let contact;
-      const first = weaponSegments(poseA), second = weaponSegments(poseB);
-      for (const sa of first) for (const sb of second) {
-        const c = closestSegments(sa.a, sa.b, sb.a, sb.b);
-        const depth = sa.radius + sb.radius - c.distance;
-        if (depth > 0 && (!contact || depth > contact.depth)) contact = { c, depth, sa, sb };
-      }
-      return contact;
-    });
-    if (!best) {
-      this.clashSeparated += dt;
-      if (this.clashSeparated >= CLASH.separationDelay) this.clashArmed = true;
-      return;
-    }
-    this.clashSeparated = 0;
-    const { c, depth, sa, sb, poseA, poseB } = best;
-    const n = unit(sub(c.a, c.b), v3(0, 1, 0));
-    const fa = segmentFrame(poseA, sa, c.s), fb = segmentFrame(poseB, sb, c.t);
-    const closing = -dot(sub(fa.velocity, fb.velocity), n);
-    const j = Math.max(0, (closing * 1.35 + depth * 0.13 / dt) / (effectiveMass(poseA, fa, n) + effectiveMass(poseB, fb, n)));
-    impulse(a, fa, mul(n, j), poseA);
-    impulse(b, fb, mul(n, -j), poseB);
-    if (this.clashArmed && closing > CLASH.minSpeed && this.time - this.lastClash > CLASH.cooldown) {
-      this.lastClash = this.time;
-      this.clashArmed = false;
-      const effort = clamp((closing - CLASH.minSpeed) / (CLASH.fullSpeed - CLASH.minSpeed), 0, 1);
-      const recoilSpeed = CLASH.minRecoilSpeed + (CLASH.maxRecoilSpeed - CLASH.minRecoilSpeed) * effort;
-      recoilFromClash(a, recoilSpeed);
-      recoilFromClash(b, recoilSpeed);
-      this.events.push({ type: 'clash', point: mul(add(c.a, c.b), 0.5),
-        strength: clamp(closing / CLASH.fullSpeed, 0.2, 1), recoilSpeed });
-    }
+    return this.combat.resolve(previous, dt, { attackers: [], clashes: true });
   }
 
   solveAttack(attacker, target, dt, previous) {
-    const best = contactAlongMotion(attacker, target, previous, (poseA, poseB) => {
-      let contact;
-      for (const segment of weaponSegments(poseA)) {
-        for (const body of hurtSegments(poseB)) {
-          const c = closestSegments(segment.a, segment.b, body.a, body.b);
-          const depth = body.radius + segment.radius - c.distance;
-          if (depth > 0 && (!contact || depth > contact.depth)) contact = { c, depth, segment };
-        }
-      }
-      return contact;
-    });
-    const contact = this.contacts[attacker.id];
-    if (!best) { contact.separated += dt; return; }
-    const { c, depth, segment, poseA } = best;
-    const n = unit(sub(c.a, c.b));
-    const f = segmentFrame(poseA, segment, c.s);
-    const relative = sub(f.velocity, target.v);
-    const closing = -dot(relative, n);
-    const driving = add(mul(f.jt, attacker.driveT), mul(f.jp, attacker.driveP));
-    const swing = sub(f.velocity, attacker.v);
-    const acceleration = Math.max(0, dot(driving, unit(swing, v3())));
-    // Attribute only motion closing into the target. Sideways motion that does
-    // not cause the contact cannot reduce a vertical hit, and released keys do
-    // not disguise a coasting horizontal strike. Body translation stays neutral.
-    const turnClosing = Math.max(0, -dot(mul(f.jp, attacker.wp), n));
-    const swingClosing = Math.max(0, -dot(mul(f.jt, attacker.wt), n));
-    const bodyClosing = Math.max(0, -dot(sub(attacker.v, target.v), n));
-    const totalClosing = turnClosing + swingClosing + bodyClosing;
-    const turnShare = totalClosing > 1e-8 ? turnClosing / totalClosing : 0;
-    const directionScale = 1 - (1 - CONFIG.turnDamageScale) * turnShare;
-    const damage = Math.round(damageForImpact(closing, acceleration) * (segment.damageScale || 1) * directionScale);
-    const fresh = contact.separated > 0.045 && this.time - attacker.lastAttackAt > 0.28;
-    contact.separated = 0;
-    const j = Math.max(0, (closing * 1.12 + Math.max(0, depth - 0.008) * 0.12 / dt) /
-      (effectiveMass(poseA, f, n) + invMass));
-    impulse(attacker, f, mul(n, j), poseA);
-    target.v = sub(target.v, mul(n, j * invMass));
-    if (!fresh || damage === 0) return;
-    target.health = Math.max(this.practice ? 1 : 0, target.health - damage);
-    target.hitFlash = 1;
-    target.lastHitAt = this.time;
-    attacker.lastAttackAt = this.time;
-    attacker.lastDamage = damage;
-    attacker.totalDamage += damage;
-    // A bounded arcade impulse makes solid hits readable without toppling bodies.
-    target.v = sub(target.v, mul(n, damage * 0.07));
-    this.lastHit = { damage, speed: closing, acceleration, turnShare, attacker: attacker.id };
-    this.events.push({
-      type: 'hit', point: c.a, normal: mul(n, -1), attacker: attacker.id,
-      target: target.id, damage, speed: closing, acceleration, turnShare,
-      strength: clamp(damage / 30, 0.12, 1),
-    });
+    if (!attacker || !target || target.id !== 1 - attacker.id) return false;
+    return this.combat.resolve(previous, dt, { attackers: [attacker.id], clashes: false });
   }
 }

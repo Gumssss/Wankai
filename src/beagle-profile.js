@@ -1,5 +1,5 @@
 // Measured from the approved smooth v05 model. Regenerate with scripts/blender/fit-beagle-contacts.mjs.
-export const BEAGLE = Object.freeze({
+const measuredBeagle = Object.freeze({
   "model": "beagle-smooth-ear-duelist-v05.glb",
   "appearanceModel": "beagle-smooth-appearance-v05.glb",
   "bodyFloor": 0.59,
@@ -373,3 +373,15 @@ export const BEAGLE = Object.freeze({
     }
   ]
 });
+
+// Visuals retain the complete approved ear; every physical subsystem consumes
+// only these distal capsules. Inset spine endpoints by r to contain both caps.
+const freezeShape=s=>Object.freeze({...s,a:Object.freeze(s.a),b:Object.freeze(s.b),anchor:Object.freeze(s.anchor)});
+const visualColliders=Object.freeze(measuredBeagle.colliders.map(freezeShape));
+const colliders=Object.freeze(visualColliders.flatMap(s=>{
+ const low=1.8+s.radius,high=3.6-s.radius;
+ if(s.b[1]<low||s.a[1]>high||low>high)return [];
+ const at=y=>{const t=(y-s.a[1])/(s.b[1]-s.a[1]);return s.a.map((v,i)=>i===1?y:v+(s.b[i]-v)*t);};
+ return [freezeShape({...s,a:at(Math.max(low,s.a[1])),b:at(Math.min(high,s.b[1]))})];
+}));
+export const BEAGLE=Object.freeze({...measuredBeagle,weaponStart:1.8,visualColliders,colliders});

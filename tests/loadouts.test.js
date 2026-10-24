@@ -64,13 +64,13 @@ test('skill input gates follow the complete loadout rather than the beagle chara
  game.tick(1/60);assert.equal(game.world.players[1].skillActive,true);assert.equal(game.world.players[0].skillActive,false);
  assert.equal(isEarLoadout(game.world.players[1]),true);
 });
-test('all 64 mixed-character matchups stay finite, bounded and within resource limits under combined controls and skills',()=>{
+test('all 81 mixed-character matchups stay finite, bounded and within resource limits under combined controls and skills',()=>{
  for(const first of PLAYABLE_LOADOUTS)for(const second of PLAYABLE_LOADOUTS){
   const world=new ArenaPhysics();world.reset(false,false,first,second,3);
   for(let tick=0;tick<360;tick++){
    world.step([{theta:tick<180?1:-1,phi:tick%120<60?1:-1,skill:tick<180},{theta:tick<120?-1:1,phi:tick%90<45?-1:1,skill:tick<180}]);
    for(const p of world.players){
-    assert.ok(Number.isFinite(p.p.x+p.p.y+p.p.z+p.wt+p.wp));assert.ok(p.stamina>=0&&p.stamina<=200);assert.ok(p.health>=0&&p.health<=100);assert.ok(p.p.y>=CONFIG.bodyFloor-1e-8);
+    assert.ok(Number.isFinite(p.p.x+p.p.y+p.p.z+p.wt+p.wp));assert.ok(p.stamina>=0&&p.stamina<=200);assert.ok(p.health>=0&&p.health<=p.maxHealth);assert.ok(p.p.y>=CONFIG.bodyFloor-1e-8);
     for(const s of hurtSegments(p))for(const q of [s.a,s.b])assert.ok(Math.hypot(q.x,q.z)+s.radius<world.arenaRadius+.02);
     if(!isEarLoadout(p)){assert.equal(p.skillActive,false);assert.equal(p.earSpread,0);}
    }

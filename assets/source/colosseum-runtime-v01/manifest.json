@@ -1,0 +1,12 @@
+{
+  "asset": "colosseum-runtime-v01-archive",
+  "source": "Exact former runtime assets; consolidated from SHA-identical public copies with suffix 2.",
+  "model": "colosseum-prepared-v01.glb",
+  "modelSha256": "b15375cfff789df19bb587c84b6ef838287e306382f897d5f645f5a7c0857584",
+  "floor": "colosseum-roman-floor-v01.jpg",
+  "floorSha256": "099bf45874be74d1b0e33828099a6d23a1c0faff4f006514f00f4071af6419bb",
+  "selectedTripoSource": "../tripo/colosseum-v01/colosseum-tripo-v01-source.glb",
+  "blenderSource": "../blender/colosseum-prepared-v01.blend",
+  "floorProvenance": "../../concepts/colosseum/floor-pattern-v02/",
+  "note": "Preserved approved source for reproducible lighter runtime variants. No new generation or licensing claim."
+}

@@ -1,0 +1,167 @@
+{
+  "chapters": 28,
+  "duration": 103.43959999999404,
+  "allModelsReady": true,
+  "normalMatrix": {
+    "cat-paws W": {
+      "offset": 0,
+      "duration": 3.012100000023842,
+      "heldSamples": 103
+    },
+    "cat-paws S": {
+      "offset": 3.012100000023842,
+      "duration": 6.031,
+      "heldSamples": 115
+    },
+    "cat-paws A": {
+      "offset": 9.043100000023841,
+      "duration": 3.004,
+      "heldSamples": 108
+    },
+    "cat-paws D": {
+      "offset": 12.04710000002384,
+      "duration": 3.009,
+      "heldSamples": 104
+    },
+    "cat-paws W + A": {
+      "offset": 15.056100000023841,
+      "duration": 3.013,
+      "heldSamples": 118
+    },
+    "cat-paws W + D": {
+      "offset": 18.06910000002384,
+      "duration": 3.0112000000178814,
+      "heldSamples": 120
+    },
+    "cat-paws S + A": {
+      "offset": 21.080300000041724,
+      "duration": 3.0102000000178815,
+      "heldSamples": 117
+    },
+    "cat-paws S + D": {
+      "offset": 24.090500000059606,
+      "duration": 3.0235999999940395,
+      "heldSamples": 104
+    },
+    "long-ears W": {
+      "offset": 34.148400000035764,
+      "duration": 3.0200999999940397,
+      "heldSamples": 104
+    },
+    "long-ears S": {
+      "offset": 37.1685000000298,
+      "duration": 6.00709999999404,
+      "heldSamples": 118
+    },
+    "long-ears A": {
+      "offset": 43.17560000002384,
+      "duration": 3.014,
+      "heldSamples": 107
+    },
+    "long-ears D": {
+      "offset": 46.189600000023844,
+      "duration": 3.0120999999940397,
+      "heldSamples": 101
+    },
+    "long-ears W + A": {
+      "offset": 49.20170000001789,
+      "duration": 3.0070999999940393,
+      "heldSamples": 105
+    },
+    "long-ears W + D": {
+      "offset": 52.20880000001193,
+      "duration": 3.0305,
+      "heldSamples": 118
+    },
+    "long-ears S + A": {
+      "offset": 55.23930000001192,
+      "duration": 3.0114000000059606,
+      "heldSamples": 118
+    },
+    "long-ears S + D": {
+      "offset": 58.250700000017886,
+      "duration": 3.003699999988079,
+      "heldSamples": 117
+    }
+  },
+  "cat-vertical-hit": [
+    {
+      "type": "clash",
+      "time": 0.38158420138888854
+    }
+  ],
+  "cat-horizontal-hit": [
+    {
+      "type": "hit",
+      "attacker": 0,
+      "target": 1,
+      "damage": 1,
+      "time": 1.0907009548611084
+    }
+  ],
+  "cat-block-clash": [
+    {
+      "type": "clash",
+      "time": 0.42136320891203655
+    },
+    {
+      "type": "hit",
+      "attacker": 0,
+      "target": 1,
+      "damage": 9,
+      "time": 1.9771999782986052
+    }
+  ],
+  "identical-character-trade": [
+    {
+      "type": "hit",
+      "attacker": 1,
+      "target": 0,
+      "damage": 20,
+      "time": 0
+    },
+    {
+      "type": "hit",
+      "attacker": 0,
+      "target": 1,
+      "damage": 7,
+      "time": 0
+    }
+  ],
+  "verticalDamage": [
+    {
+      "chapter": "long-ears-strike-clash-recovery",
+      "attacker": 0,
+      "target": 1,
+      "damage": 7,
+      "turnShare": 0,
+      "time": 0.30777762276785703
+    },
+    {
+      "chapter": "cat-block-clash",
+      "attacker": 0,
+      "target": 1,
+      "damage": 9,
+      "turnShare": 0,
+      "time": 1.9771999782986052
+    }
+  ],
+  "horizontalDamage": [
+    {
+      "chapter": "cat-paws-strike-clash-recovery",
+      "attacker": 0,
+      "target": 1,
+      "damage": 1,
+      "turnShare": 0.9722612505330803,
+      "time": 2.5063503689236035
+    },
+    {
+      "chapter": "cat-horizontal-hit",
+      "attacker": 0,
+      "target": 1,
+      "damage": 1,
+      "turnShare": 1,
+      "time": 1.0907009548611084
+    }
+  ]
+}

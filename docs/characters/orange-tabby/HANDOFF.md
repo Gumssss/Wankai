@@ -1,5 +1,11 @@
 # Orange tabby: current playable handoff
 
+**Latest paw-size revision — 23 October 2026:** Cat paws are now **1.3× the original width, height and depth**, replacing the earlier 2× trial. Cat remains 150 HP. The same shared transform updates visible meshes, fitted contacts, fallback, trails and camera margins. Neutral floor/body clearances remain 0.02/0.08 units; body size, hover height and control/resource/damage tuning remain unchanged. The revised exact-model, movement, collision and swapped-slot matchup checks pass (49 focused tests); production build passes. Evidence is retained in `output/cat-paws-v3/`.
+
+
+**Earlier 2× trial — 23 October 2026:** Cat has 150 HP. Both paw dimensions are doubled about their own measured neutral centers, then moved upward/outward beside the unchanged body for 0.02 floor/0.08 body clearance. Visible models, contacts, fallback, trails, cues and cameras share that geometry. The shared controller/resource/skill/damage rules remain; larger leverage intentionally changes support timing and lift. The complete 96-second pre-integration comparison and actual-game evidence are retained in `output/beagle-cat-balance-v2/`. The live game is [port 5187](http://127.0.0.1:5187/). All 224 tests and the production build pass. The roster now has nine loadouts/81 ordered pairings including Yellow Blob. Earlier v01 measurements and recordings below describe the historical 20 October checkpoint; current details are in [combat rules](../../CONTROL_SYSTEM.md#beaglecat-balance-and-damage-ownership--23-october-2026).
+
+
 Updated 20 October 2026. **Orange tabby + cat paws is playable locally.** The user approved complete movement video v07 and requested integration. Runtime uses the unchanged prepared-v02 Tripo export and accepted v06 controller. No new generation, paid retry, extra ability, push, merge or release is implied.
 
 ## Open and prepare a match

@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-24",
+  "branch": "feat/combat-balance-performance-update",
+  "base": "018c39b8985a909bec8787bb82bd589b3395877a",
+  "scope": "Push current working update to a separate branch and open a review PR; no merge or release",
+  "tests": {
+    "command": "npm test",
+    "passed": 234,
+    "failed": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "passed": true,
+    "advisory": "Existing large JavaScript chunk warning"
+  },
+  "motionEvidence": {
+    "currentCat": "../cat-paws-v3/README.md",
+    "historicalBeagleCat": "../beagle-cat-balance-v2/README.md",
+    "newMotionAuthoredDuringPublication": false
+  },
+  "limits": [
+    "Human matchup fairness remains open",
+    "Native Electron match not reverified for this publication",
+    "Synthetic CPU and texture estimates are not browser FPS or total RAM measurements"
+  ],
+  "sourceSha256": {
+    "src/App.jsx": "6bfd56b0686fa04a45fd0de2a4acc0864a50befedeca653656b28b0dd4067542",
+    "src/ArenaCanvas.jsx": "67a074a6022116f01ceefdf61b898602cfaf6b4e1f211a08f101b53b3f4226fd",
+    "src/Armory.jsx": "2e1b223d1f2e802db86cda3c41dd02b5810db736dae2460bc1d01cdf831d136f",
+    "src/LoadoutPreview.jsx": "6ed77d2e5c4978f2c42c9060aecdf5f7f1f77fab79e80a68baec05c5725e9c4c",
+    "src/arena-floor.js": "524f1071e366e3a8278a7eceed42e88d4f9814c00c547329738fb8ef4df94f3a",
+    "src/arena-model.js": "ec0af2f8b99489e66253405c602dfdbdb9d6a4db70ffec43635def7911795d43",
+    "src/arena-profile.js": "06fece91c09b5a24a5dbc53a1bfd7e8e3cbf3a0544631526e6475349b67c54da",
+    "src/armory-drafts.js": "9aeda3d69870f01f45aaf1587ac4cd6f33cf90b971f03b91767a0cf487e834a9",
+    "src/armory.css": "91180b52590ec05f865db397f70b4d500af59b390f38f3e055b8289ce0788d29",
+    "src/audio.js": "aa3855731818c0133c39278c9b9161d629e8d92bb8a746f5b83c027c931a7e8a",
+    "src/beagle-dynamics.js": "113a26b76a54fbfe6427105e28b4a576efa50b59770a877e75b1d59a89fdd0eb",
+    "src/beagle-model.js": "817d5553f425aed38895c9e3f62f552cedabd8b9b06032e6c1908824aa5181d3",
+    "src/beagle-profile.js": "71778cff481dd85d13c058ed46c5b0202e8904d743038a71b9823ee28f389631",
+    "src/beagle-skill.js": "7f5bcd049e62bf52a509f3906b2fb032b8ef3a7fea90defaf203f12c73d83126",
+    "src/character-attachments.js": "29e107ea8e0a4b83b5a3d08e7358c2591cff97b35d8611e1a9a4de11bc71014e",
+    "src/character-catalog.js": "88e188b3f365ca5770c020ebcb697bae00449bcb307bed67b114fad61c158ee0",
+    "src/combat-camera.js": "f087cd9ae77ec9643b75a178e0f7c3d2c8f5e2a165c90c4a1bf7c3fdcf072eec",
+    "src/combat-contacts.js": "6423e147c34bebfb31811d034621d2bc43a5f93c01544ff0e69002a7f6744b6f",
+    "src/combat-settings.js": "aa10deda5da0fbb361a079d89780568f3c2ef96afad4b8b8f6a1bd31b469b7d6",
+    "src/fixed-camera.js": "f8044ff6b93d5e31b7eb1378dd4be334eff0bbfc2f0c86890c19a5e6b8371fbc",
+    "src/free-camera.js": "bccc8547ca864f04cfd5f41ed4bc898f59062e35652f3aab0b2c19e9dd0a590b",
+    "src/game-session.js": "08ad4cff2d7693e1520e924ecc7326fcd712ea747cc2e027adb46e61e515f5fa",
+    "src/loadouts.js": "7ce087a842bf867cf9c6a3f20d782dff90f0c9067826f243e8ac857b61c9fcaa",
+    "src/lobby-camera.js": "f60ba71629289782a2bac2958d10a5e93dc66ae88425732f4b22b37d76612d41",
+    "src/main.jsx": "80ee52efe216f3e9fa32095b42b62ebb832b2495765124d0c13b6cb5f38f8814",
+    "src/model-assets.js": "245beb249b7cefcd8a647b8a007b2920bfc81a281f2ad555895ae95b77d32318",
+    "src/orange-tabby-model.js": "886455fa9fafd907ed6f19d1006b121142660e4504938a0a26543318c34f6d07",
+    "src/orange-tabby-profile.js": "48c9aeb3b05297efc4caf911422188c380a447c14ae263c8324ff0dfac9cbea3",
+    "src/physics.js": "f2b4936554b55f44d3dca72d1570476b39b56505a4a01286505d416ccce20dfe",
+    "src/player-identity.js": "a0406f6d15bcbdc4bc31ed48b759868d75a4d17b22ccfb3e17fadbe0617a6660",
+    "src/render-resolution.js": "9d5f4a5cda8716c64828caef11ca3b829c7fe1d5cc05068e7aaecca270bc2351",
+    "src/round-rules.js": "27542609f61b6c9f09364c07321eae988587c5e510fc8a989af9f879c420213e",
+    "src/scene.js": "a3c6eedf167abd318bb9388fc13012f667087c3ec33fc83b6bf41b05cd4690df",
+    "src/selection-icons.jsx": "973f3b70459566d9a70b7a17b9c3ab41ca6e15594cd277a9225dd28ebc82bca4",
+    "src/style.css": "ed87d107884ad2d6a4d461f0eb9d7f1fa302ce69b2aed17b4f6baea0855878a8",
+    "src/weapon-catalog.js": "050dc25fbc3b81d19a2aa2cabcbde4627fd52822f0e5717e6f738e6541dd0433",
+    "src/weapon-visuals.js": "c8641b1fcde79c88146daad1c10ac127186596c0e5897e18baf5fc7e9fe64cda",
+    "src/yellow-blob-model.js": "2b79acc46e9a219934702ed5d7c2c2275e0c3a30d56faea1210258e1c04741b1",
+    "public/models/colosseum-prepared-v01.glb": "a9ab0bf8f848124eaba3082d18e5e726ddd9b248c09d083bd3376f0dd44feea0",
+    "public/textures/colosseum-roman-floor-v01.jpg": "694738c370de5d43106ea4ad6b7b0e94a3f0c193150a14f5be506f96dfd80423"
+  },
+  "browser": {
+    "passed": true,
+    "checks": [
+      "intro and menu",
+      "independent Beagle/Cat preparation and real previews",
+      "shared tactical match",
+      "both combined controls",
+      "80/150 max health",
+      "paid rotor activation",
+      "pause clock"
+    ],
+    "errors": [],
+    "loadouts": [
+      {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      }
+    ],
+    "players": [
+      {
+        "maxHealth": 80,
+        "stamina": 179.29999999999993,
+        "skillActive": true
+      },
+      {
+        "maxHealth": 150,
+        "stamina": 185.33333333333417,
+        "skillActive": false
+      }
+    ],
+    "screenshot": "shared-match.png"
+  },
+  "diffCheck": "pass",
+  "localDocumentLinks": {
+    "checked": 139,
+    "missing": 0
+  }
+}

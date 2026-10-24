@@ -57,7 +57,7 @@ test('fatigue weakens articulated swing/turn power while keeping one shared stam
   states.push({speed:Math.abs(p.wt),yaw:p.wp,stamina:p.stamina});
  }
  assert.ok(states[1].speed<states[0].speed*.65);assert.ok(states[1].yaw<states[0].yaw*.65);
- assert.ok(Math.abs(states[0].stamina-86)<1e-8);assert.equal(states[1].stamina,0);
+ assert.ok(Math.abs(states[0].stamina-85)<1e-8);assert.equal(states[1].stamina,0);
 });
 
 test('explicit body-pose geometry remains aligned while combat keeps the body upright',()=>{

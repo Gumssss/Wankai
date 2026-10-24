@@ -73,7 +73,7 @@ export function makeBeagleFallback(id=0,weaponEars=true){
  }
  for(const side of ['L','R']){
   const hinge=new Group();hinge.position.set(...BEAGLE.anchors[side]);hinge.position.y-=PIVOT_HEIGHT;body.add(hinge);hinges[side]=hinge;
-  for(const c of BEAGLE.colliders.filter(c=>c.ear===side)){
+  for(const c of BEAGLE.visualColliders.filter(c=>c.ear===side)){
    const a=new Vector3(...c.a),b=new Vector3(...c.b),d=b.clone().sub(a);
    const mesh=new Mesh(new CapsuleGeometry(c.radius,d.length(),4,8),tan);
    mesh.position.copy(a.add(b).multiplyScalar(.5));mesh.quaternion.setFromUnitVectors(UP,d.normalize());

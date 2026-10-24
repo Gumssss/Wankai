@@ -9,11 +9,12 @@ import {beagleEarYaw} from './beagle-skill.js';
 import { instantiateBeagle, poseBeagle, makeBeagleFallback } from './beagle-model.js';
 import { weaponPointFrame, v3 } from './physics.js';
 import {resolveLoadout} from './loadouts.js';
-import {CAT} from './orange-tabby-profile.js';
+import {CAT,transformCatPawPoint} from './orange-tabby-profile.js';
 import {instantiateOrangeTabby,poseOrangeTabby,makeOrangeTabbyFallback,poseOrangeTabbyFallback} from './orange-tabby-model.js';
 import { ARENA_PROFILE } from './arena-profile.js';
 import { attachArenaModel, prepareArenaCamera, restoreArenaOpacity } from './arena-model.js';
 import { FIXED_CAMERA } from './fixed-camera.js';
+import {createCombatCameraRig,resetCombatCamera,updateCombatCamera} from './combat-camera.js';
 import {applyArenaFloorTexture,setArenaFloorPatternEnabled,disposeArenaFloorTexture} from './arena-floor.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
@@ -34,6 +35,7 @@ export class ArenaView {
     this.renderer = renderer;
     this.camera = camera;
     this.solo = mode === 'solo';
+    this.practice=mode==='practice';
     this.fixed = mode === 'duel-fixed';
     this.duel = mode === 'duel';
     // Apply one display basis to bodies, weapons, contacts, trails and impacts.
@@ -54,6 +56,7 @@ export class ArenaView {
     this.target = this.fixed ? new THREE.Vector3(...FIXED_CAMERA.target) : new THREE.Vector3(0, 0, -0.3);
     this.camera.position.copy(this.solo ? new THREE.Vector3(-4, 3, -4) : this.cameraBase);
     this.camera.lookAt(this.target);
+    this.sharedCamera=this.fixed||this.practice?createCombatCameraRig(camera,this.cameraBase.toArray(),this.target.toArray()):null;
     this.soloCamera = this.solo ? createFreeCameraRig(camera) : null;
     this.duelCameras = this.duel ? [0, 1].map(() => createFreeCameraRig(undefined, true)) : [];
     this.particles = [];
@@ -63,6 +66,10 @@ export class ArenaView {
     this.reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.makeLighting();
     this.makeArena();
+    this.pressureRing=new THREE.Mesh(new THREE.RingGeometry(.995,1.005,128),
+      new THREE.MeshBasicMaterial({color:0xb65f37,transparent:true,opacity:.85,depthWrite:false,side:THREE.DoubleSide}));
+    this.pressureRing.rotation.x=-Math.PI/2;this.pressureRing.position.y=.065;this.pressureRing.visible=false;
+    this.arena.add(this.pressureRing);
     this.meshRoot = this.actors;
     this.players = this.solo ? [this.makeFighter(0)] : [this.makeFighter(0), this.makeFighter(1)];
   }
@@ -458,8 +465,8 @@ export class ArenaView {
       for (const trail of model.trails) {
         if (recordTrail) {
           const lateral=trail.pawSide?CAT.pawAnchors[trail.pawSide][2]:0;
-          const near = weaponPointFrame(p, trail.pawSide?v3(-.45,.95,lateral):v3(0, weaponStats(p).length * .72, 0), trail.anchor).point;
-          const tip = weaponPointFrame(p, trail.pawSide?v3(-1.4,.95,lateral):v3(0, weaponStats(p).length, 0), trail.anchor).point;
+          const near = weaponPointFrame(p, trail.pawSide?v3(...transformCatPawPoint([-.45,.95,lateral],trail.pawSide)):v3(0, weaponStats(p).length * .72, 0), trail.anchor).point;
+          const tip = weaponPointFrame(p, trail.pawSide?v3(...transformCatPawPoint([-1.4,.95,lateral],trail.pawSide)):v3(0, weaponStats(p).length, 0), trail.anchor).point;
           trail.history.unshift([vec(near), vec(tip)]);
           if (trail.history.length > model.maxTrail) trail.history.pop();
         }
@@ -488,19 +495,26 @@ export class ArenaView {
       if (r.life <= 0) { this.effectsRoot.remove(r.mesh); r.mesh.geometry.dispose(); r.mesh.material.dispose(); this.rings.splice(i, 1); }
     }
     this.shake *= Math.exp(-16 * dt);
-    if (this.solo && players[0]) updateFreeCamera(this.soloCamera, players[0], cameraDt);
+    if(this.sharedCamera&&players.length)updateCombatCamera(this.sharedCamera,players,cameraDt,p=>this.displayPoint(p));
+    else if (this.solo && players[0]) updateFreeCamera(this.soloCamera, players[0], cameraDt);
     else this.camera.position.copy(this.cameraBase);
-    if (!this.fixed && !this.reducedMotion && this.shake > 0.003) {
+    if (!this.sharedCamera && !this.fixed && !this.reducedMotion && this.shake > 0.003) {
       this.camera.position.x += (Math.random() - 0.5) * this.shake;
       this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
     }
-    this.camera.lookAt(this.solo ? this.soloCamera.focus : this.target);
+    if(!this.sharedCamera||!players.length)this.camera.lookAt(this.solo ? this.soloCamera.focus : this.target);
     if (splitView && this.duel) this.updateDuelCameras(players, cameraDt, cameraInputs);
   }
 
   resetCamera() {
+    if(this.sharedCamera)resetCombatCamera(this.sharedCamera);
     if (this.soloCamera) resetFreeCamera(this.soloCamera);
     for (const rig of this.duelCameras) resetFreeCamera(rig);
+  }
+
+  updatePressure(pressure){
+    this.pressureRing.visible=!!pressure?.active;
+    if(pressure)this.pressureRing.scale.setScalar(pressure.radius);
   }
 
   updateDuelCameras(players, dt, inputs) {
@@ -511,7 +525,8 @@ export class ArenaView {
       turnFreeCamera(rig, inputs[player.id] || 0, dt);
       updateFreeCamera(rig, player, dt,
         (Math.random() - 0.5) * shake,
-        (Math.random() - 0.5) * shake * 0.65);
+        (Math.random() - 0.5) * shake * 0.65,
+        players.filter(p=>p.id!==player.id&&Math.hypot(p.p.x-player.p.x,p.p.y-player.p.y,p.p.z-player.p.z)<=12));
     }
   }
 

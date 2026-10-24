@@ -19,7 +19,7 @@ test('a tap starts a fixed-duration rotor and low hover; timer expiry lands and 
  advance(w,CONFIG.step,{skill:true});advance(w,2,{});
  assert.equal(p.skillActive,true);assert.ok(p.earSpread>1.56);assert.ok(p.wp>3);
  assert.ok(Math.abs(p.p.y-(CONFIG.bodyFloor+BEAGLE_SKILL.hoverHeight))<.035,`hover height ${p.p.y}`);
- assert.equal(p.bodyPitch,0);assert.equal(p.stamina,200);
+ assert.equal(p.bodyPitch,0);assert.ok(Math.abs(p.stamina-(200-(2+CONFIG.step)*16))<1e-7);
  const tips=Object.values(BEAGLE.anchors).map(a=>weaponPointFrame(p,v3(0,3.6,0),a).point);
  assert.ok(Math.abs(tips[0].y-tips[1].y)<.002);
  assert.ok(Math.hypot(tips[0].x-tips[1].x,tips[0].z-tips[1].z)>8);
@@ -29,8 +29,8 @@ test('a tap starts a fixed-duration rotor and low hover; timer expiry lands and 
  assert.equal(p.earSpread,0);assert.ok(landed,'timer expiry did not return the beagle to ground contact');
 });
 
-test('skill has no stamina cost or fatigue gate, repeated input cannot extend it, and holding cannot auto-recast',()=>{
- const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];p.stamina=0;
+test('paid skill repeated input cannot extend it and holding cannot auto-recast',()=>{
+ const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];
  advance(w,1,{skill:true,phi:1});assert.equal(p.skillActive,true);assert.ok(p.wp>4);
  const remaining=p.skillRemaining;p.skillRequested=true;advance(w,.5,{skill:true});
  assert.ok(p.skillRemaining<remaining-.49,'repeated activation extended the timer');
@@ -40,7 +40,7 @@ test('skill has no stamina cost or fatigue gate, repeated input cannot extend it
  w.reset(false,true,'beagle');assert.equal(w.players[0].skillActive,false);assert.equal(w.players[0].skillRemaining,0);
  assert.equal(w.players[0].stamina,200);
  const free=new ArenaPhysics();free.reset(false,true,'beagle');
- advance(free,4,{skill:true,theta:1,phi:1});assert.equal(free.players[0].stamina,200,'skill and its steering consumed stamina');
+ advance(free,4,{skill:true,theta:1,phi:1});assert.ok(Math.abs(free.players[0].stamina-136)<1e-7,'rotor steering shares one paid skill cost');
 });
 
 test('A/D can reverse the rotor; ordinary weapons do not hover or spend skill stamina',()=>{
@@ -66,7 +66,7 @@ test('deploying ear contact velocities include splay and lag, and sockets stay f
 test('hovering rotor ears still hit once per pair and clash with a normal sword',()=>{
  const w=new ArenaPhysics();w.reset(true,false,'beagle','sword');const [a,b]=w.players;
  Object.assign(a,{p:v3(0,.94,0),theta:-Math.PI/2,phi:0,wp:4.25,earSpread:Math.PI/2});
- const c=BEAGLE.colliders[6],f=weaponPointFrame(a,v3(...c.b),c.anchor);
+ const c=BEAGLE.colliders.find(c=>c.ear==='L'&&c.a[1]>2.7),f=weaponPointFrame(a,v3(...c.b),c.anchor);
  b.p=v3(f.point.x-.35,CONFIG.bodyFloor,f.point.z);
  w.solveAttack(a,b,CONFIG.step);assert.ok(w.lastHit?.damage>0);
  assert.equal(w.events.filter(e=>e.type==='hit').length,1);

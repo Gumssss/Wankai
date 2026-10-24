@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ACESFilmicToneMapping, PCFShadowMap, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -9,6 +9,9 @@ import { FIXED_CAMERA } from './fixed-camera.js';
 import {resolveLoadout,loadoutKey} from './loadouts.js';
 import { ARENA_PROFILE } from './arena-profile.js';
 import {loadArenaFloorTexture} from './arena-floor.js';
+import {playerDisplayName} from './player-identity.js';
+import {opponentIndicator} from './combat-camera.js';
+import {renderDprForViewport} from './render-resolution.js';
 
 function ArenaEnvironment({ group }) { return <primitive object={group} dispose={null} />; }
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
@@ -137,6 +140,7 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
     for (const event of impacts) view.impact(event);
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
     view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending', Math.min(delta, 0.06), splitView, session.getCameraInputs());
+    view.updatePressure(session.world.pressure);
 
     // Keep the same viewport and camera controller through the menu handoff.
     if (intro && session.state === 'lobby' && camera.isOrthographicCamera) {
@@ -146,7 +150,7 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
       camera.zoom = pose.zoom;
       camera.updateProjectionMatrix();
       if (pose.complete || pose.returned) onIntroComplete?.();
-    } else if (camera.isOrthographicCamera && camera.zoom !== 1) {
+    } else if (session.state==='lobby' && camera.isOrthographicCamera && camera.zoom !== 1) {
       camera.zoom = 1;
       camera.updateProjectionMatrix();
     }
@@ -181,6 +185,15 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
       { id: 1, camera: view.duelCameras[1].camera, viewport: { x: size.width / 2, width: size.width / 2, height: size.height } },
     ] : [{ id: 0, camera, viewport: { x: 0, width: size.width, height: size.height } }];
     for (const pane of panes) {
+      if(splitView){
+        const opponent=session.world.players[1-pane.id],element=document.getElementById(`opponent-indicator-${pane.id}`);
+        if(element&&opponent){
+          const marker=opponentIndicator(pane.camera,{...opponent.p,y:opponent.p.y+.7},pane.viewport);
+          element.style.visibility=marker.visible?'hidden':'visible';
+          element.style.transform=`translate(${marker.x}px,${marker.y}px) translate(-50%,-50%)`;
+          element.querySelector('i').style.transform=`rotate(${marker.angle}rad)`;
+        }
+      }
       if (mode === 'solo' || splitView) {
         const arrow = document.getElementById(`staff-heading-arrow-${pane.id}`);
         const player = session.world.players[pane.id];
@@ -205,7 +218,7 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
         point.set(effect.point.x, effect.point.y + 0.5 + (effect.maxLife - effect.life) * 1.4, effect.point.z);
         const screen = view.project(point, pane.camera, pane.viewport);
         element.style.visibility = screen.visible ? 'visible' : 'hidden';
-        element.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-50%)`;
+        element.style.transform = `translate(${screen.x+(effect.attacker===0?-34:effect.attacker===1?34:0)}px,${screen.y}px) translate(-50%,-50%)`;
         element.style.opacity = String(Math.min(1, effect.life * 3));
       }
     }
@@ -222,10 +235,37 @@ export function ArenaCanvas({ session, mode, loadouts, onReady, intro, onIntroCo
   const fixed = mode === 'duel-fixed';
   const key=loadouts.map(loadoutKey).join('|');
   const selections=useMemo(()=>loadouts.map(p=>({...p})),[key]);
+  const canvasRef=useRef(null),[dpr,setDpr]=useState(1);
+  useLayoutEffect(()=>{
+    const container=canvasRef.current?.parentElement;
+    if(!container)return;
+    const resize=()=>{
+      const {width,height}=container.getBoundingClientRect();
+      // Keep the previous allocation while preparation hides the arena.
+      if(width>0&&height>0)setDpr(renderDprForViewport(width,height,window.devicePixelRatio));
+    };
+    const observer=new ResizeObserver(resize);
+    observer.observe(container);
+    window.addEventListener('resize',resize);
+    let density;
+    const watchDensity=()=>{
+      density?.removeEventListener('change',watchDensity);
+      resize();
+      density=window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+      density.addEventListener('change',watchDensity);
+    };
+    watchDensity();
+    return()=>{
+      observer.disconnect();
+      window.removeEventListener('resize',resize);
+      density?.removeEventListener('change',watchDensity);
+    };
+  },[]);
   return (
     <Canvas
+      ref={canvasRef}
       shadows
-      dpr={[1, 2]}
+      dpr={dpr}
       camera={mode === 'solo' ? { position: [-4, 3, -4], fov: FREE_CAMERA.fov, near: 0.1, far: 120 } : fixed ?
         { position: [...FIXED_CAMERA.position], fov: FIXED_CAMERA.fov, near: FIXED_CAMERA.near, far: FIXED_CAMERA.far } :
         { position: [0, 15.4, 21], near: 0.1, far: 120 }}
@@ -236,7 +276,7 @@ export function ArenaCanvas({ session, mode, loadouts, onReady, intro, onIntroCo
         gl.shadowMap.type = PCFShadowMap;
         gl.toneMapping = ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.28;
-        gl.domElement.setAttribute('aria-label', mode === 'solo' ? '赤丸的可旋转三维视角' : '赤丸与青丸的三维圆形角斗场');
+        gl.domElement.setAttribute('aria-label', mode === 'solo' ? `${playerDisplayName(0,loadouts[0])}的可旋转三维视角` : `${playerDisplayName(0,loadouts[0])}与${playerDisplayName(1,loadouts[1],mode==='practice')}的三维圆形角斗场`);
         onReady();
       }}
     >

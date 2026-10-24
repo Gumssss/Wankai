@@ -1,0 +1,116 @@
+{
+  "asset": "colosseum-lite-v01",
+  "source": {
+    "modelSha256": "b15375cfff789df19bb587c84b6ef838287e306382f897d5f645f5a7c0857584",
+    "floorSha256": "099bf45874be74d1b0e33828099a6d23a1c0faff4f006514f00f4071af6419bb",
+    "modelBytes": 3482856,
+    "floorBytes": 1137001
+  },
+  "output": {
+    "modelSha256": "a9ab0bf8f848124eaba3082d18e5e726ddd9b248c09d083bd3376f0dd44feea0",
+    "floorSha256": "694738c370de5d43106ea4ad6b7b0e94a3f0c193150a14f5be506f96dfd80423",
+    "modelBytes": 1531544,
+    "floorBytes": 203931
+  },
+  "beforeTriangles": 96434,
+  "afterTriangles": 46280,
+  "textures": {
+    "beforeEdge": 2048,
+    "afterEdge": 1024,
+    "rgba8WithMipmapsBytesBefore": 44739242.666666664,
+    "rgba8WithMipmapsBytesAfter": 11184810.666666666
+  },
+  "meshes": [
+    {
+      "name": "SM_Arena_Floor",
+      "beforeTriangles": 5263,
+      "afterTriangles": 5263,
+      "beforeVertices": 3489,
+      "afterVertices": 3489,
+      "error": 0,
+      "lockedVertices": 0,
+      "floorUnchanged": true
+    },
+    {
+      "name": "SM_Arena_Shell_00",
+      "beforeTriangles": 8163,
+      "afterTriangles": 3787,
+      "beforeVertices": 4985,
+      "afterVertices": 2586,
+      "error": 0.007983983494341373,
+      "lockedVertices": 659,
+      "floorUnchanged": false
+    },
+    {
+      "name": "SM_Arena_Shell_01",
+      "beforeTriangles": 11324,
+      "afterTriangles": 5006,
+      "beforeVertices": 6865,
+      "afterVertices": 3414,
+      "error": 0.007995564490556717,
+      "lockedVertices": 700,
+      "floorUnchanged": false
+    },
+    {
+      "name": "SM_Arena_Shell_02",
+      "beforeTriangles": 12689,
+      "afterTriangles": 5675,
+      "beforeVertices": 7933,
+      "afterVertices": 4013,
+      "error": 0.007992703467607498,
+      "lockedVertices": 638,
+      "floorUnchanged": false
+    },
+    {
+      "name": "SM_Arena_Shell_03",
+      "beforeTriangles": 17455,
+      "afterTriangles": 7995,
+      "beforeVertices": 11322,
+      "afterVertices": 5946,
+      "error": 0.007975224405527115,
+      "lockedVertices": 771,
+      "floorUnchanged": false
+    },
+    {
+      "name": "SM_Arena_Shell_04",
+      "beforeTriangles": 14890,
+      "afterTriangles": 6432,
+      "beforeVertices": 9291,
+      "afterVertices": 4592,
+      "error": 0.007994833402335644,
+      "lockedVertices": 695,
+      "floorUnchanged": false
+    },
+    {
+      "name": "SM_Arena_Shell_05",
+      "beforeTriangles": 9335,
+      "afterTriangles": 4395,
+      "beforeVertices": 5526,
+      "afterVertices": 2858,
+      "error": 0.00798233412206173,
+      "lockedVertices": 745,
+      "floorUnchanged": false
+    },
+    {
+      "name": "SM_Arena_Shell_06",
+      "beforeTriangles": 8532,
+      "afterTriangles": 3788,
+      "beforeVertices": 5130,
+      "afterVertices": 2569,
+      "error": 0.007988141849637032,
+      "lockedVertices": 820,
+      "floorUnchanged": false
+    },
+    {
+      "name": "SM_Arena_Shell_07",
+      "beforeTriangles": 8783,
+      "afterTriangles": 3939,
+      "beforeVertices": 5503,
+      "afterVertices": 2821,
+      "error": 0.00799273420125246,
+      "lockedVertices": 783,
+      "floorUnchanged": false
+    }
+  ],
+  "method": "Bundled MeshoptSimplifier, attribute-aware; locked sector borders and low rim; exact floor geometry/UV/normals; 1024px JPEG atlas and floor. No runtime decoding dependency."
+}

@@ -1,5 +1,9 @@
 # Beagle normal movement and F hover skill
 
+**Historical checkpoint — superseded tuning**
+
+The original free-skill tuning below is superseded by the 23 October coordinated trial: activation requires 40 stamina, active time costs 16/second, deployment/spinning/retraction block regeneration, and shared fatigue applies. Current implementation and verification: [combat rules](CONTROL_SYSTEM.md#complete-problem-mapping-for-the-coordinated-trial). The earlier design and evidence remain intact below.
+
 **Current local entry, 20 October 2026:** open the [live game](http://127.0.0.1:5173/) for implemented behavior. Preparation is a full-window P1-left/P2-right stage, with each player's choices above their own actual-model preview, independent Ready and shared Start/Save. Back/Escape cancels drafts. Beagle may equip sword, polearm, hammer or long ears; only long ears activate F/Right Shift hover. Orange tabby + cat paws is also playable, giving eight valid loadouts and 64 ordered pairings. The creator prefers live review after implementation; the dated videos below remain evidence. [Current preparation and verification](CHARACTER_WEAPON_SELECTION_IMPLEMENTATION.md) · [latest UI checks](selection-concepts/v04-preparation-stage/verification.json).
 
 
@@ -50,3 +54,7 @@ The old `beagle-dynamics.js` module is retained as historical experiment code; t
 - At the 19 October timed-hover checkpoint, `npm test` passed **100 tests, 0 failures** and `npm run build` passed with the existing bundle-size warning. The native rig import and historical functional-preview commands also pass. This source checkpoint includes the implementation, tests, motion previews, design history and reusable character-production skill; it is not a packaged app release.
 
 The later cat integration checkpoint passed the full 132-test suite. Subsequent selection UI work ran 14 focused checks, then the full-window preparation pass ran 17 focused checks and the build; these were not new full-suite runs. Use the [latest preparation verification](selection-concepts/v04-preparation-stage/verification.json) and [project status](PROJECT_STATUS.md) for current evidence scope.
+
+## 23 October 2026 geometry / health revision
+
+Beagle now has 80 HP for every loadout. The rotor uses only the same distal 1.8–3.6 ear capsules as ordinary swings; capsule caps are inset so the inner half cannot hit, clash, support or touch the rim. Complete GLB and fallback ears remain visible and frame the camera. Activation, drain, fatigue, retraction, motor tuning and damage formulas are unchanged. New regressions explicitly check normal/deployed inner passes and distal hits/clashes.

@@ -85,7 +85,7 @@ test('body-driven impacts retain their damage and slow touches still cause no da
 
 test('swing stamina lasts ten seconds, turning is cheaper, and simultaneous inputs add costs', () => {
   for (const weapon of Object.keys(WEAPONS)) {
-    for (const [input, afterOneSecond] of [[{ theta: 1 }, 180], [{ phi: -1 }, 192], [{ theta: -1, phi: 1 }, 172]]) {
+    for (const [input, afterOneSecond] of [[{ theta: 1 }, 180], [{ phi: -1 }, 190], [{ theta: -1, phi: 1 }, 170]]) {
       const world = solo(weapon);
       advance(world, 1, input);
       near(world.players[0].stamina, afterOneSecond);
@@ -106,13 +106,13 @@ test('stamina recovery observes the release delay, clamps at full, and is indepe
     advance(world, 0.5, {}, dt);
     near(world.players[0].stamina, 160);
     advance(world, 0.5, {}, dt);
-    near(world.players[0].stamina, 175);
+    near(world.players[0].stamina, 169.6);
     advance(world, 2, {}, dt);
     assert.equal(world.players[0].stamina, 200);
     advance(world, 0.5, { phi: 1 }, dt);
-    near(world.players[0].stamina, 196);
+    near(world.players[0].stamina, 195);
     advance(world, 0.25, {}, dt);
-    near(world.players[0].stamina, 196, 0.1);
+    near(world.players[0].stamina, 195, 0.1);
   }
 });
 

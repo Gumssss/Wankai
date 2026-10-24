@@ -1,0 +1,2596 @@
+{
+  "schemaVersion": 1,
+  "trial": "coordinated-combat-v1",
+  "stamina": {
+    "max": 200,
+    "swingDrain": 20,
+    "turnDrain": 10,
+    "recoveryDelay": 0.6,
+    "recoveryRate": 24,
+    "lowThreshold": 60,
+    "minPower": 0.4
+  },
+  "rotorResource": {
+    "activationMinimum": 40,
+    "drain": 16
+  },
+  "hoverDrag": {
+    "air": 0.15,
+    "supported": 1.5,
+    "fadeHeight": 0.75
+  },
+  "round": {
+    "duration": 120,
+    "pressureStart": 45,
+    "contractionTime": 60,
+    "finalRadiusFraction": 0.32,
+    "outsideGrace": 2,
+    "outsideDamageFraction": 0.1
+  },
+  "characters": [
+    {
+      "characterId": "yellow-blob",
+      "maxHealth": 110,
+      "projectedHurtArea": 1.4306250000000007,
+      "relativeExposure": 1.2590759075907594
+    },
+    {
+      "characterId": "basic-fighter",
+      "maxHealth": 100,
+      "projectedHurtArea": 1.1362500000000002,
+      "relativeExposure": 1
+    },
+    {
+      "characterId": "beagle",
+      "maxHealth": 110,
+      "projectedHurtArea": 1.3720833333333333,
+      "relativeExposure": 1.2075540887422074
+    },
+    {
+      "characterId": "orange-tabby",
+      "maxHealth": 100,
+      "projectedHurtArea": 1.1109895833333334,
+      "relativeExposure": 0.9777686101943527
+    }
+  ],
+  "checks": {
+    "rotorFiveSecondStamina": 119.99999999998879,
+    "rotorEnded": true,
+    "catHalfSecondRetention": 0.4723665527410151,
+    "hammerHeadDamage": [
+      {
+        "speed": 8,
+        "shaft": 17,
+        "head": 25
+      },
+      {
+        "speed": 10,
+        "shaft": 24,
+        "head": 35
+      },
+      {
+        "speed": 100,
+        "shaft": 34,
+        "head": 49
+      }
+    ]
+  },
+  "movement": [
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 6.252154788627776,
+        "phi": 0,
+        "wt": 5,
+        "wp": 0
+      },
+      "horizontalTravel": 5.928840095581001,
+      "peakRise": 2.759372547419694,
+      "supportSteps": 89,
+      "releaseDistance": 1.480113375956063,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -5.337491065944329,
+        "phi": 0,
+        "wt": -5,
+        "wp": 0
+      },
+      "horizontalTravel": 4.8182823557723395,
+      "peakRise": 2.7586504817467805,
+      "supportSteps": 89,
+      "releaseDistance": 2.4116817953300407,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.7033227496370027,
+        "phi": 0.290750432723722,
+        "wt": -0.3419935441052699,
+        "wp": 5
+      },
+      "horizontalTravel": 3.4527500378574008,
+      "peakRise": 0.3521646422009195,
+      "supportSteps": 103,
+      "releaseDistance": 0.4785036362847043,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 6.089338852305816,
+        "phi": 0.0001349161784736097,
+        "wt": 5,
+        "wp": 5
+      },
+      "horizontalTravel": 8.997948277958006,
+      "peakRise": 2.6802520111106323,
+      "supportSteps": 96,
+      "releaseDistance": 2.0973624464895164,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 3.819847515785534,
+        "phi": 0,
+        "wt": 2.4948654140590785,
+        "wp": 0
+      },
+      "horizontalTravel": 4.198202395371057,
+      "peakRise": 2.462401883071628,
+      "supportSteps": 151,
+      "releaseDistance": 1.890844969486797,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -2.920155585095699,
+        "phi": 0,
+        "wt": -2.0659849750527566,
+        "wp": 0
+      },
+      "horizontalTravel": 2.0862296385352637,
+      "peakRise": 2.3837899517754644,
+      "supportSteps": 145,
+      "releaseDistance": 2.6570767817288714,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.699498953927363,
+        "phi": 4.562048341328709,
+        "wt": -0.2569820578852914,
+        "wp": 3.2293022991695315
+      },
+      "horizontalTravel": 3.294224171039106,
+      "peakRise": 0.3469399660867498,
+      "supportSteps": 101,
+      "releaseDistance": 0.9373383031393805,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.6512770603434515,
+        "phi": 3.47056256923345,
+        "wt": 0.5124771072739034,
+        "wp": 2.048176887376197
+      },
+      "horizontalTravel": 4.956187073495148,
+      "peakRise": 2.1074050243647067,
+      "supportSteps": 191,
+      "releaseDistance": 1.3862740060582341,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.1613035640251885,
+        "phi": 0,
+        "wt": 0.5391085609319998,
+        "wp": 0
+      },
+      "horizontalTravel": 0.3750044874841138,
+      "peakRise": 1.147935409953555,
+      "supportSteps": 140,
+      "releaseDistance": 0.008812593983000272,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.8994250969919295,
+        "phi": 0,
+        "wt": -0.4278398307411954,
+        "wp": 0
+      },
+      "horizontalTravel": 0.09297096746799918,
+      "peakRise": 0.4594666224916687,
+      "supportSteps": 57,
+      "releaseDistance": 0.07698557132718872,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.710630134862344,
+        "phi": 2.3819890575535387,
+        "wt": -0.4916880633916218,
+        "wp": 2.036432981397294
+      },
+      "horizontalTravel": 2.174371134647812,
+      "peakRise": 0.35614346006770625,
+      "supportSteps": 107,
+      "releaseDistance": 0.9566892861212054,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "yellow-blob",
+        "weaponId": "yellow-staff"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.0553480784921767,
+        "phi": 2.4023328827035053,
+        "wt": 0.06381295860516176,
+        "wp": 2.0095467912872413
+      },
+      "horizontalTravel": 2.998268979588912,
+      "peakRise": 0.8814852782030548,
+      "supportSteps": 140,
+      "releaseDistance": 2.3154048210305005,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 8.322082347909854,
+        "phi": 0,
+        "wt": 2.2834269151018396,
+        "wp": 0
+      },
+      "horizontalTravel": 6.695163811302092,
+      "peakRise": 2.552455617397239,
+      "supportSteps": 105,
+      "releaseDistance": 1.6822687965742107,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -5.690134722006473,
+        "phi": 0,
+        "wt": -6.1,
+        "wp": 0
+      },
+      "horizontalTravel": 4.267930357881626,
+      "peakRise": 2.6464360276138303,
+      "supportSteps": 70,
+      "releaseDistance": 2.5005725503600864,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.7632686327847413,
+        "phi": 2.2806266111541063,
+        "wt": -0.05139060774805662,
+        "wp": 6.033052018640171
+      },
+      "horizontalTravel": 2.3689222364800395,
+      "peakRise": 0.07191702852420656,
+      "supportSteps": 224,
+      "releaseDistance": 0.5849697223646304,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 8.258905883151362,
+        "phi": 1.0666895879828677,
+        "wt": 1.9709460268494752,
+        "wp": 3.6898999459456086
+      },
+      "horizontalTravel": 10.498878103261653,
+      "peakRise": 2.4867376816502476,
+      "supportSteps": 106,
+      "releaseDistance": 3.7618373423677918,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 5.951257893966229,
+        "phi": 0,
+        "wt": 3.0128019903342436,
+        "wp": 0
+      },
+      "horizontalTravel": 6.1397553583660285,
+      "peakRise": 2.2612936382203332,
+      "supportSteps": 103,
+      "releaseDistance": 0.4035622752319723,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -2.7621297175833557,
+        "phi": 0,
+        "wt": -2.3328373762668373,
+        "wp": 0
+      },
+      "horizontalTravel": 1.4814874718251656,
+      "peakRise": 1.9561322454198717,
+      "supportSteps": 108,
+      "releaseDistance": 2.6054393289166327,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.7632522010803624,
+        "phi": 6.124239847387386,
+        "wt": -0.051418601050077305,
+        "wp": 3.8736046766115337
+      },
+      "horizontalTravel": 2.7444673612811026,
+      "peakRise": 0.07167041288350451,
+      "supportSteps": 224,
+      "releaseDistance": 0.6432321302729868,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 5.077146472609824,
+        "phi": 4.177063840832753,
+        "wt": 2.3756178094003917,
+        "wp": 2.4244608030688335
+      },
+      "horizontalTravel": 7.844063590389918,
+      "peakRise": 2.1669343427548426,
+      "supportSteps": 127,
+      "releaseDistance": 0.48448153088480644,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 3.6451378047638534,
+        "phi": 0,
+        "wt": 2.452639252809403,
+        "wp": 0
+      },
+      "horizontalTravel": 3.624233039528274,
+      "peakRise": 2.145861531700298,
+      "supportSteps": 248,
+      "releaseDistance": 1.7575569354452196,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.5011155100603626,
+        "phi": 0,
+        "wt": -2.476304822116471,
+        "wp": 0
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0.018513657028255703,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.7632316500048568,
+        "phi": 3.011587741740054,
+        "wt": -0.05138371723508709,
+        "wp": 2.386003493633934
+      },
+      "horizontalTravel": 3.051485917855391,
+      "peakRise": 0.06995186813587706,
+      "supportSteps": 227,
+      "releaseDistance": 0.6398524643087952,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.43168127901493,
+        "phi": 2.956051958073107,
+        "wt": 0.005747107959329346,
+        "wp": 2.4558619873179803
+      },
+      "horizontalTravel": 5.784059306280952,
+      "peakRise": 1.501342711199161,
+      "supportSteps": 248,
+      "releaseDistance": 1.9644325307895518,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 5.06450683004911,
+        "phi": 0,
+        "wt": 4.25,
+        "wp": 0
+      },
+      "horizontalTravel": 5.513227719587878,
+      "peakRise": 3.0230532468838343,
+      "supportSteps": 112,
+      "releaseDistance": 2.4372624828480722,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -4.190708546530896,
+        "phi": -0.0017250353991029382,
+        "wt": -4.25,
+        "wp": -0.0019931922557741666
+      },
+      "horizontalTravel": 4.16235603853085,
+      "peakRise": 3.031623198616208,
+      "supportSteps": 111,
+      "releaseDistance": 3.184543128433334,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.7034288167391727,
+        "phi": 5.5034635930431035,
+        "wt": -0.42227778759927753,
+        "wp": 4.25
+      },
+      "horizontalTravel": 3.196136666669067,
+      "peakRise": 0.3315124943909884,
+      "supportSteps": 98,
+      "releaseDistance": 0.8440994265067175,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 4.758778622199252,
+        "phi": 5.212705641112239,
+        "wt": 4.25,
+        "wp": 4.25
+      },
+      "horizontalTravel": 8.464695961190362,
+      "peakRise": 2.9235568220794246,
+      "supportSteps": 128,
+      "releaseDistance": 2.9807228978636133,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 2.9674332539721915,
+        "phi": 0,
+        "wt": 1.7582252306382578,
+        "wp": 0
+      },
+      "horizontalTravel": 2.529628894987438,
+      "peakRise": 2.7770948706194547,
+      "supportSteps": 182,
+      "releaseDistance": 2.6458691771751615,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -2.3756912108079162,
+        "phi": -0.0007450575922375658,
+        "wt": -1.076036897592764,
+        "wp": -0.0011248994483185639
+      },
+      "horizontalTravel": 0.8965995972866502,
+      "peakRise": 1.8874141331195249,
+      "supportSteps": 126,
+      "releaseDistance": 0.9215386502663558,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.70231991578388,
+        "phi": 3.7690298715836765,
+        "wt": -0.3320129298508705,
+        "wp": 2.7449069542941014
+      },
+      "horizontalTravel": 2.850957542280111,
+      "peakRise": 0.32896368178892277,
+      "supportSteps": 97,
+      "releaseDistance": 1.1235648007948846,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.2784143215397417,
+        "phi": 2.916105255974348,
+        "wt": 0.058665419066675634,
+        "wp": 1.7049063156864133
+      },
+      "horizontalTravel": 4.671784838052019,
+      "peakRise": 1.6504010989405478,
+      "supportSteps": 178,
+      "releaseDistance": 1.999257270585831,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.9223272867351562,
+        "phi": 0,
+        "wt": 0.10733859607540237,
+        "wp": 0
+      },
+      "horizontalTravel": 0.10952847229551467,
+      "peakRise": 0.6228934348746381,
+      "supportSteps": 120,
+      "releaseDistance": 0.189497611405262,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.7717985650196784,
+        "phi": -0.000047435509368763554,
+        "wt": -0.29446834812244305,
+        "wp": -0.0008703574214373696
+      },
+      "horizontalTravel": 0.026948409699526797,
+      "peakRise": 0.17164660299895074,
+      "supportSteps": 25,
+      "releaseDistance": 0.07674620151876065,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.7129299201485646,
+        "phi": 1.9949346552199807,
+        "wt": -0.5453018779934113,
+        "wp": 1.559000232957954
+      },
+      "horizontalTravel": 1.7890203617884421,
+      "peakRise": 0.33506278484287777,
+      "supportSteps": 101,
+      "releaseDistance": 0.9076313448830267,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.895517083223975,
+        "phi": 1.9764742970798514,
+        "wt": 0.005153971583940653,
+        "wp": 1.6079333863148437
+      },
+      "horizontalTravel": 2.1781149395157264,
+      "peakRise": 0.537046560087388,
+      "supportSteps": 120,
+      "releaseDistance": 2.184557173381206,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 4.71679893174681,
+        "phi": 0,
+        "wt": 3.4,
+        "wp": 0
+      },
+      "horizontalTravel": 5.434526785475471,
+      "peakRise": 2.8469245574292845,
+      "supportSteps": 86,
+      "releaseDistance": 2.155124494904082,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -3.8036615027529677,
+        "phi": 0,
+        "wt": -3.4,
+        "wp": 0
+      },
+      "horizontalTravel": 3.81176733481136,
+      "peakRise": 2.978162851553436,
+      "supportSteps": 84,
+      "releaseDistance": 2.7635882228003035,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.9483321199954953,
+        "phi": 4.492772813900828,
+        "wt": -0.35673524412560237,
+        "wp": 3.3641479321421683
+      },
+      "horizontalTravel": 3.857691764360684,
+      "peakRise": 0.8829332086982523,
+      "supportSteps": 113,
+      "releaseDistance": 2.611781042132191,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 4.649005370195486,
+        "phi": 4.4295194963613005,
+        "wt": 3.4,
+        "wp": 3.4
+      },
+      "horizontalTravel": 7.577651556078047,
+      "peakRise": 2.8471862833928343,
+      "supportSteps": 86,
+      "releaseDistance": 2.6009709013371016,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 3.1719570959831285,
+        "phi": 0,
+        "wt": 1.6981391819546061,
+        "wp": 0
+      },
+      "horizontalTravel": 3.1813791082230085,
+      "peakRise": 2.655074213887845,
+      "supportSteps": 167,
+      "releaseDistance": 2.247977056547826,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -2.312096512796264,
+        "phi": 0,
+        "wt": -1.6439587571454424,
+        "wp": 0
+      },
+      "horizontalTravel": 0.9329409683305578,
+      "peakRise": 1.8069219499072418,
+      "supportSteps": 96,
+      "releaseDistance": 1.9478343998792762,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.94542277333136,
+        "phi": 3.204730971521285,
+        "wt": -0.3231306549380441,
+        "wp": 2.216400860813843
+      },
+      "horizontalTravel": 3.16681069707244,
+      "peakRise": 0.8681749389803491,
+      "supportSteps": 113,
+      "releaseDistance": 2.4712763374820055,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.8101835737639935,
+        "phi": 2.4897016519961763,
+        "wt": 1.3640284752689855,
+        "wp": 1.4374963192056498
+      },
+      "horizontalTravel": 3.734732116918495,
+      "peakRise": 2.4439186402282744,
+      "supportSteps": 163,
+      "releaseDistance": 1.4038708652960568,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.0645848447648665,
+        "phi": 0,
+        "wt": 0.9867944939062262,
+        "wp": 0
+      },
+      "horizontalTravel": 0.38644554143232585,
+      "peakRise": 1.131549780932354,
+      "supportSteps": 96,
+      "releaseDistance": 0.7093199503788461,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.4250569955692185,
+        "phi": 0,
+        "wt": -1.3948216833074638,
+        "wp": 0
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0.13594401470084425,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.025612061460253,
+        "phi": 1.7605560008989447,
+        "wt": 0.020621160124246356,
+        "wp": 1.359074529345572
+      },
+      "horizontalTravel": 1.8665968118813032,
+      "peakRise": 1.0346607685283642,
+      "supportSteps": 113,
+      "releaseDistance": 1.533961708427416,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "basic-fighter",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.043280766416041,
+        "phi": 1.7517502111052703,
+        "wt": 0.8527787955136957,
+        "wp": 1.3626288986020452
+      },
+      "horizontalTravel": 1.5611475060732805,
+      "peakRise": 1.0780231245322374,
+      "supportSteps": 96,
+      "releaseDistance": 1.598473195673633,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 8.212606431099555,
+        "phi": 0,
+        "wt": 1.8586269794030477,
+        "wp": 0
+      },
+      "horizontalTravel": 6.82809604350755,
+      "peakRise": 2.664165359274075,
+      "supportSteps": 105,
+      "releaseDistance": 1.0735545197899077,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -5.524524928923895,
+        "phi": 0,
+        "wt": -6.1,
+        "wp": 0
+      },
+      "horizontalTravel": 4.272196043551859,
+      "peakRise": 2.753726551080384,
+      "supportSteps": 77,
+      "releaseDistance": 2.74054621379074,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.7534424051749027,
+        "phi": 2.2789010672765486,
+        "wt": -0.048281859421792396,
+        "wp": 6.037077221305207
+      },
+      "horizontalTravel": 2.0661232773171836,
+      "peakRise": 0.061271303604193084,
+      "supportSteps": 226,
+      "releaseDistance": 0.5364290126687302,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 8.150210246151948,
+        "phi": 1.0622160746081926,
+        "wt": 1.5348587022812994,
+        "wp": 3.0360292623536447
+      },
+      "horizontalTravel": 10.642310173855327,
+      "peakRise": 2.5871689926041945,
+      "supportSteps": 106,
+      "releaseDistance": 3.5125603425083596,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 5.715185564120812,
+        "phi": 0,
+        "wt": 3.003648917797799,
+        "wp": 0
+      },
+      "horizontalTravel": 6.238065506100925,
+      "peakRise": 2.3695137121825027,
+      "supportSteps": 116,
+      "releaseDistance": 0.5412489878355711,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -2.6277260126316273,
+        "phi": 0,
+        "wt": -1.9016685840657281,
+        "wp": 0
+      },
+      "horizontalTravel": 1.235040351984816,
+      "peakRise": 1.9230037812898924,
+      "supportSteps": 109,
+      "releaseDistance": 2.153914467028539,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.7534300235543636,
+        "phi": 6.154222231341409,
+        "wt": -0.048292059948929524,
+        "wp": 3.9301150504663163
+      },
+      "horizontalTravel": 2.3852540657115315,
+      "peakRise": 0.061169225922657056,
+      "supportSteps": 226,
+      "releaseDistance": 0.596584477323514,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 4.514703643489455,
+        "phi": 3.9530540567597408,
+        "wt": 2.4602707448209586,
+        "wp": 1.4251260644811155
+      },
+      "horizontalTravel": 7.001760403923608,
+      "peakRise": 2.28601061981704,
+      "supportSteps": 200,
+      "releaseDistance": 0.553619900446368,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 3.0964408586947854,
+        "phi": 0,
+        "wt": 1.8059726055058285,
+        "wp": 0
+      },
+      "horizontalTravel": 2.355811203236932,
+      "peakRise": 2.28276596578812,
+      "supportSteps": 248,
+      "releaseDistance": 2.2797476925950826,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.562601440194565,
+        "phi": 0,
+        "wt": -2.473235487220412,
+        "wp": 0
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0.018950423285094522,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.7534149634779281,
+        "phi": 2.9806837915143913,
+        "wt": -0.04826807042841729,
+        "wp": 2.406319398805353
+      },
+      "horizontalTravel": 2.7182257664730014,
+      "peakRise": 0.05996817028964052,
+      "supportSteps": 225,
+      "releaseDistance": 0.5927065673694234,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "sword"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.2428582377983184,
+        "phi": 2.8938607649223016,
+        "wt": 0.011134591352069678,
+        "wp": 2.429294253294957
+      },
+      "horizontalTravel": 6.4932869771571005,
+      "peakRise": 1.2271316272896455,
+      "supportSteps": 248,
+      "releaseDistance": 2.3563547350763474,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 5.06450683004911,
+        "phi": 0,
+        "wt": 4.25,
+        "wp": 0
+      },
+      "horizontalTravel": 5.513227719587878,
+      "peakRise": 3.0230532468838343,
+      "supportSteps": 112,
+      "releaseDistance": 2.4372624828480722,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -4.190708546530896,
+        "phi": -0.0017250353991029382,
+        "wt": -4.25,
+        "wp": -0.0019931922557741666
+      },
+      "horizontalTravel": 4.16235603853085,
+      "peakRise": 3.031623198616208,
+      "supportSteps": 111,
+      "releaseDistance": 3.184543128433334,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.7034288167391727,
+        "phi": 5.5034635930431035,
+        "wt": -0.42227778759927753,
+        "wp": 4.25
+      },
+      "horizontalTravel": 3.196136666669067,
+      "peakRise": 0.3315124943909884,
+      "supportSteps": 98,
+      "releaseDistance": 0.8440994265067175,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 4.758778622199252,
+        "phi": 5.212705641112239,
+        "wt": 4.25,
+        "wp": 4.25
+      },
+      "horizontalTravel": 8.464695961190362,
+      "peakRise": 2.9235568220794246,
+      "supportSteps": 128,
+      "releaseDistance": 2.9807228978636133,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 2.9674332539721915,
+        "phi": 0,
+        "wt": 1.7582252306382578,
+        "wp": 0
+      },
+      "horizontalTravel": 2.529628894987438,
+      "peakRise": 2.7770948706194547,
+      "supportSteps": 182,
+      "releaseDistance": 2.6458691771751615,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -2.3756912108079162,
+        "phi": -0.0007450575922375658,
+        "wt": -1.076036897592764,
+        "wp": -0.0011248994483185639
+      },
+      "horizontalTravel": 0.8965995972866502,
+      "peakRise": 1.8874141331195249,
+      "supportSteps": 126,
+      "releaseDistance": 0.9215386502663558,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.70231991578388,
+        "phi": 3.7690298715836765,
+        "wt": -0.3320129298508705,
+        "wp": 2.7449069542941014
+      },
+      "horizontalTravel": 2.850957542280111,
+      "peakRise": 0.32896368178892277,
+      "supportSteps": 97,
+      "releaseDistance": 1.1235648007948846,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.2784143215397417,
+        "phi": 2.916105255974348,
+        "wt": 0.058665419066675634,
+        "wp": 1.7049063156864133
+      },
+      "horizontalTravel": 4.671784838052019,
+      "peakRise": 1.6504010989405478,
+      "supportSteps": 178,
+      "releaseDistance": 1.999257270585831,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.9223272867351562,
+        "phi": 0,
+        "wt": 0.10733859607540237,
+        "wp": 0
+      },
+      "horizontalTravel": 0.10952847229551467,
+      "peakRise": 0.6228934348746381,
+      "supportSteps": 120,
+      "releaseDistance": 0.189497611405262,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.7717985650196784,
+        "phi": -0.000047435509368763554,
+        "wt": -0.29446834812244305,
+        "wp": -0.0008703574214373696
+      },
+      "horizontalTravel": 0.026948409699526797,
+      "peakRise": 0.17164660299895074,
+      "supportSteps": 25,
+      "releaseDistance": 0.07674620151876065,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.7129299201485646,
+        "phi": 1.9949346552199807,
+        "wt": -0.5453018779934113,
+        "wp": 1.559000232957954
+      },
+      "horizontalTravel": 1.7890203617884421,
+      "peakRise": 0.33506278484287777,
+      "supportSteps": 101,
+      "releaseDistance": 0.9076313448830267,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "polearm"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.895517083223975,
+        "phi": 1.9764742970798514,
+        "wt": 0.005153971583940653,
+        "wp": 1.6079333863148437
+      },
+      "horizontalTravel": 2.1781149395157264,
+      "peakRise": 0.537046560087388,
+      "supportSteps": 120,
+      "releaseDistance": 2.184557173381206,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 4.71679893174681,
+        "phi": 0,
+        "wt": 3.4,
+        "wp": 0
+      },
+      "horizontalTravel": 5.434526785475471,
+      "peakRise": 2.8469245574292845,
+      "supportSteps": 86,
+      "releaseDistance": 2.155124494904082,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -3.8036615027529677,
+        "phi": 0,
+        "wt": -3.4,
+        "wp": 0
+      },
+      "horizontalTravel": 3.81176733481136,
+      "peakRise": 2.978162851553436,
+      "supportSteps": 84,
+      "releaseDistance": 2.7635882228003035,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.9483321199954953,
+        "phi": 4.492772813900828,
+        "wt": -0.35673524412560237,
+        "wp": 3.3641479321421683
+      },
+      "horizontalTravel": 3.857691764360684,
+      "peakRise": 0.8829332086982523,
+      "supportSteps": 113,
+      "releaseDistance": 2.611781042132191,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 4.649005370195486,
+        "phi": 4.4295194963613005,
+        "wt": 3.4,
+        "wp": 3.4
+      },
+      "horizontalTravel": 7.577651556078047,
+      "peakRise": 2.8471862833928343,
+      "supportSteps": 86,
+      "releaseDistance": 2.6009709013371016,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 3.1719570959831285,
+        "phi": 0,
+        "wt": 1.6981391819546061,
+        "wp": 0
+      },
+      "horizontalTravel": 3.1813791082230085,
+      "peakRise": 2.655074213887845,
+      "supportSteps": 167,
+      "releaseDistance": 2.247977056547826,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -2.312096512796264,
+        "phi": 0,
+        "wt": -1.6439587571454424,
+        "wp": 0
+      },
+      "horizontalTravel": 0.9329409683305578,
+      "peakRise": 1.8069219499072418,
+      "supportSteps": 96,
+      "releaseDistance": 1.9478343998792762,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.94542277333136,
+        "phi": 3.204730971521285,
+        "wt": -0.3231306549380441,
+        "wp": 2.216400860813843
+      },
+      "horizontalTravel": 3.16681069707244,
+      "peakRise": 0.8681749389803491,
+      "supportSteps": 113,
+      "releaseDistance": 2.4712763374820055,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.8101835737639935,
+        "phi": 2.4897016519961763,
+        "wt": 1.3640284752689855,
+        "wp": 1.4374963192056498
+      },
+      "horizontalTravel": 3.734732116918495,
+      "peakRise": 2.4439186402282744,
+      "supportSteps": 163,
+      "releaseDistance": 1.4038708652960568,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.0645848447648665,
+        "phi": 0,
+        "wt": 0.9867944939062262,
+        "wp": 0
+      },
+      "horizontalTravel": 0.38644554143232585,
+      "peakRise": 1.131549780932354,
+      "supportSteps": 96,
+      "releaseDistance": 0.7093199503788461,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.4250569955692185,
+        "phi": 0,
+        "wt": -1.3948216833074638,
+        "wp": 0
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0.13594401470084425,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.025612061460253,
+        "phi": 1.7605560008989447,
+        "wt": 0.020621160124246356,
+        "wp": 1.359074529345572
+      },
+      "horizontalTravel": 1.8665968118813032,
+      "peakRise": 1.0346607685283642,
+      "supportSteps": 113,
+      "releaseDistance": 1.533961708427416,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "hammer"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 2.043280766416041,
+        "phi": 1.7517502111052703,
+        "wt": 0.8527787955136957,
+        "wp": 1.3626288986020452
+      },
+      "horizontalTravel": 1.5611475060732805,
+      "peakRise": 1.0780231245322374,
+      "supportSteps": 96,
+      "releaseDistance": 1.598473195673633,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 3.0410705527920796,
+        "phi": -0.09696878944294701,
+        "wt": 4.25,
+        "wp": -0.08175092369219819
+      },
+      "horizontalTravel": 2.189078450025055,
+      "peakRise": 2.08942340185266,
+      "supportSteps": 95,
+      "releaseDistance": 3.2492947262655214,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -6.469619733766469,
+        "phi": 0.13420333411785876,
+        "wt": -4.25,
+        "wp": 3.781161437353281e-8
+      },
+      "horizontalTravel": 6.747907442316221,
+      "peakRise": 2.194125405980402,
+      "supportSteps": 95,
+      "releaseDistance": 0.4777875188281347,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": -1.9112902700430145,
+        "phi": 1.1669687040331422,
+        "wt": 0.04145700574878704,
+        "wp": 0.621872820824064
+      },
+      "horizontalTravel": 2.5644368751255397,
+      "peakRise": 0.19294848984184343,
+      "supportSteps": 190,
+      "releaseDistance": 0.47736391883283685,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 2.9266875332505133,
+        "phi": 1.382171105015442,
+        "wt": 3.7982336896262368,
+        "wp": 1.065649263071264
+      },
+      "horizontalTravel": 2.6018895798711914,
+      "peakRise": 2.026335451629191,
+      "supportSteps": 98,
+      "releaseDistance": 3.7099132342240715,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 1.9491273076764424,
+        "phi": -0.002334764091812906,
+        "wt": 0.4497614755483937,
+        "wp": -0.022167664015038235
+      },
+      "horizontalTravel": 0.03890682774503851,
+      "peakRise": 0.10968923096523953,
+      "supportSteps": 13,
+      "releaseDistance": 0.04870048561865482,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -4.382266625335566,
+        "phi": 0.13565332176325942,
+        "wt": -2.0870078153858964,
+        "wp": -0.12389903737111263
+      },
+      "horizontalTravel": 5.909615487139726,
+      "peakRise": 2.0770305517454197,
+      "supportSteps": 209,
+      "releaseDistance": 0.5920202399368832,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": -1.9113174868723715,
+        "phi": 0.7666301647883461,
+        "wt": 0.04145142681246763,
+        "wp": 0.3358965330243777
+      },
+      "horizontalTravel": 1.6668026434065657,
+      "peakRise": 0.18459624463028035,
+      "supportSteps": 191,
+      "releaseDistance": 0.26083232542234425,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.603725125885129,
+        "phi": 0.8748116716079056,
+        "wt": 1.73286303092502,
+        "wp": 0.4027754570095371
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0.0527726527475209,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -0.08256142969205445,
+        "phi": 0,
+        "wt": 1.7229893885202483,
+        "wp": 0
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -2.4720375414686098,
+        "phi": 0.024250968934174746,
+        "wt": -0.5825340206166658,
+        "wp": 0.061323649694483354
+      },
+      "horizontalTravel": 0.9283155968416272,
+      "peakRise": 1.4499229580288047,
+      "supportSteps": 225,
+      "releaseDistance": 0.39688511985493075,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -1.9113142423333145,
+        "phi": 0.30233106924715847,
+        "wt": 0.04145574480355347,
+        "wp": 0.14670030352761826
+      },
+      "horizontalTravel": 0.7339311828595219,
+      "peakRise": 0.17197156027859928,
+      "supportSteps": 194,
+      "releaseDistance": 0.11844236113538435,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "beagle",
+        "weaponId": "long-ears"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -0.08256142969205445,
+        "phi": 0.5408982213850397,
+        "wt": 1.7229893885202483,
+        "wp": 0.3925966511802054
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": 7.466320627578491,
+        "phi": 0.21009735022612566,
+        "wt": 4.25,
+        "wp": 4.073360445327211e-8
+      },
+      "horizontalTravel": 4.251802197680166,
+      "peakRise": 1.7501740822266516,
+      "supportSteps": 83,
+      "releaseDistance": 0.8072741850840568,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 169.99999999999915,
+        "theta": -4.0947216565978195,
+        "phi": -0.07471857759335358,
+        "wt": -4.25,
+        "wp": -0.0000032671008649662518
+      },
+      "horizontalTravel": 3.0397260937012547,
+      "peakRise": 1.8466079144988066,
+      "supportSteps": 61,
+      "releaseDistance": 1.6568292897886892,
+      "finalStamina": 169.99999999999915
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 200,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 185.0000000000034,
+        "theta": 1.5707963267948966,
+        "phi": 1.5598101086472886,
+        "wt": 0,
+        "wp": 1.076102417042668
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0,
+      "finalStamina": 185.0000000000034
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 200,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 155.00000000000256,
+        "theta": 7.465394512217789,
+        "phi": 1.7150237847555883,
+        "wt": 4.25,
+        "wp": 1.0761024596258049
+      },
+      "horizontalTravel": 3.1402645744597764,
+      "peakRise": 1.7486370298207081,
+      "supportSteps": 85,
+      "releaseDistance": 0.7041016684238021,
+      "finalStamina": 155.00000000000256
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": 5.378459666108387,
+        "phi": 0.22561053532354347,
+        "wt": 2.1114668879185476,
+        "wp": 0.00005676343207378084
+      },
+      "horizontalTravel": 3.5955128969742773,
+      "peakRise": 1.6622349614626408,
+      "supportSteps": 208,
+      "releaseDistance": 1.2630448213491288,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 9.999999999999854,
+        "theta": -1.9575693435917765,
+        "phi": -0.023272093749438907,
+        "wt": -2.1514982682848798,
+        "wp": -0.02710560076943911
+      },
+      "horizontalTravel": 1.4070526561816616,
+      "peakRise": 1.638387483087953,
+      "supportSteps": 125,
+      "releaseDistance": 1.6415008734114596,
+      "finalStamina": 9.999999999999854
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 40,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 24.999999999999574,
+        "theta": 1.5707963267948966,
+        "phi": 1.0992157384892567,
+        "wt": 0,
+        "wp": 0.6848413482339731
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0,
+      "finalStamina": 24.999999999999574
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 40,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 4.912081401017459,
+        "phi": 1.0000359661852873,
+        "wt": 1.7106977426933971,
+        "wp": 0.0701814655457023
+      },
+      "horizontalTravel": 2.3455272560421148,
+      "peakRise": 1.6617429282122047,
+      "supportSteps": 233,
+      "releaseDistance": 0.9225989236604613,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 3.930062965231221,
+        "phi": 0.1458132738687618,
+        "wt": 1.6868017806185216,
+        "wp": 0.14756935961361872
+      },
+      "horizontalTravel": 1.4269291290046582,
+      "peakRise": 1.6139406917597592,
+      "supportSteps": 214,
+      "releaseDistance": 1.2021255929883345,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": -1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": -0.7301286501995154,
+        "phi": -0.0008533650140781413,
+        "wt": -0.8293975667234648,
+        "wp": -0.00037744606085802265
+      },
+      "horizontalTravel": 0.022712170116299658,
+      "peakRise": 0.2069882162567971,
+      "supportSteps": 25,
+      "releaseDistance": 0.012202835898581765,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 0,
+      "input": {
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 1.5707963267948966,
+        "phi": 0.5408982213850397,
+        "wt": 0,
+        "wp": 0.3925966511802054
+      },
+      "horizontalTravel": 0,
+      "peakRise": 0,
+      "supportSteps": 0,
+      "releaseDistance": 0,
+      "finalStamina": 0
+    },
+    {
+      "selection": {
+        "characterId": "orange-tabby",
+        "weaponId": "cat-paws"
+      },
+      "initialStamina": 0,
+      "input": {
+        "theta": 1,
+        "phi": 1
+      },
+      "activeSeconds": 1.5,
+      "active": {
+        "stamina": 0,
+        "theta": 3.9275687198189724,
+        "phi": 0.6860557387751057,
+        "wt": 1.6877302848811369,
+        "wp": 0.6133411091385672
+      },
+      "horizontalTravel": 1.0230479857116945,
+      "peakRise": 1.6129367107929045,
+      "supportSteps": 214,
+      "releaseDistance": 0.9414765528954346,
+      "finalStamina": 0
+    }
+  ],
+  "limits": [
+    "Constructed movement trials do not establish matchup fairness.",
+    "Counterbalanced human matches across players, loadouts and keyboard sides remain necessary.",
+    "Optional passive-damage and extra hammer-braking trials remain conditional on match evidence."
+  ]
+}

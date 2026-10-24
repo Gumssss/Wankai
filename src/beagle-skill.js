@@ -1,4 +1,5 @@
 import {BEAGLE} from './beagle-profile.js';
+import {ROTOR_RESOURCE,staminaPower} from './combat-settings.js';
 
 export const BEAGLE_SKILL=Object.freeze({
  normalTurnSpeed:1.15, steeringGain:.7, spinSpeed:4.25,
@@ -33,12 +34,19 @@ export function updateBeagleSkill(p,held,dt){
  const wants=!!held;
  const trigger=p.skillRequested || (wants&&!p.skillWasHeld);
  p.skillRequested=false;p.skillWasHeld=wants;
- if(trigger&&!p.skillActive&&(p.earSpread||0)<.001){p.skillActive=true;p.skillRemaining=BEAGLE_SKILL.duration;}
- if(p.skillActive){p.skillRemaining=Math.max(0,p.skillRemaining-dt);p.skillActive=p.skillRemaining>1e-8;}
+ if(trigger&&!p.skillActive&&(p.earSpread||0)<.001&&p.stamina>=ROTOR_RESOURCE.activationMinimum){p.skillActive=true;p.skillRemaining=BEAGLE_SKILL.duration;}
+ p.skillStepTime=p.skillActive?Math.min(dt,p.skillRemaining,p.stamina/ROTOR_RESOURCE.drain):0;
+ const wasActive=p.skillActive;
+ if(p.skillActive){
+  p.skillRemaining=Math.max(0,p.skillRemaining-dt);
+  p.skillActive=p.skillRemaining>1e-8&&p.stamina-ROTOR_RESOURCE.drain*p.skillStepTime>1e-8;
+  if(!p.skillActive)p.skillRemaining=0;
+ }
  const ready=Math.abs(Math.atan2(Math.sin(p.theta+Math.PI/2),Math.cos(p.theta+Math.PI/2)))<.3;
  const target=p.skillActive&&ready?Math.PI/2:0;
  const before=p.earSpread||0,amount=Math.min(BEAGLE_SKILL.spreadSpeed*dt,Math.abs(target-before));
  p.earSpread=before+Math.sign(target-before)*amount;p.earSpreadRate=(p.earSpread-before)/dt;
+ p.skillBusy=wasActive||before>.001||p.earSpread>.001;
  const lagTarget=p.earSpread>0?-.028*p.wp:0;
  p.earLagRate=(p.earLagRate||0)+(55*(lagTarget-(p.earLag||0))-12*(p.earLagRate||0))*dt;
  p.earLag=(p.earLag||0)+p.earLagRate*dt;
@@ -46,7 +54,7 @@ export function updateBeagleSkill(p,held,dt){
 
 export function applyBeagleHover(p,dt,gravity){
  if(!p.skillActive)return;
- const speed=Math.min(1,Math.abs(p.wp)/3);
+ const speed=Math.min(1,Math.abs(p.wp)/(3*staminaPower(p.stamina)));
  const ready=Math.max(0,(p.earSpread/(Math.PI/2)-.65)/.35)*speed;
  const target=BEAGLE.bodyFloor+BEAGLE_SKILL.hoverHeight;
  const thrust=Math.max(0,Math.min(gravity+12,gravity+BEAGLE_SKILL.hoverGain*(target-p.p.y)-BEAGLE_SKILL.hoverDamping*p.v.y));

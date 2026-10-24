@@ -1,6 +1,7 @@
 import { ArenaPhysics, CONFIG, WEAPONS, arenaScaleForMode } from './physics.js';
 import { GameAudio } from './audio.js';
 import {DEFAULT_LOADOUTS,normalizeLoadout,isEarLoadout} from './loadouts.js';
+import {ROUND_RULES,ROTOR_RESOURCE} from './combat-settings.js';
 
 export const CAMERA_KEYS = new Set(['KeyQ', 'KeyE', 'Period', 'Slash']);
 
@@ -28,6 +29,8 @@ export class GameSession {
     this.countdownNumber = -1;
     this.endTimer = 0;
     this.readoutTimer = 0;
+    this.readoutTimers = [0, 0];
+    this.readouts = [null, null];
     this.nextEffectId = 0;
     this.effects = [];
     this.readout = null;
@@ -56,13 +59,21 @@ export class GameSession {
       weapons: [this.weapon, this.secondWeapon],
       pressed: [...this.keys],
       health: this.world.players.map(player => player.health),
+      maxHealth: this.world.players.map(player => player.maxHealth),
       stamina: this.world.players.map(player => player.stamina),
-      skills: this.world.players.map(player=>({active:player.skillActive,remaining:player.skillRemaining})),
+      skills: this.world.players.map(player=>({active:player.skillActive,remaining:player.skillRemaining,
+        retracting:!player.skillActive&&player.earSpread>.001,
+        ready:isEarLoadout(player)&&!player.skillActive&&player.earSpread<=.001&&player.stamina>=ROTOR_RESOURCE.activationMinimum})),
       seconds: Math.floor(this.world.time),
+      remainingSeconds:Math.max(0,Math.ceil(ROUND_RULES.duration-this.world.time-1e-8)),
+      pressure:{...this.world.pressure,outside:this.world.players.map(p=>p.zoneOutside),
+        warning: this.world.players.map(p=>p.zoneOutside>0&&p.zoneOutside<ROUND_RULES.outsideGrace)},
       winner: this.world.winner,
+      endReason:this.world.endReason,
       countdownText: this.state === 'countdown' ? (this.countdownNumber > 0 ? String(this.countdownNumber) : '') :
         this.state === 'playing' && this.countdown < 0 ? '抡起来' : '',
       readout: this.readout,
+      readouts: [...this.readouts],
       effects: [...this.effects],
       soundEnabled: this.sound.enabled,
       error: this.error,
@@ -157,6 +168,8 @@ export class GameSession {
     this.effects = [];
     this.readout = null;
     this.readoutTimer = 0;
+    this.readoutTimers = [0, 0];
+    this.readouts = [null, null];
     this.accumulator = 0;
     this.freeze = 0;
     this.state = 'countdown';
@@ -168,6 +181,9 @@ export class GameSession {
 
   goHome() {
     this.state = 'lobby';
+    this.readoutTimer = 0;
+    this.readoutTimers = [0, 0];
+    this.readouts = [null, null];
     this.clearKeys();
     this.mode = 'duel';
     this.practice = false;
@@ -213,13 +229,17 @@ export class GameSession {
     this.sound.impact(event);
     if (event.type !== 'hit') return;
     this.freeze = Math.max(this.freeze, 0.028 + event.strength * 0.055);
-    this.effects.push({ id: ++this.nextEffectId, point: { ...event.point }, damage: event.damage, life: 0.95, maxLife: 0.95 });
+    const attacker = [0,1].includes(event.attacker) ? event.attacker : null;
+    const target = [0,1].includes(event.target) ? event.target : null;
+    this.effects.push({ id: ++this.nextEffectId, attacker, target, point: { ...event.point }, damage: event.damage, life: 0.95, maxLife: 0.95 });
     this.readout = {
+      attacker, target,
       label: event.damage >= 22 ? '漂亮的一击' : '有效命中',
       damage: event.damage,
       detail: `${event.speed.toFixed(1)} m/s · 发力加成 ${Math.round(30 * Math.min(event.acceleration / 48, 1))}%${event.turnShare > 0.01 ? ' · 横转伤害降低' : ''}`,
     };
     this.readoutTimer = 3;
+    if (attacker !== null) { this.readouts[attacker] = this.readout; this.readoutTimers[attacker] = 3; }
     this.publish();
   }
 
@@ -279,6 +299,11 @@ export class GameSession {
     if (this.readoutTimer > 0) {
       this.readoutTimer -= effectDt;
       if (this.readoutTimer <= 0) { this.readout = null; this.publish(); }
+    }
+    for (let id = 0; id < 2; id++) {
+      if (this.readoutTimers[id] <= 0) continue;
+      this.readoutTimers[id] = Math.max(0, this.readoutTimers[id] - effectDt);
+      if (!this.readoutTimers[id]) { this.readouts[id] = null; this.publish(); }
     }
     if (this.effects.length) {
       for (const effect of this.effects) effect.life -= effectDt;
