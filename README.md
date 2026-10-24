@@ -1,5 +1,9 @@
 # 丸棍竞技场
 
+> **24 October 2026 — GitHub delivery:** current combat/resource rules, 1.3× Cat paws, character-specific health, adaptive combat cameras, drawing-buffer limits and the lighter Colosseum are collected on `feat/combat-balance-performance-update`. Fresh verification: **234 tests pass** and the production build passes. This delivery targets a separate branch; it does not merge into main. [Delivery record and retained motion evidence](docs/updates/2026-10-24-github-delivery.md). Earlier dated checkpoints below remain historical.
+
+> **23 October 2026 — coordinated combat trial:** all 15 plan items are implemented, including the shared chronological contacts and remaining resource, durability, recoil, 3D-body, round-pressure, training and camera work. All 216 tests and production build pass. Balance values are trial candidates, pending human matches. [Rules and complete problem mapping](docs/CONTROL_SYSTEM.md#complete-problem-mapping-for-the-coordinated-trial).
+
 **Live integration review:** browser checks pass for intro entry/Escape return, yellow defaults, independent preparation/cancellation, fixed yellow combat/rematch, split beagle/cat controls and hover ownership, pause, practice, solo polearm and mobile bounds. No page errors; existing clock-deprecation warnings remain. [Combined verification and screenshots](assets/concepts/integration-2026-10-22/verification.json).
 
 **Combined checkpoint — 22 October 2026:** integrates the yellow character/yellow staff and animated startup/menu from latest main (`ae91c42`) with the Colosseum, Roman-inspired floor and approved arena cameras (`701b7d5`). All four characters and nine valid loadouts are retained, including the new yellow defaults. Both sides of the menu/camera conflicts are preserved. The shortened 2.00-unit polearm now scales its measured contacts with the visible model; a regression reproduces and prevents the former invisible-tip hit. Fresh checks: **179/179 tests and production build pass** (existing chunk-size advisory). [Integration/merge status](https://github.com/Gumssss/Wankai/pull/4). Earlier local-only and branch-only notes below describe their dated checkpoints.
@@ -103,19 +107,19 @@ A / D（← / →）只改变武器的水平朝向，可以与 W 或 S 同时按
 
 ## 对战规则
 
-- 同一键盘本地双人；默认每方 100 HP，血量归零判负，可再战。菜单可选「双人对战 · 分屏视角」或「双人对战 · 固定视角」。前者并排显示两位玩家的跟随视角；后者使用最初版本的固定高位镜头，在同一画面显示两位玩家。两种对战使用相同的武器、操控和物理规则，重开保留所选模式。
+- 同一键盘本地双人；基础丸人 100 HP，比格犬 80 HP，黄团子 110 HP，橘猫 150 HP。菜单可选分屏或共享战术视角；共享视角保留既定方向，自动居中与拉远以容纳双方和武器，分屏保护近处对手并提示远处对手方向。两种对战使用相同的物理规则。对战最多 120 秒，45 秒后安全圈逐渐收缩；圈外警告 2 秒后每秒损失最大生命的 10%。血量归零判负；到时按剩余生命百分比判胜，相同为平局。重开保留模式并重置状态。
 - P1 用 WASD、P2 用方向键；左右键控制角色面向和武器挥动平面的水平转向。在固定视角中，转向仍相对角色面向，镜头不跟随角色转动。
 - 头部与躯干伤害相同；同一挥击不会因持续重叠而反复扣血。
-- 伤害以接触点朝向对手的相对碰撞速度为基础，叠加命中前约 90 ms 的沿挥动方向净加速度（计入阻尼和转速上限），最高加成 30%，基础单次伤害上限 34；铁战锤的金属头在此基础上乘 1.3，四舍五入后上限 44，锤柄仍使用基础伤害。
+- 伤害以接触点朝向对手的相对碰撞速度为基础，叠加命中前约 90 ms 的沿挥动方向净加速度（计入阻尼和转速上限），最高加成 30%，基础单次伤害上限 34；铁战锤的金属头在此基础上乘 1.45，四舍五入后上限 49，锤柄仍使用基础伤害。
 - 相同碰撞速度、发力与命中部位下，纯水平转动命中的伤害系数为竖直挥击的 50%；组合动作按接触点朝向对手的横转、竖挥和身体相对移动贡献混合计算。松开转向键后的惯性命中仍会降低横转部分的伤害；与命中方向无关的横向运动不会削弱竖击。伤害调整不改变基础碰撞和格挡冲量。
-- 每人另有 200 耐力：W / S（↑ / ↓）每秒消耗 20，A / D（← / →）每秒消耗 8，同时操作叠加。只竖挥约 10 秒耗尽；组合动作约 7.1 秒。放开两轴武器操作 0.5 秒后，每秒恢复 30。反向输入、武器受阻时继续按键仍消耗耐力；同轴相反键抵消后该轴不消耗。转动镜头、被动摆动和碰撞不消耗耐力。
-- 耐力低于 25 时，主动驱动力和驱动转速逐渐降低，耗尽时保留 40% 的驱动力及驱动转速目标。反向刹车保留原有响应；松手仍有惯性，力竭不会锁住武器。继续按键不会恢复耐力；暂停、倒数与命中停顿不推进耐力，重开恢复满值。所有模式和八种有效搭配采用相同普通耐力规则，生命与耐力分别显示。
+- 每人另有 200 耐力：W / S（↑ / ↓）每秒消耗 20，A / D（← / →）每秒消耗 10，同时操作叠加。只竖挥约 10 秒耗尽；组合动作约 6.67 秒。放开两轴武器操作 0.6 秒后，每秒恢复 24。反向输入、武器受阻时继续按键仍消耗耐力；同轴相反键抵消后该轴不消耗。转动镜头、被动摆动和碰撞不消耗耐力。
+- 耐力低于 60 时，主动驱动力和驱动转速逐渐降低，耗尽时保留 40% 的驱动力及驱动转速目标。反向刹车保留原有响应；松手仍有惯性，力竭不会锁住武器。继续按键不会恢复耐力；暂停、倒数与命中停顿不推进耐力，重开恢复满值。所有模式和九种有效搭配采用相同普通耐力规则，生命与耐力分别显示。
 - 低于 1.65 m/s 的轻触不扣血。向心加速度、碰撞产生的骤停不参与加成。
-- 武器互相碰撞可格挡，有力相撞会让双方沿各自当前面向的反方向后退，并有物理冲量、音效和粒子。轻触不触发额外后退，持续贴住只触发一次，分开后再次相撞才可重触发；圆台边界仍会阻止身体出界。击中身体另有短暂停顿、击退、数字和伤害提示。有效撞击还可产生轻微震屏；系统开启“减少动态效果”时禁用震屏。
-- 角斗场边界约束主体，不以掉出场外判胜。角色被撑起后保持直立；比格犬装备长耳后按 F 可旋耳低空悬停 5 秒，不耗耐力，时间到后落地。
+- 武器互相碰撞可格挡，有力相撞会让双方沿彼此连线向外后退，并有物理冲量、音效和粒子。轻触不触发额外后退，持续贴住只触发一次，分开后再次相撞才可重触发；圆台边界仍会阻止身体出界。击中身体另有短暂停顿、击退、数字和伤害提示。有效撞击还可产生轻微震屏；系统开启“减少动态效果”时禁用震屏。
+- 角斗场边界约束主体，不以掉出场外判胜。角色被撑起后保持直立；比格犬装备长耳后按 F 可旋耳低空悬停最多 5 秒，至少需要 40 耐力，每秒消耗 16，耗尽或时间到后落地。长耳只有末端 1.8–3.6 区间参与攻击、格挡和撑地；内段保持可见。
 - 单人练习中青丸不主动操作，但仍会被击退；停止受击 2.5 秒后恢复血量，最低保留 1 HP。
 - 分屏对战采用已确认的角色后方远景：从身后略偏 15° 看向前方，使用较缓俯视、55° 透视和 10.5 的默认距离，可看到圆台远侧边缘；镜头柔和追踪武器。A / D（← / →）转动武器与角色面向，镜头的水平朝向保持独立；P1 按住 Q / E、P2 按住句号键和斜杠键（. / ?，无需 Shift）水平转动自己的镜头，松开保持所选角度。两组镜头键的方向已根据实玩反馈反转。双方视角互不影响，对战不使用鼠标控制镜头，重开恢复初始角度。
-- 分屏镜头的位置始终跟随自己的角色，并柔和调整武器在画面中的位置。画面边缘检查会在角色头部、身体或标签锚点需要更多空间时立即拉远，空间恢复后再缓慢靠近，防止撑地跳起或击退时看丢自己；对手和整把武器不保证始终在画面内。分屏圆台及物理边界与单人模式一样，扩大至原圆台的三倍半径（19.35）；固定视角对战与木桩练习保留原圆台。
+- 分屏镜头跟随自己的角色并容纳完整武器，保护 12 单位范围内的近处对手，远处对手通过边缘方向标记提示。共享战术视角自动居中与拉远。所有模式共用半径 19.35 的圆台与接触规则；木桩练习保留被动操作、回血和不计时的训练规则。
 - 单人自由视角只有赤丸，圆台及其物理边界与分屏对战一样，是原圆台的三倍半径，棍子与地面物理规则保持相同。视角从武器侧面稍高处开始，随后柔和追踪武器在画面中的位置；A / D 仍直接转动武器，镜头的水平朝向保持稳定。左侧指示盘显示角色面向和挥动平面相对当前镜头的水平方向。在场景内拖动鼠标旋转视角，滚轮调远近，松手一段时间后缓缓回到起始方向。
 - 失焦、切换标签页会自动暂停，防止卡键。
 
@@ -185,4 +189,4 @@ A / D（← / →）只改变武器的水平朝向，可以与 W 或 S 同时按
 
 ### 比格犬旋耳悬停（2026-10-19）
 
-普通 W/S 挥耳与 A/D 转向可组合，双耳保持并列。按 **F**（P2 **右 Shift**）启动 **5 秒**旋耳低空悬停，**不消耗耐力**，也不受低耐力影响；松开不提前结束，时间到后自动收耳落地。悬停中 A/D 可改变旋转方向，W/S 暂停普通挥耳。持续按住不会自动连发，重复按键不会延长计时。所有兵器的普通耐力提高至 **200**，普通挥动消耗与恢复速度不变。详细说明见[技能交接](docs/BEAGLE_SPIN_SKILL.md)。
+普通 W/S 挥耳与 A/D 转向可组合，双耳保持并列。按 **F**（P2 **右 Shift**）在至少 **40 耐力**时启动最多 **5 秒**旋耳低空悬停，**每秒消耗 16 耐力**，受共享疲劳影响；展开、旋转与收耳期间不回复耐力，耗尽或时间到后自动收耳落地。松开不提前结束。悬停中 A/D 可改变旋转方向，W/S 暂停普通挥耳。持续按住不会自动连发，重复按键不会延长计时。所有兵器的普通耐力提高至 **200**，普通挥动消耗与恢复采用上述新规则。当前完整规则与每个问题的对应关系见[战斗系统](docs/CONTROL_SYSTEM.md#complete-problem-mapping-for-the-coordinated-trial)；[早期技能交接](docs/BEAGLE_SPIN_SKILL.md)保留原始设计。

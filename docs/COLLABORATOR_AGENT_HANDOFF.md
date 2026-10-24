@@ -1,5 +1,7 @@
 # Wankai Collaborator and Agent Handoff
 
+**Current delivery — 24 October 2026:** use `feat/combat-balance-performance-update` for the latest unpublished-since-main work, based on `018c39b`. It includes the chronological resolver, coordinated resource/round/body trial, Beagle 80 / Cat 150 / Yellow 110 / Basic 100 HP, 1.3× Cat paws, distal-only solid long ears, attacker-owned feedback, adaptive cameras, rendering budget and lite arena. **234 tests and build pass.** [Delivery record and videos](updates/2026-10-24-github-delivery.md) and [current rules](CONTROL_SYSTEM.md) supersede earlier dated checkpoints. Publication scope is a separate-branch push/PR, with no merge or installer release.
+
 **Live integration review:** browser checks pass for intro entry/Escape return, yellow defaults, independent preparation/cancellation, fixed yellow combat/rematch, split beagle/cat controls and hover ownership, pause, practice, solo polearm and mobile bounds. No page errors; existing clock-deprecation warnings remain. [Combined verification and screenshots](../assets/concepts/integration-2026-10-22/verification.json).
 
 **Combined checkpoint — 22 October 2026:** integrates the yellow character/yellow staff and animated startup/menu from latest main (`ae91c42`) with the Colosseum, Roman-inspired floor and approved arena cameras (`701b7d5`). All four characters and nine valid loadouts are retained, including the new yellow defaults. Both sides of the menu/camera conflicts are preserved. The shortened 2.00-unit polearm now scales its measured contacts with the visible model; a regression reproduces and prevents the former invisible-tip hit. Fresh checks: **179/179 tests and production build pass** (existing chunk-size advisory). [Integration/merge status](https://github.com/Gumssss/Wankai/pull/4). Earlier local-only and branch-only notes below describe their dated checkpoints.
@@ -128,7 +130,7 @@ W/S select a continuous rotation direction, not a fixed up/down pose. Both axes 
 
 Weapon heading and camera heading are separate. Do not make A/D rotate the camera as an incidental change. Split-screen renders one simulation twice; it must not tick the game separately for each viewport. Mouse camera controls belong to solo. Loss of focus or a hidden tab clears input and pauses.
 
-The split cameras start behind each fighter with the closer preview approved on 21 October: a 15-degree offset, approximately 0.17230016-radian orbit pitch, 55-degree field of view and 21-unit distance. Pitch is derived from `asin(sin(0.35) * 10.5 / 21)`, so the original baseline eye height remains exactly 4.80042698 units above the fighter. Framing guards protect the player's own fighter; they do not guarantee the opponent and full weapon are always visible.
+The split cameras retain the approved starting direction and height, independent keyboard orbit and 55-degree field of view. Current framing fits the player's body, label and full visual weapon, and nearby opponents within 12 units; edge indicators identify distant opponents. The shared tactical camera retains the approved display basis/direction while centering and pulling back. Practice now uses the same full-size arena/spawns/contact rules as duel. See `src/combat-camera.js`, `src/free-camera.js` and current camera tests.
 
 ### Loadouts and combat
 
@@ -138,19 +140,20 @@ Common weapons work with basic fighter and beagle. Beagle uses its natural-ear r
 | --- | --- |
 | sword | Short reach, fast response. Axis limit 6.1 rad/s. Guard geometry participates in contact; decorative flame detail does not add coverage. |
 | polearm | Longer reach. Axis limit 4.25 rad/s. Measured shaft/collar/blade/barb contacts follow the local asset. |
-| hammer | Slower response and greater inertia. Axis limit 3.4 rad/s. Solid head participates in support/hits/clashes and receives a 30% head-damage bonus; hanging cloth is cosmetic. |
+| hammer | Slower response and greater inertia. Axis limit 3.4 rad/s. Solid head participates in support/hits/clashes and receives a 45% head-damage bonus; hanging cloth is cosmetic. |
 | long-ears | Beagle-only long head-mounted weapon ears, upright strokes and timed rotor/hover. Legacy `beagle` input maps to beagle + long ears. |
 | cat-paws | Orange-tabby-only detached giant paws. Paired W/S strokes and A/D heading, including all four combinations; floor support lifts the seated cat above low rest hover. No additional skill. |
+| yellow-staff | Yellow-blob-only round staff, sharing ordinary weapon-driven movement and contact rules. |
 
-All eight valid loadouts and 64 ordered pairings are enumerated in tests. Orange tabby currently supports only cat paws. F/Right Shift requires beagle + long ears; natural beagle ears are cosmetic and cannot attack, block or provide powered support.
+All nine valid loadouts and 81 ordered pairings are enumerated in tests, including full/low/empty stamina and slot reversal. Orange tabby currently supports only cat paws; Yellow supports yellow staff. F/Right Shift requires beagle + long ears; natural beagle ears are cosmetic and cannot attack, block or provide powered support.
 
 Current speed limits are the approved half-speed trial, with visual reach and acceleration/braking retained. They remain balance values, not final competitive tuning. Ordinary weapon parameters live in WEAPONS; beagle geometry/profile lives separately.
 
-Each fighter has **100 HP** and **200 stamina**. Ordinary swing input costs 20 stamina/s, turning costs 8/s and both together cost 28/s. Recovery starts after 0.5 seconds without normal weapon input at 30/s. Below 25 stamina, powered strength/driven speed weakens toward 40% at zero; braking, passive motion, support and blocking remain. Camera input is free. Paused/countdown/hit-freeze periods do not advance the physical stamina clock.
+Current maximum health is Basic 100, Beagle 80, Yellow 110 and Cat 150. Every loadout has **200 stamina**: swing costs 20/s, turn costs 10/s and both together cost 30/s. Recovery starts after 0.6 seconds at 24/s. Below 60 stamina, powered strength/driven speed weakens toward 40% at zero; braking, passive motion, support and blocking remain. Camera input is free. Paused/countdown/hit-freeze periods do not advance the physical stamina clock. Competitive rounds last at most 120 seconds, with pressure starting at 45 seconds; practice/solo remain untimed. Read `src/combat-settings.js` and `src/round-rules.js` for shared values and outcomes.
 
-Damage uses incoming relative contact-point speed and recent net drive acceleration. Light contacts below 1.65 m/s do no damage. Base damage is capped at 34 before the hammer-head multiplier; the resulting hammer head cap is 44 after rounding. Head and torso receive the same damage. Pure yaw-driven horizontal impact gets 50% of equivalent vertical damage; mixed contacts blend actual incoming yaw/pitch/translation contributions, including inertial hits after key release. Do not substitute current key state for contact motion.
+Damage uses incoming relative contact-point speed and recent net drive acceleration. Light contacts below 1.65 m/s do no damage. Base damage is capped at 34 before the 1.45 hammer-head multiplier; the resulting hammer head cap is 49 after rounding. Head and torso receive the same damage. Pure yaw-driven horizontal impact gets 50% of equivalent vertical damage; mixed contacts blend actual incoming yaw/pitch/translation contributions, including inertial hits after key release. Do not substitute current key state for contact motion.
 
-Repeated overlap is gated rather than awarding damage every step. Paired ears or paws share one logical attack gate and ordinary stamina budget. Clear weapon clashes physically deflect both weapons and apply backward recoil opposite each fighter's own facing, with separation/cooldown rearming. Do not use the camera direction or collision normal as a replacement for that requested recoil direction. Body hits and clashes have different feedback; extra clash pause/readouts remain unimplemented.
+`CombatContacts` resolves chronological weapon clashes/body hits, batches simultaneous damage from one incoming state and resweeps revised remaining motion. Independent parts have damage episodes but share the ordinary damage interval/resource budget; duplicate capsule patches cannot become extra attacks. Harmless touches remain eligible, while qualifying cooldown-suppressed impacts cannot deal delayed damage. Clashes physically deflect weapons and apply outward recoil along the pair's separation axis, with separation/cooldown rearming. Body hits and clashes have different feedback; extra clash pause/readouts remain unimplemented.
 
 Arena boundaries constrain bodies; falling off is not the win condition. A fighter loses at zero HP. The practice dummy stays passive, retains at least 1 HP and recovers health after it has not been hit for 2.5 seconds.
 
@@ -162,7 +165,7 @@ Normal W/S rotates parallel ears at measured head sockets; A/D can steer simulta
 
 Tap F, or P2 Right Shift, to start **five seconds including preparation/spin-up** of full sideways deployment, whole-body-and-ear rotation and low hover. Rotor speed targets up to 4.25 rad/s; feet target about 0.35 world units above the floor. Bounded physical lift depends on deployment/rotor readiness, and impacts can alter it. The timer continues when the key is released. Repeated presses cannot extend it, and holding cannot automatically recast. Expiry removes lift, retracts the ears and lands; a fresh edge after retraction can activate again. There is no added cooldown in this prototype.
 
-The skill and its A/D steering cost **no stamina**, work at zero stamina and do not weaken with ordinary fatigue. Ordinary stamina can recover during it. W/S strokes pause while deployed/retracting. Pause freezes the timer; rematch/menu resets it. Other loadouts ignore the skill keys.
+The skill requires **40 stamina**, costs **16/s** for up to five seconds including its A/D steering, and shares fatigue. Deployment/spinning/retraction block regeneration; exhaustion or expiry retracts the ears. W/S strokes pause while deployed/retracting. Pause freezes the timer; rematch/menu resets it. Other loadouts ignore the skill keys. Only distal long-ear volumes in local range 1.8–3.6 are physical; the full ear remains visible and camera-fitted. Cat paws use 1.3× original dimensions around each measured center; preserve the shared mesh/contact transform and floor/body clearance.
 
 **Front and back flips are inactive.** The user reported the articulated experiment lying down and set it aside. src/beagle-dynamics.js and the old flip studies remain historical/isolated test material; the production controller does not import that module. Do not restore flips because an older document or video requests them.
 
@@ -190,7 +193,9 @@ flowchart LR
 | src/main.jsx | Mounts the React application. |
 | src/App.jsx | Owns the shared GameSession instance, menu/preparation-screen transition, HUD/help/dialogs and browser keyboard/focus bindings. Keeps the arena mounted and hidden while preparing. Uses session snapshots for React UI. |
 | src/game-session.js | Input mapping, selections/mode, lobby/countdown/playing/paused/ending/result states, fixed-step accumulator, hit-freeze, audio/events, resets and snapshots. |
-| src/physics.js | Authoritative game rules: CONFIG, WEAPONS, STAMINA, CLASH, contact transforms/velocities, motors, ground/rim/body impulses, attacks, clashes, damage and repeat-hit rules. Keep it renderer-independent. |
+| src/physics.js | Fixed-step world, contact transforms/velocities, motors, ground/rim/body constraints and integration. Keep it renderer-independent. |
+| src/combat-contacts.js, src/combat-settings.js and src/round-rules.js | Chronological contact batches/episodes, shared resource/health tuning and competitive pressure/timeout outcomes. Keep forces/resources advancing once per fixed tick. |
+| src/combat-camera.js, src/render-resolution.js and src/player-identity.js | Combat envelope fitting/edge indicators, drawing-buffer limits and consistent player/character names. |
 | src/ArenaCanvas.jsx | R3F Canvas and frame bridge. Calls session.tick once, loads local GLBs, updates the view and renders one/two viewports. Handles renderer context loss and lifecycle. |
 | src/scene.js | ArenaView: scene/fighters/fallbacks, model attachment, trails/particles, camera orchestration, projection and resource disposal. Hidden/invalid resize dimensions retain the last valid framing. Visuals follow physics rather than moving the solver. |
 | src/free-camera.js | Solo/split orbit, facing-independent camera input, tracking, resize and framing protection. |
@@ -198,7 +203,7 @@ flowchart LR
 | src/Armory.jsx, src/armory-drafts.js, src/LoadoutPreview.jsx, src/model-assets.js and src/armory.css | Full-window per-player drafts/readiness, shared atomic confirmation, combined actual-model previews, fallback/retry and disposal. |
 | src/character-attachments.js | Generated compact body bounds and measured ordinary-weapon clearance offsets. Regenerate with the measurement script after relevant asset changes. |
 | src/weapon-visuals.js | Measured native model axes, grip alignment and continuous yaw/pitch orientation. Do not infer pivots from a screenshot. |
-| src/beagle-profile.js | Generated measured model name, sockets, dimensions, motor values and eighteen fitted ear capsules. Regenerate after relevant geometry edits. |
+| src/beagle-profile.js | Measured sockets/dimensions/motors, eighteen full-ear visual capsules and twelve radius-inset distal physical capsules. Preserve that visual/physical distinction when regenerating. |
 | src/beagle-skill.js | Active timed skill lifecycle, hover and authoritative beagle point transform/Jacobians, including spread and lag rates. |
 | src/beagle-model.js | Independent skeleton/material instances, imported rest transforms, game-driven posing, blink and procedural fallback. |
 | src/orange-tabby-profile.js and src/orange-tabby-model.js | Approved runtime GLB, fitted cat/paw contacts and bounds, independently instantiated model/materials and shared actual/fallback posing. |
@@ -259,7 +264,7 @@ Existing static-weapon preparation scripts assume inspected static GLB layouts a
 | --- | --- |
 | Playable locally | Four modes, full-window P1/P2 preparation, eight valid loadouts, shared keyboard, independent cameras, 200 stamina, damage/blocks/clash recoil, long-ear-only timed hover and cat giant-paw support/movement. Preserve these unless explicitly changed. |
 | Verified checkpoints | Cat integration passed 132 tests and 73 actual-game capture checks; the following dual-player layout passed 14 focused checks and the full-window follow-up passed 17 focused checks. Builds passed with the existing chunk warning. These dated counts are not cumulative full-suite reruns. See cat GAMEPLAY and selection verification. Earlier built Electron picker/local beagle loading was checked; the latest screen and full native match remain unverified in Electron. |
-| Beagle playtest pending | Judge normal steering, long-ear coverage, ground lift, rotor wind-up, five-second timing, free skill use/rearming, landing and match balance. Keep flips inactive. |
+| Beagle playtest pending | Judge normal steering, distal-ear coverage, ground lift, rotor wind-up, paid/fatigued skill use and rearming, expiry/exhaustion, landing and match balance. Keep flips inactive. |
 | Sword support complaint open | The owner still finds its support-direction behavior wrong. Reproduce exact keys, pose, mode and camera; compare polearm under the same view. Existing rotation tests do not establish user acceptance. |
 | Contact/recoil balance pending | Half-speed limits, measured proxies and swept sampling are implemented. Evaluate deliberate blocks, near misses, impact strength and backward recoil before adding forgiveness or changing tuning. |
 | Two-person acceptance pending | Have two unfamiliar players try deliberate movement, aiming and hits without live coaching; distinguish accidental contact from understandable control. |
@@ -298,7 +303,7 @@ The dated 132-test cat-integration checkpoint and later focused checks cover:
 - Stamina drain/recovery/fatigue, directional damage and clash recoil/rearming.
 - Session modes, input cancellation, pause/focus/reset, cameras and framing.
 - Actual imported GLB/socket/contact alignment, independent skeletons and ear spread/lag.
-- Timed hover, no-cost zero-stamina activation, reversal, expiry/landing, repeated/held-key handling and independent P1/P2 keys.
+- Timed hover: 40-stamina activation threshold, 16/s drain, shared fatigue, exhaustion/expiry and landing, blocked regeneration through retraction, repeated/held-key handling and independent P1/P2 keys.
 - Cat GLB/contact parity, seated low hover, S support lift, all direction combinations, recovery, shared resources and combat/lifecycle behavior.
 - Local drafts and independent Ready states, shared final confirmation, hidden P2 preservation, and finite camera projections while the preparation page hides/restores the arena.
 

@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-23",
+  "status": "local changes; no commit or push",
+  "trigger": "Whole picture freezes or stutters during play",
+  "changes": [
+    "Cap the main 3D drawing buffer to 1920*1080 total pixels and DPR 1.5, with resize/monitor-density tracking; CSS layout and cameras retain their dimensions.",
+    "Defer capsule deduplication, key strings and per-shape bounds until the existing aggregate broad phase overlaps."
+  ],
+  "validation": {
+    "tests": {
+      "command": "npm test",
+      "passed": 229,
+      "failed": 0
+    },
+    "build": {
+      "command": "npm run build",
+      "passed": true,
+      "advisory": "Existing large JavaScript chunk warning"
+    },
+    "exactSimulationComparison": {
+      "steps": 1215,
+      "loadoutPairs": 81,
+      "result": "Identical serialized player states, events, episode state and solver diagnostics against the before-change contact module"
+    },
+    "browser": {
+      "url": "http://127.0.0.1:5187/",
+      "checks": [
+        "Clean intro/menu entry",
+        "Both cat previews, Ready and start",
+        "Split-screen P1 swing reflected in stamina",
+        "Preparation hidden-arena restoration",
+        "Pause and return to menu",
+        "Shared-view match start"
+      ],
+      "splitDrawingBuffer": {
+        "css": [
+          3024,
+          1412
+        ],
+        "buffer": [
+          2107,
+          983
+        ],
+        "pixels": 2071181
+      },
+      "screenshot": "../output/playwright/performance-split-2026-10-23.png"
+    }
+  },
+  "benchmark": {
+    "kind": "Synthetic Node physics; six alternating rounds, 180 warmup and 900 measured ticks per round",
+    "catMedianMsPerTick": {
+      "before": 0.979,
+      "after": 0.666
+    },
+    "beagleMedianMsPerTick": {
+      "before": 0.984,
+      "after": 0.868
+    },
+    "swordMedianMsPerTick": {
+      "before": 0.446,
+      "after": 0.204
+    },
+    "limitation": "CPU benchmark and reduced pixel count are not measured browser FPS or proof that every reported freeze is resolved."
+  },
+  "remaining": [
+    "Oversized runtime textures and meshes remain unchanged.",
+    "Intentional successful-hit stop remains unchanged.",
+    "No memory leak or RAM-only root cause has been established."
+  ],
+  "sourceSha256": {
+    "src/ArenaCanvas.jsx": "67a074a6022116f01ceefdf61b898602cfaf6b4e1f211a08f101b53b3f4226fd",
+    "src/combat-contacts.js": "6423e147c34bebfb31811d034621d2bc43a5f93c01544ff0e69002a7f6744b6f",
+    "src/render-resolution.js": "9d5f4a5cda8716c64828caef11ca3b829c7fe1d5cc05068e7aaecca270bc2351",
+    "tests/render-resolution.test.js": "3638d10aabc57156a6d09002f976a835ddd8810c28126a1780209910bf27708b"
+  }
+}

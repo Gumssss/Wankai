@@ -1,0 +1,114 @@
+[
+  {
+    "id": "cat-paws-w",
+    "offset": 0,
+    "duration": 3.143199999988079,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s",
+    "offset": 3.143199999988079,
+    "duration": 6.172,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-a",
+    "offset": 9.315199999988078,
+    "duration": 3.0310999999940393,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-d",
+    "offset": 12.346299999982117,
+    "duration": 3.0324000000059605,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-w-a",
+    "offset": 15.378699999988077,
+    "duration": 3.0915,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-w-d",
+    "offset": 18.470199999988075,
+    "duration": 3.0069000000059605,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s-a",
+    "offset": 21.477099999994035,
+    "duration": 3.0235,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s-d",
+    "offset": 24.500599999994034,
+    "duration": 3.0475,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-w-release-s",
+    "offset": 27.548099999994033,
+    "duration": 6.10509999999404,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-opposites-cancel",
+    "offset": 33.653199999988075,
+    "duration": 1.0109000000059605,
+    "speed": 1
+  },
+  {
+    "id": "cat-block-clash",
+    "offset": 34.664099999994036,
+    "duration": 5.053099999994039,
+    "speed": 1
+  },
+  {
+    "id": "cat-vertical-hit",
+    "offset": 39.717199999988075,
+    "duration": 4.813800000011921,
+    "speed": 1
+  },
+  {
+    "id": "cat-horizontal-hit",
+    "offset": 44.531,
+    "duration": 3.4522999999821185,
+    "speed": 1
+  },
+  {
+    "id": "cat-clean-miss",
+    "offset": 47.983299999982115,
+    "duration": 3.0075999999940395,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s-support-same-event-slow",
+    "offset": 50.99089999997616,
+    "sourceOffset": 3.901164912268781,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "cat-vertical-hit-hit-same-event-slow",
+    "offset": 54.99089999997616,
+    "sourceOffset": 40.25339373428498,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "cat-horizontal-hit-hit-same-event-slow",
+    "offset": 58.99089999997616,
+    "sourceOffset": 45.64578647840134,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "cat-block-clash-clash-same-event-slow",
+    "offset": 62.99089999997616,
+    "sourceOffset": 35.087675923374235,
+    "duration": 4,
+    "speed": 0.25
+  }
+]

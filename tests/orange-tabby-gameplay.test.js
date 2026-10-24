@@ -38,28 +38,51 @@ function replay(shot,onSample){
 }
 
 assert.equal(ordinary.length,13,'the accepted matrix includes all directions and recovery cases');
-for(const shot of ordinary)test(`production cat reproduces accepted ${shot.id} motion, contacts and shared stamina`,()=>{
+// Keep the approved input matrix and initial poses. Hover drag, turning cost
+// and fatigue intentionally replace the v06 numerical trajectories; the
+// original recording remains unchanged rather than being regenerated to pass.
+for(const shot of ordinary)test(`balanced cat preserves ${shot.id} control intent, support and shared resources`,()=>{
  let firstSupport=null,highest=.35,maxBeforeSupport=.35,airborneAscent=false;
+ let maxWT=0,minWT=0,maxWP=0,minWP=0,coasting=false,spent=0,lastActive=0;
  const world=replay(shot,(p,expected,time,tick)=>{
-  for(const vector of ['p','v'])for(const axis of ['x','y','z'])near(p[vector][axis],expected[vector][axis],`${shot.id} at ${time}: ${vector}.${axis}`);
-  for(const key of ['theta','phi','wt','wp','bodyPitch','health','stamina'])near(p[key],expected[key],`${shot.id} at ${time}: ${key}`);
-  assert.equal(p.staffGrounded,expected.contact,`${shot.id} at ${time}: paw-floor contact`);
-  // The old prototype marked its hand-positioned initial player grounded.
-  // Compare solved states; the production spawn must report airborne below.
-  if(tick)assert.equal(p.grounded,expected.grounded,`${shot.id} at ${time}: body grounded`);
-  assert.ok(p.stamina>=0&&p.stamina<=200);
+  // Integrate requested input durations independently of the controller. All
+  // intermediate release gaps in this matrix are <= the new recovery delay.
+  if(tick){for(let j=tick-2;j<=tick;j++){
+   const action=inputAt(shot.id,j*CONFIG.step),cost=Math.abs(action.theta)*20+Math.abs(action.phi)*10;
+   spent+=cost*CONFIG.step;if(cost)lastActive=j*CONFIG.step;
+  }}
+  const recovered=lastActive?Math.max(0,time-lastActive-.6)*24:0;
+  near(p.stamina,Math.min(200,200-spent+recovered),`${shot.id} stamina`);
+  assert.ok([p.p.x,p.p.y,p.p.z,p.v.x,p.v.y,p.v.z,p.wt,p.wp].every(Number.isFinite));
+  assert.ok(p.p.y>=CONFIG.bodyFloor-1e-8);assert.equal(p.bodyPitch,0);assert.equal(p.health,150);
+  assert.ok(Math.abs(p.wt)<=4.25+1e-8&&Math.abs(p.wp)<=4.25+1e-8);
+  maxWT=Math.max(maxWT,p.wt);minWT=Math.min(minWT,p.wt);maxWP=Math.max(maxWP,p.wp);minWP=Math.min(minWP,p.wp);
+  if(shot.id==='release-reverse'&&time>1.45&&time<1.6&&p.wt>.5)coasting=true;
+  if(['hover-idle','opposites'].includes(shot.id)){
+   for(const vector of ['p','v'])for(const axis of ['x','y','z'])near(p[vector][axis],expected[vector][axis],`${shot.id}: ${vector}.${axis}`);
+   for(const key of ['theta','phi','wt','wp'])near(p[key],expected[key],`${shot.id}: ${key}`);
+  }
   const base=p.p.y-CONFIG.bodyFloor;highest=Math.max(highest,base);
   if(firstSupport===null){if(p.staffGrounded)firstSupport=time;else maxBeforeSupport=Math.max(maxBeforeSupport,base);}
   if(!p.staffGrounded&&base>1&&p.v.y>0)airborneAscent=true;
  });
  assert.equal(world.events.length,0,'ordinary movement has no invented impacts');
  if(shot.id==='s'){
-  near(firstSupport,reference.verification.liftProof.firstSupportTime,'S contact time');
+  assert.ok(firstSupport>.4&&firstSupport<reference.verification.liftProof.firstSupportTime,'enlarged paws establish support during S, earlier than the smaller geometry');
   near(maxBeforeSupport,.35,'S has no ascent before contact');
-  near(highest,reference.verification.liftProof.maximumBaseHeight,'accepted S peak');
-  assert.ok(highest-.35>1.5&&airborneAscent,'planted paws must produce a clear airborne phase');
-  assert.ok(world.players[0].p.y-CONFIG.bodyFloor<.45,'S release must settle back to hover');
+  assert.ok(highest>1.85&&highest<3&&airborneAscent,'planted paws still produce a bounded airborne phase');
+  assert.ok(world.players[0].p.y-CONFIG.bodyFloor<.45,'S release settles back to hover');
  }
+ if(['w','s','wa','wd','sa','sd','landing'].includes(shot.id)){
+  assert.ok(firstSupport!==null&&highest>1.8&&airborneAscent,'powered contact must still lift the body');
+  assert.ok(Math.hypot(world.players[0].p.x,world.players[0].p.z)>.25,'floor contact must still provide travel');
+ }
+ if(['w','wa','wd'].includes(shot.id))assert.ok(maxWT>3);
+ if(['s','sa','sd'].includes(shot.id))assert.ok(minWT<-3);
+ if(['a','wa','sa'].includes(shot.id))assert.ok(minWP<-.8);
+ if(['d','wd','sd'].includes(shot.id))assert.ok(maxWP>.8);
+ if(shot.id==='release-reverse')assert.ok(maxWT>3&&minWT<-3&&coasting,'release preserves motion and opposite input reverses it');
+ if(shot.id==='yaw-reverse')assert.ok(minWP<-.8&&maxWP>.8);
 });
 
 test('paw contact velocities match the moving visible frame through pitch and yaw',()=>{
@@ -103,7 +126,7 @@ test('pause, rematch, return home and mode changes preserve the cat loadout and 
   game.world.players[0].health=31;game.world.players[0].stamina=18;
   game.startRound();assert.equal(game.mode,mode);assert.equal(game.world.time,0);assert.deepEqual(game.getSnapshot().pressed,[]);
   for(const p of game.world.players){
-   assert.ok(isPawLoadout(p));assert.equal(p.health,100);assert.equal(p.stamina,200);
+   assert.ok(isPawLoadout(p));assert.equal(p.health,150);assert.equal(p.stamina,200);
    near(p.p.y,CONFIG.bodyFloor+.35,'cat spawn hover');near(p.theta,Math.PI/2,'neutral paw pose');
    for(const value of [p.v.x,p.v.y,p.v.z,p.wt,p.wp,p.driveT,p.driveP,p.polarInput])near(value,0,'reset motion');
    assert.equal(p.staffGrounded,false);assert.equal(p.grounded,false);assert.equal(p.skillActive,false);
@@ -128,11 +151,11 @@ function combat({target,theta=.4,phi=0,targetTheta=.4,duration=3,turn=false}){
  return {world,events};
 }
 test('actual paw and sword profiles produce vertical/horizontal hits, clash recoil and a clean miss',()=>{
- const vertical=combat({target:[1.8,CONFIG.bodyFloor,1.5]});
+ const vertical=combat({target:[1.4,CONFIG.bodyFloor,1],targetTheta:0});
  // The old dummy had no weapon. An upright sword keeps the real target's
  // defense clear of this body-hit fixture; the separate fixture tests blocks.
  const horizontal=combat({target:[1.8,CONFIG.bodyFloor,-1],theta:1.05,phi:-.65,targetTheta:0,turn:true});
- const clash=combat({target:[3,CONFIG.bodyFloor,1.5],theta:1.05,targetTheta:1.4,duration:4});
+ const clash=combat({target:[3,CONFIG.bodyFloor,1.5],theta:1.05,targetTheta:.4,duration:4});
  const miss=combat({target:[7,CONFIG.bodyFloor,6],theta:1.05,duration:2.5});
  const hits=result=>result.events.filter(e=>e.type==='hit'&&e.attacker===0);
  assert.ok(hits(vertical).length>0,'vertical paw swing must damage the actual fighter');
@@ -140,7 +163,7 @@ test('actual paw and sword profiles produce vertical/horizontal hits, clash reco
  assert.ok(clash.events.some(e=>e.type==='clash'&&e.recoilSpeed>0),'actual paw/sword contact must deflect with recoil');
  assert.equal(hits(miss).length,0);assert.equal(miss.world.players[1].health,100);
  for(const result of [vertical,horizontal,clash,miss])for(const p of result.world.players){
-  assert.ok(Number.isFinite(p.p.x+p.p.y+p.p.z+p.wt+p.wp));assert.ok(p.stamina>=0&&p.stamina<=200);assert.ok(p.health>=0&&p.health<=100);
+  assert.ok(Number.isFinite(p.p.x+p.p.y+p.p.z+p.wt+p.wp));assert.ok(p.stamina>=0&&p.stamina<=200);assert.ok(p.health>=0&&p.health<=p.maxHealth);
  }
  for(const result of [vertical,horizontal])for(const hit of hits(result))assert.ok(hit.damage>0&&hit.speed>=1.65&&hit.strength>0);
 });

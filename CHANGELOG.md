@@ -1,5 +1,44 @@
 # 更新记录 / Changelog
 
+## 24 October 2026 — publish combat and performance checkpoint
+
+- Deliver the current chronological combat resolver, coordinated resource/round/body rules, character-specific health, 1.3× Cat paws, attacker-owned feedback and adaptive combat cameras on `feat/combat-balance-performance-update`; this push does not merge main.
+- Cap arena rendering at 1920×1080 total pixels and DPR 1.5 with resize/density tracking; defer per-capsule preparation until broad-phase overlap. Use the lite Colosseum (46,280 triangles, 1024² textures), preserving the exact floor and protected boundaries. Archive the prior runtime assets.
+- Fresh verification: 234 tests and production build pass. Retain existing motion comparisons, actual-game recordings and evidence in tracked concept folders. [Delivery details](docs/updates/2026-10-24-github-delivery.md). Earlier local-only statements are historical; final human balance and native Electron acceptance remain open.
+
+## 23 October 2026 — Cat paws reduced to 1.3× original
+
+- Replace the 2× trial with 1.3× width/height/depth through one shared scale. Derive placement and camera fit margins from that scale; preserve 0.02 floor and 0.08 body clearance, 150 HP, body hover and all control/combat tuning.
+- Update actual-mesh size/contact checks and geometry-dependent support/contact fixtures. All 49 focused model, movement, solver and matchup checks pass; production build passes. Retain the pre-integration comparison and actual-game evidence separately in `output/cat-paws-v3/`.
+
+## 23 October 2026 — Beagle/Cat balance and damage ownership
+
+- Set all Beagle loadouts to 80 HP and Cat to 150 HP through shared health settings. Retain each maximum through preparation, HUD, training restoration, rematches, proportional pressure and timeout results.
+- Keep full visible long ears, but restrict every physical ear response to radius-inset capsules in the distal 1.8–3.6 range. Fallbacks and cameras retain full-ear bounds.
+- Double each Cat paw's three dimensions around its own neutral center, place it beside the unchanged body with 0.02 floor/0.08 body clearance, and share the transform across model, contacts, fallback, trails and cues. Preserve controls, stamina, skill and damage tuning.
+- Use selected character names with P1/P2 across the game; keep names visible on narrow screens and preserve dummy identity. Retain effect attacker/target IDs, color/prefix damage by attacker, and show two independent full-name readouts for trades. Pressure stays environmental.
+- Verify **224 passing tests**, including all 81 pairings with swapped slots at full/low/empty stamina, and a passing production build (existing chunk-size advisory). Preserve the pre-integration comparison, exact-model checks, actual-game capture and desktop/mobile ownership evidence in `output/beagle-cat-balance-v2/`. No commit or push.
+
+## 23 October 2026 — coordinated balance trial (remaining 12 plan items)
+
+- Centralize shared stamina, rotor, hover, health, hammer and round settings. Rotor requires 40 stamina, spends 16/second, stops empty and cannot regenerate through retraction; all powered controllers share fatigue. Turning costs 10/second, fatigue starts below 60, recovery is 24/second after 0.6 seconds. Supported hover uses total horizontal damping 1.5/second with an airborne fade.
+- Trial 110 maximum HP for Beagle/Yellow and retain 100 for Basic/Cat with unchanged mass. Correct Yellow's below-floor torso proxy. Make HUD, healing, reset, timeout and pressure use actual maximum health. Hammer metal heads use 1.45 damage while handling and shaft scaling remain.
+- Apply clash arcade recoil along the pair's separation axis through the common event batch. Replace horizontal body circles/height cutoff with authored upright 3D capsules, shape-aware boundaries and floor-supported landing response. Preserve player-slot fairness even for coincident bodies and do not repeat forces/resources during contact slices.
+- Add competitive 120-second rounds, a pressure zone starting at 45 seconds and contracting toward 32% radius, a two-second outside warning, and 10%-maximum-HP/second outside loss. Timeout uses health percentages; earlier contact knockout takes priority over later pressure. Practice/solo remain untimed and pressure-free; training shares duel geometry, spawns, friction and contacts.
+- Replace the static shared view with controlled centering/pullback along its approved direction/display basis. Fit bodies, labels and solid weapons, protect nearby opponents in split-screen, add distant edge indicators and fit full-size training wall encounters. Update preparation, HUD, help and results to describe the active rules.
+- Preserve archived character recordings. Retain exact unchanged movement checks and replace superseded tuning expectations with control-direction, support, coasting/reversal and current-resource checks. Add regressions for all remaining problems, 81 pairings at full/low/empty stamina with slot reversal, camera visibility and round/contact priority. Record 108 constructed movement trials with the reproducible balance audit. Live checks include paid rotor activation, actual practice damage, pressure defeat and rematch.
+- Final verification: **216 tests pass**, production build passes with its existing chunk-size advisory, and diff check passes. Live practice restores its 110-HP dummy and remains untimed beyond two minutes; split-screen keyboard combat/camera control and pause work with no runtime errors.
+- These are first-trial balance values. Optional stationary-defense damage reduction and further hammer-braking changes remain conditional on human match evidence, as specified in the plan. Local work only; no commit/push.
+
+## 23 October 2026 — shared combat contact resolution (plan 6–8)
+
+- Replace clash-first/P1-first queries with one chronological weapon–weapon/weapon–body resolver. Resolve simultaneous damage from a common incoming state, apply coupled physical constraints and resweep the revised remaining motion. Earlier blocks can prevent later hits; simultaneous lethal trades can draw.
+- Combine redundant contact geometry without discarding independent valid impacts. Select a damage representative by incoming normal impulse and retain actual striking-surface properties. Crossing adjacent capsules on a continuing surface no longer repeats restitution.
+- Separate harmless contact from processed damage episodes. Track logical paws/ears/weapons independently, retain the shared 0.28-second damage interval and require over 0.045 seconds of each part's full separation to rearm. Consume qualifying cooldown-suppressed impacts without delayed damage; simultaneous parts cannot double-hit.
+- Keep forces, resources and skill timers advancing once per fixed tick. Restore environmental constraints after changed trajectories without repeating friction. Retain existing resource/weapon balance numbers and reset contact episodes on rematch.
+- Add 16 regressions covering the reproduced failures, event chronology, lockouts, duplicate geometry, material scaling, resource timing and all 81 ordered loadout pairs with reversed slots. Retain exact approved yellow movement/pre-contact replay checks; replace obsolete post-contact trajectory expectations with current combat checks and a clean swept staff/sword block. Preserve archived recordings. Verify beagle recoil at its actual impact time and continued retreat at tick end.
+- **196 tests pass; production build passes** with its existing chunk-size advisory. Actual-game keyboard checks verified hits, pause/resume and rematch resource/health reset. This implements the combined 6–8 specification; the other balance proposals remain pending. Local work only; no commit/push.
+
 ## 22 October 2026 — combined character, menu, arena and camera checkpoint
 
 - Integrate latest main's yellow character/staff, yellow default loadouts and animated intro/menu with the approved Colosseum/floor and split/fixed cameras. Preserve independent preparation, existing beagle/cat controllers and the single shared tick.

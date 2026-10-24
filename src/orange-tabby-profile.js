@@ -1,7 +1,7 @@
 // Approved prepared-v02 measurements and v06 controller. Source contacts:
 // assets/concepts/orange-tabby/prepared-v02/contact-fit.json; no retuning.
 const freezeShape=s=>Object.freeze({...s,a:Object.freeze(s.a),b:Object.freeze(s.b)});
-const colliders=Object.freeze([
+const originalColliders=Object.freeze([
  {"a":[-0.670304,0.950124,-1.433035],"b":[-0.670304,0.950124,-1.433035],"radius":0.439924,"side":"L"},
  {"a":[-1.230304,0.931419,-1.433035],"b":[-1.230304,0.931419,-1.433035],"radius":0.361309,"side":"L"},
  {"a":[-0.670304,0.942236,-1.993035],"b":[-0.670304,0.942236,-1.993035],"radius":0.312491,"side":"L"},
@@ -51,12 +51,33 @@ const colliders=Object.freeze([
  {"a":[-0.670525,0.982777,2.137887],"b":[-0.670525,0.982777,2.137887],"radius":0.21299,"side":"R"},
  {"a":[-0.670525,0.951562,1.297887],"b":[-0.670525,0.951562,1.297887],"radius":0.426945,"side":"R"},
 ].map(freezeShape));
+// Measured neutral mesh bounds, before any runtime transform. Keep the body and
+// virtual joint unchanged: each paw grows about its own center, then clears the
+// floor by .02 and the side of the body by .08 at the existing .35 hover.
+const pawMeasurements={
+ L:{center:[.947603702545166,.8910090625286102,-1.5062631368637085],size:[.9307253360748291,1.7614100575447083,1.7464559078216553]},
+ R:{center:[.9480390548706055,.8918709754943848,1.5055665969848633],size:[.9308137893676758,1.7626919746398926,1.7446417808532715]},
+};
+export const CAT_PAW_SCALE=1.3;
+export const CAT_PAW_TRANSFORMS=Object.freeze(Object.fromEntries(Object.entries(pawMeasurements).map(([side,m])=>{
+ const sign=side==='L'?-1:1,scale=CAT_PAW_SCALE;
+ const lift=.02-(.35+m.center[1]-scale*m.size[1]/2);
+ const outward=sign*(.5733+.08+scale*m.size[2]/2)-m.center[2];
+ return [side,Object.freeze({scale,center:Object.freeze(m.center),size:Object.freeze(m.size),offset:Object.freeze([0,lift,outward])})];
+})));
+// Physical local frame is [-modelY,modelX,modelZ]. This is also used by trails.
+export function transformCatPawPoint(point,side){
+ const {center:c,offset:d,scale}=CAT_PAW_TRANSFORMS[side],q=[-c[1],c[0],c[2]],delta=[-d[1],d[0],d[2]];
+ return point.map((v,i)=>q[i]+scale*(v-q[i])+delta[i]);
+}
+const colliders=Object.freeze(originalColliders.map(s=>freezeShape({...s,
+ a:transformCatPawPoint(s.a,s.side),b:transformCatPawPoint(s.b,s.side),radius:s.radius*CAT_PAW_TRANSFORMS[s.side].scale})));
 const hurtShapes=Object.freeze([{"a":[-0.12,-0.29,0],"b":[-0.12,-0.05,0],"radius":0.3},{"a":[0.02,0.36,-0.05],"b":[0.02,0.46,0.05],"radius":0.48}].map(freezeShape));
 export const CAT=Object.freeze({
  model:'orange-tabby-prepared-v02.glb',bodyFloor:.59,bodyRadius:.58,
  bounds:Object.freeze({min:Object.freeze([-.6198,0,-.5733]),max:Object.freeze([.6196,1.4505,.5733])}),
  hurtShapes,colliders,restTheta:Math.PI/2,hoverHeight:.35,hoverGain:25,hoverDamping:9,
- normalTurnSpeed:1.15,steeringGain:.70,contactUndercoverage:.14,
+ normalTurnSpeed:1.15,steeringGain:.70,contactUndercoverage:.14*CAT_PAW_SCALE,
  pawAnchors:Object.freeze({L:Object.freeze([0,0,-1.5062631368637085]),R:Object.freeze([0,0,1.5055665969848633])}),
  weapon:Object.freeze({length:1.7,offset:0,radius:.44,inertia:4.1,yawAnchorInertia:.7,
   motorAcceleration:24,brakeAcceleration:30,maxAngularSpeed:4.25,initialTheta:Math.PI/2,

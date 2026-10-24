@@ -26,7 +26,7 @@ function clash(rotation = 0, forwardSpeed = 2) {
   return world;
 }
 
-test('a strong weapon clash sends each fighter backward along their own facing while preserving lateral and vertical motion', () => {
+test('a strong weapon clash separates the pair while preserving tangent and vertical motion', () => {
   for (const rotation of [0, 0.7, 2.4]) {
     const world = clash(rotation), physicalOnly = clash(rotation);
     physicalOnly.clashArmed = false;
@@ -35,14 +35,21 @@ test('a strong weapon clash sends each fighter backward along their own facing w
     const event = world.events.find(event => event.type === 'clash');
     assert.ok(event && event.recoilSpeed >= CLASH.minRecoilSpeed && event.recoilSpeed <= CLASH.maxRecoilSpeed);
     for (const [id, player] of world.players.entries()) {
-      const heading = fighterHeading(player), baseline = physicalOnly.players[id];
-      assert.ok(project(player.v, heading) <= -event.recoilSpeed + 1e-8, 'forward momentum must become a backward step');
-      assert.ok(project(player.v, heading) < project(baseline.v, heading), 'both fighters must receive recoil');
+      const heading = rotation+(id===0?Math.PI:0), baseline = physicalOnly.players[id];
+      assert.ok(project(player.v, heading) >= event.recoilSpeed-1e-8, 'inward momentum must become separation');
+      assert.ok(project(player.v, heading) > project(baseline.v, heading), 'both fighters must receive recoil');
       near(project(player.v, heading + Math.PI / 2), project(baseline.v, heading + Math.PI / 2));
       near(player.v.y, baseline.v.y);
       assert.equal(player.health, 100); assert.equal(player.stamina, 200);
     }
   }
+});
+
+test('backward weapon clashes separate even when both fighters face away from one another',()=>{
+ const w=clash();for(const p of w.players)p.facingOffset+=Math.PI;
+ w.solveStaffClash(CONFIG.step);const e=w.events.find(e=>e.type==='clash');assert.ok(e);
+ assert.ok(w.players[0].v.x<0&&w.players[1].v.x>0);
+ assert.ok(w.players[1].v.x-w.players[0].v.x>=2*e.recoilSpeed-1e-8);
 });
 
 test('resting and gentle weapon contact do not trigger repeated backward steps', () => {

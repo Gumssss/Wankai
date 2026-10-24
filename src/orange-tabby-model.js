@@ -1,5 +1,5 @@
 import {Group,Mesh,SphereGeometry,ConeGeometry,MeshStandardMaterial,Color} from 'three';
-import {CAT} from './orange-tabby-profile.js';
+import {CAT,CAT_PAW_TRANSFORMS} from './orange-tabby-profile.js';
 
 const WHITE=new Color(0xffffff);
 // This export is rigid. Clone the hierarchy and materials for each fighter;
@@ -8,6 +8,16 @@ export function instantiateOrangeTabby(source,id=0){
  const model=source.clone(true),host=new Group(),materials=new Map();
  const controls={root:model.getObjectByName('CTRL_Root'),L:model.getObjectByName('CTRL_Paw_L'),R:model.getObjectByName('CTRL_Paw_R')};
  for(const [name,node] of Object.entries(controls))if(!node)throw Error('Orange tabby control missing: '+name);
+ // An instance-local affine wrapper leaves the source GLB and shared geometry
+ // untouched. It rotates with the original virtual joint, exactly like contacts.
+ for(const side of ['L','R']){
+  const control=controls[side],{center,offset,scale}=CAT_PAW_TRANSFORMS[side],wrapper=new Group();
+  wrapper.name='PawScale_'+side;
+  wrapper.position.set(...center.map((v,i)=>(1-scale)*(v-CAT.pawAnchors[side][i])+offset[i]));
+  wrapper.scale.setScalar(scale);
+  for(const child of [...control.children])wrapper.add(child);
+  control.add(wrapper);
+ }
  host.name='OrangeTabby_Character';host.position.y=-CAT.bodyFloor;host.add(model);
  model.traverse(object=>{
   if(!object.isMesh)return;

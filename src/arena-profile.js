@@ -11,6 +11,9 @@ export const ARENA_PROFILE = Object.freeze({
   sectorCount: 8,
 });
 
+// Visual scale, physical limits and spawns are identical in training and duel.
+export const COMBAT_ARENA=Object.freeze({scale:3,spawnDistance:2.2,groundFriction:4.3,grip:1.28});
+
 export function arenaPlacement(scale = 1) {
   return { scale, floorHeight: ARENA_PROFILE.floorHeight,
     radius: ARENA_PROFILE.radius * scale,

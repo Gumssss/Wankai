@@ -1,0 +1,198 @@
+[
+  {
+    "weapon": "cat-paws",
+    "keys": "W",
+    "start": 0,
+    "end": 3,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "S",
+    "start": 3,
+    "end": 6,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "A",
+    "start": 6,
+    "end": 9,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "D",
+    "start": 9,
+    "end": 12,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "W+A",
+    "start": 12,
+    "end": 15,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "W+D",
+    "start": 15,
+    "end": 18,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "S+A",
+    "start": 18,
+    "end": 21,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "S+D",
+    "start": 21,
+    "end": 24,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "W / RELEASE / S",
+    "start": 24,
+    "end": 28,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "OPPOSITES CANCEL",
+    "start": 28,
+    "end": 29,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "W",
+    "start": 29,
+    "end": 32,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "S",
+    "start": 32,
+    "end": 35,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "A",
+    "start": 35,
+    "end": 38,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "D",
+    "start": 38,
+    "end": 41,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "W+A",
+    "start": 41,
+    "end": 44,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "W+D",
+    "start": 44,
+    "end": 47,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "S+A",
+    "start": 47,
+    "end": 50,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "S+D",
+    "start": 50,
+    "end": 53,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "W / RELEASE / S",
+    "start": 53,
+    "end": 57,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "OPPOSITES CANCEL",
+    "start": 57,
+    "end": 58,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "F / ROTOR + D / EXPIRY / LAND",
+    "start": 58,
+    "end": 66,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "STRIKE / CLASH / RECOVERY",
+    "start": 66,
+    "end": 71,
+    "speed": 1
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "STRIKE / CLASH / RECOVERY",
+    "start": 71,
+    "end": 76,
+    "speed": 1
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "S / SAME EVENT",
+    "start": 76,
+    "end": 80,
+    "speed": 0.25
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "S / SAME EVENT",
+    "start": 80,
+    "end": 84,
+    "speed": 0.25
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "F / ROTOR + D / EXPIRY / LAND / SAME EVENT",
+    "start": 84,
+    "end": 88,
+    "speed": 0.25
+  },
+  {
+    "weapon": "cat-paws",
+    "keys": "STRIKE / CLASH / RECOVERY / SAME EVENT",
+    "start": 88,
+    "end": 92,
+    "speed": 0.25
+  },
+  {
+    "weapon": "long-ears",
+    "keys": "STRIKE / CLASH / RECOVERY / SAME EVENT",
+    "start": 92,
+    "end": 96,
+    "speed": 0.25
+  }
+]

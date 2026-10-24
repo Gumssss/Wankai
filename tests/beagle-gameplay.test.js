@@ -39,7 +39,7 @@ test('W/S with either turn direction produces grounded lift and travel, with no 
 test('both ears use one stamina budget and release/reverse retain the ordinary controller rules',()=>{
  const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];p.p.y=1000;p.theta=0;
  for(let i=0;i<180;i++)w.step([{theta:1,phi:1}]);
- assert.ok(Math.abs(p.stamina-172)<1e-7,'the pair must not charge twice');
+ assert.ok(Math.abs(p.stamina-170)<1e-7,'the pair must not charge twice');
  const before=p.wt;w.step([{}]);assert.ok(p.wt>0);
  assert.ok(p.wt>before*.8,'release must coast');
  p.theta=0;p.wt=3;p.bodyRate=0;
@@ -84,6 +84,11 @@ test('head hurtbox follows the broader beagle and its camera contains the full e
 
 test('a powered ear meets a sword under the ordinary clash and recoil rules',()=>{
  const w=new ArenaPhysics();w.reset(true,false,'beagle','sword');
+  const recoils=[],recoil=w.combat.physics.recoilFromClash;
+  w.combat.physics.recoilFromClash=(p,speed,away)=>{
+    recoil(p,speed,away);
+    recoils.push({speed,outward:p.v.x*away.x+p.v.z*away.z});
+  };
  Object.assign(w.players[0],{p:v3(0,CONFIG.bodyFloor,0),theta:.4});
  Object.assign(w.players[1],{p:v3(4.3,CONFIG.bodyFloor,.78),theta:1.25});
  let clash;
@@ -92,8 +97,13 @@ test('a powered ear meets a sword under the ordinary clash and recoil rules',()=
   if(clash)break;
  }
  assert.ok(clash,'ear must block and deflect an ordinary weapon');
+  assert.equal(recoils.length,2);
+  for(const recoil of recoils)assert.ok(recoil.outward>=recoil.speed-1e-6,
+    'both fighters must receive separating recoil at the actual impact time');
+  // The remaining fraction of the tick now includes turning and floor
+  // response; its final velocity need not equal the instantaneous recoil.
  for(const p of w.players){
-  const forward=p.v.x*Math.cos(p.phi)+p.v.z*Math.sin(p.phi);
-  assert.ok(forward<=-clash.recoilSpeed+1e-6,'both fighters must recoil opposite their facing');
+    const outward=(p.v.x*clash.axis.x+p.v.z*clash.axis.z)*(p.id?1:-1);
+    assert.ok(outward>0,'this clash must still leave both fighters separating');
  }
 });

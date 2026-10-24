@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-23",
+  "scale": 1.3,
+  "relativeToPrevious2x": 0.65,
+  "health": 150,
+  "bodyHover": 0.35,
+  "floorClearance": 0.02,
+  "bodyClearance": 0.08,
+  "pawTransforms": {
+    "L": {
+      "scale": 1.3,
+      "center": [
+        0.947603702545166,
+        0.8910090625286102,
+        -1.5062631368637085
+      ],
+      "size": [
+        0.9307253360748291,
+        1.7614100575447083,
+        1.7464559078216553
+      ],
+      "offset": [
+        0,
+        -0.0760925251245499,
+        -0.2822332032203674
+      ]
+    },
+    "R": {
+      "scale": 1.3,
+      "center": [
+        0.9480390548706055,
+        0.8918709754943848,
+        1.5055665969848633
+      ],
+      "size": [
+        0.9308137893676758,
+        1.7626919746398926,
+        1.7446417808532715
+      ],
+      "offset": [
+        0,
+        -0.07612119197845459,
+        0.2817505605697632
+      ]
+    }
+  },
+  "cameraUndercoverage": 0.18200000000000002,
+  "tests": {
+    "pass": 49,
+    "failed": 0,
+    "log": "/tmp/cat-paws-v3-verified.log",
+    "matchupRuns": 486
+  },
+  "build": "pass, existing chunk-size advisory",
+  "sourceHashes": {
+    "src/orange-tabby-profile.js": "48c9aeb3b05297efc4caf911422188c380a447c14ae263c8324ff0dfac9cbea3",
+    "src/orange-tabby-model.js": "886455fa9fafd907ed6f19d1006b121142660e4504938a0a26543318c34f6d07",
+    "src/scene.js": "a3c6eedf167abd318bb9388fc13012f667087c3ec33fc83b6bf41b05cd4690df",
+    "src/combat-settings.js": "aa10deda5da0fbb361a079d89780568f3c2ef96afad4b8b8f6a1bd31b469b7d6"
+  },
+  "evidence": {
+    "preview": "motion-comparison.mp4",
+    "actualGameplay": "actual-gameplay-complete.mp4",
+    "actualReport": "actual-gameplay-report.json",
+    "live": "live-game.png",
+    "validation": "actual-gameplay-validation.json"
+  },
+  "actualGameplay": {
+    "chapters": 14,
+    "modelsReady": true,
+    "normalMatrix": 8,
+    "slowReplays": 4,
+    "fps": 30,
+    "duration": 66.966667,
+    "decode": "pass",
+    "runtimeErrors": []
+  }
+}

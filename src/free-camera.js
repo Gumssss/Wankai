@@ -1,6 +1,8 @@
 import { PerspectiveCamera, Vector3, MathUtils } from 'three';
+import {CAT} from './orange-tabby-profile.js';
 import {CHARACTERS} from './character-catalog.js';
-import { CONFIG, clamp, staffFrame, weaponStats, weaponSegments, hurtSegments } from './physics.js';
+import { CONFIG, clamp, staffFrame, weaponStats, visualWeaponSegments, hurtSegments } from './physics.js';
+import {combatFramePoints} from './combat-camera.js';
 
 // Shared by solo exploration and each player's split-screen view.
 export const FREE_CAMERA = Object.freeze({ fov: 55, pitch: 0.52, distance: 6.2, yawOffset: Math.PI / 2 });
@@ -40,7 +42,7 @@ export function turnFreeCamera(rig, input, dt) {
   rig.manualYaw += clamp(input, -1, 1) * Math.max(0, dt) * 1.4;
 }
 
-export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
+export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0, nearby = []) {
   const { camera } = rig;
   const firstFrame = rig.yaw === null;
   const elapsed = Math.max(0, dt);
@@ -80,15 +82,16 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
   camera.position.y += shakeY;
   camera.lookAt(rig.focus);
   camera.updateMatrixWorld();
-  if (rig.frameFighter || player.characterId === 'beagle' || player.characterId === 'orange-tabby') fitFighter(rig, player, elapsed, firstFrame);
+  if (rig.frameFighter || player.characterId === 'beagle' || player.characterId === 'orange-tabby') fitFighter(rig, player, elapsed, firstFrame, nearby);
 }
 
-function fitFighter(rig, player, dt, firstFrame) {
+function fitFighter(rig, player, dt, firstFrame, nearby) {
   const { camera } = rig;
   const verticalSlope = Math.tan(MathUtils.degToRad(camera.fov / 2)) / camera.zoom;
   const horizontalSlope = verticalSlope * Math.max(camera.aspect, 1e-6);
   let needed = 0;
   const points = [];
+  if(rig.frameFighter)points.push(...combatFramePoints([player,...nearby]));
   for (const x of [-0.5, 0.5]) for (const y of [-0.6, 1.65]) for (const z of [-0.5, 0.5]) {
     points.push({ x: player.p.x + x, y: player.p.y + y, z: player.p.z + z });
   }
@@ -96,8 +99,8 @@ function fitFighter(rig, player, dt, firstFrame) {
     const character=CHARACTERS[player.characterId],bounds=character.bounds,angle=player.phi+(player.facingOffset||0),c=Math.cos(angle),s=Math.sin(angle);
     for(const x of [bounds.min[0],bounds.max[0]])for(const y of [bounds.min[1],bounds.max[1]])for(const z of [bounds.min[2],bounds.max[2]])points.push({x:player.p.x+x*c-z*s,y:player.p.y+y-character.bodyFloor,z:player.p.z+x*s+z*c});
   }
-  if (player.characterId === 'beagle'||player.characterId==='orange-tabby') for (const s of [...weaponSegments(player),...hurtSegments(player)]) for (const p of [s.a, s.b])
-    for (const x of [-s.radius-(player.characterId==='orange-tabby'?.14:0), s.radius+(player.characterId==='orange-tabby'?.14:0)]) for (const y of [-s.radius-(player.characterId==='orange-tabby'?.14:0), s.radius+(player.characterId==='orange-tabby'?.14:0)]) for (const z of [-s.radius-(player.characterId==='orange-tabby'?.14:0), s.radius+(player.characterId==='orange-tabby'?.14:0)])
+  if (player.characterId === 'beagle'||player.characterId==='orange-tabby') for (const s of [...visualWeaponSegments(player),...hurtSegments(player)]) for (const p of [s.a, s.b])
+    for (const x of [-s.radius-(player.characterId==='orange-tabby'?CAT.contactUndercoverage:0), s.radius+(player.characterId==='orange-tabby'?CAT.contactUndercoverage:0)]) for (const y of [-s.radius-(player.characterId==='orange-tabby'?CAT.contactUndercoverage:0), s.radius+(player.characterId==='orange-tabby'?CAT.contactUndercoverage:0)]) for (const z of [-s.radius-(player.characterId==='orange-tabby'?CAT.contactUndercoverage:0), s.radius+(player.characterId==='orange-tabby'?CAT.contactUndercoverage:0)])
       points.push({ x: p.x + x, y: p.y + y, z: p.z + z });
   for (const p of points) {
     const point = rig.framePoint.set(p.x, p.y, p.z)
@@ -111,7 +114,7 @@ function fitFighter(rig, player, dt, firstFrame) {
   rig.pullback = firstFrame || needed > rig.pullback ? needed :
     rig.pullback + (needed - rig.pullback) * (1 - Math.exp(-4 * dt));
   camera.translateZ(rig.pullback);
-  const far = Math.max(120, rig.pullback + 20);
+  const far = Math.max(120, rig.pullback + 50);
   if (camera.far !== far) { camera.far = far; camera.updateProjectionMatrix(); }
   camera.updateMatrixWorld();
 }

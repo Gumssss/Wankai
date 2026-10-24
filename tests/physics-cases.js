@@ -238,7 +238,7 @@ export const cases = [
       for (const p of w.players) {
         for (const value of [p.p.x, p.p.y, p.p.z, p.v.x, p.v.y, p.v.z, p.wt, p.wp]) assert(Number.isFinite(value), 'non-finite physics state');
         assert(p.p.y >= CONFIG.bodyFloor - 0.01 && p.p.y < 15, `invalid height ${p.p.y}`);
-        assert(Math.hypot(p.p.x, p.p.z) <= CONFIG.arenaRadius - CONFIG.bodyRadius + 0.05, 'escaped arena');
+        assert(Math.hypot(p.p.x, p.p.z) <= w.arenaRadius - CONFIG.bodyRadius + 0.05, 'escaped arena');
         assert(Number.isFinite(p.theta), 'non-finite polar angle');
         const r = staffFrame(p).r; near(Math.hypot(r.x, r.y, r.z), CONFIG.staffOffset + CONFIG.staffLength);
       }

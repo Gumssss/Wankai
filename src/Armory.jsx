@@ -1,20 +1,21 @@
 import {useEffect,useRef,useState} from 'react';
-import {CHARACTER_CATALOG,characterName} from './character-catalog.js';
+import {CHARACTER_CATALOG,CHARACTERS,characterName} from './character-catalog.js';
 import {WEAPON_CATALOG} from './weapon-catalog.js';
 import {normalizeLoadout,canEquip,isValidLoadout,loadoutName,loadoutKey} from './loadouts.js';
 import {createDrafts,updateDraft,toggleReady,requiredPlayers,canConfirm,confirmedLoadouts} from './armory-drafts.js';
+import {playerDisplayName} from './player-identity.js';
 import {LoadoutPreview} from './LoadoutPreview.jsx';
 import {CharacterPortrait,WeaponIcon} from './selection-icons.jsx';
 import './armory.css';
 
-const MODES={duel:'双人对战 · 分屏视角','duel-fixed':'双人对战 · 固定视角',practice:'木桩练习',solo:'单人自由视角',browse:'出战配置'};
+const MODES={duel:'双人对战 · 分屏视角','duel-fixed':'双人对战 · 共享战术视角',practice:'木桩练习',solo:'单人自由视角',browse:'出战配置'};
 const selectionName=draft=>draft.weaponId?loadoutName(draft):`${characterName(draft.characterId)} · 待选武器`;
 
 function PlayerSelection({id,draft,mode,onChange,onReady}){
   const valid=isValidLoadout(draft),player=`P${id+1}`;
   return <section className="loadout-player-panel" data-player={id} style={{'--selection-accent':id===0?'#bd6048':'#4f858a'}} aria-label={`${player} 出战配置`}>
     <header className="loadout-player-heading">
-      <b className="loadout-player-label">{player}<span>{id===0?'赤方':mode==='practice'?'木桩':'青方'}</span></b>
+      <b className="loadout-player-label">{player}<span>{playerDisplayName(id,draft,mode==='practice').split(' · ')[1]}</span></b>
       <span className="loadout-ready-status" aria-live="polite">{draft.ready?'✓ 已准备':'选择角色与武器'}</span>
     </header>
     <div className="loadout-choices">
@@ -37,7 +38,7 @@ function PlayerSelection({id,draft,mode,onChange,onReady}){
     </div>
     <div className="loadout-showcase" aria-label={`${player} 角色与武器模型预览`}>
       <LoadoutPreview key={`${id}:${loadoutKey(draft)}`} selection={draft} id={id}/>
-      <div className="loadout-current" aria-live="polite"><b>{selectionName(draft)}</b></div>
+      <div className="loadout-current" aria-live="polite"><b>{selectionName(draft)}</b><small>{CHARACTERS[draft.characterId]?.maxHealth} HP · 200 耐力</small></div>
       <div className="loadout-drag">↔ 拖动旋转 · 滚轮缩放</div>
     </div>
     <button type="button" className="loadout-ready-button" aria-label={`${player} ${draft.ready?'取消准备':'准备就绪'}`} aria-pressed={draft.ready} disabled={!valid} onClick={onReady}>

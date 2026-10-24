@@ -1,5 +1,6 @@
 import {BEAGLE_COMPACT_BOUNDS} from './character-attachments.js';
 import {CAT} from './orange-tabby-profile.js';
+import {CHARACTER_HEALTH} from './combat-settings.js';
 
 const shape=(a,b,radius)=>Object.freeze({a:Object.freeze(a),b:Object.freeze(b),radius});
 export const CHARACTER_CATALOG=Object.freeze([
@@ -7,7 +8,7 @@ export const CHARACTER_CATALOG=Object.freeze([
     description:'圆润的黄色伙伴，使用同色圆棍，沿面朝方向前后挥动、撑地与格挡。',
     model:'yellow-blob-static-v03.glb',bodyFloor:.59,bodyRadius:.70,
     bounds:{min:[-.587,0,-.701],max:[.587,1.7,.701]},
-    hurtShapes:Object.freeze([shape([0,-.15,0],[0,.18,0],.55),shape([0,.72,0],[0,.76,0],.35)]),
+    hurtShapes:Object.freeze([shape([0,-.04,0],[0,.18,0],.55),shape([0,.72,0],[0,.76,0],.35)]),
     weaponIds:Object.freeze(['yellow-staff'])}),
   Object.freeze({id:'basic-fighter',name:'基础丸人',english:'BASIC FIGHTER',available:true,
     description:'最初的丸人，使用漂浮兵器撑地与对战。',model:null,bodyFloor:.59,bodyRadius:.38,
@@ -23,5 +24,5 @@ export const CHARACTER_CATALOG=Object.freeze([
     bodyFloor:CAT.bodyFloor,bodyRadius:CAT.bodyRadius,bounds:CAT.bounds,hurtShapes:CAT.hurtShapes,
     weaponIds:Object.freeze(['cat-paws'])}),
 ]);
-export const CHARACTERS=Object.freeze(Object.fromEntries(CHARACTER_CATALOG.map(c=>[c.id,c])));
+export const CHARACTERS=Object.freeze(Object.fromEntries(CHARACTER_CATALOG.map(c=>[c.id,Object.freeze({...c,maxHealth:CHARACTER_HEALTH[c.id]})])));
 export const characterName=id=>CHARACTERS[id]?.name??'角色';

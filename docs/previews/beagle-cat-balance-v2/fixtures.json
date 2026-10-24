@@ -1,0 +1,10319 @@
+{
+  "version": "beagle-cat-balance-v2",
+  "type": "Actual App / GameSession / ArenaPhysics / ArenaView with independent resets and scripted keys",
+  "sourceHashes": {
+    "physics.js": "f2b4936554b55f44d3dca72d1570476b39b56505a4a01286505d416ccce20dfe",
+    "beagle-profile.js": "71778cff481dd85d13c058ed46c5b0202e8904d743038a71b9823ee28f389631",
+    "orange-tabby-profile.js": "f2e1910b9de8d1f6729a89e0bd37b3c2844394e89eb5922cc685bf9956e7237d",
+    "orange-tabby-model.js": "886455fa9fafd907ed6f19d1006b121142660e4504938a0a26543318c34f6d07",
+    "game-session.js": "08ad4cff2d7693e1520e924ecc7326fcd712ea747cc2e027adb46e61e515f5fa",
+    "scene.js": "a3c6eedf167abd318bb9388fc13012f667087c3ec33fc83b6bf41b05cd4690df"
+  },
+  "chapters": [
+    {
+      "id": "cat-paws-w",
+      "title": "cat-paws / W",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-s",
+      "title": "cat-paws / S",
+      "duration": 6,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-a",
+      "title": "cat-paws / A",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-d",
+      "title": "cat-paws / D",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-w-a",
+      "title": "cat-paws / W+A",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-w-d",
+      "title": "cat-paws / W+D",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-s-a",
+      "title": "cat-paws / S+A",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-s-d",
+      "title": "cat-paws / S+D",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-w-release-s",
+      "title": "cat-paws / W / RELEASE / S",
+      "duration": 6,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-opposites-cancel",
+      "title": "cat-paws / OPPOSITES CANCEL",
+      "duration": 1,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.5707963267948966,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-w",
+      "title": "long-ears / W",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-s",
+      "title": "long-ears / S",
+      "duration": 6,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-a",
+      "title": "long-ears / A",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "A"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-d",
+      "title": "long-ears / D",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-w-a",
+      "title": "long-ears / W+A",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "W + A"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-w-d",
+      "title": "long-ears / W+D",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-s-a",
+      "title": "long-ears / S+A",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "S + A"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-s-d",
+      "title": "long-ears / S+D",
+      "duration": 3,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "S + D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-w-release-s",
+      "title": "long-ears / W / RELEASE / S",
+      "duration": 6,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "S"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-opposites-cancel",
+      "title": "long-ears / OPPOSITES CANCEL",
+      "duration": 1,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "W + S"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        },
+        {
+          "keys": "A + D"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-f-rotor-d-expiry-land",
+      "title": "long-ears / F / ROTOR + D / EXPIRY / LAND",
+      "duration": 8,
+      "mode": "solo",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.59,
+            "z": 0
+          },
+          "theta": -1.5502427329699233,
+          "phi": 0
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "F"
+        },
+        {
+          "keys": "F"
+        },
+        {
+          "keys": "F"
+        },
+        {
+          "keys": "F"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-paws-strike-clash-recovery",
+      "title": "cat-paws / STRIKE / CLASH / RECOVERY",
+      "duration": 5,
+      "mode": "practice",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 1.9994135802469135,
+            "z": 0
+          },
+          "theta": 1.05,
+          "phi": 0
+        },
+        {
+          "p": {
+            "x": 2.7,
+            "y": 1.9994135802469135,
+            "z": 0.8
+          },
+          "theta": 1.500288303818893,
+          "phi": 3.141592653589793
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "long-ears-strike-clash-recovery",
+      "title": "long-ears / STRIKE / CLASH / RECOVERY",
+      "duration": 5,
+      "mode": "practice",
+      "reviewCamera": false,
+      "fixture": "independent reset / recorded keys / no scripted travel",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "long-ears"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 1.9994135802469135,
+            "z": 0
+          },
+          "theta": 1.050210597754505,
+          "phi": 0
+        },
+        {
+          "p": {
+            "x": 2.7,
+            "y": 1.9994135802469135,
+            "z": 0.8
+          },
+          "theta": 1.500288303818893,
+          "phi": 3.141592653589793
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "W + D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-block-clash",
+      "title": "Cat / sword block, outward recoil and recovery",
+      "duration": 4,
+      "mode": "practice",
+      "reviewCamera": false,
+      "fixture": "independent contact fixture / initial positions only",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.05,
+          "phi": 0
+        },
+        {
+          "p": {
+            "x": 3,
+            "y": 0.59,
+            "z": 1.5
+          },
+          "theta": 0.4,
+          "phi": 3.141592653589793
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "identical-character-trade",
+      "title": "P1 / P2 same-character simultaneous trade",
+      "duration": 3,
+      "mode": "practice",
+      "reviewCamera": false,
+      "fixture": "independent incoming-motion contact fixture / no scripted body motion",
+      "loadouts": [
+        {
+          "characterId": "beagle",
+          "weaponId": "sword"
+        },
+        {
+          "characterId": "beagle",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 3,
+            "z": 0.3
+          },
+          "v": {
+            "x": 5,
+            "y": 2.4,
+            "z": 1
+          },
+          "theta": 1.68,
+          "phi": -0.19,
+          "wt": 4,
+          "wp": 4.1
+        },
+        {
+          "p": {
+            "x": 1.5,
+            "y": 2.75,
+            "z": 0.1
+          },
+          "v": {
+            "x": 4.4,
+            "y": -0.7,
+            "z": 2.1
+          },
+          "theta": 1.19,
+          "phi": 3.13,
+          "wt": -6,
+          "wp": -3.6
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-vertical-hit",
+      "title": "Cat / vertical strike / damage / recovery",
+      "duration": 3,
+      "mode": "practice",
+      "reviewCamera": false,
+      "fixture": "independent non-overlapping contact fixture / initial poses only",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 0.4,
+          "phi": 0
+        },
+        {
+          "p": {
+            "x": 1.8,
+            "y": 0.59,
+            "z": 1.5
+          },
+          "theta": 0.4,
+          "phi": 3.141592653589793
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-horizontal-hit",
+      "title": "Cat / horizontal strike / directional damage / recovery",
+      "duration": 3,
+      "mode": "practice",
+      "reviewCamera": false,
+      "fixture": "independent non-overlapping contact fixture / initial poses only",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.05,
+          "phi": -0.65
+        },
+        {
+          "p": {
+            "x": 1.8,
+            "y": 0.59,
+            "z": -1
+          },
+          "theta": 0,
+          "phi": 3.141592653589793
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "D"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    },
+    {
+      "id": "cat-clean-miss",
+      "title": "Cat / same swing / distant clean miss",
+      "duration": 3,
+      "mode": "practice",
+      "reviewCamera": false,
+      "fixture": "independent non-overlapping contact fixture / initial poses only",
+      "loadouts": [
+        {
+          "characterId": "orange-tabby",
+          "weaponId": "cat-paws"
+        },
+        {
+          "characterId": "basic-fighter",
+          "weaponId": "sword"
+        }
+      ],
+      "initial": [
+        {
+          "p": {
+            "x": 0,
+            "y": 0.94,
+            "z": 0
+          },
+          "theta": 1.05,
+          "phi": 0
+        },
+        {
+          "p": {
+            "x": 7,
+            "y": 0.59,
+            "z": 6
+          },
+          "theta": 0.4,
+          "phi": 3.141592653589793
+        }
+      ],
+      "inputs": [
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "W"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        },
+        {
+          "keys": "RELEASE"
+        }
+      ]
+    }
+  ]
+}

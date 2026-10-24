@@ -214,3 +214,34 @@
 }
 .intro-cover .intro-title { animation: intro-menu-in .8s ease both; }
 @keyframes intro-menu-out { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+
+.skill-status{display:block;margin-top:5px;font-size:9px;color:#686f59;line-height:1.4}
+.pressure-status{position:absolute;left:50%;top:116px;transform:translateX(-50%);z-index:3;max-width:80%;padding:6px 10px;border-radius:5px;background:#faf8efed;border:1px solid #d6d5bf;color:#757151;font-size:10px;text-align:center;pointer-events:none}
+.pressure-status.danger{color:#993c26;background:#fff0e6ef;border-color:#c8896b}
+.opponent-indicator{position:absolute;left:0;top:0;z-index:3;visibility:hidden;display:flex;align-items:center;gap:5px;padding:5px 7px;border-radius:6px;background:#faf8efed;border:1px solid #a9b4a0;color:#526b6a;font-size:9px;pointer-events:none}
+.opponent-indicator i{display:inline-block;font-style:normal;font-size:17px}
+.loadout-current small{display:block;margin-top:5px;color:#737a66;font-size:10px}
+@media(max-width:740px){.pressure-status{top:104px;font-size:8px;padding:4px 7px}.skill-status{font-size:7px}.fighter-heading strong{font-size:14px}}
+
+/* Character identity survives narrow panes; damage is owned by its attacker. */
+.fighter-heading>span{min-width:0;flex:1}
+.fighter-heading b{display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.4}
+.fighter-heading>span>small{display:block;margin:2px 0 0;white-space:normal}
+.fighter-heading>strong{flex-shrink:0}
+.player-label span{margin:0;font-weight:700}
+.view-name{max-width:calc(50% - 30px);white-space:normal;overflow-wrap:anywhere}
+.heading-guide strong{text-align:center;white-space:normal}
+.damage-p1{--damage-color:var(--red)}
+.damage-p2{--damage-color:var(--blue)}
+.damage-environment{--damage-color:#727b63}
+.damage-number{color:var(--damage-color);white-space:nowrap;letter-spacing:0}
+.hit-readout{top:158px;max-width:calc(50% - 58px);width:300px;gap:4px;padding:9px 12px;background:#faf8efdf;border-radius:7px;z-index:3}
+.hit-readout-0{left:39px;right:auto;align-items:flex-start;text-align:left}
+.hit-readout-1{right:39px;left:auto;align-items:flex-end;text-align:right}
+.hit-readout>b{color:var(--damage-color);font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.hit-readout strong{color:var(--damage-color);font-size:32px}
+.hit-readout small{line-height:1.5}
+@media(max-width:900px){.hit-readout{top:178px;max-width:calc(50% - 32px)}.hit-readout-0{left:18px}.hit-readout-1{right:18px}.hit-readout>b{font-size:10px}}
+@media(max-width:600px){.fighter-heading{align-items:flex-start}.fighter-heading b{font-size:11px;letter-spacing:0}.fighter-heading>span>small{font-size:8px;letter-spacing:0}.hit-readout{top:180px;max-width:calc(50% - 22px);padding:6px 8px}.hit-readout-0{left:10px}.hit-readout-1{right:10px}.hit-readout strong{font-size:24px}.hit-readout small{font-size:8px}.damage-number{font-size:22px}}
+.damage-number.damage-p1{margin-top:32px}
+.damage-number.damage-p2{margin-top:8px}
