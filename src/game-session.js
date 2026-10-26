@@ -100,11 +100,17 @@ export class GameSession {
   }
 
   syncPolarInputs() {
-    this.getInputs().forEach((input, id) => this.world.setPolarInput(id, input.theta));
+    this.getInputs().forEach((input, id) => {
+      if (this.world.winner === null || id === this.world.winner) this.world.setPolarInput(id, input.theta);
+    });
   }
 
   keyDown(code) {
-    if (!CONTROL_KEYS.has(code) || (this.state !== 'playing' && this.state !== 'countdown')) return;
+    if (!CONTROL_KEYS.has(code) || (this.state !== 'playing' && this.state !== 'countdown' && this.state !== 'result')) return;
+    if (this.state === 'result') {
+      const playerId = code.startsWith('Arrow') || ['ShiftRight','Period','Slash'].includes(code) ? 1 : 0;
+      if (playerId !== this.world.winner) return;
+    }
     if (this.mode === 'solo' && code.startsWith('Arrow')) return;
     if(code==='KeyF'&&!isEarLoadout(this.loadouts[0]))return;
     if(code==='ShiftRight'&&(!isEarLoadout(this.loadouts[1])||this.mode==='solo'||this.practice))return;
@@ -150,7 +156,6 @@ export class GameSession {
     if (!['duel', 'duel-fixed', 'practice', 'solo'].includes(this.mode)) throw new Error(`Unknown game mode: ${this.mode}`);
     this.practice = this.mode === 'practice';
     void this.sound.unlock();
-    this.sound.lastWhoosh = [0, 0];
     this.clearKeys();
     this.world.reset(this.practice, this.mode === 'solo', ...this.loadouts, arenaScaleForMode(this.mode));
     this.visualRevision++;
@@ -182,7 +187,7 @@ export class GameSession {
   }
 
   pause() {
-    if (this.state !== 'playing' && this.state !== 'countdown') return;
+    if (this.state !== 'playing' && this.state !== 'countdown' && this.state !== 'result') return;
     this.previousState = this.state;
     this.state = 'paused';
     this.clearKeys();
@@ -263,12 +268,19 @@ export class GameSession {
           this.accumulator -= CONFIG.step;
           for (const event of this.world.events) { impacts.push(event); this.impact(event); }
           if (this.world.winner !== null) {
-            this.state = 'ending'; this.endTimer = 0.7;
-            this.clearKeys(); this.accumulator = 0; break;
+            this.accumulator = 0; this.finishRound(); break;
           }
           if (this.freeze > 0) { this.accumulator = 0; break; }
         }
-        for (const player of this.world.players) this.sound.swing(player.id, player.contactSpeed, this.world.time);
+      }
+      this.publish();
+    } else if (this.state === 'result') {
+      this.accumulator += dt;
+      const inputs = this.getInputs();
+      let steps = 0;
+      while (this.accumulator >= CONFIG.step && steps++ < 12) {
+        this.world.step(inputs);
+        this.accumulator -= CONFIG.step;
       }
       this.publish();
     } else if (this.state === 'ending') {

@@ -4,7 +4,8 @@ import { CONTROL_KEYS, GameSession } from './game-session.js';
 import { Armory } from './Armory.jsx';
 import { weaponName } from './weapon-catalog.js';
 import {loadoutName,loadoutKey,isEarLoadout,isPawLoadout} from './loadouts.js';
-import {characterName} from './character-catalog.js';
+import {CHARACTERS,characterName} from './character-catalog.js';
+import {CharacterPortrait} from './selection-icons.jsx';
 import { STAMINA } from './physics.js';
 import './style.css';
 
@@ -30,14 +31,14 @@ function Modal({ children, onCancel, className = '' }) {
   return <dialog ref={ref} className={`modal ${className}`} onCancel={event => { event.preventDefault(); onCancel?.(); }}>{children}</dialog>;
 }
 
-function FighterScore({ id, health, stamina, practice, loadout }) {
+function FighterScore({ id, health, stamina, loadout }) {
   const isSecond = id === 1;
   const staminaState = stamina <= 1e-8 ? 'empty' : stamina < STAMINA.lowThreshold ? 'low' : 'ready';
   const staminaLabel = staminaState === 'empty' ? '力竭 · 弱控' : staminaState === 'low' ? '耐力不足' : '耐力';
   return <div className={`fighter fighter-${isSecond ? 'two' : 'one'}`}>
-    <div className="fighter-avatar"><span></span><i></i></div>
+    <div className="fighter-avatar"><CharacterPortrait id={loadout.characterId} critical={health < 10}/></div>
     <div className="fighter-info">
-      <div className="fighter-heading"><span><b>{isSecond ? (practice ? '木桩' : '青丸') : '赤丸'}</b> <small>{loadout?loadoutName(loadout):(isSecond ? (practice ? 'TRAINING' : 'PLAYER 02') : 'PLAYER 01')}</small></span><strong aria-label={`生命 ${health} / 100`}>{health}<small>/100</small></strong></div>
+      <div className="fighter-heading"><span><b>{characterName(loadout.characterId)}</b></span><strong aria-label={`生命 ${health} / 100`}>{health}<small>/100</small></strong></div>
       <div className="health-track" role="progressbar" aria-label={`P${id + 1} 生命`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={health}><div className="health-ghost" style={{ transform: `scaleX(${health / 100})` }}></div><div className="health-fill" style={{ transform: `scaleX(${health / 100})` }}></div></div>
       <div className={`stamina-meter stamina-${staminaState}`}>
         <div className="stamina-heading"><span>{staminaLabel}</span><span>{Math.ceil(stamina - 1e-8)} / {STAMINA.max}</span></div>
@@ -203,9 +204,8 @@ function App({session=defaultSession}) {
   }, []);
 
   const winner = game.winner;
-  const resultTitle = winner === -1 ? '平分秋色' : `${winner === 0 ? '赤丸' : '青丸'}获胜`;
-  const resultDetail = `本局 ${game.seconds} 秒。${winner === -1 ? '双方同时倒下，再来一局。' : `胜者剩余 ${game.health[winner] ?? 0} 点生命。下一局，谁说了算？`}`;
-  const elapsed = `${String(Math.floor(game.seconds / 60)).padStart(2, '0')}:${String(game.seconds % 60).padStart(2, '0')}`;
+  const resultTitle = winner === -1 ? '平局' : `P${winner + 1} 获胜`;
+  const winningCharacter = winner >= 0 ? CHARACTERS[game.loadouts[winner]?.characterId] : null;
   const solo = game.mode === 'solo';
   const fixedDuel = game.mode === 'duel-fixed';
   const splitView = game.mode === 'duel' && active;
@@ -235,16 +235,14 @@ function App({session=defaultSession}) {
 
     <main id="game-shell" className={`${solo ? 'solo-mode' : ''} ${splitView ? 'split-mode' : ''}`}>
       <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={`${solo ? 'solo' : fixedDuel ? 'fixed' : 'shared'}-${game.loadouts.map(loadoutKey).join('-')}`} session={session} mode={game.mode} loadouts={game.loadouts} intro={intro.current} onIntroComplete={finishIntro} onReady={() => setReady(true)} /></CanvasBoundary></div>
-      {splitView && <><div className="view-divider" aria-hidden="true"></div><div className="view-name view-one">P1 · 赤丸自由视角</div><div className="view-name view-two">P2 · 青丸自由视角</div></>}
+      {splitView && <div className="view-divider" aria-hidden="true"></div>}
       <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>{solo ? '只有你、武器与圆台。' : '兵器与双耳，各有所长。'}</span></div>
       <div className="arena-coordinate" aria-hidden="true">{solo ? '自由视角' : fixedDuel ? '固定视角' : 'N ↑'}<br/><span>{solo ? 'DRAG / ORBIT' : fixedDuel ? 'SHARED VIEW' : '35° / FIXED VIEW'}</span></div>
-      {active && (solo || splitView) && viewIds.map(id => <HeadingGuide key={id} id={id} split={splitView} />)}
+      {active && solo && <HeadingGuide id={0} split={false} />}
       <section className="scoreboard" aria-label={solo ? '单人状态' : '对战血量'}>
         <FighterScore id={0} health={game.health[0]} stamina={game.stamina[0]} practice={game.practice} loadout={game.loadouts[0]} />
-        <div className="match-center"><span>{solo ? '自由视角' : game.practice ? '自由练习' : fixedDuel ? '固定视角' : '分屏对战'}</span>{!solo && <b>VS</b>}<div>{elapsed}</div></div>
         {!solo && <FighterScore id={1} health={game.health[1]} stamina={game.stamina[1]} practice={game.practice} loadout={game.loadouts[1]} />}
       </section>
-      {viewIds.flatMap(viewId => (solo ? [0] : [0, 1]).map(playerId => <div key={`${viewId}-${playerId}`} id={`player-label-${viewId}-${playerId}`} className={`player-label ${playerId === 0 ? 'red' : 'blue'}`}>P{playerId + 1}<span>{game.practice&&playerId===1?'木桩':characterName(game.loadouts[playerId].characterId)}</span></div>))}
       <div id="effects" aria-hidden="true">{viewIds.flatMap(viewId => game.effects.map(effect => <div key={`${viewId}-${effect.id}`} id={`effect-${viewId}-${effect.id}`} className="damage-number">{effect.damage >= 22 && <span className="impact-word">重 击 !</span>}−{effect.damage}</div>))}</div>
       <div key={game.countdownText} id="countdown" className={/^[1-9]$/.test(game.countdownText) ? 'pop' : ''} style={game.countdownText === '抡起来' ? { fontSize: 56 } : undefined} aria-live="polite">{game.countdownText}</div>
       <div className={`hit-readout${game.readout ? ' visible' : ''}`}><span>{game.readout?.label ?? '有效命中'}</span><strong>−{game.readout?.damage ?? 0}</strong><small>{game.readout?.detail ?? ''}</small></div>
@@ -274,9 +272,25 @@ function App({session=defaultSession}) {
     </div>
 
     {helpOpen && <Modal onCancel={closeHelp}><HelpContent close={closeHelp}/></Modal>}
-    {armoryMode !== null && <main className="preparation-stage" aria-labelledby="preparation-title"><Armory game={game} session={session} mode={armoryMode} close={() => setArmoryMode(null)} start={() => { session.startRound(armoryMode); setArmoryMode(null); }}/></main>}
-    {game.state === 'paused' && !helpOpen && !game.error && <Modal className="compact-modal" onCancel={() => session.resume()}><span className="eyebrow">TAKE A BREATH</span><h2>歇一棍。</h2><p>对局已暂停，准备好再继续。</p><button className="primary-button" onClick={() => session.resume()}>继续对战 <span>↗</span></button><button className="secondary-button" onClick={() => session.goHome()}>回到主菜单</button></Modal>}
-    {game.state === 'result' && <Modal className="compact-modal"><span className="eyebrow">A GOOD BONK, WELL PLAYED.</span><div className="winner-icon" style={{ background: winner === 1 ? '#568d92' : winner === 0 ? '#c4684f' : '#838c74' }}>{winner === -1 ? '和' : winner === 0 ? '赤' : '青'}</div><h2>{resultTitle}</h2><p>{resultDetail}</p><button className="primary-button" onClick={() => session.startRound()}>再战一局 <span>↗</span></button><button className="secondary-button" onClick={() => session.goHome()}>回到主菜单</button></Modal>}
+    {armoryMode !== null && <main className={`preparation-stage${armoryMode === 'duel' ? ' styled-duel' : ''}`} aria-labelledby={armoryMode==='duel'?undefined:'preparation-title'} aria-label={armoryMode==='duel'?'双人出战配置':undefined}><Armory game={game} session={session} mode={armoryMode} close={() => setArmoryMode(null)} start={() => { session.startRound(armoryMode); setArmoryMode(null); }}/></main>}
+    {game.state === 'paused' && !helpOpen && !game.error && <Modal className="pause-menu" onCancel={() => session.resume()}>
+      <h2>停！</h2>
+      <div className="pause-actions">
+        <button onClick={() => session.resume()}><span className="lobby-button-content">继续对战</span></button>
+        <button onClick={() => session.goHome()}><span className="lobby-button-content">回到主菜单</span></button>
+      </div>
+    </Modal>}
+    {game.state === 'result' && <section className="victory-overlay" aria-label="对战结果">
+      <h2>{resultTitle}</h2>
+      {winningCharacter&&<div className="victory-portrait" key={winningCharacter.id}>
+        {winningCharacter.victoryPortrait?<img src={`${import.meta.env.BASE_URL}${winningCharacter.victoryPortrait}`} alt={`${winningCharacter.name}胜利姿态`}/>:<CharacterPortrait id={winningCharacter.id}/>}
+      </div>}
+      <div className="victory-actions">
+        <button type="button" onClick={() => session.startRound()}><span className="lobby-button-content">再战一局</span></button>
+        <button type="button" onClick={() => session.goHome()}><span className="lobby-button-content">回到主菜单</span></button>
+      </div>
+    </section>}
+
   </>;
 }
 

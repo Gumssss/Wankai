@@ -7,14 +7,14 @@ import {BEAGLE_COMMON_OFFSETS} from '../src/character-attachments.js';
 
 const basic=weaponId=>({characterId:'basic-fighter',weaponId}),beagle=weaponId=>({characterId:'beagle',weaponId});
 function session(){const game=new GameSession();for(const name of ['unlock','tick','tone','swing','impact'])game.sound[name]=()=>{};return game;}
-test('separate catalogues expose nine valid loadouts and enforce signature ownership',()=>{
- assert.equal(PLAYABLE_LOADOUTS.length,9);
+test('separate catalogues expose twelve valid loadouts and enforce signature ownership',()=>{
+ assert.equal(PLAYABLE_LOADOUTS.length,12);
  assert.deepEqual(normalizeLoadout('beagle'),beagle('long-ears'));
  assert.deepEqual(normalizeLoadout('sword'),basic('sword'));
  assert.equal(canEquip('basic-fighter','long-ears'),false);
  assert.equal(canEquip('beagle','long-ears'),true);
  assert.equal(canEquip('orange-tabby','cat-paws'),true);
- for(const c of ['basic-fighter','beagle'])for(const w of ['sword','polearm','hammer'])assert.equal(canEquip(c,w),true);
+ for(const c of ['basic-fighter','beagle','yellow-blob'])for(const w of ['sword','polearm','hammer'])assert.equal(canEquip(c,w),true);
  assert.equal(resolveLoadout(beagle('sword')).bodyModel,'beagle-smooth-appearance-v05.glb');
  assert.equal(resolveLoadout(beagle('long-ears')).bodyModel,'beagle-smooth-ear-duelist-v05.glb');
  assert.equal(resolveLoadout(beagle('sword')).skill,null);
@@ -31,7 +31,7 @@ test('lobby loadout commit validates both players atomically without leaking inv
  game.startRound('duel');const committed=game.getSnapshot().loadouts;
  assert.equal(game.setLoadouts([basic('polearm'),basic('sword')]),false);assert.deepEqual(game.getSnapshot().loadouts,committed);
 });
-test('64 canonical pairings retain character and weapon choices through all modes and resets',()=>{
+test('All canonical pairings retain character and weapon choices through all modes and resets',()=>{
  for(const first of PLAYABLE_LOADOUTS)for(const second of PLAYABLE_LOADOUTS){
   const game=session();assert.equal(game.setLoadouts([first,second]),true);
   for(const mode of ['solo','practice','duel-fixed','duel']){
@@ -64,7 +64,7 @@ test('skill input gates follow the complete loadout rather than the beagle chara
  game.tick(1/60);assert.equal(game.world.players[1].skillActive,true);assert.equal(game.world.players[0].skillActive,false);
  assert.equal(isEarLoadout(game.world.players[1]),true);
 });
-test('all 64 mixed-character matchups stay finite, bounded and within resource limits under combined controls and skills',()=>{
+test('all mixed-character matchups stay finite, bounded and within resource limits under combined controls and skills',()=>{
  for(const first of PLAYABLE_LOADOUTS)for(const second of PLAYABLE_LOADOUTS){
   const world=new ArenaPhysics();world.reset(false,false,first,second,3);
   for(let tick=0;tick<360;tick++){

@@ -106,7 +106,7 @@ test('stamina recovery observes the release delay, clamps at full, and is indepe
     advance(world, 0.5, {}, dt);
     near(world.players[0].stamina, 160);
     advance(world, 0.5, {}, dt);
-    near(world.players[0].stamina, 175);
+    near(world.players[0].stamina, 190);
     advance(world, 2, {}, dt);
     assert.equal(world.players[0].stamina, 200);
     advance(world, 0.5, { phi: 1 }, dt);

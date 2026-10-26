@@ -50,7 +50,7 @@ test('approved actual GLBs align face with swing plane, feet with floor, and pre
 });
 test('yellow dedicated loadout works for both players across modes and resets',()=>{
  assert.equal(resolveLoadout(yellow).bodyModel,'yellow-blob-static-v03.glb');assert.equal(resolveLoadout(yellow).weaponModel,'yellow-staff.glb');
- assert.equal(canEquip('basic-fighter','yellow-staff'),false);assert.equal(canEquip('yellow-blob','sword'),false);
+ assert.equal(canEquip('basic-fighter','yellow-staff'),false);assert.equal(canEquip('yellow-blob','sword'),true);
  const game=new GameSession();for(const k of ['unlock','tick','tone','swing','impact'])game.sound[k]=()=>{};
  assert.equal(game.setLoadouts([yellow,yellow]),true);
  for(const mode of ['solo','practice','duel']){
@@ -70,4 +70,25 @@ test('arena attaches both yellow models independently and replaces failed-load f
  assert.ok(view.players.every(p=>p.yellow&&!p.yellowFallback.root.visible&&!p.weaponBackup.visible&&!p.grip.visible));
  assert.notEqual(view.players[0].yellow.materials[0],view.players[1].yellow.materials[0]);
  const count=view.players[0].root.children.length;view.setCharacterModel(new Group(),'yellow-blob-static-v03.glb');assert.equal(view.players[0].root.children.length,count);
+});
+
+for(const weaponId of ['sword','polearm','hammer'])test(`yellow supports common weapon ${weaponId} in session and arena`,async()=>{
+ const selection={characterId:'yellow-blob',weaponId},resolved=resolveLoadout(selection);
+ assert.equal(resolved.bodyModel,'yellow-blob-static-v03.glb');
+ assert.equal(resolved.weaponModel,`${weaponId}.glb`);
+ assert.equal(resolved.controller,'floating');
+ const game=new GameSession();for(const k of ['unlock','tick','tone','swing','impact'])game.sound[k]=()=>{};
+ assert.equal(game.setLoadouts([selection,selection]),true);
+ game.startRound('duel');
+ assert.ok(game.world.players.every(p=>p.characterId==='yellow-blob'&&p.weapon===weaponId));
+ for(let i=0;i<180;i++)game.world.step([{theta:1,phi:.5},{theta:-1,phi:-.5}]);
+ assert.ok(game.world.players.every(p=>Object.values(p.p).every(Number.isFinite)));
+ const view=Object.create(ArenaView.prototype);view.actors=new Group();view.meshRoot=view.actors;
+ view.loadouts=[resolved,resolved];view.characterLoaded=new Set();view.weaponLoaded=new Set();
+ view.players=[view.makeFighter(0),view.makeFighter(1)];
+ view.setCharacterModel(await loadGeometry(new URL('../public/models/yellow-blob-static-v03.glb',import.meta.url)),'yellow-blob-static-v03.glb');
+ view.setWeaponModel(await loadGeometry(new URL(`../public/models/${weaponId}.glb`,import.meta.url)),weaponId);
+ assert.ok(view.players.every(p=>p.yellow&&!p.weaponBackup.visible));
+ assert.equal(canEquip('yellow-blob','long-ears'),false);
+ assert.equal(canEquip('yellow-blob','cat-paws'),false);
 });

@@ -14,14 +14,16 @@ function PlayerSelection({id,draft,mode,onChange,onReady}){
   const valid=isValidLoadout(draft),player=`P${id+1}`;
   return <section className="loadout-player-panel" data-player={id} style={{'--selection-accent':id===0?'#bd6048':'#4f858a'}} aria-label={`${player} 出战配置`}>
     <header className="loadout-player-heading">
-      <b className="loadout-player-label">{player}<span>{id===0?'赤方':mode==='practice'?'木桩':'青方'}</span></b>
-      <span className="loadout-ready-status" aria-live="polite">{draft.ready?'✓ 已准备':'选择角色与武器'}</span>
+      <b className="loadout-player-label">{player}</b>
+      <span className="loadout-ready-status" role="status" aria-live="polite" aria-label={draft.ready?`${player} 已准备`:`${player} 未准备`}>
+        {draft.ready?<svg className="loadout-ready-doodle" viewBox="0 0 64 52" aria-hidden="true"><path d="M9 27 23 42 54 9"/><path d="m12 25 11 12 28-29"/><path d="m25 44 31-32"/></svg>:mode==='duel'?'':'选择角色与武器'}
+      </span>
     </header>
     <div className="loadout-choices">
       <div className="loadout-library-title"><b>角色</b><span>CHARACTERS</span></div>
       <div className="loadout-character-grid" role="group" aria-label={`${player} 角色选择`}>
         {CHARACTER_CATALOG.map(character=><button key={character.id} type="button" aria-label={`${player} 选择${character.name}`} aria-pressed={draft.characterId===character.id} disabled={!character.available} onClick={()=>onChange({characterId:character.id})}>
-          <div className="loadout-portrait"><CharacterPortrait id={character.id}/>{draft.characterId===character.id&&<i aria-hidden="true">✓</i>}{!character.available&&<span>开发中</span>}</div>
+          <div className="loadout-portrait"><CharacterPortrait id={character.id}/>{!character.available&&<span>开发中</span>}</div>
           <b>{character.name}</b><small>{character.english}</small>
         </button>)}
       </div>
@@ -62,11 +64,14 @@ export function Armory({game,session,mode,close,start}){
   const action=mode==='browse'?'保存搭配':mode==='practice'?'开始练习':mode==='solo'?'开始单人':'开始对战';
   const hint=players.length===1?(ready?'已准备，可以开始':'准备后开始'):ready?(mode==='browse'?'双方已准备，可以保存':'双方已准备，可以开始'):(mode==='browse'?'双方准备后保存':'双方准备后开始');
   return <>
-    <header className="loadout-header"><button type="button" className="loadout-back" onClick={close} aria-label="返回主菜单">← 返回</button><div className="loadout-heading-copy"><h1 id="preparation-title" ref={headingRef} tabIndex={-1}>出战准备</h1><p>PREPARE / 选择角色与武器</p></div><span>{MODES[mode]}</span></header>
+    <header className="loadout-header">
+      <button ref={mode==='duel'?headingRef:null} type="button" className="loadout-back" onClick={close} aria-label="返回主菜单">{mode==='duel'?'返回主菜单':'← 返回'}</button>
+      {mode!=='duel'&&<><div className="loadout-heading-copy"><h1 id="preparation-title" ref={headingRef} tabIndex={-1}>出战准备</h1><p>PREPARE / 选择角色与武器</p></div><span>{MODES[mode]}</span></>}
+    </header>
     <div className={`loadout-dual-picker${mode==='solo'?' solo':''}`}>
       {players.map(id=><PlayerSelection key={id} id={id} draft={drafts[id]} mode={mode} onChange={patch=>change(id,patch)} onReady={()=>prepare(id)}/>)}
     </div>
     {error&&<p className="loadout-form-error" role="alert">{error}</p>}
-    <footer className="loadout-footer"><div className="loadout-start"><button type="button" className="primary-button" disabled={!ready} onClick={confirm}>{action}<span>→</span></button><span className="loadout-start-hint" aria-live="polite">{hint}</span></div></footer>
+    <footer className="loadout-footer"><div className="loadout-start"><button type="button" className="primary-button" disabled={!ready} onClick={confirm}>{action}{mode!=='duel'&&<span>→</span>}</button><span className="loadout-start-hint" aria-live="polite">{hint}</span></div></footer>
   </>;
 }

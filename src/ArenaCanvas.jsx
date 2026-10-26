@@ -3,11 +3,12 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ACESFilmicToneMapping, PCFShadowMap, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { ArenaView } from './scene.js';
+import {createDeathPortraits} from './death-portrait.js';
 import { advanceLobbyCamera } from './lobby-camera.js';
 import { FREE_CAMERA } from './free-camera.js';
 import { FIXED_CAMERA } from './fixed-camera.js';
 import {resolveLoadout,loadoutKey} from './loadouts.js';
-import { ARENA_PROFILE } from './arena-profile.js';
+import { ARENA_PROFILE, ACTIVE_ARENA_STYLE } from './arena-profile.js';
 import {loadArenaFloorTexture} from './arena-floor.js';
 
 function ArenaEnvironment({ group }) { return <primitive object={group} dispose={null} />; }
@@ -18,6 +19,12 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
   const [first,second]=loadouts;
   const { gl, camera, scene, size } = useThree();
   const view = useMemo(() => new ArenaView(gl, camera, mode, first, second), [gl, camera, mode, first, second]);
+  const deathPortraits = useRef(null);
+  useEffect(() => {
+    const portraits = createDeathPortraits(scene, [first, second], import.meta.env.BASE_URL);
+    deathPortraits.current = portraits;
+    return () => { portraits.dispose(); deathPortraits.current = null; };
+  }, [scene, first, second]);
   const revision = useRef(session.visualRevision);
   const point = useMemo(() => new Vector3(), []);
   const headingForward = useMemo(() => new Vector3(), []);
@@ -26,6 +33,10 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
   // Local review recorders may inspect the actual game view without replacing
   // the runtime renderer or advancing a second physics world.
   useEffect(() => {
+    if (ACTIVE_ARENA_STYLE === 'classic') {
+      view.environmentState = 'ready';
+      return;
+    }
     let cancelled = false;
     let cancelFloorTexture;
     const dispose = source => {
@@ -128,6 +139,7 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
 
   useFrame((_, delta) => {
     const impacts = session.tick(delta);
+    deathPortraits.current?.update(session.world.players, session.world.winner, session.state, Math.min(delta, .06));
     const splitView = mode === 'duel' && session.state !== 'lobby';
     if (revision.current !== session.visualRevision) {
       view.clearEffects();
@@ -136,7 +148,7 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
     }
     for (const event of impacts) view.impact(event);
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
-    view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending', Math.min(delta, 0.06), splitView, session.getCameraInputs());
+    view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'ending' || session.state === 'result', Math.min(delta, 0.06), splitView, session.getCameraInputs());
 
     // Keep the same viewport and camera controller through the menu handoff.
     if (intro && session.state === 'lobby' && camera.isOrthographicCamera) {
@@ -191,13 +203,6 @@ function ArenaScene({ session, mode, loadouts, intro, onIntroComplete }) {
           const angle = Math.atan2(x * headingRight.x + z * headingRight.z, x * headingForward.x + z * headingForward.z);
           arrow.style.transform = `rotate(${angle}rad)`;
         }
-      }
-      for (const player of session.world.players) {
-        const label = document.getElementById(`player-label-${pane.id}-${player.id}`);
-        if (!label) continue;
-        const screen = view.project({ x: player.p.x, y: player.p.y + 1.53, z: player.p.z }, pane.camera, pane.viewport);
-        label.style.visibility = screen.visible ? 'visible' : 'hidden';
-        label.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-100%)`;
       }
       for (const effect of session.effects) {
         const element = document.getElementById(`effect-${pane.id}-${effect.id}`);

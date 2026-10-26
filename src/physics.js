@@ -39,7 +39,7 @@ export const STAMINA = Object.freeze({
   swingDrain: 20,
   turnDrain: 8,
   recoveryDelay: 0.5,
-  recoveryRate: 30,
+  recoveryRate: 60,
   lowThreshold: 25,
   minPower: 0.4,
 });
@@ -421,11 +421,13 @@ export class ArenaPhysics {
   }
 
   step(inputs, dt = CONFIG.step) {
-    if (this.winner !== null) return;
+    const finished = this.winner !== null;
+    if (this.winner === -1) { this.events.length = 0; return; }
     this.events.length = 0;
     this.time += dt;
     const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, earSpread:p.earSpread, earLag:p.earLag }));
     for (const p of this.players) {
+      if (finished && p.id !== this.winner) continue;
       const weapon = weaponStats(p);
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
@@ -487,18 +489,20 @@ export class ArenaPhysics {
     // weapon/weapon contact separately inspect the motion between these poses.
     for (let pass = 0; pass < 5; pass++) {
       for (const p of this.players) {
+      if (finished && p.id !== this.winner) continue;
         this.solveBodyGround(p, dt, pass === 0);
         this.solveStaffGround(p, dt);
         this.solveWall(p, dt);
       }
-      if (!this.solo) this.solveBodies();
+      if (!finished && !this.solo) this.solveBodies();
     }
-    if (!this.solo) {
+    if (!finished && !this.solo) {
       this.solveStaffClash(dt, previous);
       this.solveAttack(this.players[0], this.players[1], dt, previous);
       this.solveAttack(this.players[1], this.players[0], dt, previous);
     }
     for (const p of this.players) {
+      if (finished && p.id !== this.winner) continue;
       // Body separation can push a fighter slightly past the rim on the last
       // contact pass. Reapply the body boundary after pair contacts finish.
       this.solveBodyWall(p);
@@ -511,7 +515,7 @@ export class ArenaPhysics {
       p.contactSpeed = length(staffFrame(p).velocity);
       if (this.practice && p.id === 1 && this.time - p.lastHitAt > 2.5) p.health = CONFIG.maxHealth;
     }
-    if (!this.practice && !this.solo) {
+    if (!finished && !this.practice && !this.solo) {
       const dead = this.players.map(p => p.health <= 0);
       if (dead[0] || dead[1]) this.winner = dead[0] && dead[1] ? -1 : dead[0] ? 1 : 0;
     }
