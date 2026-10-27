@@ -1,12 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ArenaPhysics, CONFIG, WEAPONS, closestSegments, staffFrame, weaponSegments, v3 } from '../src/physics.js';
+import {sandbox,sparring} from './sandbox.js';
 
 const idle = [{}, {}];
 const near = (a, b, tolerance = 1e-7) => assert.ok(Math.abs(a - b) < tolerance, `${a} differs from ${b}`);
 
 test('the shortened polearm cannot hit a head beyond its visible tip', () => {
-  const world = new ArenaPhysics(); world.reset(true, false, 'polearm', 'sword');
+  const world = new ArenaPhysics(); sparring(world,'polearm','sword');
   const [a, b] = world.players;
   Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: 0, v: v3(6, 0, 0) });
   b.p = v3(4.02, 10 - .76, 0);
@@ -18,7 +19,7 @@ test('the shortened polearm cannot hit a head beyond its visible tip', () => {
 
 test('the half-speed trial limits both axes while retaining responsive starts and reverse braking', () => {
   for (const [weapon, cap] of [['sword', 6.1], ['polearm', 4.25], ['hammer', 3.4]]) {
-    const world = new ArenaPhysics(); world.reset(false, true, weapon);
+    const world = new ArenaPhysics(); sandbox(world,weapon);
     const p = world.players[0]; p.p.y = 10000; p.theta = 0;
     world.step([{ theta: 1, phi: 1 }]);
     near(p.wp, WEAPONS[weapon].motorAcceleration * CONFIG.step * Math.exp(-CONFIG.damping * CONFIG.step));
@@ -34,7 +35,7 @@ test('the half-speed trial limits both axes while retaining responsive starts an
 });
 
 function crossing(gap = 0.17) {
-  const world = new ArenaPhysics(); world.reset(false, false, 'sword', 'sword');
+  const world = new ArenaPhysics(); world.reset('sword','sword');
   const [a, b] = world.players;
   Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: 0, v: v3(0, 0, -12) });
   Object.assign(b, { p: v3(2.65 + gap, 8, -0.06), theta: 0, phi: 0, v: v3(0, 0, 12) });
@@ -66,7 +67,7 @@ test('a nearby swept weapon miss stays a miss without a forgiving collision marg
 });
 
 function passingBody(gap = 0.465) {
-  const world = new ArenaPhysics(); world.reset(false, false, 'sword', 'sword');
+  const world = new ArenaPhysics(); world.reset('sword','sword');
   const [a, b] = world.players;
   Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: 0, v: v3(0, 0, -15) });
   Object.assign(b, { p: v3(2.65 + gap, 10, -0.08), theta: 0, phi: Math.PI, v: v3(0, 0, 15) });
@@ -91,7 +92,7 @@ test('a blade passing a body between separated poses still records one hit', () 
 });
 
 test('heading wrap does not sweep a weapon the long way around into an opponent behind it', () => {
-  const world = new ArenaPhysics(); world.reset(false, false, 'sword', 'sword');
+  const world = new ArenaPhysics(); world.reset('sword','sword');
   const [a, b] = world.players;
   Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: Math.PI * 2 - 0.004, wp: 1.5 });
   Object.assign(b, { p: v3(-2.6, 8, 0), theta: 0, phi: 0 });
@@ -108,7 +109,7 @@ test('measured sword guard and curved polearm tip can hit beyond their old thin 
     ['polearm', v3(tip.b[0] - CONFIG.bodyRadius - tip.radius + .01,
       10 + WEAPONS.polearm.offset + tip.b[1] - .76, tip.b[2])],
   ]) {
-    const world = new ArenaPhysics(); world.reset(true, false, weapon, 'sword');
+    const world = new ArenaPhysics(); sparring(world,weapon,'sword');
     const [a, b] = world.players;
     Object.assign(a, { p: v3(0, 10, 0), theta: 0, phi: 0, v: v3(-6, 0, 0) });
     b.p = target;
@@ -127,7 +128,7 @@ test('solid guard and curved-tip features also block beyond the old shaft-only c
     ['polearm', v3(tip.b[0] - tip.radius - WEAPONS.polearm.radius + .01,
       10 + tip.b[1] - .05, tip.b[2])],
   ]) {
-    const world = new ArenaPhysics(); world.reset(false, false, weapon, 'polearm');
+    const world = new ArenaPhysics(); world.reset(weapon,'polearm');
     const [a, b] = world.players;
     Object.assign(a, { p: v3(0, 10, 0), theta: 0, phi: 0, v: v3(-6, 0, 0) });
     Object.assign(b, { p: position, theta: 0, phi: 0 });
@@ -141,7 +142,7 @@ test('solid guard and curved-tip features also block beyond the old shaft-only c
 
 test('all three weapons can still support movement through the lower-speed swing in either direction', () => {
   for (const weapon of Object.keys(WEAPONS).filter(id=>!WEAPONS[id].attachment)) for (const direction of [-1, 1]) {
-    const world = new ArenaPhysics(); world.reset(false, true, weapon);
+    const world = new ArenaPhysics(); sandbox(world,weapon);
     const p = world.players[0]; p.theta = 0;
     let highest = p.p.y, furthest = 0;
     for (let step = 0; step < 270; step++) {

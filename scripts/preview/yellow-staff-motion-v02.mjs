@@ -10,7 +10,7 @@ await writeFile(new URL('isolated-physics.mjs',out),code);
 const {ArenaPhysics,CONFIG,staffFrame,weaponSegments,v3}=await import(new URL('isolated-physics.mjs',out));
 const zero={theta:0,phi:0},fps=15;
 function run(def){
- const w=new ArenaPhysics();w.reset(!!def.combat,!def.combat,'sword','sword',3);
+ const w=new ArenaPhysics();w.reset('sword','sword',{fighters:def.combat?2:1,endless:!!def.combat,arenaScale:3});
  const a=w.players[0];a.characterId='yellow-blob';a.weapon='yellow-staff';a.p=v3(0,.59,0);a.theta=def.theta??.65;a.phi=def.phi??0;
  if(def.combat){const b=w.players[1];b.p=v3(def.distance??3,.59,def.z??0);b.theta=def.targetTheta??2.8;b.phi=Math.PI;}
  const rows=[],events=[];

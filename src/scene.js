@@ -1,9 +1,9 @@
 import {instantiateYellowBlob,poseYellowBlob,makeYellowBlobFallback} from './yellow-blob-model.js';
-import {createWeaponFallback} from './model-assets.js';
+import {createWeaponFallback,createWeaponModel} from './model-assets.js';
 import * as THREE from 'three';
-import { CONFIG, arenaScaleForMode, WEAPONS, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
-import { WEAPON_VISUALS, setWeaponRotation } from './weapon-visuals.js';
-import { createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera, turnFreeCamera } from './free-camera.js';
+import { CONFIG, MATCH_ARENA_SCALE, WEAPONS, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
+import { setWeaponRotation } from './weapon-visuals.js';
+import { createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera } from './free-camera.js';
 import { BEAGLE } from './beagle-profile.js';
 import {beagleEarYaw} from './beagle-skill.js';
 import { instantiateBeagle, poseBeagle, makeBeagleFallback } from './beagle-model.js';
@@ -13,7 +13,6 @@ import {CAT} from './orange-tabby-profile.js';
 import {instantiateOrangeTabby,poseOrangeTabby,makeOrangeTabbyFallback,poseOrangeTabbyFallback} from './orange-tabby-model.js';
 import { ARENA_PROFILE } from './arena-profile.js';
 import { attachArenaModel, prepareArenaCamera, restoreArenaOpacity } from './arena-model.js';
-import { FIXED_CAMERA } from './fixed-camera.js';
 import {applyArenaFloorTexture,setArenaFloorPatternEnabled,disposeArenaFloorTexture} from './arena-floor.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
@@ -22,7 +21,7 @@ const vec = p => new THREE.Vector3(p.x, p.y, p.z);
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, ...extra });
 
 export class ArenaView {
-  constructor(renderer, camera, mode = 'duel', weapon = 'polearm', secondWeapon = 'polearm') {
+  constructor(renderer, camera, weapon = 'polearm', secondWeapon = 'polearm') {
     // R3F owns the renderer, camera, frame loop and canvas. These groups keep
     // the existing meshes and their appearance while R3F manages each layer.
     this.arena = new THREE.Group();
@@ -33,29 +32,19 @@ export class ArenaView {
     this.meshRoot = this.arenaGeometry;
     this.renderer = renderer;
     this.camera = camera;
-    this.solo = mode === 'solo';
-    this.fixed = mode === 'duel-fixed';
-    this.duel = mode === 'duel';
-    // Apply one display basis to bodies, weapons, contacts, trails and impacts.
-    // The circular physics arena and both players' control state stay shared.
-    this.fixedDisplayRotation = this.fixed ? FIXED_CAMERA.actorRotation : 0;
-    this.actors.rotation.y = this.effectsRoot.rotation.y = this.fixedDisplayRotation;
     this.loadouts=[resolveLoadout(weapon),resolveLoadout(secondWeapon)];
-    this.weapon = this.loadouts[0].weaponId;
-    this.secondWeapon = this.loadouts[1].weaponId;
     this.characterLoaded=new Set();
     this.swordPitch = new THREE.Quaternion();
     this.weaponLoaded = new Set();
-    this.arenaScale = arenaScaleForMode(mode);
+    this.arenaScale = MATCH_ARENA_SCALE;
     this.arenaGeometry.scale.setScalar(this.arenaScale);
-    this.environmentState = 'loading';
     this.colosseum = null;
-    this.cameraBase = this.fixed ? new THREE.Vector3(...FIXED_CAMERA.position) : new THREE.Vector3(0, 15.4, 21);
-    this.target = this.fixed ? new THREE.Vector3(...FIXED_CAMERA.target) : new THREE.Vector3(0, 0, -0.3);
-    this.camera.position.copy(this.solo ? new THREE.Vector3(-4, 3, -4) : this.cameraBase);
+    // The canvas camera frames the lobby; matches render through the follow rig.
+    this.cameraBase = new THREE.Vector3(0, 15.4, 21);
+    this.target = new THREE.Vector3(0, 0, -0.3);
+    this.camera.position.copy(this.cameraBase);
     this.camera.lookAt(this.target);
-    this.soloCamera = this.solo ? createFreeCameraRig(camera) : null;
-    this.duelCameras = this.duel ? [0, 1].map(() => createFreeCameraRig(undefined, true)) : [];
+    this.followCamera = createFreeCameraRig();
     this.particles = [];
     this.rings = [];
     this.trailTime = 0;
@@ -64,7 +53,7 @@ export class ArenaView {
     this.makeLighting();
     this.makeArena();
     this.meshRoot = this.actors;
-    this.players = this.solo ? [this.makeFighter(0)] : [this.makeFighter(0), this.makeFighter(1)];
+    this.players = [this.makeFighter(0), this.makeFighter(1)];
   }
 
   mesh(geometry, mat, parent = this.meshRoot) {
@@ -165,7 +154,7 @@ export class ArenaView {
       block.rotation.y = angle;
     }
     // Inlaid starting marks.
-    for (const [x, color] of this.solo ? [] : [[-2.2, PALETTE[0]], [2.2, PALETTE[1]]]) {
+    for (const [x, color] of [[-2.2, PALETTE[0]], [2.2, PALETTE[1]]]) {
       const mark = this.mesh(new THREE.RingGeometry(0.58, 0.62, 48), material(color, { transparent: true, opacity: 0.42 }), this.arena);
       mark.rotation.x = -Math.PI / 2; mark.position.set(x, 0.014, 0); mark.castShadow = false;
       const dash = this.mesh(new THREE.BoxGeometry(0.14, 0.01, 0.6), material(color, { transparent: true, opacity: 0.35 }), this.arena);
@@ -203,11 +192,8 @@ export class ArenaView {
     ground.position.y = -0.95 * this.arenaScale;
     ground.receiveShadow = true;
     this.arena.add(ground);
-    this.environmentState = 'ready';
     return true;
   }
-
-  showArenaFallback() { if (!this.colosseum && !this.disposed) this.environmentState = 'fallback'; }
 
   setArenaFloorTexture(texture,maxAnisotropy) {
     return !this.disposed && applyArenaFloorTexture(this.colosseum,texture,maxAnisotropy);
@@ -215,15 +201,7 @@ export class ArenaView {
 
   setArenaFloorPatternEnabled(enabled) { return setArenaFloorPatternEnabled(this.colosseum,enabled); }
 
-  displayPoint(point) {
-    const p = vec(point);
-    return this.fixedDisplayRotation ? p.applyAxisAngle(UP, this.fixedDisplayRotation) : p;
-  }
-
-  prepareArenaCamera(camera, players) {
-    const displayed = this.fixedDisplayRotation ? players.map(player => ({ p: this.displayPoint(player.p) })) : players;
-    return prepareArenaCamera(this.colosseum, camera, displayed);
-  }
+  prepareArenaCamera(camera, players) { return prepareArenaCamera(this.colosseum, camera, players); }
   restoreArenaCamera() { restoreArenaOpacity(this.colosseum); }
 
   makeBanner(x, z, color, side) {
@@ -351,37 +329,9 @@ export class ArenaView {
 
   setWeaponModel(source, type = 'polearm') {
     if (this.disposed || this.weaponLoaded.has(type)) return;
-    if (type === 'beagle'||type==='long-ears')return this.setCharacterModel(source,BEAGLE.model);
     for (const [id, fighter] of this.players.entries()) {
       if (fighter.weaponType !== type) continue;
-      const weapon = source.clone(true);
-      const axis = new THREE.Vector3(...WEAPON_VISUALS[type].axis).normalize();
-      const sourceButt = new THREE.Vector3(...WEAPON_VISUALS[type].butt);
-      weapon.quaternion.setFromUnitVectors(axis, UP);
-      weapon.updateMatrixWorld(true);
-      const bounds = new THREE.Box3().setFromObject(weapon);
-      const height = bounds.max.y - bounds.min.y;
-      if (!Number.isFinite(height) || height <= 0) throw new Error('Weapon model has invalid bounds');
-      const scale = WEAPONS[type].length / height;
-      weapon.scale.setScalar(scale);
-      const butt = sourceButt.clone().applyQuaternion(weapon.quaternion).multiplyScalar(scale);
-      weapon.position.copy(butt.multiplyScalar(-1));
-      weapon.traverse(object => {
-        if (!object.isMesh) return;
-        object.castShadow = true;
-        object.receiveShadow = true;
-        const copyMaterial = original => {
-          const mat = original.clone();
-          if (type === 'polearm') {
-            mat.color.set(0x626a70).lerp(fighter.baseColor, 0.18);
-            mat.metalness = 0.24;
-            mat.roughness = 0.62;
-          }
-          return mat;
-        };
-        object.material = Array.isArray(object.material) ? object.material.map(copyMaterial) : copyMaterial(object.material);
-      });
-      fighter.staff.add(weapon);
+      fighter.staff.add(createWeaponModel(source, type, id));
       if(fighter.weaponBackup)fighter.weaponBackup.visible=false;
       fighter.rod.visible = false;
       fighter.cap.visible = false;
@@ -399,15 +349,8 @@ export class ArenaView {
     this.width = width;
     this.height = height;
     const aspect = this.width / Math.max(1, this.height);
-    for (const rig of this.duelCameras) {
-      rig.camera.aspect = Math.max(1, this.width / 2) / Math.max(1, this.height);
-      rig.camera.updateProjectionMatrix();
-    }
-    if (this.camera.isPerspectiveCamera) {
-      this.camera.aspect = aspect;
-      this.camera.updateProjectionMatrix();
-      return;
-    }
+    this.followCamera.camera.aspect = aspect;
+    this.followCamera.camera.updateProjectionMatrix();
     const halfHeight = Math.max(5.5, 8.9 / aspect);
     this.camera.left = -halfHeight * aspect;
     this.camera.right = halfHeight * aspect;
@@ -416,8 +359,8 @@ export class ArenaView {
     this.camera.updateProjectionMatrix();
   }
 
-  update(players, dt, active = false, cameraDt = dt, splitView = false, cameraInputs = []) {
-    this.banners.visible = !splitView;
+  update(players, dt, active = false, cameraDt = dt, matchView = false, localPlayerId = 0) {
+    this.banners.visible = !matchView;
     this.trailTimeTotal = (this.trailTimeTotal || 0) + dt;
     this.trailTime += dt;
     const recordTrail = this.trailTime > 1 / 90;
@@ -435,7 +378,6 @@ export class ArenaView {
       if(model.catFallback)poseOrangeTabbyFallback(model.catFallback,p);
       if (model.beagle) poseBeagle(model.beagle, p, this.trailTimeTotal || 0);
       if (model.beagleFallback) {
-        model.beagleFallback.body.rotation.z = -(p.bodyPitch || 0);
         for (const [side,hinge] of Object.entries(model.beagleFallback.hinges))
           hinge.rotation.set(0,-beagleEarYaw(p,BEAGLE.anchors[side]),-p.theta,'YZX');
       }
@@ -488,42 +430,19 @@ export class ArenaView {
       if (r.life <= 0) { this.effectsRoot.remove(r.mesh); r.mesh.geometry.dispose(); r.mesh.material.dispose(); this.rings.splice(i, 1); }
     }
     this.shake *= Math.exp(-16 * dt);
-    if (this.solo && players[0]) updateFreeCamera(this.soloCamera, players[0], cameraDt);
-    else this.camera.position.copy(this.cameraBase);
-    if (!this.fixed && !this.reducedMotion && this.shake > 0.003) {
-      this.camera.position.x += (Math.random() - 0.5) * this.shake;
-      this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.65;
-    }
-    this.camera.lookAt(this.solo ? this.soloCamera.focus : this.target);
-    if (splitView && this.duel) this.updateDuelCameras(players, cameraDt, cameraInputs);
+    const shake = !this.reducedMotion && this.shake > 0.003 ? this.shake : 0;
+    this.camera.position.copy(this.cameraBase);
+    this.camera.position.x += (Math.random() - 0.5) * shake;
+    this.camera.position.y += (Math.random() - 0.5) * shake * 0.65;
+    this.camera.lookAt(this.target);
+    const local = players[localPlayerId];
+    if (matchView && local) updateFreeCamera(this.followCamera, local, cameraDt,
+      (Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake * 0.65);
   }
 
-  resetCamera() {
-    if (this.soloCamera) resetFreeCamera(this.soloCamera);
-    for (const rig of this.duelCameras) resetFreeCamera(rig);
-  }
-
-  updateDuelCameras(players, dt, inputs) {
-    for (const player of players) {
-      const rig = this.duelCameras[player.id];
-      if (!rig) continue;
-      const shake = !this.reducedMotion && this.shake > 0.003 ? this.shake : 0;
-      turnFreeCamera(rig, inputs[player.id] || 0, dt);
-      updateFreeCamera(rig, player, dt,
-        (Math.random() - 0.5) * shake,
-        (Math.random() - 0.5) * shake * 0.65);
-    }
-  }
-
-  orbit(dx, dy, playerId = 0) {
-    const rig = this.soloCamera || this.duelCameras[playerId];
-    if (rig) orbitFreeCamera(rig, dx, dy);
-  }
-
-  zoom(delta, playerId = 0) {
-    const rig = this.soloCamera || this.duelCameras[playerId];
-    if (rig) zoomFreeCamera(rig, delta);
-  }
+  resetCamera() { resetFreeCamera(this.followCamera); }
+  orbit(dx, dy) { orbitFreeCamera(this.followCamera, dx, dy); }
+  zoom(delta) { zoomFreeCamera(this.followCamera, delta); }
 
   impact(event) {
     const isHit = event.type === 'hit';
@@ -547,7 +466,7 @@ export class ArenaView {
   }
 
   project(point, camera = this.camera, viewport = { x: 0, width: this.width, height: this.height }) {
-    const p = this.displayPoint(point).project(camera);
+    const p = vec(point).project(camera);
     return {
       x: viewport.x + (p.x * 0.5 + 0.5) * viewport.width,
       y: (-p.y * 0.5 + 0.5) * viewport.height,

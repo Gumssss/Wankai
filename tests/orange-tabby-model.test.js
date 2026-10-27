@@ -9,7 +9,7 @@ import {instantiateOrangeTabby,poseOrangeTabby,makeOrangeTabbyFallback,poseOrang
 import {makePlayer,weaponPointFrame,v3} from '../src/physics.js';
 import {resolveLoadout} from '../src/loadouts.js';
 import {ArenaView} from '../src/scene.js';
-import {createFreeCameraRig,updateFreeCamera,orbitFreeCamera,turnFreeCamera} from '../src/free-camera.js';
+import {createFreeCameraRig,updateFreeCamera,orbitFreeCamera} from '../src/free-camera.js';
 
 async function loadGeometry(){
  const bytes=await readFile(new URL('../public/models/'+CAT.model,import.meta.url));
@@ -110,10 +110,10 @@ test('actual scene attaches independent cat instances and uses two paw cues with
 });
 
 
-test('solo and split cameras keep actual cat body and paws inside the frustum through rise, extremes and independent orbit',async t=>{
+test('the follow camera keeps actual cat body and paws inside the frustum through rise, extremes and orbit',async t=>{
  const source=await asset,projection=new Vector3();let projectedVertices=0;
- for(const id of [0,1])for(const split of [false,true])for(const aspect of [.35,.7,1.4]){
-  const camera=new PerspectiveCamera(55,aspect,.1,120),rig=createFreeCameraRig(camera,split);
+ for(const id of [0,1])for(const aspect of [.35,.7,1.4,2]){
+  const camera=new PerspectiveCamera(55,aspect,.1,120),rig=createFreeCameraRig(camera);
   const instance=instantiateOrangeTabby(source,id),outer=new Group();outer.add(instance.host);
   const meshes=['SM_Body','SM_Paw_L','SM_Paw_R'].map(name=>instance.model.getObjectByName(name));
   // Cover the surface regularly and include each mesh's actual coordinate
@@ -137,29 +137,29 @@ test('solo and split cameras keep actual cat body and paws inside the frustum th
     player.p=v3(id?9:-7,height,id?-6:5);Object.assign(player,{theta,phi});
     outer.position.set(player.p.x,player.p.y,player.p.z);outer.rotation.y=-phi;poseOrangeTabby(instance,player);outer.updateMatrixWorld(true);
     if(state===21)orbitFreeCamera(rig,120,-25);
-    if(state===42)turnFreeCamera(rig,id?-1:1,.4);
+    if(state===42)orbitFreeCamera(rig,id?-60:60,10);
     updateFreeCamera(rig,player,1/60);
     for(const {mesh,indices} of samples)for(const index of indices){
      mesh.getVertexPosition(index,projection).applyMatrix4(mesh.matrixWorld).project(camera);projectedVertices++;
      assert.ok(Math.abs(projection.x)<1&&Math.abs(projection.y)<1&&projection.z>-1&&projection.z<1,
-      `cat clipped: P${id+1} ${split?'split':'solo'} aspect=${aspect}, height=${height}, theta=${theta}, phi=${phi}, mesh=${mesh.name}, vertex=${index}, ndc=${projection.toArray()}`);
+      `cat clipped: P${id+1} aspect=${aspect}, height=${height}, theta=${theta}, phi=${phi}, mesh=${mesh.name}, vertex=${index}, ndc=${projection.toArray()}`);
     }
     state++;
    }
  }
- assert.ok(projectedVertices>300000,'exercise actual model surfaces across the complete framing matrix');
- t.diagnostic(`${projectedVertices} actual exported vertices projected across 756 camera/pose states`);
+ assert.ok(projectedVertices>200000,'exercise actual model surfaces across the complete framing matrix');
+ t.diagnostic(`${projectedVertices} actual exported vertices projected across 504 camera/pose states`);
 });
 
-test('cat steering leaves camera azimuth independent while orbit and turn controls still work',()=>{
- const player=makePlayer(1,{characterId:'orange-tabby',weaponId:'cat-paws'}),rig=createFreeCameraRig(undefined,true);
+test('cat steering leaves camera azimuth independent while mouse orbit still works',()=>{
+ const player=makePlayer(1,{characterId:'orange-tabby',weaponId:'cat-paws'}),rig=createFreeCameraRig();
  updateFreeCamera(rig,player,1/60);const initializedYaw=rig.yaw,before=rig.camera.quaternion.clone();
  player.phi+=1.3;updateFreeCamera(rig,player,1/60);
  assert.equal(rig.yaw,initializedYaw,'A/D steering must not drag camera azimuth');
- orbitFreeCamera(rig,120,30);turnFreeCamera(rig,-1,.4);
+ orbitFreeCamera(rig,190,30);
  // The established camera eases at 5/s. Observe half a second of normal
  // frames rather than assuming an instantaneous orbit after one tick.
  for(let frame=0;frame<30;frame++)updateFreeCamera(rig,player,1/60);
- assert.equal(rig.yaw,initializedYaw);assert.ok(rig.mouseYaw<-.7);assert.ok(rig.manualYaw<-.5);
+ assert.equal(rig.yaw,initializedYaw);assert.ok(rig.mouseYaw<-1.1);
  assert.ok(before.angleTo(rig.camera.quaternion)>.5,'independent orbit must visibly turn the camera');
 });

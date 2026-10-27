@@ -1,14 +1,10 @@
-import { ArenaPhysics, CONFIG, WEAPONS, arenaScaleForMode } from './physics.js';
+import { ArenaPhysics, CONFIG, MATCH_ARENA_SCALE } from './physics.js';
 import { GameAudio } from './audio.js';
 import {DEFAULT_LOADOUTS,normalizeLoadout,isEarLoadout} from './loadouts.js';
 
-export const CAMERA_KEYS = new Set(['KeyQ', 'KeyE', 'Period', 'Slash']);
-
-export const CONTROL_KEYS = new Set([
-  'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'ShiftRight',
-  'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-  ...CAMERA_KEYS,
-]);
+// One local fighter per machine. The opponent is driven by the AI (or, later, the network).
+export const MATCH_MODES = Object.freeze(['ai']);
+export const CONTROL_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF']);
 
 export class GameSession {
   constructor() {
@@ -18,15 +14,14 @@ export class GameSession {
     this.listeners = new Set();
     this.state = 'lobby';
     this.previousState = 'playing';
-    this.practice = false;
-    this.mode = 'duel';
+    this.mode = MATCH_MODES[0];
+    this.localPlayerId = 0;
     this.loadouts=DEFAULT_LOADOUTS.map(p=>Object.freeze({...p}));
-    this.world.reset(false, false, ...this.loadouts, arenaScaleForMode(this.mode));
+    this.world.reset(...this.loadouts, { arenaScale: MATCH_ARENA_SCALE });
     this.accumulator = 0;
     this.freeze = 0;
     this.countdown = 0;
     this.countdownNumber = -1;
-    this.endTimer = 0;
     this.readoutTimer = 0;
     this.nextEffectId = 0;
     this.effects = [];
@@ -35,9 +30,6 @@ export class GameSession {
     this.error = null;
     this.snapshot = this.makeSnapshot();
   }
-
-  get weapon(){return this.loadouts[0].weaponId;}
-  get secondWeapon(){return this.loadouts[1].weaponId;}
 
   subscribe = listener => {
     this.listeners.add(listener);
@@ -49,11 +41,9 @@ export class GameSession {
   makeSnapshot() {
     return {
       state: this.state,
-      practice: this.practice,
       mode: this.mode,
+      localPlayerId: this.localPlayerId,
       loadouts: Object.freeze(this.loadouts.map(p=>Object.freeze({...p}))),
-      weapon: this.weapon,
-      weapons: [this.weapon, this.secondWeapon],
       pressed: [...this.keys],
       health: this.world.players.map(player => player.health),
       stamina: this.world.players.map(player => player.stamina),
@@ -77,26 +67,20 @@ export class GameSession {
     for (const listener of this.listeners) listener();
   }
 
-  getInputs() {
-    const first = { theta: Number(this.keys.has('KeyW')) - Number(this.keys.has('KeyS')), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
-    if(isEarLoadout(this.loadouts[0])&&this.keys.has('KeyF'))first.skill=true;
-    if (this.mode === 'solo') return [first];
-    return [
-      first,
-      this.practice ? { theta: 0, phi: 0 } : {
-        theta: Number(this.keys.has('ArrowUp')) - Number(this.keys.has('ArrowDown')),
-        phi: Number(this.keys.has('ArrowRight')) - Number(this.keys.has('ArrowLeft')),
-        ...(isEarLoadout(this.loadouts[1])&&this.keys.has('ShiftRight')?{skill:true}:{}),
-      },
-    ];
+  localInput() {
+    const input = { theta: Number(this.keys.has('KeyW')) - Number(this.keys.has('KeyS')), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
+    if(isEarLoadout(this.loadouts[this.localPlayerId])&&this.keys.has('KeyF'))input.skill=true;
+    return input;
   }
 
-  getCameraInputs() {
-    if (this.mode !== 'duel') return [0, 0];
-    return [
-      Number(this.keys.has('KeyE')) - Number(this.keys.has('KeyQ')),
-      Number(this.keys.has('Slash')) - Number(this.keys.has('Period')),
-    ];
+  // Until the AI controller lands, the opponent stands idle.
+  opponentInput() { return { theta: 0, phi: 0 }; }
+
+  getInputs() {
+    const inputs = [];
+    inputs[this.localPlayerId] = this.localInput();
+    inputs[1 - this.localPlayerId] = this.opponentInput();
+    return inputs;
   }
 
   syncPolarInputs() {
@@ -107,17 +91,12 @@ export class GameSession {
 
   keyDown(code) {
     if (!CONTROL_KEYS.has(code) || (this.state !== 'playing' && this.state !== 'countdown' && this.state !== 'result')) return;
-    if (this.state === 'result') {
-      const playerId = code.startsWith('Arrow') || ['ShiftRight','Period','Slash'].includes(code) ? 1 : 0;
-      if (playerId !== this.world.winner) return;
-    }
-    if (this.mode === 'solo' && code.startsWith('Arrow')) return;
-    if(code==='KeyF'&&!isEarLoadout(this.loadouts[0]))return;
-    if(code==='ShiftRight'&&(!isEarLoadout(this.loadouts[1])||this.mode==='solo'||this.practice))return;
-    if (CAMERA_KEYS.has(code) && this.mode !== 'duel') return;
+    // After the round only the winner keeps moving.
+    if (this.state === 'result' && this.world.winner !== this.localPlayerId) return;
+    if(code==='KeyF'&&!isEarLoadout(this.loadouts[this.localPlayerId]))return;
     if (this.keys.has(code)) return;
     this.keys.add(code);
-    if(code==='KeyF'||code==='ShiftRight')this.world.players[code==='KeyF'?0:1].skillRequested=true;
+    if(code==='KeyF')this.world.players[this.localPlayerId].skillRequested=true;
     this.syncPolarInputs();
     this.publish();
   }
@@ -141,23 +120,16 @@ export class GameSession {
     let next;try{next=values.map(value=>Object.freeze(normalizeLoadout(value)));}catch{return false;}
     if(next.every((p,id)=>p.characterId===this.loadouts[id].characterId&&p.weaponId===this.loadouts[id].weaponId))return true;
     this.loadouts=next;
-    this.world.reset(false,false,...this.loadouts,arenaScaleForMode(this.mode));
+    this.world.reset(...this.loadouts,{arenaScale:MATCH_ARENA_SCALE});
     this.visualRevision++;this.publish();return true;
   }
 
-  setWeapon(weapon, playerId = 0) {
-    if(![0,1].includes(playerId))return false;
-    let next;try{next=weapon==='beagle'||weapon==='long-ears'?normalizeLoadout(weapon):normalizeLoadout({...this.loadouts[playerId],weaponId:weapon});}catch{return false;}
-    return this.setLoadouts(this.loadouts.map((p,id)=>id===playerId?next:p));
-  }
-
   startRound(mode = this.mode) {
-    this.mode = typeof mode === 'boolean' ? (mode ? 'practice' : 'duel') : mode;
-    if (!['duel', 'duel-fixed', 'practice', 'solo'].includes(this.mode)) throw new Error(`Unknown game mode: ${this.mode}`);
-    this.practice = this.mode === 'practice';
+    if (!MATCH_MODES.includes(mode)) throw new Error(`Unknown game mode: ${mode}`);
+    this.mode = mode;
     void this.sound.unlock();
     this.clearKeys();
-    this.world.reset(this.practice, this.mode === 'solo', ...this.loadouts, arenaScaleForMode(this.mode));
+    this.world.reset(...this.loadouts, { arenaScale: MATCH_ARENA_SCALE });
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -174,9 +146,7 @@ export class GameSession {
   goHome() {
     this.state = 'lobby';
     this.clearKeys();
-    this.mode = 'duel';
-    this.practice = false;
-    this.world.reset(false, false, ...this.loadouts, arenaScaleForMode(this.mode));
+    this.world.reset(...this.loadouts, { arenaScale: MATCH_ARENA_SCALE });
     this.visualRevision++;
     this.effects = [];
     this.readout = null;
@@ -283,9 +253,6 @@ export class GameSession {
         this.accumulator -= CONFIG.step;
       }
       this.publish();
-    } else if (this.state === 'ending') {
-      this.endTimer -= dt;
-      if (this.endTimer <= 0) this.finishRound();
     }
     const effectDt = this.state === 'paused' ? 0 : dt;
     if (this.readoutTimer > 0) {

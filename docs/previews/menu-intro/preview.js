@@ -5,7 +5,7 @@ import {GameSession} from '../../../src/game-session.js';
 const out=document.querySelector('#film'),c=out.getContext('2d'),status=document.querySelector('#status');
 const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(1280,720);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.28;
 const camera=new T.OrthographicCamera(-10,10,5.5,-5.5,.1,120),session=new GameSession();
-const view=new ArenaView(renderer,camera,'duel',...session.loadouts);view.resize(1280,632);
+const view=new ArenaView(renderer,camera,...session.loadouts);view.resize(1280,632);
 const scene=new T.Scene();scene.background=new T.Color(0xebe9dc);scene.add(view.arena,view.actors,view.effectsRoot);
 const loader=new GLTFLoader();await Promise.all(['sword','polearm'].map(async id=>{const g=await loader.loadAsync('/models/'+id+'.glb');view.setWeaponModel(g.scene,id);}));
 const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*x*(x*(x*6-15)+10);};

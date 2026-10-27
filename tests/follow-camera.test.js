@@ -1,10 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Vector3 } from 'three';
-import { CONFIG, SOLO_ARENA_SCALE, makePlayer, weaponStats } from '../src/physics.js';
-import { FREE_CAMERA, SPLIT_CAMERA, createFreeCameraRig, updateFreeCamera, turnFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera } from '../src/free-camera.js';
-
-const createDuelCameraRig = () => createFreeCameraRig(undefined, true);
+import { CONFIG, MATCH_ARENA_SCALE, makePlayer, weaponStats } from '../src/physics.js';
+import { FOLLOW_CAMERA, createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera } from '../src/free-camera.js';
 
 function assertFighterVisible(camera, player) {
   // Enclose the rendered head, body and name-label anchor, independently of
@@ -17,10 +15,10 @@ function assertFighterVisible(camera, player) {
   }
 }
 
-test('fast turns, jumps and knockback keep each fighter inside their own split-screen pane', () => {
+test('fast turns, mouse orbit, jumps and knockback keep the fighter inside the follow view', () => {
   for (const weapon of ['sword', 'polearm', 'hammer']) for (const id of [0, 1]) for (const aspect of [0.3, 0.65, 1.4]) {
     const player = makePlayer(id, weapon);
-    const rig = createDuelCameraRig();
+    const rig = createFreeCameraRig();
     rig.camera.aspect = aspect;
     rig.camera.updateProjectionMatrix();
     let time = 0;
@@ -29,7 +27,7 @@ test('fast turns, jumps and knockback keep each fighter inside their own split-s
       time += dt;
       player.phi += (frame < 120 ? 1 : -1) * weaponStats(player).maxAngularSpeed * dt;
       player.theta += 8 * dt;
-      turnFreeCamera(rig, frame < 120 ? -1 : 1, dt);
+      orbitFreeCamera(rig, frame < 120 ? 6 : -6, 0);
       player.p.x = Math.sin(time * 3) * 6;
       player.p.z = Math.cos(time * 2) * 6;
       player.p.y = 0.59 + Math.abs(Math.sin(time * 4)) * 5;
@@ -39,24 +37,22 @@ test('fast turns, jumps and knockback keep each fighter inside their own split-s
   }
 });
 
-test('duel pulls farther back at the original eye height, while weapon turning leaves camera azimuth alone', () => {
+test('the follow view sits far behind at the original eye height, while weapon turning leaves camera azimuth alone', () => {
   const player = makePlayer(0, 'sword');
-  const solo = createFreeCameraRig();
-  const duel = createDuelCameraRig();
-  for (const rig of [solo, duel]) updateFreeCamera(rig, player, 1 / 60);
+  const duel = createFreeCameraRig();
+  updateFreeCamera(duel, player, 1 / 60);
   assert.equal(duel.camera.fov, 55);
-  assert.equal(duel.pitch, SPLIT_CAMERA.pitch);
+  assert.equal(duel.pitch, FOLLOW_CAMERA.pitch);
   assert.equal(duel.distance, 24 * 0.875, 'apply the reviewed 12.5% distance reduction');
   assert.ok(duel.position.x < player.p.x - 8, 'camera should sit behind the fighter');
   const rear = duel.position.clone().sub(new Vector3(player.p.x, player.p.y, player.p.z));
-  assert.ok(Math.abs(Math.atan2(-rear.z, -rear.x) - SPLIT_CAMERA.yawOffset) < 1e-8,
+  assert.ok(Math.abs(Math.atan2(-rear.z, -rear.x) - FOLLOW_CAMERA.yawOffset) < 1e-8,
     'wider rear view retains the small sideways offset');
   const originalHeight = Math.sin(0.35) * 10.5 + 1.2;
   assert.ok(Math.abs(rear.y - originalHeight) < 1e-10, 'closer view must retain the original eye height exactly');
   assert.ok(Math.hypot(rear.x, rear.z) > 20 && Math.hypot(rear.x, rear.z) < 21,
     'move horizontally closer than the previous 24-unit view');
-  assert.ok(duel.pitch < solo.pitch, 'farther rear view keeps a low viewing angle');
-  assert.ok(duel.focus.distanceTo(solo.focus) < 1e-8);
+  assert.ok(duel.pitch < 0.2, 'farther rear view keeps a low viewing angle');
   const yaw = duel.yaw;
   const position = duel.position.clone();
   player.phi += Math.PI;
@@ -71,54 +67,31 @@ test('duel pulls farther back at the original eye height, while weapon turning l
   assertFighterVisible(duel.camera, player);
 });
 
-test('keyboard camera turning is independent for each player and keeps its angle after release', () => {
-  const players = [makePlayer(0, 'hammer'), makePlayer(1, 'polearm')];
-  const rigs = players.map(() => createDuelCameraRig());
-  for (let id = 0; id < 2; id++) updateFreeCamera(rigs[id], players[id], 1 / 60);
-  const secondPosition = rigs[1].camera.position.clone();
-  for (let frame = 0; frame < 60; frame++) {
-    turnFreeCamera(rigs[0], 1, 1 / 60);
-    for (let id = 0; id < 2; id++) updateFreeCamera(rigs[id], players[id], 1 / 60);
-  }
-  const angle = rigs[0].manualYaw;
-  assert.ok(angle > 1, 'right camera input must use the corrected positive orbit direction');
-  assert.equal(rigs[1].manualYaw, 0);
-  assert.ok(rigs[1].camera.position.distanceTo(secondPosition) < 1e-8);
-  for (let frame = 0; frame < 300; frame++) {
-    turnFreeCamera(rigs[0], 0, 1 / 60);
-    updateFreeCamera(rigs[0], players[0], 1 / 60);
-  }
-  assert.equal(rigs[0].manualYaw, angle, 'released camera keys must not recenter');
-  turnFreeCamera(rigs[0], -1, 0.5);
-  assert.ok(rigs[0].manualYaw < angle, 'left camera input must reverse the corrected direction');
-  resetFreeCamera(rigs[0]);
-  updateFreeCamera(rigs[0], players[0], 1 / 60);
-  assert.equal(rigs[0].manualYaw, 0);
-  assert.equal(rigs[0].distance, SPLIT_CAMERA.distance);
-  assert.equal(rigs[0].yaw, players[0].phi + SPLIT_CAMERA.yawOffset);
-});
-
-test('solo mouse orbit still recenters and zoom retains its bounds', () => {
-  const player = makePlayer(0);
+test('mouse orbit keeps its angle after release, resets on rematch, and zoom stays bounded', () => {
+  const player = makePlayer(0, 'hammer');
   const rig = createFreeCameraRig();
   updateFreeCamera(rig, player, 1 / 60);
-  assert.equal(rig.yaw, player.phi + FREE_CAMERA.yawOffset, 'solo keeps its side-on start');
+  assert.equal(rig.yaw, player.phi + FOLLOW_CAMERA.yawOffset, 'starts behind the fighter');
   orbitFreeCamera(rig, 100, 100);
-  updateFreeCamera(rig, player, 1);
   assert.equal(rig.mouseYaw, -0.6);
-  updateFreeCamera(rig, player, 1);
-  assert.ok(Math.abs(rig.mouseYaw) < 0.6);
+  for (let frame = 0; frame < 300; frame++) updateFreeCamera(rig, player, 1 / 60);
+  assert.equal(rig.mouseYaw, -0.6, 'released mouse must not recenter the view');
+  orbitFreeCamera(rig, 0, 1e6);
+  assert.equal(rig.mousePitch, 0.7);
   zoomFreeCamera(rig, 1e6);
-  assert.equal(rig.distance, 10);
+  assert.equal(rig.distance, FOLLOW_CAMERA.distance * 1.4);
   zoomFreeCamera(rig, -1e6);
-  assert.equal(rig.distance, 3.8);
+  assert.equal(rig.distance, FOLLOW_CAMERA.distance * 0.45);
   resetFreeCamera(rig);
-  assert.equal(rig.distance, FREE_CAMERA.distance);
+  updateFreeCamera(rig, player, 1 / 60);
+  assert.equal(rig.mouseYaw, 0);
+  assert.equal(rig.distance, FOLLOW_CAMERA.distance);
+  assert.equal(rig.yaw, player.phi + FOLLOW_CAMERA.yawOffset);
 });
 
 test('a narrow resize makes room immediately and the camera eases back after the pane widens', () => {
   const player = makePlayer(0);
-  const rig = createDuelCameraRig();
+  const rig = createFreeCameraRig();
   updateFreeCamera(rig, player, 1 / 60);
   // The selected wider default already fits at 0.08; squeeze farther to
   // exercise the same emergency pullback and smooth recovery behavior.
@@ -139,15 +112,15 @@ test('a narrow resize makes room immediately and the camera eases back after the
   assertFighterVisible(rig.camera, player);
 });
 
-test('both rear views show the far arena rim at the start in narrow and wide panes', () => {
+test('the rear view shows the far arena rim at the start in narrow and wide windows', () => {
   for (const id of [0, 1]) for (const aspect of [0.54, 1.1]) {
     const player = makePlayer(id, id === 0 ? 'sword' : 'polearm');
-    const rig = createDuelCameraRig();
+    const rig = createFreeCameraRig();
     rig.camera.aspect = aspect;
     rig.camera.updateProjectionMatrix();
     updateFreeCamera(rig, player, 1 / 60);
     const forward = rig.camera.getWorldDirection(new Vector3()).setY(0).normalize();
-    const radius = CONFIG.arenaRadius * SOLO_ARENA_SCALE;
+    const radius = CONFIG.arenaRadius * MATCH_ARENA_SCALE;
     const along = player.p.x * forward.x + player.p.z * forward.z;
     const distance = -along + Math.sqrt(along ** 2 + radius ** 2 - player.p.x ** 2 - player.p.z ** 2);
     const rim = new Vector3(player.p.x + forward.x * distance, 0.2, player.p.z + forward.z * distance).project(rig.camera);
@@ -157,11 +130,11 @@ test('both rear views show the far arena rim at the start in narrow and wide pan
 });
 
 test('selected wider view reveals substantially more playable floor than the previous close view', () => {
-  const radius = CONFIG.arenaRadius * SOLO_ARENA_SCALE;
+  const radius = CONFIG.arenaRadius * MATCH_ARENA_SCALE;
   for (const id of [0, 1]) for (const aspect of [0.54, 1.1]) {
     const player = makePlayer(id);
     const visibleFloor = previous => {
-      const rig = createDuelCameraRig();
+      const rig = createFreeCameraRig();
       rig.camera.aspect = aspect;
       rig.camera.updateProjectionMatrix();
       if (previous) { rig.pitch = 0.35; rig.distance = 10.5; }

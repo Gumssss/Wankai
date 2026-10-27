@@ -37,8 +37,7 @@ export function poseBeagle(instance,player,time=0){
  for(const side of ['L','R'])bones[side+'_ear_swing'].quaternion.copy(rest[side+'_ear_swing'])
   .multiply(rotation.setFromAxisAngle(SPREAD_AXIS,-beagleEarYaw(player,BEAGLE.anchors[side])))
   .multiply(pitch.setFromAxisAngle(HINGE_AXIS,player.theta-BEAGLE.earBindPitch));
- bones.body_pitch.quaternion.copy(rest.body_pitch)
-  .multiply(rotation.setFromAxisAngle(HINGE_AXIS,player.bodyPitch||0));
+ bones.body_pitch.quaternion.copy(rest.body_pitch);
  const phase=(time+instance.id*1.7)%4.3;
  const blink=phase<.18?Math.sin(Math.PI*phase/.18)**2:0;
  for(const side of ['L','R'])bones[side+'_lid'].scale.z=1-.965*blink;

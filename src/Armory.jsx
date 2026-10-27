@@ -1,22 +1,23 @@
 import {useEffect,useRef,useState} from 'react';
 import {CHARACTER_CATALOG,characterName} from './character-catalog.js';
 import {WEAPON_CATALOG} from './weapon-catalog.js';
-import {normalizeLoadout,canEquip,isValidLoadout,loadoutName,loadoutKey} from './loadouts.js';
-import {createDrafts,updateDraft,toggleReady,requiredPlayers,canConfirm,confirmedLoadouts} from './armory-drafts.js';
+import {canEquip,isValidLoadout,loadoutName,loadoutKey} from './loadouts.js';
+import {createDrafts,updateDraft,toggleReady,visiblePlayers,canConfirm,confirmedLoadouts} from './armory-drafts.js';
 import {LoadoutPreview} from './LoadoutPreview.jsx';
 import {CharacterPortrait,WeaponIcon} from './selection-icons.jsx';
 import './armory.css';
 
-const MODES={duel:'双人对战 · 分屏视角','duel-fixed':'双人对战 · 固定视角',practice:'木桩练习',solo:'单人自由视角',browse:'出战配置'};
+const MODES={ai:'AI 对战',browse:'出战配置'};
+const PLAYER_LABELS=['你','AI'];
 const selectionName=draft=>draft.weaponId?loadoutName(draft):`${characterName(draft.characterId)} · 待选武器`;
 
 function PlayerSelection({id,draft,mode,onChange,onReady}){
-  const valid=isValidLoadout(draft),player=`P${id+1}`;
+  const valid=isValidLoadout(draft),player=PLAYER_LABELS[id],versus=mode==='ai';
   return <section className="loadout-player-panel" data-player={id} style={{'--selection-accent':id===0?'#bd6048':'#4f858a'}} aria-label={`${player} 出战配置`}>
     <header className="loadout-player-heading">
       <b className="loadout-player-label">{player}</b>
       <span className="loadout-ready-status" role="status" aria-live="polite" aria-label={draft.ready?`${player} 已准备`:`${player} 未准备`}>
-        {draft.ready?<svg className="loadout-ready-doodle" viewBox="0 0 64 52" aria-hidden="true"><path d="M9 27 23 42 54 9"/><path d="m12 25 11 12 28-29"/><path d="m25 44 31-32"/></svg>:mode==='duel'?'':'选择角色与武器'}
+        {draft.ready?<svg className="loadout-ready-doodle" viewBox="0 0 64 52" aria-hidden="true"><path d="M9 27 23 42 54 9"/><path d="m12 25 11 12 28-29"/><path d="m25 44 31-32"/></svg>:versus?'':'选择角色与武器'}
       </span>
     </header>
     <div className="loadout-choices">
@@ -42,17 +43,17 @@ function PlayerSelection({id,draft,mode,onChange,onReady}){
       <div className="loadout-current" aria-live="polite"><b>{selectionName(draft)}</b></div>
       <div className="loadout-drag">↔ 拖动旋转 · 滚轮缩放</div>
     </div>
-    <button type="button" className="loadout-ready-button" aria-label={`${player} ${draft.ready?'取消准备':'准备就绪'}`} aria-pressed={draft.ready} disabled={!valid} onClick={onReady}>
+    {id===0&&<button type="button" className="loadout-ready-button" aria-label={`${player} ${draft.ready?'取消准备':'准备就绪'}`} aria-pressed={draft.ready} disabled={!valid} onClick={onReady}>
       {draft.ready?'✓ 已准备 · 取消准备':'✓ 准备就绪'}
-    </button>
+    </button>}
   </section>;
 }
 
 export function Armory({game,session,mode,close,start}){
   const headingRef=useRef(null);
   useEffect(()=>{headingRef.current?.focus({preventScroll:true});},[]);
-  const [drafts,setDrafts]=useState(()=>createDrafts(game.loadouts||game.weapons.map(normalizeLoadout)));
-  const [error,setError]=useState(''),players=requiredPlayers(mode),ready=canConfirm(drafts,mode);
+  const [drafts,setDrafts]=useState(()=>createDrafts(game.loadouts));
+  const [error,setError]=useState(''),players=visiblePlayers(mode),ready=canConfirm(drafts,mode),versus=mode==='ai';
   const change=(id,patch)=>{setError('');setDrafts(current=>updateDraft(current,id,patch));};
   const prepare=id=>{setError('');setDrafts(current=>toggleReady(current,id));};
   const confirm=()=>{
@@ -61,17 +62,17 @@ export function Armory({game,session,mode,close,start}){
     if(!session.setLoadouts(selections)){setError('无法保存搭配，请检查角色与武器。');return;}
     if(mode==='browse')close();else start();
   };
-  const action=mode==='browse'?'保存搭配':mode==='practice'?'开始练习':mode==='solo'?'开始单人':'开始对战';
-  const hint=players.length===1?(ready?'已准备，可以开始':'准备后开始'):ready?(mode==='browse'?'双方已准备，可以保存':'双方已准备，可以开始'):(mode==='browse'?'双方准备后保存':'双方准备后开始');
+  const action=mode==='browse'?'保存搭配':'开始对战';
+  const hint=mode==='browse'?(ready?'已准备，可以保存':'准备后保存'):(ready?'已准备，可以开始':'准备后开始');
   return <>
     <header className="loadout-header">
-      <button ref={mode==='duel'?headingRef:null} type="button" className="loadout-back" onClick={close} aria-label="返回主菜单">{mode==='duel'?'返回主菜单':'← 返回'}</button>
-      {mode!=='duel'&&<><div className="loadout-heading-copy"><h1 id="preparation-title" ref={headingRef} tabIndex={-1}>出战准备</h1><p>PREPARE / 选择角色与武器</p></div><span>{MODES[mode]}</span></>}
+      <button ref={versus?headingRef:null} type="button" className="loadout-back" onClick={close} aria-label="返回主菜单">{versus?'返回主菜单':'← 返回'}</button>
+      {!versus&&<><div className="loadout-heading-copy"><h1 id="preparation-title" ref={headingRef} tabIndex={-1}>出战准备</h1><p>PREPARE / 选择角色与武器</p></div><span>{MODES[mode]}</span></>}
     </header>
-    <div className={`loadout-dual-picker${mode==='solo'?' solo':''}`}>
+    <div className={`loadout-dual-picker${players.length===1?' single':''}`}>
       {players.map(id=><PlayerSelection key={id} id={id} draft={drafts[id]} mode={mode} onChange={patch=>change(id,patch)} onReady={()=>prepare(id)}/>)}
     </div>
     {error&&<p className="loadout-form-error" role="alert">{error}</p>}
-    <footer className="loadout-footer"><div className="loadout-start"><button type="button" className="primary-button" disabled={!ready} onClick={confirm}>{action}{mode!=='duel'&&<span>→</span>}</button><span className="loadout-start-hint" aria-live="polite">{hint}</span></div></footer>
+    <footer className="loadout-footer"><div className="loadout-start"><button type="button" className="primary-button" disabled={!ready} onClick={confirm}>{action}{!versus&&<span>→</span>}</button><span className="loadout-start-hint" aria-live="polite">{hint}</span></div></footer>
   </>;
 }

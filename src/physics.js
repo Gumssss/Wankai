@@ -51,8 +51,8 @@ export const CLASH = Object.freeze({
   minRecoilSpeed: 1.8,
   maxRecoilSpeed: 3.2,
 });
-export const SOLO_ARENA_SCALE = 3;
-export const arenaScaleForMode = mode => mode === 'solo' || mode === 'duel' || mode === 'duel-fixed' ? SOLO_ARENA_SCALE : 1;
+// Every match uses the enlarged arena; bare physics worlds keep the measured 1x podium.
+export const MATCH_ARENA_SCALE = 3;
 
 // These measured contacts were authored for the 2.35-unit model. The renderer
 // normalizes the unchanged GLB to staffLength, so scale its contacts identically.
@@ -132,7 +132,6 @@ export function makePlayer(id, selection = 'polearm') {
     facingOffset: 0,
     wt: 0,
     wp: 0,
-    bodyPitch: 0, bodyRate: 0, vaulting: false, earPush: false,
     skillActive: false, skillRemaining: 0, skillWasHeld: false, skillRequested: false,
     earSpread: 0, earSpreadRate: 0, earLag: 0, earLagRate: 0,
     driveT: 0,
@@ -143,11 +142,8 @@ export function makePlayer(id, selection = 'polearm') {
     grounded: !paws,
     staffGrounded: false,
     contactSpeed: 0,
-    lastHitAt: -10,
     lastAttackAt: -10,
     hitFlash: 0,
-    lastDamage: 0,
-    totalDamage: 0,
   };
 }
 
@@ -389,9 +385,12 @@ export class ArenaPhysics {
     player.polarInput = Math.sign(direction || 0);
   }
 
-  reset(practice = false, solo = false, firstWeapon = 'polearm', secondWeapon = 'polearm', arenaScale = solo ? SOLO_ARENA_SCALE : 1) {
+  // fighters: 1 gives tools and tests a lone sandbox fighter at the centre.
+  // endless keeps a round running (no winner, health floor 1) for sandboxes.
+  reset(firstWeapon = 'polearm', secondWeapon = 'polearm', { fighters = 2, endless = false, arenaScale = 1 } = {}) {
     firstWeapon=normalizeLoadout(firstWeapon);
     secondWeapon=normalizeLoadout(secondWeapon);
+    const solo = fighters === 1;
     this.players = solo ? [makePlayer(0, firstWeapon)] : [makePlayer(0, firstWeapon), makePlayer(1, secondWeapon)];
     // Two level swords would overlap at the original starting marks.
     if (!solo && firstWeapon.weaponId === 'sword' && secondWeapon.weaponId === 'sword') {
@@ -404,8 +403,7 @@ export class ArenaPhysics {
     this.time = 0;
     this.events = [];
     this.winner = null;
-    this.practice = practice;
-    this.solo = solo;
+    this.endless = endless;
     this.arenaRadius = CONFIG.arenaRadius * arenaScale;
     this.arenaRimHeight = arenaPlacement(arenaScale).weaponContactHeight;
     this.contacts = this.players.map(() => ({ separated: 1 }));
@@ -413,11 +411,6 @@ export class ArenaPhysics {
     this.clashArmed = true;
     this.clashSeparated = CLASH.separationDelay;
     this.lastHit = null;
-    if (practice) {
-      this.players[0].p.x = -1.45;
-      this.players[1].p.x = 1.45;
-      if(!isPawLoadout(this.players[1]))this.players[1].theta = 0.28;
-    }
   }
 
   step(inputs, dt = CONFIG.step) {
@@ -434,7 +427,6 @@ export class ArenaPhysics {
       const rawTurnInput = clamp(input.phi || 0, -1, 1);
       const turnInput = isPawLoadout(p)?(p.polarInput||rawTurnInput?clamp((rawTurnInput*CAT.normalTurnSpeed-p.wp)*CAT.steeringGain,-1,1):0):rawTurnInput;
       if (isEarLoadout(p)) {
-        p.bodyPitch=0;p.bodyRate=0;
         updateBeagleSkill(p,input.skill,dt);
         if(p.skillActive || p.earSpread>.001)p.polarInput=0;
       }
@@ -494,9 +486,9 @@ export class ArenaPhysics {
         this.solveStaffGround(p, dt);
         this.solveWall(p, dt);
       }
-      if (!finished && !this.solo) this.solveBodies();
+      if (!finished && this.players.length > 1) this.solveBodies();
     }
-    if (!finished && !this.solo) {
+    if (!finished && this.players.length > 1) {
       this.solveStaffClash(dt, previous);
       this.solveAttack(this.players[0], this.players[1], dt, previous);
       this.solveAttack(this.players[1], this.players[0], dt, previous);
@@ -513,9 +505,8 @@ export class ArenaPhysics {
       p.wt = clamp(p.wt, -limit, limit);
       p.wp = clamp(p.wp, -limit, limit);
       p.contactSpeed = length(staffFrame(p).velocity);
-      if (this.practice && p.id === 1 && this.time - p.lastHitAt > 2.5) p.health = CONFIG.maxHealth;
     }
-    if (!finished && !this.practice && !this.solo) {
+    if (!finished && !this.endless && this.players.length > 1) {
       const dead = this.players.map(p => p.health <= 0);
       if (dead[0] || dead[1]) this.winner = dead[0] && dead[1] ? -1 : dead[0] ? 1 : 0;
     }
@@ -688,12 +679,9 @@ export class ArenaPhysics {
     impulse(attacker, f, mul(n, j), poseA);
     target.v = sub(target.v, mul(n, j * invMass));
     if (!fresh || damage === 0) return;
-    target.health = Math.max(this.practice ? 1 : 0, target.health - damage);
+    target.health = Math.max(this.endless ? 1 : 0, target.health - damage);
     target.hitFlash = 1;
-    target.lastHitAt = this.time;
     attacker.lastAttackAt = this.time;
-    attacker.lastDamage = damage;
-    attacker.totalDamage += damage;
     // A bounded arcade impulse makes solid hits readable without toppling bodies.
     target.v = sub(target.v, mul(n, damage * 0.07));
     this.lastHit = { damage, speed: closing, acceleration, turnShare, attacker: attacker.id };

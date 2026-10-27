@@ -43,7 +43,7 @@ if(command==='serve'){
   const pose=p=>({p:{...p.p},theta:p.theta,phi:p.phi});
   const zero={theta:0,phi:0};
   function simulate(def){
-    const world=new ArenaPhysics();world.reset(def.mode==='practice',def.mode==='solo',cat,opponent,def.mode==='solo'?3:1);
+    const world=new ArenaPhysics();world.reset(cat,opponent,{fighters:def.mode==='solo'?1:2,endless:def.mode==='practice',arenaScale:def.mode==='solo'?3:1});
     world.players.forEach((p,id)=>Object.assign(p,{p:{...def.initial[id].p},theta:def.initial[id].theta,phi:def.initial[id].phi}));
     const initialOverlap=world.players[1]?Math.max(0,...weaponSegments(world.players[0]).flatMap(a=>hurtSegments(world.players[1]).map(b=>a.radius+b.radius-closestSegments(a.a,a.b,b.a,b.b).distance))):0;
     const events=[],rows=[];

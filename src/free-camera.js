@@ -2,18 +2,17 @@ import { PerspectiveCamera, Vector3, MathUtils } from 'three';
 import {CHARACTERS} from './character-catalog.js';
 import { CONFIG, clamp, staffFrame, weaponStats, weaponSegments, hurtSegments } from './physics.js';
 
-// Shared by solo exploration and each player's split-screen view.
-export const FREE_CAMERA = Object.freeze({ fov: 55, pitch: 0.52, distance: 6.2, yawOffset: Math.PI / 2 });
-// Selected 12.5% closer preview; preserve the original 10.5/.35 eye height.
-const SPLIT_DISTANCE = 21;
-export const SPLIT_CAMERA = Object.freeze({ ...FREE_CAMERA,
-  pitch: Math.asin(Math.sin(0.35) * 10.5 / SPLIT_DISTANCE), distance: SPLIT_DISTANCE, yawOffset: Math.PI / 12 });
+// Third-person follow camera for the local fighter. The far, gently tilted
+// rear view keeps the opposite rim in sight; the mouse orbits it freely.
+const FOLLOW_DISTANCE = 21;
+export const FOLLOW_CAMERA = Object.freeze({ fov: 55,
+  pitch: Math.asin(Math.sin(0.35) * 10.5 / FOLLOW_DISTANCE), distance: FOLLOW_DISTANCE, yawOffset: Math.PI / 12 });
 
-export function createFreeCameraRig(camera = new PerspectiveCamera(FREE_CAMERA.fov, 1, 0.1, 120), frameFighter = false) {
-  const settings = frameFighter ? SPLIT_CAMERA : FREE_CAMERA;
+export function createFreeCameraRig(camera = new PerspectiveCamera(FOLLOW_CAMERA.fov, 1, 0.1, 120)) {
+  const settings = FOLLOW_CAMERA;
   return {
-    camera, frameFighter, settings, yaw: null, pitch: settings.pitch, distance: settings.distance,
-    mouseYaw: 0, mousePitch: 0, mouseIdle: 0, manualYaw: 0, pullback: 0,
+    camera, settings, yaw: null, pitch: settings.pitch, distance: settings.distance,
+    mouseYaw: 0, mousePitch: 0, pullback: 0,
     focus: new Vector3(), position: new Vector3(), desired: new Vector3(),
     anchor: new Vector3(), framePoint: new Vector3(),
   };
@@ -21,23 +20,17 @@ export function createFreeCameraRig(camera = new PerspectiveCamera(FREE_CAMERA.f
 
 export function resetFreeCamera(rig) {
   rig.yaw = null;
-  rig.mouseYaw = rig.mousePitch = rig.mouseIdle = rig.manualYaw = rig.pullback = 0;
+  rig.mouseYaw = rig.mousePitch = rig.pullback = 0;
   rig.distance = rig.settings.distance;
 }
 
 export function orbitFreeCamera(rig, dx, dy) {
   rig.mouseYaw -= dx * 0.006;
   rig.mousePitch = clamp(rig.mousePitch + dy * 0.004, -0.2, 0.7);
-  rig.mouseIdle = 0;
 }
 
 export function zoomFreeCamera(rig, delta) {
-  rig.distance = clamp(rig.distance * Math.exp(delta * 0.001), 3.8, 10);
-  rig.mouseIdle = 0;
-}
-
-export function turnFreeCamera(rig, input, dt) {
-  rig.manualYaw += clamp(input, -1, 1) * Math.max(0, dt) * 1.4;
+  rig.distance = clamp(rig.distance * Math.exp(delta * 0.001), rig.settings.distance * 0.45, rig.settings.distance * 1.4);
 }
 
 export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
@@ -46,16 +39,10 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
   const elapsed = Math.max(0, dt);
   const aim = staffFrame(player, weaponStats(player).length * 0.55).point;
   if (firstFrame) rig.yaw = player.phi + rig.settings.yawOffset;
-  rig.mouseIdle += elapsed;
-  if (rig.mouseIdle > 1.5) {
-    const settle = Math.exp(-0.8 * elapsed);
-    rig.mouseYaw *= settle;
-    rig.mousePitch *= settle;
-  }
-  // Weapon A/D never changes the initialized camera azimuth. Camera input is separate.
-  const yaw = rig.yaw + rig.mouseYaw + rig.manualYaw;
+  // Weapon A/D never changes the camera azimuth; only the mouse does.
+  const yaw = rig.yaw + rig.mouseYaw;
   const pitch = clamp(rig.pitch + rig.mousePitch, 0.06, 0.9);
-  if (!firstFrame && rig.frameFighter) {
+  if (!firstFrame) {
     // Follow translation immediately in the duel, so knockback cannot leave
     // the fighter behind. Smooth the weapon-relative composition separately.
     rig.desired.set(player.p.x, player.p.y, player.p.z).sub(rig.anchor);
@@ -63,8 +50,7 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
     rig.focus.add(rig.desired);
   }
   rig.anchor.set(player.p.x, player.p.y, player.p.z);
-  const focusY = rig.frameFighter ? player.p.y + clamp((aim.y - player.p.y) * 0.4,
-    0.45 - CONFIG.bodyFloor, 2.6 - CONFIG.bodyFloor) : clamp(player.p.y * 0.6 + aim.y * 0.4, 0.45, 2.6);
+  const focusY = player.p.y + clamp((aim.y - player.p.y) * 0.4, 0.45 - CONFIG.bodyFloor, 2.6 - CONFIG.bodyFloor);
   rig.desired.set(player.p.x * 0.75 + aim.x * 0.25, focusY, player.p.z * 0.75 + aim.z * 0.25);
   const blend = 1 - Math.exp(-5 * elapsed);
   if (firstFrame) rig.focus.copy(rig.desired);
@@ -80,7 +66,7 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
   camera.position.y += shakeY;
   camera.lookAt(rig.focus);
   camera.updateMatrixWorld();
-  if (rig.frameFighter || player.characterId === 'beagle' || player.characterId === 'orange-tabby') fitFighter(rig, player, elapsed, firstFrame);
+  fitFighter(rig, player, elapsed, firstFrame);
 }
 
 function fitFighter(rig, player, dt, firstFrame) {

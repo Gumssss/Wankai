@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { ArenaPhysics, CONFIG, STAMINA, WEAPONS, damageForImpact, staffFrame, v3 } from '../src/physics.js';
 import { GameSession } from '../src/game-session.js';
 import {WEAPON_CATALOG} from '../src/weapon-catalog.js';
+import {sandbox,sparring} from './sandbox.js';
 const selection=weaponId=>({characterId:WEAPON_CATALOG.find(w=>w.id===weaponId).characterId||'basic-fighter',weaponId});
 
 const near = (actual, expected, tolerance = 1e-7) => assert.ok(Math.abs(actual - expected) < tolerance,
@@ -10,7 +11,7 @@ const near = (actual, expected, tolerance = 1e-7) => assert.ok(Math.abs(actual -
 
 function solo(weapon = 'polearm', stamina = STAMINA.max) {
   const world = new ArenaPhysics();
-  world.reset(false, true, selection(weapon));
+  sandbox(world,selection(weapon));
   Object.assign(world.players[0], { p: v3(0, 10000, 0), theta: 0, stamina });
   return world;
 }
@@ -21,7 +22,7 @@ function advance(world, seconds, input = {}, dt = CONFIG.step) {
 
 function contact(weapon, turnShare, speed = 8, heading = 0, attackInput = 0) {
   const world = new ArenaPhysics();
-  world.reset(true, false, weapon, 'polearm');
+  sparring(world,weapon,'polearm');
   const [attacker, target] = world.players;
   Object.assign(attacker, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: heading, polarInput: attackInput });
   const frame = staffFrame(attacker, 0.6);
@@ -59,7 +60,7 @@ test('mixed hits blend the incoming motion and sideways turning cannot weaken an
   near(mixed.turnShare, 0.5);
   assert.ok(turning.damage < mixed.damage && mixed.damage < vertical.damage);
   const world = contact('polearm', 0);
-  world.reset(true);
+  sparring(world);
   const [a, b] = world.players;
   Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: 0, wp: 10 });
   const frame = staffFrame(a, 0.6);
@@ -72,7 +73,7 @@ test('mixed hits blend the incoming motion and sideways turning cannot weaken an
 
 test('body-driven impacts retain their damage and slow touches still cause no damage', () => {
   const world = solo();
-  world.reset(true);
+  sparring(world);
   const [a, b] = world.players;
   Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: 0, v: v3(0, 0, 8) });
   const frame = staffFrame(a, 0.6);
@@ -142,7 +143,7 @@ test('exhaustion weakens floating-weapon acceleration and turning while preservi
 
 test('an exhausted fighter can still move through ground support with every weapon', () => {
   for (const weapon of Object.keys(WEAPONS)) {
-    const world = new ArenaPhysics(); world.reset(false, true, selection(weapon));
+    const world = new ArenaPhysics(); sandbox(world,selection(weapon));
     const p = world.players[0]; p.stamina = 0; p.theta = 1.6;
     advance(world, 2, { theta: 1 });
     assert.equal(p.stamina, 0);
@@ -156,21 +157,21 @@ function session() {
   return game;
 }
 
-test('camera keys and cancelling weapon keys cost nothing, and each fighter spends stamina independently', () => {
-  const game = session(); game.startRound('duel'); game.tick(0.06);
+test('cancelling weapon keys costs nothing, and each fighter spends stamina independently', () => {
+  const game = session(); game.startRound('ai'); game.tick(0.06);
   game.state = 'playing';
-  for (const key of ['KeyW', 'KeyS', 'KeyA', 'KeyD', 'KeyQ', 'Slash']) game.keyDown(key);
+  for (const key of ['KeyW', 'KeyS', 'KeyA', 'KeyD']) game.keyDown(key);
   for (let step = 0; step < 10; step++) game.tick(0.05);
   assert.deepEqual(game.getSnapshot().stamina, [200, 200]);
-  game.clearKeys(); game.keyDown('ArrowDown');
+  game.clearKeys(); game.keyDown('KeyS');
   for (let step = 0; step < 10; step++) game.tick(0.05);
-  assert.equal(game.getSnapshot().stamina[0], 200);
-  assert.ok(game.getSnapshot().stamina[1] < 200);
+  assert.ok(game.getSnapshot().stamina[0] < 200);
+  assert.equal(game.getSnapshot().stamina[1], 200);
 });
 
-test('countdown, pause, hit pause and result freeze stamina; rematches restore it in every mode', () => {
-  for (const mode of ['duel', 'duel-fixed', 'practice', 'solo']) {
-    const game = session(); game.startRound(mode);
+test('countdown, pause, hit pause and result freeze stamina; rematches restore it', () => {
+  {
+    const game = session(); game.startRound('ai');
     game.world.players[0].stamina = 40;
     game.keyDown('KeyW'); game.tick(0.05);
     assert.equal(game.world.players[0].stamina, 40, 'countdown must freeze stamina');
@@ -185,7 +186,7 @@ test('countdown, pause, hit pause and result freeze stamina; rematches restore i
     game.state = 'result'; game.tick(0.05);
     near(game.world.players[0].stamina, before);
     game.startRound();
-    assert.deepEqual(game.getSnapshot().stamina, mode === 'solo' ? [200] : [200, 200]);
+    assert.deepEqual(game.getSnapshot().stamina, [200, 200]);
     assert.ok(game.world.players.every(p => p.staminaRestTime === 0));
   }
 });

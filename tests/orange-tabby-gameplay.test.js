@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {ArenaPhysics,CONFIG,makePlayer,weaponPointFrame,weaponSegments,hurtSegments,closestSegments,v3} from '../src/physics.js';
 import {GameSession} from '../src/game-session.js';
 import {isPawLoadout,normalizeLoadout} from '../src/loadouts.js';
+import {sandbox,sparring} from './sandbox.js';
 
 const CAT=Object.freeze({characterId:'orange-tabby',weaponId:'cat-paws'});
 const SWORD=Object.freeze({characterId:'basic-fighter',weaponId:'sword'});
@@ -27,7 +28,7 @@ function inputAt(id,t){
  return {theta:Number(keys.includes('W'))-Number(keys.includes('S')),phi:Number(keys.includes('D'))-Number(keys.includes('A'))};
 }
 function replay(shot,onSample){
- const world=new ArenaPhysics();world.reset(false,true,CAT,SWORD,5);
+ const world=new ArenaPhysics();sandbox(world,CAT,5);
  const p=world.players[0],initial=shot.rows[0].players[0];
  Object.assign(p,{p:{...initial.p},v:{...initial.v},theta:initial.theta,phi:initial.phi,wt:initial.wt,wp:initial.wp});
  for(let tick=0;tick<=Math.round(shot.duration/CONFIG.step);tick++){
@@ -42,7 +43,7 @@ for(const shot of ordinary)test(`production cat reproduces accepted ${shot.id} m
  let firstSupport=null,highest=.35,maxBeforeSupport=.35,airborneAscent=false;
  const world=replay(shot,(p,expected,time,tick)=>{
   for(const vector of ['p','v'])for(const axis of ['x','y','z'])near(p[vector][axis],expected[vector][axis],`${shot.id} at ${time}: ${vector}.${axis}`);
-  for(const key of ['theta','phi','wt','wp','bodyPitch','health','stamina'])near(p[key],expected[key],`${shot.id} at ${time}: ${key}`);
+  for(const key of ['theta','phi','wt','wp','health','stamina'])near(p[key],expected[key],`${shot.id} at ${time}: ${key}`);
   assert.equal(p.staffGrounded,expected.contact,`${shot.id} at ${time}: paw-floor contact`);
   // The old prototype marked its hand-positioned initial player grounded.
   // Compare solved states; the production spawn must report airborne below.
@@ -75,33 +76,32 @@ function session(){
  const game=new GameSession();for(const key of ['unlock','tick','tone','swing','impact'])game.sound[key]=()=>{};
  assert.equal(game.setLoadouts([CAT,CAT]),true);return game;
 }
-test('both players receive every paired direction, while opposite keys cancel and cat skills stay disabled',()=>{
- const game=session();game.startRound('duel');game.state='playing';
- for(const [keys,input] of [[['KeyW','ArrowUp'],{theta:1,phi:0}],[['KeyS','ArrowDown'],{theta:-1,phi:0}],
-  [['KeyA','ArrowLeft'],{theta:0,phi:-1}],[['KeyD','ArrowRight'],{theta:0,phi:1}],
-  [['KeyW','KeyA','ArrowUp','ArrowLeft'],{theta:1,phi:-1}],[['KeyW','KeyD','ArrowUp','ArrowRight'],{theta:1,phi:1}],
-  [['KeyS','KeyA','ArrowDown','ArrowLeft'],{theta:-1,phi:-1}],[['KeyS','KeyD','ArrowDown','ArrowRight'],{theta:-1,phi:1}],
-  [['KeyW','KeyS','KeyA','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'],zero]]){
-  game.clearKeys();keys.forEach(key=>game.keyDown(key));assert.deepEqual(game.getInputs(),[input,input]);
+test('the local cat receives every paired direction, while opposite keys cancel and cat skills stay disabled',()=>{
+ const game=session();game.startRound('ai');game.state='playing';
+ for(const [keys,input] of [[['KeyW'],{theta:1,phi:0}],[['KeyS'],{theta:-1,phi:0}],
+  [['KeyA'],{theta:0,phi:-1}],[['KeyD'],{theta:0,phi:1}],
+  [['KeyW','KeyA'],{theta:1,phi:-1}],[['KeyW','KeyD'],{theta:1,phi:1}],
+  [['KeyS','KeyA'],{theta:-1,phi:-1}],[['KeyS','KeyD'],{theta:-1,phi:1}],
+  [['KeyW','KeyS','KeyA','KeyD'],zero]]){
+  game.clearKeys();keys.forEach(key=>game.keyDown(key));assert.deepEqual(game.getInputs(),[input,zero]);
  }
- game.keyDown('KeyF');game.keyDown('ShiftRight');
- assert.ok(!game.keys.has('KeyF')&&!game.keys.has('ShiftRight'));
+ game.keyDown('KeyF');
+ assert.ok(!game.keys.has('KeyF'));
  assert.ok(game.world.players.every(p=>!p.skillRequested&&!p.skillActive));
  for(let tick=0;tick<90;tick++)game.world.step([{theta:0,phi:0,skill:true},{theta:0,phi:0,skill:true}]);
  assert.ok(game.world.players.every(p=>!p.skillActive&&p.skillRemaining===0));
 });
 
-test('pause, rematch, return home and mode changes preserve the cat loadout and reset motion/resources',()=>{
+test('pause, rematch and return home preserve the cat loadout and reset motion/resources',()=>{
  const game=session();
- for(const mode of ['duel','duel-fixed','practice','solo']){
-  game.startRound(mode);game.state='playing';game.keyDown('KeyS');
-  if(mode!=='solo')game.keyDown('ArrowDown');
+ for(let round=0;round<2;round++){
+  game.startRound('ai');game.state='playing';game.keyDown('KeyS');
   for(let tick=0;tick<60;tick++)game.world.step(game.getInputs());
   game.pause();const before=JSON.stringify(game.world.players),time=game.world.time;
   assert.equal(game.keys.size,0);game.tick(.04);assert.equal(game.world.time,time);assert.equal(JSON.stringify(game.world.players),before);
-  game.resume();assert.deepEqual(game.getInputs(),mode==='solo'?[zero]:[zero,zero]);
+  game.resume();assert.deepEqual(game.getInputs(),[zero,zero]);
   game.world.players[0].health=31;game.world.players[0].stamina=18;
-  game.startRound();assert.equal(game.mode,mode);assert.equal(game.world.time,0);assert.deepEqual(game.getSnapshot().pressed,[]);
+  game.startRound();assert.equal(game.mode,'ai');assert.equal(game.world.time,0);assert.deepEqual(game.getSnapshot().pressed,[]);
   for(const p of game.world.players){
    assert.ok(isPawLoadout(p));assert.equal(p.health,100);assert.equal(p.stamina,200);
    near(p.p.y,CONFIG.bodyFloor+.35,'cat spawn hover');near(p.theta,Math.PI/2,'neutral paw pose');
@@ -114,7 +114,7 @@ test('pause, rematch, return home and mode changes preserve the cat loadout and 
 });
 
 function combat({target,theta=.4,phi=0,targetTheta=.4,duration=3,turn=false}){
- const world=new ArenaPhysics();world.reset(true,false,CAT,SWORD,5);
+ const world=new ArenaPhysics();sparring(world,CAT,SWORD,5);
  const [a,b]=world.players;Object.assign(a,{p:v3(0,CONFIG.bodyFloor+.35,0),theta,phi});
  Object.assign(b,{p:v3(...target),theta:targetTheta,phi:Math.PI});
  const overlap=Math.max(...weaponSegments(a).flatMap(s=>hurtSegments(b).map(h=>s.radius+h.radius-closestSegments(s.a,s.b,h.a,h.b).distance)));

@@ -4,10 +4,11 @@ import {ArenaPhysics,CONFIG,WEAPONS,v3,weaponPointFrame,weaponSegments,damageFor
 import {BEAGLE} from '../src/beagle-profile.js';
 import {createFreeCameraRig,updateFreeCamera} from '../src/free-camera.js';
 import {Vector3} from 'three';
+import {sandbox,sparring} from './sandbox.js';
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
 
 test('ear sockets stay on the head through complete swings and their Jacobians match combined motion',()=>{
- const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];
+ const w=new ArenaPhysics();sandbox(w,'beagle');const p=w.players[0];
  Object.assign(p,{p:v3(.2,5,-.3),v:v3(.4,.1,-.2),wt:2.3,wp:-1.2});
  for(const theta of [-Math.PI*2,-Math.PI,0,.9,Math.PI,Math.PI*2])for(const phi of [-2,.8,3]){
   Object.assign(p,{theta,phi});
@@ -24,11 +25,11 @@ test('ear sockets stay on the head through complete swings and their Jacobians m
 
 test('W/S with either turn direction produces grounded lift and travel, with no airborne travel force',()=>{
  for(const theta of [-1,1])for(const phi of [-1,1]){
-  const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];let rise=0;
+  const w=new ArenaPhysics();sandbox(w,'beagle');const p=w.players[0];let rise=0;
   for(let i=0;i<540;i++){w.step([{theta,phi}]);rise=Math.max(rise,p.p.y-CONFIG.bodyFloor);}
   assert.ok(rise>.4,`missing substantial lift for ${theta}/${phi}: ${rise}`);
   assert.ok(Math.hypot(p.p.x,p.p.z)>.25,'ears must carry the body through contact');
-  const air=new ArenaPhysics();air.reset(false,true,'beagle');air.players[0].p.y=1000;air.players[0].grounded=false;
+  const air=new ArenaPhysics();sandbox(air,'beagle');air.players[0].p.y=1000;air.players[0].grounded=false;
   const center={...air.players[0].p};
   for(let i=0;i<180;i++)air.step([{theta,phi}]);
   const after=air.players[0].p;
@@ -37,18 +38,18 @@ test('W/S with either turn direction produces grounded lift and travel, with no 
 });
 
 test('both ears use one stamina budget and release/reverse retain the ordinary controller rules',()=>{
- const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];p.p.y=1000;p.theta=0;
+ const w=new ArenaPhysics();sandbox(w,'beagle');const p=w.players[0];p.p.y=1000;p.theta=0;
  for(let i=0;i<180;i++)w.step([{theta:1,phi:1}]);
  assert.ok(Math.abs(p.stamina-172)<1e-7,'the pair must not charge twice');
  const before=p.wt;w.step([{}]);assert.ok(p.wt>0);
  assert.ok(p.wt>before*.8,'release must coast');
- p.theta=0;p.wt=3;p.bodyRate=0;
+ p.theta=0;p.wt=3;
  w.step([{theta:-1}]);assert.ok(p.wt>0&&p.wt<3,'reverse must brake before reversing');
  for(let i=0;i<90;i++)w.step([{theta:-1}]);assert.ok(p.wt<0);
 });
 
 function impact(horizontal){
- const w=new ArenaPhysics();w.reset(true,false,'beagle','polearm');const [a,b]=w.players;
+ const w=new ArenaPhysics();sparring(w,'beagle','polearm');const [a,b]=w.players;
  Object.assign(a,{p:v3(0,10,0),theta:Math.PI/2,phi:.3,wt:horizontal?0:4,wp:horizontal?4:0});
  const c=BEAGLE.colliders[7],point=v3(...c.b),f=weaponPointFrame(a,point,c.anchor);
  const speed=Math.hypot(f.velocity.x,f.velocity.y,f.velocity.z),n=v3(-f.velocity.x/speed,-f.velocity.y/speed,-f.velocity.z/speed);
@@ -69,10 +70,10 @@ test('vertical and horizontal ears deal ordinary directional damage, with one pa
 });
 
 test('head hurtbox follows the broader beagle and its camera contains the full ear envelope',()=>{
- const w=new ArenaPhysics();w.reset(false,true,'beagle');const p=w.players[0];
+ const w=new ArenaPhysics();sandbox(w,'beagle');const p=w.players[0];
  assert.ok(hurtSegments(p).some(s=>s.radius>=.55));
  for(const aspect of [.3,.7,1.5])for(const theta of [-2.8,-1.55,0,1.8,Math.PI]){
-  p.theta=theta;p.phi=.6;const rig=createFreeCameraRig(undefined,true);rig.camera.aspect=aspect;rig.camera.updateProjectionMatrix();
+  p.theta=theta;p.phi=.6;const rig=createFreeCameraRig();rig.camera.aspect=aspect;rig.camera.updateProjectionMatrix();
   updateFreeCamera(rig,p,1/60);
   for(const s of weaponSegments(p))for(const point of [s.a,s.b]){
    const screen=new Vector3(point.x,point.y,point.z).project(rig.camera);
@@ -83,7 +84,7 @@ test('head hurtbox follows the broader beagle and its camera contains the full e
 });
 
 test('a powered ear meets a sword under the ordinary clash and recoil rules',()=>{
- const w=new ArenaPhysics();w.reset(true,false,'beagle','sword');
+ const w=new ArenaPhysics();sparring(w,'beagle','sword');
  Object.assign(w.players[0],{p:v3(0,CONFIG.bodyFloor,0),theta:.4});
  Object.assign(w.players[1],{p:v3(4.3,CONFIG.bodyFloor,.78),theta:1.25});
  let clash;
@@ -96,4 +97,22 @@ test('a powered ear meets a sword under the ordinary clash and recoil rules',()=
   const forward=p.v.x*Math.cos(p.phi)+p.v.z*Math.sin(p.phi);
   assert.ok(forward<=-clash.recoilSpeed+1e-6,'both fighters must recoil opposite their facing');
  }
+});
+
+test('fatigue weakens articulated swing/turn power while keeping one shared stamina budget',()=>{
+ const states=[];
+ for(const stamina of [100,0]){
+  const world=sandbox(new ArenaPhysics(),'beagle');const p=world.players[0];
+  Object.assign(p,{p:v3(0,100,0),grounded:false,theta:0,stamina});
+  for(let i=0;i<90;i++)world.step([{theta:1,phi:1}]);
+  states.push({speed:Math.abs(p.wt),yaw:p.wp,stamina:p.stamina});
+ }
+ assert.ok(states[1].speed<states[0].speed*.65);assert.ok(states[1].yaw<states[0].yaw*.65);
+ assert.ok(Math.abs(states[0].stamina-86)<1e-8);assert.equal(states[1].stamina,0);
+});
+
+test('body separation cannot push an upright opponent through the floor',()=>{
+ const world=sparring(new ArenaPhysics(),'beagle','sword');
+ world.players[0].p=v3(0,1,0);world.players[1].p=v3(.1,CONFIG.bodyFloor,0);
+ world.step([{},{}]);assert.ok(world.players[1].p.y>=CONFIG.bodyFloor);
 });

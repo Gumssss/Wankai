@@ -15,18 +15,18 @@ export const beagleEarYaw=(p,anchor)=>-(Math.sign(anchor[2])||1)*(p.earSpread||0
 // The same composed transform drives skinning, fallback and contact queries.
 // Splay and lag are finite actuators, with their rates included in hit velocity.
 export function beaglePointFrame(p,local,anchor){
- const pivot=.85-BEAGLE.bodyFloor,beta=p.bodyPitch||0;
+ const pivot=.85-BEAGLE.bodyFloor;
  const a=anchor?beagleEarYaw(p,anchor):0;
  const ear=anchor?yaw(turn(local,p.theta),a):v();
  const inner=anchor?v(anchor[0]+ear.x,anchor[1]-pivot+ear.y,anchor[2]+ear.z):v(local.x,local.y-pivot,local.z);
- const body=turn(inner,beta),r=yaw(v(body.x,body.y+pivot,body.z),p.phi);
- const world=q=>yaw(turn(q,beta),p.phi);
+ const r=yaw(v(inner.x,inner.y+pivot,inner.z),p.phi);
+ const world=q=>yaw(q,p.phi);
  const jt=anchor?world(yaw(dturn(turn(local,p.theta)),a)):v();
  const jl=anchor?world(dyaw(ear)):v(),sign=anchor?-(Math.sign(anchor[2])||1):0;
- const js=v(jl.x*sign,jl.y*sign,jl.z*sign),jp=dyaw(r),jb=yaw(dturn(body),p.phi);
- const velocity=v(...['x','y','z'].map(k=>p.v[k]+jt[k]*p.wt+jp[k]*p.wp+jb[k]*(p.bodyRate||0)+
+ const js=v(jl.x*sign,jl.y*sign,jl.z*sign),jp=dyaw(r);
+ const velocity=v(...['x','y','z'].map(k=>p.v[k]+jt[k]*p.wt+jp[k]*p.wp+
    js[k]*(p.earSpreadRate||0)+jl[k]*(p.earLagRate||0)));
- return {r,jt,jp,jb,js,jl,point:v(p.p.x+r.x,p.p.y+r.y,p.p.z+r.z),velocity};
+ return {r,jt,jp,js,jl,point:v(p.p.x+r.x,p.p.y+r.y,p.p.z+r.z),velocity};
 }
 
 export function updateBeagleSkill(p,held,dt){

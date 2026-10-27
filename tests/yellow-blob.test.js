@@ -10,6 +10,7 @@ import {createWeaponModel} from '../src/model-assets.js';
 import {setWeaponRotation} from '../src/weapon-visuals.js';
 import {loadGeometry} from '../scripts/preview/model-geometry.mjs';
 import {ArenaView} from '../src/scene.js';
+import {sandbox,sparring} from './sandbox.js';
 const yellow={characterId:'yellow-blob',weaponId:'yellow-staff'},sword={characterId:'basic-fighter',weaponId:'sword'};
 const approved=JSON.parse(await readFile(new URL('../assets/concepts/yellow-blob/motion-v02/replay.json',import.meta.url)));
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
@@ -22,7 +23,7 @@ function input(id,t){
 }
 for(const chapter of approved.chapters.filter(c=>c.speed===1))test(`yellow production physics matches approved ${chapter.id}`,()=>{
  const rows=approved.frames.filter(f=>f.scenario===chapter.id&&f.speed===1),world=new ArenaPhysics(),combat=rows[0].players.length===2;
- world.reset(combat,!combat,yellow,sword,3);
+ if(combat)sparring(world,yellow,sword,3);else sandbox(world,yellow,3);
  rows[0].players.forEach((p,i)=>Object.assign(world.players[i],{p:{...p.p},theta:p.theta,phi:p.phi}));
  let previous=0,hits=[];
  for(const row of rows){
@@ -48,16 +49,15 @@ test('approved actual GLBs align face with swing plane, feet with floor, and pre
  }
  assert.ok(makeYellowBlobFallback().root.children.length>5);
 });
-test('yellow dedicated loadout works for both players across modes and resets',()=>{
+test('yellow dedicated loadout works for both fighters across rounds and resets',()=>{
  assert.equal(resolveLoadout(yellow).bodyModel,'yellow-blob-static-v03.glb');assert.equal(resolveLoadout(yellow).weaponModel,'yellow-staff.glb');
  assert.equal(canEquip('basic-fighter','yellow-staff'),false);assert.equal(canEquip('yellow-blob','sword'),true);
  const game=new GameSession();for(const k of ['unlock','tick','tone','swing','impact'])game.sound[k]=()=>{};
  assert.equal(game.setLoadouts([yellow,yellow]),true);
- for(const mode of ['solo','practice','duel']){
-  game.startRound(mode);assert.ok(game.world.players.every(p=>p.characterId==='yellow-blob'&&p.weapon==='yellow-staff'));
-  game.state='playing';game.keyDown('KeyS');game.keyDown('ArrowDown');assert.equal(game.getInputs()[0].theta,-1);
-  if(mode==='duel')assert.equal(game.getInputs()[1].theta,-1);
-  game.pause();assert.equal(game.keys.size,0);game.startRound(mode);assert.ok(game.world.players.every(p=>p.health===100&&p.stamina===200));
+ for(let round=0;round<2;round++){
+  game.startRound('ai');assert.ok(game.world.players.every(p=>p.characterId==='yellow-blob'&&p.weapon==='yellow-staff'));
+  game.state='playing';game.keyDown('KeyS');assert.equal(game.getInputs()[0].theta,-1);
+  game.pause();assert.equal(game.keys.size,0);game.startRound();assert.ok(game.world.players.every(p=>p.health===100&&p.stamina===200));
  }
 });
 test('arena attaches both yellow models independently and replaces failed-load fallbacks on retry',async()=>{
@@ -79,7 +79,7 @@ for(const weaponId of ['sword','polearm','hammer'])test(`yellow supports common 
  assert.equal(resolved.controller,'floating');
  const game=new GameSession();for(const k of ['unlock','tick','tone','swing','impact'])game.sound[k]=()=>{};
  assert.equal(game.setLoadouts([selection,selection]),true);
- game.startRound('duel');
+ game.startRound('ai');
  assert.ok(game.world.players.every(p=>p.characterId==='yellow-blob'&&p.weapon===weaponId));
  for(let i=0;i<180;i++)game.world.step([{theta:1,phi:.5},{theta:-1,phi:-.5}]);
  assert.ok(game.world.players.every(p=>Object.values(p.p).every(Number.isFinite)));

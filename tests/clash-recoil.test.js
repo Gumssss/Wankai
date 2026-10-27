@@ -97,7 +97,7 @@ test('clash recoil does not erase a fighter\'s already faster backward momentum'
 });
 
 test('backward recoil remains inside the arena boundary with finite motion', () => {
-  const world = clash(); world.practice = true;
+  const world = clash(); world.endless = true;
   for (const player of world.players) player.p.x += 4.5;
   world.solveStaffClash(CONFIG.step);
   assert.equal(world.events.length, 1);

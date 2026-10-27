@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {Group,Mesh,BoxGeometry,PlaneGeometry,MeshStandardMaterial,PerspectiveCamera,Vector3} from 'three';
 import {ARENA_PROFILE,arenaPlacement} from '../src/arena-profile.js';
 import {attachArenaModel,prepareArenaCamera,restoreArenaOpacity} from '../src/arena-model.js';
-import {ArenaPhysics,CONFIG,arenaScaleForMode} from '../src/physics.js';
+import {ArenaPhysics,CONFIG,MATCH_ARENA_SCALE} from '../src/physics.js';
+import {sandbox} from './sandbox.js';
 
 function fixture(){
  const group=new Group(),material=new MeshStandardMaterial();
@@ -11,8 +12,8 @@ function fixture(){
  for(let i=0;i<8;i++){const mesh=new Mesh(new BoxGeometry(2,4,.5),material);mesh.name=ARENA_PROFILE.sectorPrefix+String(i).padStart(2,'0');const a=-(i+.5)*Math.PI/4;mesh.position.set(Math.cos(a)*8,2,Math.sin(a)*8);mesh.rotation.y=Math.PI/2-a;group.add(mesh);}
  return group;
 }
-test('all modes preserve nominal play radius and uniformly scaled podium height',()=>{
- for(const mode of ['practice','duel-fixed','solo','duel']){const scale=arenaScaleForMode(mode),world=new ArenaPhysics();world.reset(false,false,'sword','polearm',scale);assert.equal(world.arenaRadius,6.45*scale);assert.equal(world.arenaRimHeight,.84*scale);assert.equal(arenaPlacement(scale).floorHeight,0);}
+test('the match arena and bare physics preserve nominal play radius and uniformly scaled podium height',()=>{
+ for(const scale of [1,MATCH_ARENA_SCALE]){const world=new ArenaPhysics();world.reset('sword','polearm',{arenaScale:scale});assert.equal(world.arenaRadius,6.45*scale);assert.equal(world.arenaRimHeight,.84*scale);assert.equal(arenaPlacement(scale).floorHeight,0);}
 });
 test('per-camera arena cutaway is independent and restores the full source architecture',()=>{
  const arena=attachArenaModel(fixture()),p=[{p:{x:0,y:.59,z:0}}];
@@ -40,7 +41,7 @@ test('large arena keeps arch proportions and independent per-sector materials',(
 });
 test('weapons meet the taller prepared low rim but can pass above it',()=>{
  for(const scale of [1,3]){
-  function response(y){const w=new ArenaPhysics();w.reset(false,true,'polearm','polearm',scale);const p=w.players[0];p.p.x=w.arenaRadius-1;p.p.y=y;p.phi=0;p.theta=Math.PI/2;p.v={x:2,y:0,z:0};p.wt=p.wp=0;w.solveWall(p,CONFIG.step);return p.v.x;}
+  function response(y){const w=new ArenaPhysics();sandbox(w,'polearm',scale);const p=w.players[0];p.p.x=w.arenaRadius-1;p.p.y=y;p.phi=0;p.theta=Math.PI/2;p.v={x:2,y:0,z:0};p.wt=p.wp=0;w.solveWall(p,CONFIG.step);return p.v.x;}
   assert(response(.6*scale)<2,'weapon passed through visible low podium');
   assert.equal(response(ARENA_PROFILE.weaponContactHeight*scale+1),2,'decorative upper architecture became an extra collider');
  }

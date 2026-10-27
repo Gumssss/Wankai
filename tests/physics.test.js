@@ -2,14 +2,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cases } from './physics-cases.js';
 import { ArenaPhysics, CONFIG, WEAPONS, fighterHeading, staffFrame } from '../src/physics.js';
+import {sandbox,sparring} from './sandbox.js';
 
 for (const [name, run] of cases) test(name, run);
 
 test('sword shortens reach and responds faster to the same swing input without adding locomotion', () => {
   const polearm = new ArenaPhysics();
   const sword = new ArenaPhysics();
-  polearm.reset(false, true);
-  sword.reset(false, true, 'sword');
+  sandbox(polearm);
+  sandbox(sword,'sword');
   const a = polearm.players[0], b = sword.players[0];
   assert.ok(WEAPONS.sword.length < CONFIG.staffLength);
   assert.equal(b.theta, Math.PI / 2, 'sword starts level');
@@ -37,8 +38,8 @@ test('sword shortens reach and responds faster to the same swing input without a
 test('sword cannot make a body contact that the longer polearm can reach', () => {
   const polearm = new ArenaPhysics();
   const sword = new ArenaPhysics();
-  polearm.reset(true);
-  sword.reset(true, false, 'sword');
+  sparring(polearm);
+  sparring(sword,'sword');
   for (const world of [polearm, sword]) {
     const [attacker, target] = world.players;
     attacker.p.x = 0;

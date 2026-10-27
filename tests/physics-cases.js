@@ -1,4 +1,5 @@
 import { ArenaPhysics, CONFIG, staffFrame, damageForImpact, closestSegments, v3 } from '../src/physics.js';
+import {sandbox} from './sandbox.js';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const near = (a, b, tolerance = 1e-8) => assert(Math.abs(a - b) <= tolerance, `Expected ${a} ≈ ${b} (±${tolerance})`);
@@ -146,7 +147,7 @@ export const cases = [
   }],
   ['向前或向后持续挥动都能撑地并越过向下姿态', () => {
     for (const weapon of ['polearm', 'sword']) for (const direction of [-1, 1]) {
-      const w = new ArenaPhysics(); w.reset(false, true, weapon);
+      const w = new ArenaPhysics(); sandbox(w,weapon);
       const p = w.players[0]; p.theta = 0; p.phi = 0;
       const startX = p.p.x; let highest = p.p.y;
       for (let i = 0; i < 270; i++) {
@@ -211,14 +212,6 @@ export const cases = [
     w.reset(); assert(w.winner === null && w.time === 0 && w.events.length === 0, 'reset round state');
     assert(w.players.every(p => p.health === 100 && p.wp === 0 && p.wt === 0 && p.polarInput === 0), 'reset players and inputs');
   }],
-  ['练习模式不会结束，木桩在停止受击后回血', () => {
-    const w = attackSetup(); w.practice = true; w.players[1].health = 1;
-    run(w, 0.5, [{ phi: 1 }, {}]);
-    assert(w.winner === null && w.players[1].health >= 1, 'practice cannot end');
-    w.players[0].p = v3(-5, CONFIG.bodyFloor, 0); w.players[1].p = v3(5, CONFIG.bodyFloor, 0);
-    w.players.forEach(p => { p.v = v3(); p.wp = 0; p.wt = 0; p.theta = 0.4; });
-    run(w, 3); assert(w.players[1].health === 100, 'dummy should recover');
-  }],
   ['武器交叉接触会改变双方转速', () => {
     const w = new ArenaPhysics(); const [a, b] = w.players;
     a.p = v3(-1.5, 1, 0); b.p = v3(1.5, 1.03, 0);
@@ -227,23 +220,6 @@ export const cases = [
     assert(a.wt > -3 && b.wt < 3, 'both weapons should deflect');
     assert(w.events.some(e => e.type === 'clash'), 'clash feedback');
   }],
-  ['90 秒混合输入保持数值稳定、长度固定、角色留在圆台', () => {
-    const w = new ArenaPhysics(); w.practice = true;
-    let seed = 379;
-    const random = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-    let inputs = idle;
-    for (let i = 0; i < 90 * 180; i++) {
-      if (i % 27 === 0) inputs = [0, 1].map(() => ({ theta: Math.floor(random() * 3) - 1, phi: Math.floor(random() * 3) - 1 }));
-      w.step(inputs);
-      for (const p of w.players) {
-        for (const value of [p.p.x, p.p.y, p.p.z, p.v.x, p.v.y, p.v.z, p.wt, p.wp]) assert(Number.isFinite(value), 'non-finite physics state');
-        assert(p.p.y >= CONFIG.bodyFloor - 0.01 && p.p.y < 15, `invalid height ${p.p.y}`);
-        assert(Math.hypot(p.p.x, p.p.z) <= CONFIG.arenaRadius - CONFIG.bodyRadius + 0.05, 'escaped arena');
-        assert(Number.isFinite(p.theta), 'non-finite polar angle');
-        const r = staffFrame(p).r; near(Math.hypot(r.x, r.y, r.z), CONFIG.staffOffset + CONFIG.staffLength);
-      }
-    }
-  }],
   ['碰撞最近点计算支持相交、平行和退化线段', () => {
     near(closestSegments(v3(-1, 0, 0), v3(1, 0, 0), v3(0, 0, -1), v3(0, 0, 1)).distance, 0);
     near(closestSegments(v3(), v3(2, 0, 0), v3(0, 1, 0), v3(2, 1, 0)).distance, 1);
@@ -251,10 +227,3 @@ export const cases = [
   }],
 ];
 
-export function runPhysicsTests() {
-  return cases.map(([name, fn]) => {
-    const started = performance.now();
-    try { fn(); return { name, passed: true, ms: Math.round(performance.now() - started) }; }
-    catch (error) { return { name, passed: false, error: error.message }; }
-  });
-}

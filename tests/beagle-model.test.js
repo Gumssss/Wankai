@@ -41,8 +41,8 @@ test('the actual exported skinned ears follow the same anchored frame as gamepla
  const bodyLocal=Array.from({length:body.geometry.attributes.position.count},(_,i)=>
    body.getVertexPosition(i,new Vector3()).applyMatrix4(body.matrixWorld).sub(new Vector3(0,BEAGLE.bodyFloor,0)));
  const p=makePlayer(0,'beagle');p.p=v3(.4,3,-.7);
- for(const earSpread of [0,.65,Math.PI/2])for(const bodyPitch of [-Math.PI,-.8,0,1.7,Math.PI*2])for(const theta of [-Math.PI,-1.55,0,Math.PI/2,Math.PI,2*Math.PI])for(const phi of [-2,0,.7]){
-  Object.assign(p,{theta,phi,bodyPitch,earSpread,earLag:.07*earSpread});root.position.set(p.p.x,p.p.y,p.p.z);root.rotation.y=-phi;
+ for(const earSpread of [0,.65,Math.PI/2])for(const theta of [-Math.PI,-1.55,0,Math.PI/2,Math.PI,2*Math.PI])for(const phi of [-2,0,.7]){
+  Object.assign(p,{theta,phi,earSpread,earLag:.07*earSpread});root.position.set(p.p.x,p.p.y,p.p.z);root.rotation.y=-phi;
   poseBeagle(instance,p,1);refresh(root);
   for(const side of ['L','R']){
    const {mesh,local}=samples[side],anchor=BEAGLE.anchors[side];

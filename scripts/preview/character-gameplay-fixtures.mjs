@@ -4,7 +4,7 @@ import {ArenaPhysics,CONFIG,v3} from '../../src/physics.js';
 const root=new URL('../../',import.meta.url),dest=new URL('docs/previews/character-weapon-motion/',root);
 function run(weapon,chapter,initial){
  const combat=chapter.id.endsWith('hit')||chapter.id==='block-clash',world=new ArenaPhysics();
- world.reset(combat,!combat,{characterId:'beagle',weaponId:weapon},{characterId:'basic-fighter',weaponId:'polearm'},combat?1:3);
+ world.reset({characterId:'beagle',weaponId:weapon},{characterId:'basic-fighter',weaponId:'polearm'},{fighters:combat?2:1,endless:combat,arenaScale:combat?1:3});
  for(const [id,p]of world.players.entries()){Object.assign(p,{p:{...initial[id].p},theta:initial[id].theta,phi:initial[id].phi});}
  const events=[];
  for(let i=0;i<Math.round(chapter.duration/CONFIG.step);i++){
