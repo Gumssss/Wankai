@@ -10,6 +10,11 @@ import './style.css';
 
 const defaultSession = new GameSession();
 
+// Capture the mouse for free-look. Called from clicks, which grant the needed user activation;
+// the arena may still be hidden behind the preparation page for a frame or two.
+const lockView = () => requestAnimationFrame(() => requestAnimationFrame(() =>
+  document.querySelector('#viewport canvas')?.requestPointerLock?.()?.catch?.(() => {})));
+
 class CanvasBoundary extends Component {
   constructor(props) { super(props); this.state = { error: null }; }
   static getDerivedStateFromError(error) { return { error }; }
@@ -65,7 +70,7 @@ function HelpContent({ close }) {
   return <>
     <button className="modal-close" onClick={close} aria-label="关闭玩法说明">×</button>
     <span className="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，转动武器。</h2>
-    <p className="modal-intro">你控制的是兵器、双耳或巨爪的转动力。角色与武器分别选择：基础丸人和比格犬均可使用漂浮的短剑、长柄刀或战锤。橘猫装备巨爪，低空悬浮时可按 W / S 挥爪，S 触地后撑起身体；A / D 转向，也可与 W / S 组合。巨爪共用耐力，没有额外技能。只有比格犬装备长耳时，W / S 前后挥耳撑地，A / D 同时转向，普通转向时双耳保持并列。按 F 启动 5 秒旋耳悬停，不消耗耐力，时间到后自动收耳落地。松开技能键不会提前结束。悬停时 W / S 暂停挥耳，A / D 可改变旋转方向。在场景中拖动鼠标转动视角，滚轮调整远近；武器转向不会带着镜头转向。</p>
+    <p className="modal-intro">你控制的是兵器、双耳或巨爪的转动力。角色与武器分别选择：基础丸人和比格犬均可使用漂浮的短剑、长柄刀或战锤。橘猫装备巨爪，低空悬浮时可按 W / S 挥爪，S 触地后撑起身体；A / D 转向，也可与 W / S 组合。巨爪共用耐力，没有额外技能。只有比格犬装备长耳时，W / S 前后挥耳撑地，A / D 同时转向，普通转向时双耳保持并列。按 F 启动 5 秒旋耳悬停，不消耗耐力，时间到后自动收耳落地。松开技能键不会提前结束。悬停时 W / S 暂停挥耳，A / D 可改变旋转方向。点击画面锁定鼠标后，移动鼠标转动视角，角色的身体和脸始终朝向视角方向，滚轮调整远近，Esc 释放鼠标并暂停。A / D 只转动武器，不会带着镜头或身体转向。</p>
     <div className="guide-steps">
       <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D 调整水平方向，再用 W 或 S 选择挥动方向。武器触地后，继续挥动可撑起并带动身体；角色没有独立行走按键。</p></div></article>
       <article><span>02</span><div><h3>选择挥动方向</h3><p>W 让武器向角色正面旋转，S 向背面旋转；在头顶可以选前后，触地后继续按住可撑起身体并转到另一侧。A / D 只改变水平方向，也可与 W 或 S 同时按。松手后保留惯性，并受重力和阻尼影响。</p></div></article>
@@ -89,6 +94,12 @@ function App({session=defaultSession}) {
     return () => window.removeEventListener('pointerdown', closeOutside);
   }, []);
   const [armoryMode, setArmoryMode] = useState(null);
+  const [mouseLocked, setMouseLocked] = useState(false);
+  useEffect(() => {
+    const change = () => setMouseLocked(!!document.pointerLockElement);
+    document.addEventListener('pointerlockchange', change);
+    return () => document.removeEventListener('pointerlockchange', change);
+  }, []);
   const [ready, setReady] = useState(false);
   const [introPhase, setIntroPhase] = useState('cover');
   const intro = useRef({ phase: 'cover', elapsed: 0, transition: 0, angle: -.72 });
@@ -233,7 +244,8 @@ function App({session=defaultSession}) {
     <main id="game-shell">
       <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={game.loadouts.map(loadoutKey).join('-')} session={session} loadouts={game.loadouts} intro={intro.current} onIntroComplete={finishIntro} onReady={() => setReady(true)} /></CanvasBoundary></div>
       <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>兵器与双耳，各有所长。</span></div>
-      <div className="arena-coordinate" aria-hidden="true">{active ? '自由视角' : 'N ↑'}<br/><span>{active ? 'DRAG / ORBIT' : '35° / FIXED VIEW'}</span></div>
+      <div className="arena-coordinate" aria-hidden="true">{active ? '自由视角' : 'N ↑'}<br/><span>{active ? 'MOUSE LOOK' : '35° / FIXED VIEW'}</span></div>
+      {active && !mouseLocked && (game.state === 'playing' || game.state === 'countdown') && <div className="look-hint" aria-live="polite">点击画面锁定鼠标 · 移动鼠标转动视角</div>}
       {active && <HeadingGuide />}
       <section className="scoreboard" aria-label="对战血量">
         <FighterScore id={0} health={game.health[0]} stamina={game.stamina[0]} loadout={game.loadouts[0]} />
@@ -252,7 +264,7 @@ function App({session=defaultSession}) {
         <button className="primary-button" onClick={() => openPreparation('ai')}><span className="lobby-button-content">AI 对战</span></button>
       </nav>}
       {active && <div className="match-tools"><button className="pill-button" onClick={() => session.pause()}>Ⅱ 暂停 <kbd>ESC</kbd></button><button className="pill-button" onClick={() => session.startRound()} title="重新开始当前对局">↻ 重开</button><button className="pill-button" onClick={() => session.goHome()} title="回到主菜单">返回</button></div>}
-      {active && <div className="live-tip"><span className="status-dot"></span><span>W / S 前后挥动 · A / D 水平转向 · 拖动鼠标转动视角 · 滚轮缩放</span></div>}
+      {active && <div className="live-tip"><span className="status-dot"></span><span>W / S 前后挥动 · A / D 转动武器 · 鼠标转动视角与身体朝向 · Esc 释放鼠标</span></div>}
       {!ready && !game.error && <div className="loading"><span className="loader"></span><p>正在布置角斗场…</p></div>}
       {game.error && <div className="error-panel"><h2>角斗场暂时无法载入</h2><p>{game.error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载 ↗</button></div>}
     </main>
@@ -260,16 +272,16 @@ function App({session=defaultSession}) {
     <footer className="controls-bar">
       <div className="control-block"><span className="player-chip red">你</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>{loadoutName(game.loadouts[0])}</b><span>W 朝正面挥 <i>·</i> S 朝背面挥 <i>·</i> A / D 水平转向 · 可组合{isPawLoadout(game.loadouts[0])&&<><br/>S 触地撑起身体 · 巨爪共用耐力</>}{isEarLoadout(game.loadouts[0])&&<><br/><kbd data-key="KeyF" className={game.pressed.includes('KeyF')?'pressed':''}>F</kbd> 旋耳悬停{game.skills[0]?.active?` · ${game.skills[0].remaining.toFixed(1)} 秒`:''}</>}</span></div></div>
       <div className="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br/><b>武器才是主角</b></span></div>
-      <div className="control-copy view-help"><b>鼠标控制视角</b><span>拖动旋转 <i>·</i> 滚轮缩放 <i>·</i> 视野柔和追踪武器</span></div>
+      <div className="control-copy view-help"><b>鼠标控制视角</b><span>移动鼠标转动视角 <i>·</i> 身体朝向视角 <i>·</i> 滚轮缩放</span></div>
     </footer>
     </div>
 
     {helpOpen && <Modal onCancel={closeHelp}><HelpContent close={closeHelp}/></Modal>}
-    {armoryMode !== null && <main className={`preparation-stage${armoryMode === 'ai' ? ' styled-versus' : ''}`} aria-labelledby={armoryMode==='ai'?undefined:'preparation-title'} aria-label={armoryMode==='ai'?'AI 对战出战配置':undefined}><Armory game={game} session={session} mode={armoryMode} close={() => setArmoryMode(null)} start={() => { session.startRound(armoryMode); setArmoryMode(null); }}/></main>}
+    {armoryMode !== null && <main className={`preparation-stage${armoryMode === 'ai' ? ' styled-versus' : ''}`} aria-labelledby={armoryMode==='ai'?undefined:'preparation-title'} aria-label={armoryMode==='ai'?'AI 对战出战配置':undefined}><Armory game={game} session={session} mode={armoryMode} close={() => setArmoryMode(null)} start={() => { session.startRound(armoryMode); setArmoryMode(null); lockView(); }}/></main>}
     {game.state === 'paused' && !helpOpen && !game.error && <Modal className="pause-menu" onCancel={() => session.resume()}>
       <h2>停！</h2>
       <div className="pause-actions">
-        <button onClick={() => session.resume()}><span className="lobby-button-content">继续对战</span></button>
+        <button onClick={() => { session.resume(); lockView(); }}><span className="lobby-button-content">继续对战</span></button>
         <button onClick={() => session.goHome()}><span className="lobby-button-content">回到主菜单</span></button>
       </div>
     </Modal>}
@@ -279,7 +291,7 @@ function App({session=defaultSession}) {
         {winningCharacter.victoryPortrait?<img src={`${import.meta.env.BASE_URL}${winningCharacter.victoryPortrait}`} alt={`${winningCharacter.name}胜利姿态`}/>:<CharacterPortrait id={winningCharacter.id}/>}
       </div>}
       <div className="victory-actions">
-        <button type="button" onClick={() => session.startRound()}><span className="lobby-button-content">再战一局</span></button>
+        <button type="button" onClick={() => { session.startRound(); lockView(); }}><span className="lobby-button-content">再战一局</span></button>
         <button type="button" onClick={() => session.goHome()}><span className="lobby-button-content">回到主菜单</span></button>
       </div>
     </section>}

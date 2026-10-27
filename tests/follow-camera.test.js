@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Vector3 } from 'three';
 import { CONFIG, MATCH_ARENA_SCALE, makePlayer, weaponStats } from '../src/physics.js';
-import { FOLLOW_CAMERA, createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera } from '../src/free-camera.js';
+import { FOLLOW_CAMERA, cameraYaw, createFreeCameraRig, updateFreeCamera, resetFreeCamera, orbitFreeCamera, zoomFreeCamera } from '../src/free-camera.js';
 
 function assertFighterVisible(camera, player) {
   // Enclose the rendered head, body and name-label anchor, independently of
@@ -74,6 +74,12 @@ test('mouse orbit keeps its angle after release, resets on rematch, and zoom sta
   assert.equal(rig.yaw, player.phi + FOLLOW_CAMERA.yawOffset, 'starts behind the fighter');
   orbitFreeCamera(rig, 100, 100);
   assert.equal(rig.mouseYaw, -0.6);
+  assert.equal(cameraYaw(rig), rig.yaw - 0.6, 'the body faces where the camera looks');
+  const forward = rig.camera.getWorldDirection(new Vector3());
+  updateFreeCamera(rig, player, 10);
+  rig.camera.getWorldDirection(forward);
+  assert.ok(Math.abs(Math.atan2(Math.sin(Math.atan2(forward.z, forward.x) - cameraYaw(rig)), Math.cos(Math.atan2(forward.z, forward.x) - cameraYaw(rig)))) < 0.2,
+    'cameraYaw matches the rendered horizontal look direction');
   for (let frame = 0; frame < 300; frame++) updateFreeCamera(rig, player, 1 / 60);
   assert.equal(rig.mouseYaw, -0.6, 'released mouse must not recenter the view');
   orbitFreeCamera(rig, 0, 1e6);

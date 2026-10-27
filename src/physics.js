@@ -33,6 +33,9 @@ export const CONFIG = Object.freeze({
   grip: 1.28,
   maxHealth: 100,
   turnDamageScale: 0.5,
+  // The body turns toward the view direction at a bounded rate, so hurt
+  // capsules never jump and both networked ends integrate the same motion.
+  bodyTurnRate: 12,
 });
 export const STAMINA = Object.freeze({
   max: 200,
@@ -128,8 +131,9 @@ export function makePlayer(id, selection = 'polearm') {
     theta: WEAPONS[weapon]?.initialTheta ?? (weapon === 'sword' ? Math.PI / 2 : 0.4),
     polarInput: 0,
     phi,
-    // The fighter's face follows the weapon's horizontal direction.
-    facingOffset: 0,
+    // Body/face yaw, steered toward the player's view. Anatomical weapons
+    // (ears, paws) keep the body on the weapon azimuth instead.
+    bodyYaw: phi,
     wt: 0,
     wp: 0,
     skillActive: false, skillRemaining: 0, skillWasHeld: false, skillRequested: false,
@@ -147,10 +151,20 @@ export function makePlayer(id, selection = 'polearm') {
   };
 }
 
-export const fighterHeading = player => player.phi + player.facingOffset;
+export const bodyFollowsView = player => !!characterStats(player).bodyFollowsView && !isEarLoadout(player) && !isPawLoadout(player);
+export const fighterHeading = player => bodyFollowsView(player) ? player.bodyYaw : player.phi;
+
+// Step the body toward the view yaw along the shortest arc.
+function turnBody(player, faceYaw, dt) {
+  if (!Number.isFinite(faceYaw)) return;
+  const error = Math.atan2(Math.sin(faceYaw - player.bodyYaw), Math.cos(faceYaw - player.bodyYaw));
+  const limit = CONFIG.bodyTurnRate * dt;
+  player.bodyYaw += clamp(error, -limit, limit);
+}
 
 function recoilFromClash(player, speed) {
-  const heading = fighterHeading(player);
+  // Back away from the weapon's facing, independent of where the player looks.
+  const heading = player.phi;
   const forward = v3(Math.cos(heading), 0, Math.sin(heading));
   // Guarantee a readable backward step, even if the fighter was moving forward.
   // Keep lateral/vertical motion and any already faster backward momentum.
@@ -332,9 +346,11 @@ function contactMotion(player, start) {
     }
   }
   const theta = player.theta - start.theta, phi = headingDelta(player.phi, start.phi);
+  const body = headingDelta(player.bodyYaw, start.bodyYaw);
+  const bodyReach = Math.max(...characterStats(player).hurtShapes.flatMap(shape => [shape.a, shape.b].map(point => Math.hypot(...point) + shape.radius)));
   const spread=(player.earSpread||0)-(start.earSpread||0),lag=(player.earLag||0)-(start.earLag||0);
-  return { theta, phi, spread, lag, radius,
-    travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi) + Math.abs(spread) + Math.abs(lag)) };
+  return { theta, phi, body, spread, lag, radius,
+    travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi) + Math.abs(spread) + Math.abs(lag)) + bodyReach * Math.abs(body) };
 }
 
 // Inspect intermediate rigid poses, including curved rotation and heading wrap.
@@ -351,7 +367,7 @@ function contactAlongMotion(a, b, previous, detect) {
     (Math.min(motionA.radius, motionB.radius) * CONFIG.contactTravelFraction)), 1, CONFIG.maxContactSubsteps);
   const at = (player, start, motion, t) => ({ ...player,
     p: add(start.p, mul(sub(player.p, start.p), t)),
-    theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t,
+    theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t, bodyYaw: start.bodyYaw + motion.body * t,
     earSpread:(start.earSpread||0)+motion.spread*t,earLag:(start.earLag||0)+motion.lag*t });
   const inspect = t => {
     const poseA = at(a, startA, motionA, t), poseB = at(b, startB, motionB, t);
@@ -418,12 +434,14 @@ export class ArenaPhysics {
     if (this.winner === -1) { this.events.length = 0; return; }
     this.events.length = 0;
     this.time += dt;
-    const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, earSpread:p.earSpread, earLag:p.earLag }));
+    const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, bodyYaw: p.bodyYaw, earSpread:p.earSpread, earLag:p.earLag }));
     for (const p of this.players) {
       if (finished && p.id !== this.winner) continue;
       const weapon = weaponStats(p);
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
+      turnBody(p, input.faceYaw, dt);
+      if (input.skillTap) p.skillRequested = true;
       const rawTurnInput = clamp(input.phi || 0, -1, 1);
       const turnInput = isPawLoadout(p)?(p.polarInput||rawTurnInput?clamp((rawTurnInput*CAT.normalTurnSpeed-p.wp)*CAT.steeringGain,-1,1):0):rawTurnInput;
       if (isEarLoadout(p)) {

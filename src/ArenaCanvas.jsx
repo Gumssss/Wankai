@@ -9,6 +9,10 @@ import {resolveLoadout,loadoutKey} from './loadouts.js';
 import { ARENA_PROFILE, ACTIVE_ARENA_STYLE } from './arena-profile.js';
 import {loadArenaFloorTexture} from './arena-floor.js';
 import {disposeModelResources} from './model-assets.js';
+import {cameraYaw} from './free-camera.js';
+
+// States in which the mouse steers the view and should stay captured.
+const LOOK_STATES = new Set(['countdown', 'playing']);
 
 function ArenaEnvironment({ group }) { return <primitive object={group} dispose={null} />; }
 function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
@@ -83,40 +87,29 @@ function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
     };
   }, [gl, session, view]);
 
-  // Drag to orbit the follow camera, wheel to zoom. Only during a match.
+  // Mouse free-look: click the arena to capture the pointer, then any mouse
+  // movement turns the camera (and the body follows it). Wheel zooms.
   useEffect(() => {
     const canvas = gl.domElement;
-    let dragging = false;
-    const inMatch = () => session.state !== 'lobby';
+    const locked = () => document.pointerLockElement === canvas;
     const down = event => {
-      if (event.button !== 0 || !inMatch()) return;
-      dragging = true;
-      canvas.setPointerCapture(event.pointerId);
-      canvas.style.cursor = 'grabbing';
+      if (event.button !== 0 || !LOOK_STATES.has(session.state) || locked()) return;
+      canvas.requestPointerLock?.()?.catch?.(() => {});
     };
-    const move = event => { if (dragging) view.orbit(event.movementX, event.movementY); };
-    const up = event => {
-      dragging = false;
-      if (event?.pointerId !== undefined && canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
-      canvas.style.cursor = '';
-    };
-    const wheel = event => { if (!inMatch()) return; event.preventDefault(); view.zoom(event.deltaY); };
+    const move = event => { if (locked()) view.orbit(event.movementX, event.movementY); };
+    const wheel = event => { if (session.state === 'lobby') return; event.preventDefault(); view.zoom(event.deltaY); };
+    // Leaving pointer lock (Esc, Alt+Tab) during a match pauses it.
+    const change = () => { if (!locked() && LOOK_STATES.has(session.state)) session.pause(); };
     canvas.addEventListener('pointerdown', down);
-    canvas.addEventListener('pointermove', move);
-    canvas.addEventListener('pointerup', up);
-    canvas.addEventListener('pointercancel', up);
-    canvas.addEventListener('lostpointercapture', up);
+    document.addEventListener('mousemove', move);
+    document.addEventListener('pointerlockchange', change);
     canvas.addEventListener('wheel', wheel, { passive: false });
-    window.addEventListener('blur', up);
     return () => {
-      canvas.style.cursor = '';
       canvas.removeEventListener('pointerdown', down);
-      canvas.removeEventListener('pointermove', move);
-      canvas.removeEventListener('pointerup', up);
-      canvas.removeEventListener('pointercancel', up);
-      canvas.removeEventListener('lostpointercapture', up);
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('pointerlockchange', change);
       canvas.removeEventListener('wheel', wheel);
-      window.removeEventListener('blur', up);
+      if (locked()) document.exitPointerLock();
     };
   }, [gl, session, view]);
 
@@ -132,6 +125,9 @@ function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
     for (const event of impacts) view.impact(event);
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
     view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'result', Math.min(delta, 0.06), matchView, session.localPlayerId);
+    session.localFaceYaw = matchView ? cameraYaw(view.followCamera) : null;
+    // Hand the cursor back for menus, results and pause.
+    if (!LOOK_STATES.has(session.state) && document.pointerLockElement === gl.domElement) document.exitPointerLock();
 
     // Keep the same viewport and camera controller through the menu handoff.
     if (intro && session.state === 'lobby') {

@@ -1,6 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ArenaPhysics, CLASH, CONFIG, fighterHeading, v3 } from '../src/physics.js';
+import { ArenaPhysics, CLASH, CONFIG, v3 } from '../src/physics.js';
+
+// Recoil follows the weapon azimuth; the body may be looking elsewhere.
+const weaponHeading = player => player.phi;
 
 const near = (a, b, tolerance = 1e-7) => assert.ok(Math.abs(a - b) < tolerance, `${a} differs from ${b}`);
 const project = (velocity, heading) => velocity.x * Math.cos(heading) + velocity.z * Math.sin(heading);
@@ -11,10 +14,10 @@ function poseClash(world, rotation = 0, forwardSpeed = 2) {
     player.p = v3(x * Math.cos(rotation), id === 0 ? 1 : 1.03, x * Math.sin(rotation));
     player.theta = Math.PI / 2;
     player.phi = (id === 0 ? 0.5 : Math.PI - 0.5) + rotation;
-    player.facingOffset = id === 0 ? 0.3 : -0.4;
+    player.bodyYaw = player.phi + (id === 0 ? 0.3 : -0.4);
     player.wt = id === 0 ? -3 : 3;
     player.wp = 0;
-    const heading = fighterHeading(player);
+    const heading = weaponHeading(player);
     player.v = v3(forwardSpeed * Math.cos(heading) - 0.75 * Math.sin(heading), 0.2,
       forwardSpeed * Math.sin(heading) + 0.75 * Math.cos(heading));
   }
@@ -35,7 +38,7 @@ test('a strong weapon clash sends each fighter backward along their own facing w
     const event = world.events.find(event => event.type === 'clash');
     assert.ok(event && event.recoilSpeed >= CLASH.minRecoilSpeed && event.recoilSpeed <= CLASH.maxRecoilSpeed);
     for (const [id, player] of world.players.entries()) {
-      const heading = fighterHeading(player), baseline = physicalOnly.players[id];
+      const heading = weaponHeading(player), baseline = physicalOnly.players[id];
       assert.ok(project(player.v, heading) <= -event.recoilSpeed + 1e-8, 'forward momentum must become a backward step');
       assert.ok(project(player.v, heading) < project(baseline.v, heading), 'both fighters must receive recoil');
       near(project(player.v, heading + Math.PI / 2), project(baseline.v, heading + Math.PI / 2));

@@ -120,3 +120,19 @@ test('every match uses the enlarged arena and keeps its boundary on rematch', ()
   session.goHome();
   assert.equal(session.world.arenaRadius, radius);
 });
+
+test('the renderer camera yaw drives the local body facing, and clearing it keeps the current facing', () => {
+  const session = createSession(), baseline = createSession();
+  for (const game of [session, baseline]) { game.startRound('ai'); advance(game, 2.5); }
+  const local = session.world.players[session.localPlayerId];
+  session.localFaceYaw = 1.2;
+  assert.equal(session.getInputs()[0].faceYaw, 1.2);
+  assert.equal(session.getInputs()[1].faceYaw, undefined, 'the opponent has its own facing source');
+  for (const game of [session, baseline]) advance(game, 0.5);
+  assert.ok(Math.abs(local.bodyYaw - 1.2) < 1e-9);
+  assert.equal(local.phi, baseline.world.players[0].phi, 'looking around never steers the weapon');
+  session.localFaceYaw = null;
+  assert.equal(session.getInputs()[0].faceYaw, undefined);
+  advance(session, 0.2);
+  assert.ok(Math.abs(local.bodyYaw - 1.2) < 1e-9);
+});

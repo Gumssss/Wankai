@@ -1,6 +1,6 @@
 import { PerspectiveCamera, Vector3, MathUtils } from 'three';
 import {CHARACTERS} from './character-catalog.js';
-import { CONFIG, clamp, staffFrame, weaponStats, weaponSegments, hurtSegments } from './physics.js';
+import { CONFIG, clamp, staffFrame, weaponStats, weaponSegments, hurtSegments, fighterHeading } from './physics.js';
 
 // Third-person follow camera for the local fighter. The far, gently tilted
 // rear view keeps the opposite rim in sight; the mouse orbits it freely.
@@ -17,6 +17,9 @@ export function createFreeCameraRig(camera = new PerspectiveCamera(FOLLOW_CAMERA
     anchor: new Vector3(), framePoint: new Vector3(),
   };
 }
+
+// Horizontal direction the camera looks along, in the physics heading convention.
+export const cameraYaw = rig => rig.yaw === null ? null : rig.yaw + rig.mouseYaw;
 
 export function resetFreeCamera(rig) {
   rig.yaw = null;
@@ -38,7 +41,7 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
   const firstFrame = rig.yaw === null;
   const elapsed = Math.max(0, dt);
   const aim = staffFrame(player, weaponStats(player).length * 0.55).point;
-  if (firstFrame) rig.yaw = player.phi + rig.settings.yawOffset;
+  if (firstFrame) rig.yaw = fighterHeading(player) + rig.settings.yawOffset;
   // Weapon A/D never changes the camera azimuth; only the mouse does.
   const yaw = rig.yaw + rig.mouseYaw;
   const pitch = clamp(rig.pitch + rig.mousePitch, 0.06, 0.9);
@@ -79,7 +82,7 @@ function fitFighter(rig, player, dt, firstFrame) {
     points.push({ x: player.p.x + x, y: player.p.y + y, z: player.p.z + z });
   }
   if(player.characterId==='beagle'||player.characterId==='orange-tabby'){
-    const character=CHARACTERS[player.characterId],bounds=character.bounds,angle=player.phi+(player.facingOffset||0),c=Math.cos(angle),s=Math.sin(angle);
+    const character=CHARACTERS[player.characterId],bounds=character.bounds,angle=fighterHeading(player),c=Math.cos(angle),s=Math.sin(angle);
     for(const x of [bounds.min[0],bounds.max[0]])for(const y of [bounds.min[1],bounds.max[1]])for(const z of [bounds.min[2],bounds.max[2]])points.push({x:player.p.x+x*c-z*s,y:player.p.y+y-character.bodyFloor,z:player.p.z+x*s+z*c});
   }
   if (player.characterId === 'beagle'||player.characterId==='orange-tabby') for (const s of [...weaponSegments(player),...hurtSegments(player)]) for (const p of [s.a, s.b])

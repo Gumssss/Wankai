@@ -54,7 +54,7 @@ test('sword cannot make a body contact that the longer polearm can reach', () =>
   assert.ok(sword.contacts[0].separated > 0, 'sword leaves a gap');
 });
 
-test('each fighter starts facing the opponent and weapon pitch cannot flip fighter heading', () => {
+test('each fighter starts facing the opponent; weapon pitch and azimuth leave the body heading alone', () => {
   const world = new ArenaPhysics();
   const [first, second] = world.players;
   assert.ok(Math.abs(fighterHeading(first)) < 1e-8);
@@ -67,5 +67,7 @@ test('each fighter starts facing the opponent and weapon pitch cannot flip fight
     assert.equal(fighterHeading(first), heading);
   }
   first.phi += 0.4;
+  assert.equal(fighterHeading(first), heading, 'A/D steers the weapon, not the body');
+  first.bodyYaw += 0.4;
   assert.ok(Math.abs(fighterHeading(first) - heading - 0.4) < 1e-8);
 });

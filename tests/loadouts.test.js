@@ -54,9 +54,10 @@ test('beagle body geometry is independent of ordinary weapon identity and has no
 });
 test('skill input gates follow the complete loadout rather than the beagle character alone',()=>{
  const game=session();game.setLoadouts([beagle('sword'),beagle('long-ears')]);game.startRound('ai');game.state='playing';
- game.keyDown('KeyF');assert.equal(game.keys.has('KeyF'),false);assert.equal(game.world.players[0].skillRequested,false);
- game.setLoadouts;game.goHome();game.setLoadouts([beagle('long-ears'),beagle('sword')]);game.startRound('ai');game.state='playing';
- game.keyDown('KeyF');assert.equal(game.world.players[0].skillRequested,true);
+ game.keyDown('KeyF');assert.equal(game.keys.has('KeyF'),false);assert.equal(game.getInputs()[0].skillTap,undefined);
+ game.goHome();game.setLoadouts([beagle('long-ears'),beagle('sword')]);game.startRound('ai');game.state='playing';
+ game.keyDown('KeyF');assert.equal(game.getInputs()[0].skillTap,true);
  game.tick(1/60);assert.equal(game.world.players[0].skillActive,true);assert.equal(game.world.players[1].skillActive,false);
+ assert.equal(game.getInputs()[0].skillTap,undefined,'a tap is consumed by one physics step');
  assert.equal(isEarLoadout(game.world.players[0]),true);
 });

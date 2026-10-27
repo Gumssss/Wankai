@@ -16,6 +16,10 @@ export class GameSession {
     this.previousState = 'playing';
     this.mode = MATCH_MODES[0];
     this.localPlayerId = 0;
+    // Camera yaw the local body turns toward; written by the renderer each frame.
+    this.localFaceYaw = null;
+    // A skill press between frames still triggers on the next physics step.
+    this.skillTap = false;
     this.loadouts=DEFAULT_LOADOUTS.map(p=>Object.freeze({...p}));
     this.world.reset(...this.loadouts, { arenaScale: MATCH_ARENA_SCALE });
     this.accumulator = 0;
@@ -70,6 +74,8 @@ export class GameSession {
   localInput() {
     const input = { theta: Number(this.keys.has('KeyW')) - Number(this.keys.has('KeyS')), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
     if(isEarLoadout(this.loadouts[this.localPlayerId])&&this.keys.has('KeyF'))input.skill=true;
+    if(this.skillTap)input.skillTap=true;
+    if(Number.isFinite(this.localFaceYaw))input.faceYaw=this.localFaceYaw;
     return input;
   }
 
@@ -96,7 +102,7 @@ export class GameSession {
     if(code==='KeyF'&&!isEarLoadout(this.loadouts[this.localPlayerId]))return;
     if (this.keys.has(code)) return;
     this.keys.add(code);
-    if(code==='KeyF')this.world.players[this.localPlayerId].skillRequested=true;
+    if(code==='KeyF')this.skillTap=true;
     this.syncPolarInputs();
     this.publish();
   }
@@ -108,7 +114,7 @@ export class GameSession {
   }
 
   clearKeys() {
-    for(const player of this.world.players)player.skillRequested=false;
+    this.skillTap=false;
     if (this.keys.size === 0) return;
     this.keys.clear();
     this.syncPolarInputs();
@@ -198,6 +204,12 @@ export class GameSession {
     this.publish();
   }
 
+  // A tap reaches exactly one physics step.
+  consumeSkillTap(inputs) {
+    for (const input of inputs) if (input) delete input.skillTap;
+    this.skillTap = false;
+  }
+
   finishRound() {
     this.state = 'result';
     this.clearKeys();
@@ -235,6 +247,7 @@ export class GameSession {
         let steps = 0;
         while (this.accumulator >= CONFIG.step && steps++ < 12) {
           this.world.step(inputs);
+          this.consumeSkillTap(inputs);
           this.accumulator -= CONFIG.step;
           for (const event of this.world.events) { impacts.push(event); this.impact(event); }
           if (this.world.winner !== null) {
@@ -250,6 +263,7 @@ export class GameSession {
       let steps = 0;
       while (this.accumulator >= CONFIG.step && steps++ < 12) {
         this.world.step(inputs);
+        this.consumeSkillTap(inputs);
         this.accumulator -= CONFIG.step;
       }
       this.publish();

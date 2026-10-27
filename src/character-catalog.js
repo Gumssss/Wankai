@@ -3,18 +3,18 @@ import {CAT} from './orange-tabby-profile.js';
 
 const shape=(a,b,radius)=>Object.freeze({a:Object.freeze(a),b:Object.freeze(b),radius});
 export const CHARACTER_CATALOG=Object.freeze([
-  Object.freeze({id:'yellow-blob',name:'奶龙',english:'NAI LONG',available:true,
+  Object.freeze({id:'yellow-blob',name:'奶龙',english:'NAI LONG',available:true,bodyFollowsView:true,
     portrait:'portraits/nailong-states/normal.png', criticalPortrait:'portraits/nailong-states/critical.png', victoryPortrait:'portraits/nailong-states/victory.png',
     description:'圆润的黄色伙伴，可使用同色圆棍和通用武器，沿面朝方向前后挥动、撑地与格挡。',
     model:'yellow-blob-static-v03.glb',bodyFloor:.59,bodyRadius:.70,
     bounds:{min:[-.587,0,-.701],max:[.587,1.7,.701]},
     hurtShapes:Object.freeze([shape([0,-.15,0],[0,.18,0],.55),shape([0,.72,0],[0,.76,0],.35)]),
   }),
-  Object.freeze({id:'basic-fighter',name:'基础丸人',english:'BASIC FIGHTER',available:true,
+  Object.freeze({id:'basic-fighter',name:'基础丸人',english:'BASIC FIGHTER',available:true,bodyFollowsView:true,
     description:'最初的丸人，使用漂浮兵器撑地与对战。',model:null,bodyFloor:.59,bodyRadius:.38,
     bounds:{min:[-.39,0,-.335],max:[.39,1.75,.335]},
     hurtShapes:Object.freeze([shape([0,-.19,0],[0,.18,0],.38),shape([0,.76,0],[0,.76,0],.38)])}),
-  Object.freeze({id:'beagle',name:'Werwer',english:'WERWER',available:true,
+  Object.freeze({id:'beagle',name:'Werwer',english:'WERWER',available:true,bodyFollowsView:true,
     portrait:'portraits/werwer-states/normal.png', criticalPortrait:'portraits/werwer-states/critical.png', victoryPortrait:'portraits/werwer-states/victory.png',
     description:'自然垂耳的比格犬，也可装备长耳变为双耳战斗形态。',model:'beagle-smooth-appearance-v05.glb',bodyFloor:.59,bodyRadius:.58,
     bounds:BEAGLE_COMPACT_BOUNDS,
