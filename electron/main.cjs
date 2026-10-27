@@ -22,7 +22,7 @@ function createWindow() {
   window.webContents.on('will-navigate', (event, url) => {
     if (url !== DEV_URL) event.preventDefault();
   });
-  if (process.env.WANKAI_DIST === '1') {
+  if (process.argv.includes('--dist') || process.env.WANKAI_DIST === '1') {
     window.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
   } else {
     window.loadURL(DEV_URL);

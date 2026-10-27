@@ -10,7 +10,7 @@
     "dev:renderer": "vite --host 127.0.0.1",
     "dev:electron": "wait-on http://127.0.0.1:5173/ && electron .",
     "build": "vite build",
-    "preview:electron": "WANKAI_DIST=1 electron .",
+    "preview:electron": "electron . --dist",
     "test": "node --test tests/*.test.js"
   },
   "dependencies": {
