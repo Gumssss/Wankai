@@ -1,19 +1,14 @@
 import {CHARACTERS,characterName} from './character-catalog.js';
 import {WEAPON_CATALOG,weaponName} from './weapon-catalog.js';
-import {BEAGLE} from './beagle-profile.js';
-import {CAT} from './orange-tabby-profile.js';
+import {skillFor} from './skills.js';
 
 export const DEFAULT_LOADOUTS=Object.freeze([
-  Object.freeze({characterId:'yellow-blob',weaponId:'yellow-staff'}),
-  Object.freeze({characterId:'yellow-blob',weaponId:'yellow-staff'}),
+  Object.freeze({characterId:'naiwa',weaponId:'yellow-staff'}),
+  Object.freeze({characterId:'dudu',weaponId:'takeout-box'}),
 ]);
 const weapons=new Map(WEAPON_CATALOG.map(w=>[w.id,w]));
 
-// Legacy string values are accepted only at boundary methods used by earlier
-// scripts. Runtime state and the new picker always carry both canonical IDs.
 export function normalizeLoadout(value){
-  if(typeof value==='string')value=value==='beagle'||value==='long-ears'
-    ?{characterId:'beagle',weaponId:'long-ears'}:value==='yellow-staff'?{characterId:'yellow-blob',weaponId:value}:{characterId:'basic-fighter',weaponId:value};
   const {characterId,weaponId}=value||{};
   const character=CHARACTERS[characterId],weapon=weapons.get(weaponId);
   if(!character?.available)throw new Error(`Unknown or unavailable character: ${characterId}`);
@@ -25,15 +20,13 @@ export function normalizeLoadout(value){
 }
 export function isValidLoadout(value){try{normalizeLoadout(value);return true;}catch{return false;}}
 export function canEquip(characterId,weaponId){return isValidLoadout({characterId,weaponId});}
-export const isEarLoadout=p=>p?.characterId==='beagle'&&(p.weaponId??p.weapon)==='long-ears';
-export const isPawLoadout=p=>p?.characterId==='orange-tabby'&&(p.weaponId??p.weapon)==='cat-paws';
 export const loadoutKey=p=>`${p.characterId}:${p.weaponId??p.weapon??'none'}`;
 export const loadoutName=p=>`${characterName(p.characterId)} · ${weaponName(p.weaponId??p.weapon)}`;
+// Every weapon, exclusive or common, floats beside the body under the same controller.
 export function resolveLoadout(value){
-  const loadout=normalizeLoadout(value),ears=isEarLoadout(loadout),paws=isPawLoadout(loadout);
-  return {...loadout,character:CHARACTERS[loadout.characterId],weapon:weapons.get(loadout.weaponId),
-    bodyModel:paws?CAT.model:loadout.characterId==='beagle'?(ears?BEAGLE.model:BEAGLE.appearanceModel):CHARACTERS[loadout.characterId].model,
-    weaponModel:ears||paws?null:`${loadout.weaponId}.glb`,controller:paws?'paws':ears?'ears':'floating',skill:ears?'ear-hover':null};
+  const loadout=normalizeLoadout(value);
+  return {...loadout,character:CHARACTERS[loadout.characterId],weapon:weapons.get(loadout.weaponId),skill:skillFor(loadout.characterId)};
 }
+export const weaponsFor=characterId=>WEAPON_CATALOG.filter(w=>canEquip(characterId,w.id));
 export const PLAYABLE_LOADOUTS=Object.freeze(Object.values(CHARACTERS).filter(c=>c.available)
-  .flatMap(c=>WEAPON_CATALOG.filter(w=>canEquip(c.id,w.id)).map(w=>Object.freeze({characterId:c.id,weaponId:w.id}))));
+  .flatMap(c=>weaponsFor(c.id).map(w=>Object.freeze({characterId:c.id,weaponId:w.id}))));

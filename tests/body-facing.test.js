@@ -1,11 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {ArenaPhysics,CONFIG,bodyFollowsView,fighterHeading,hurtSegments,weaponSegments,makePlayer} from '../src/physics.js';
-import {PLAYABLE_LOADOUTS,isEarLoadout,isPawLoadout} from '../src/loadouts.js';
+import {PLAYABLE_LOADOUTS} from '../src/loadouts.js';
 import {sandbox,sparring} from './sandbox.js';
 
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
-const yellow={characterId:'yellow-blob',weaponId:'yellow-staff'};
+const yellow={characterId:'naiwa',weaponId:'yellow-staff'};
 
 test('the body turns toward the view yaw at a bounded rate along the shortest arc',()=>{
  const world=sandbox(new ArenaPhysics(),yellow),p=world.players[0];
@@ -30,27 +30,38 @@ test('looking around never steers the weapon, and A/D never turns the body',()=>
  assert.equal(b.bodyYaw,makePlayer(0,yellow).bodyYaw,'weapon steering alone leaves the body where it was');
 });
 
-test('ordinary fighters face their view; ears and paws keep the body on the weapon azimuth',()=>{
+test('every fighter faces its view, whatever weapon it holds',()=>{
  for(const loadout of PLAYABLE_LOADOUTS){
   const p=makePlayer(0,loadout);p.phi=.4;p.bodyYaw=1.9;
-  const anatomical=isEarLoadout(p)||isPawLoadout(p);
-  assert.equal(bodyFollowsView(p),!anatomical,JSON.stringify(loadout));
-  assert.equal(fighterHeading(p),anatomical?.4:1.9,JSON.stringify(loadout));
+  assert.equal(bodyFollowsView(p),true,JSON.stringify(loadout));
+  assert.equal(fighterHeading(p),1.9,JSON.stringify(loadout));
+ }
+});
+
+test('a weapon starts and floats in the same place and orientation on every character',()=>{
+ for(const weaponId of new Set(PLAYABLE_LOADOUTS.map(l=>l.weaponId))){
+  const holders=PLAYABLE_LOADOUTS.filter(l=>l.weaponId===weaponId).map(l=>makePlayer(1,l));
+  const [first,...others]=holders;
+  for(const p of others){
+   for(const key of ['theta','phi','wt','wp','grounded'])assert.equal(p[key],first[key],`${weaponId} ${p.characterId} ${key}`);
+   assert.deepEqual(p.p,first.p,`${weaponId} ${p.characterId} starts at the same pivot`);
+   assert.deepEqual(weaponSegments(p),weaponSegments(first),`${weaponId} ${p.characterId} weapon pose`);
+  }
  }
 });
 
 test('hurt capsules rotate with the body while weapon capsules ignore it',()=>{
- const beagleSword={characterId:'beagle',weaponId:'sword'};
+ const beagleSword={characterId:'dudu',weaponId:'sword'};
  const a=makePlayer(0,beagleSword),b=makePlayer(0,beagleSword);b.bodyYaw=a.bodyYaw+1.2;
  const moved=(x,y)=>x.some((s,i)=>Math.hypot(s.a.x-y[i].a.x,s.a.z-y[i].a.z)>1e-3);
- assert.ok(moved(hurtSegments(a),hurtSegments(b)),'the asymmetric beagle body must turn');
+ assert.ok(moved(hurtSegments(a),hurtSegments(b)),'the asymmetric dudu body must turn');
  assert.deepEqual(weaponSegments(a),weaponSegments(b));
 });
 
 test('a body turning during a tick is still swept for contact',()=>{
  // The target spins its body as the sword arrives; hits must still register.
  for(const turn of [0,1,-1]){
-  const world=sparring(new ArenaPhysics(),{characterId:'basic-fighter',weaponId:'sword'},{characterId:'beagle',weaponId:'sword'});
+  const world=sparring(new ArenaPhysics(),{characterId:'naiwa',weaponId:'sword'},{characterId:'dudu',weaponId:'sword'});
   for(let i=0;i<360&&!world.lastHit;i++)world.step([{theta:1},{faceYaw:world.players[1].bodyYaw+turn*2}]);
   assert.ok(world.lastHit,`no hit while the target turned ${turn}`);
  }

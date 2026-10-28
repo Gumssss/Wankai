@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ArenaPhysics, CONFIG, WEAPONS, closestSegments, staffFrame, weaponSegments, v3 } from '../src/physics.js';
 import {sandbox,sparring} from './sandbox.js';
+import { CHARACTERS } from '../src/character-catalog.js';
 
 const idle = [{}, {}];
 const near = (a, b, tolerance = 1e-7) => assert.ok(Math.abs(a - b) < tolerance, `${a} differs from ${b}`);
@@ -66,7 +67,9 @@ test('a nearby swept weapon miss stays a miss without a forgiving collision marg
   near(world.players[0].v.x, 0); near(world.players[1].v.x, 0);
 });
 
-function passingBody(gap = 0.465) {
+// The stickman's torso capsule; gaps are measured from its surface.
+const TORSO = CHARACTERS.stickman.hurtShapes[0];
+function passingBody(gap = TORSO.radius + 0.085) {
   const world = new ArenaPhysics(); world.reset('sword','sword');
   const [a, b] = world.players;
   Object.assign(a, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: 0, v: v3(0, 0, -15) });
@@ -77,7 +80,7 @@ function passingBody(gap = 0.465) {
 function bodyClearance(world) {
   const [a, b] = world.players;
   return Math.min(...weaponSegments(a).map(segment => closestSegments(segment.a, segment.b,
-    v3(b.p.x, b.p.y - 0.19, b.p.z), v3(b.p.x, b.p.y + 0.18, b.p.z)).distance - CONFIG.bodyRadius - segment.radius));
+    v3(b.p.x, b.p.y + TORSO.a[1], b.p.z), v3(b.p.x, b.p.y + TORSO.b[1], b.p.z)).distance - TORSO.radius - segment.radius));
 }
 
 test('a blade passing a body between separated poses still records one hit', () => {
@@ -87,7 +90,7 @@ test('a blade passing a body between separated poses still records one hit', () 
   assert.ok(bodyClearance(world) > 0);
   assert.equal(world.events.filter(event => event.type === 'hit' && event.attacker === 0).length, 1);
   assert.ok(world.players[1].health < 100);
-  const miss = passingBody(0.49); miss.step(idle);
+  const miss = passingBody(TORSO.radius + 0.11); miss.step(idle);
   assert.equal(miss.players[1].health, 100, 'nearby body misses must remain misses');
 });
 
@@ -141,7 +144,7 @@ test('solid guard and curved-tip features also block beyond the old shaft-only c
 });
 
 test('all three weapons can still support movement through the lower-speed swing in either direction', () => {
-  for (const weapon of Object.keys(WEAPONS).filter(id=>!WEAPONS[id].attachment)) for (const direction of [-1, 1]) {
+  for (const weapon of Object.keys(WEAPONS)) for (const direction of [-1, 1]) {
     const world = new ArenaPhysics(); sandbox(world,weapon);
     const p = world.players[0]; p.theta = 0;
     let highest = p.p.y, furthest = 0;

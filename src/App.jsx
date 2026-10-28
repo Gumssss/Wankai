@@ -1,199 +1,346 @@
 import { Component, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { ArenaCanvas } from './ArenaCanvas.jsx';
+import { ArenaCanvas, LOOK_STATES, requestLook } from './ArenaCanvas.jsx';
 import { CONTROL_KEYS, GameSession } from './game-session.js';
-import { Armory } from './Armory.jsx';
-import {loadoutName,loadoutKey,isEarLoadout,isPawLoadout} from './loadouts.js';
-import {CHARACTERS,characterName} from './character-catalog.js';
-import {CharacterPortrait} from './selection-icons.jsx';
+import { MatchSetup } from './MatchSetup.jsx';
+import { loadoutKey, loadoutName } from './loadouts.js';
+import { CHARACTER_CATALOG, characterName } from './character-catalog.js';
+import { CharacterPortrait, SkillIcon } from './selection-icons.jsx';
 import { STAMINA } from './physics.js';
+import { SKILLS } from './skills.js';
+import { AI_DIFFICULTIES } from './ai-opponent.js';
+import { SENSITIVITY_RANGE } from './free-camera.js';
+import { loadSettings, saveSettings } from './settings.js';
+import { MUSIC_CREDITS, MUSIC_LICENSE, MUSIC_CHANGES } from './audio/credits.js';
+import { onlineAvailable, steamStatus, quickMatch, inviteFriend, joinInvite, openInviteDialog, cancelOnline } from './online.js';
+import { loadArenaPreviews } from './models/arena-previews.js';
 import './style.css';
 
 const defaultSession = new GameSession();
 
-// Capture the mouse for free-look. Called from clicks, which grant the needed user activation;
-// the arena may still be hidden behind the preparation page for a frame or two.
-const lockView = () => requestAnimationFrame(() => requestAnimationFrame(() =>
-  document.querySelector('#viewport canvas')?.requestPointerLock?.()?.catch?.(() => {})));
+// Capture the mouse for free-look. Called from clicks, which grant the needed
+// user activation; the arena may still be hidden for a frame or two.
+const lockView = () => requestAnimationFrame(() => requestAnimationFrame(() => requestLook(document.querySelector('#viewport canvas'))));
 
 class CanvasBoundary extends Component {
   constructor(props) { super(props); this.state = { error: null }; }
   static getDerivedStateFromError(error) { return { error }; }
   componentDidCatch(error) { console.error(error); this.props.onError(error); }
   render() {
-    if (this.state.error) return <div className="error-panel"><h2>角斗场暂时无法载入</h2><p>请使用支持 WebGL 2 的现代浏览器，并开启硬件加速。</p><button className="primary-button" onClick={() => location.reload()}>重新加载 ↗</button></div>;
+    if (this.state.error) return <div className="error-panel"><h2>竞技场暂时无法载入</h2><p>请使用支持 WebGL 2 的环境，并开启硬件加速。</p><button className="primary-button" onClick={() => location.reload()}>重新加载</button></div>;
     return this.props.children;
   }
 }
 
-function Modal({ children, onCancel, className = '' }) {
+function Modal({ children, onCancel, className = '', label }) {
   const ref = useRef(null);
   useEffect(() => {
     const dialog = ref.current;
     dialog.showModal();
     return () => { if (dialog.open) dialog.close(); };
   }, []);
-  return <dialog ref={ref} className={`modal ${className}`} onCancel={event => { event.preventDefault(); onCancel?.(); }}>{children}</dialog>;
+  return <dialog ref={ref} aria-label={label} className={`modal ${className}`} onCancel={event => { event.preventDefault(); onCancel?.(); }}>{children}</dialog>;
 }
 
-const FIGHTER_LABELS = ['你', 'AI'];
+const clock = seconds => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
-function FighterScore({ id, health, stamina, loadout }) {
-  const isSecond = id === 1;
+function FighterCard({ id, tag, health, stamina, loadout, skill, side }) {
   const staminaState = stamina <= 1e-8 ? 'empty' : stamina < STAMINA.lowThreshold ? 'low' : 'ready';
-  const staminaLabel = staminaState === 'empty' ? '力竭 · 弱控' : staminaState === 'low' ? '耐力不足' : '耐力';
-  return <div className={`fighter fighter-${isSecond ? 'two' : 'one'}`}>
-    <div className="fighter-avatar"><CharacterPortrait id={loadout.characterId} critical={health < 10}/></div>
-    <div className="fighter-info">
-      <div className="fighter-heading"><span><b>{characterName(loadout.characterId)}</b></span><strong aria-label={`生命 ${health} / 100`}>{health}<small>/100</small></strong></div>
-      <div className="health-track" role="progressbar" aria-label={`${FIGHTER_LABELS[id]} 生命`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={health}><div className="health-ghost" style={{ transform: `scaleX(${health / 100})` }}></div><div className="health-fill" style={{ transform: `scaleX(${health / 100})` }}></div></div>
-      <div className={`stamina-meter stamina-${staminaState}`}>
-        <div className="stamina-heading"><span>{staminaLabel}</span><span>{Math.ceil(stamina - 1e-8)} / {STAMINA.max}</span></div>
-        <div className="stamina-track" role="progressbar" aria-label={`${FIGHTER_LABELS[id]} 耐力`} aria-valuemin={0} aria-valuemax={STAMINA.max} aria-valuenow={Math.round(stamina)} aria-valuetext={`${Math.round(stamina)} / ${STAMINA.max}，${staminaLabel}`}><div className="stamina-fill" style={{ transform: `scaleX(${stamina / STAMINA.max})` }}></div></div>
+  const staminaLabel = staminaState === 'empty' ? '力竭' : staminaState === 'low' ? '体力低' : '体力';
+  const info = SKILLS[skill?.id];
+  return <div className={`fighter-card ${side} player-${id}`}>
+    <div className="fighter-avatar"><CharacterPortrait id={loadout.characterId} playerId={id} critical={health < 15} /></div>
+    <div className="fighter-body">
+      <div className="fighter-name"><span className="fighter-tag">{tag}</span><b>{characterName(loadout.characterId)}</b><strong>{health}</strong></div>
+      <div className="health-track" role="progressbar" aria-label={`${tag} 生命`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={health}>
+        <div className="health-ghost" style={{ transform: `scaleX(${health / 100})` }} />
+        <div className="health-fill" style={{ transform: `scaleX(${health / 100})` }} />
       </div>
+      <div className={`stamina-row stamina-${staminaState}`}>
+        <span>{staminaLabel}</span>
+        <div className="stamina-track" role="progressbar" aria-label={`${tag} ${staminaLabel}`} aria-valuemin={0} aria-valuemax={STAMINA.max} aria-valuenow={Math.round(stamina)}>
+          <div className="stamina-fill" style={{ transform: `scaleX(${stamina / STAMINA.max})` }} />
+        </div>
+      </div>
+      {info && <div className={`skill-chip${skill.active ? ' active' : skill.cooldown > 0 ? ' cooling' : ' ready'}`}>
+        <SkillIcon id={info.id} />{info.name}<span>{skill.active ? '发动中' : skill.cooldown > 0 ? `${Math.ceil(skill.cooldown)}s` : '就绪'}</span>
+      </div>}
     </div>
   </div>;
 }
 
-function KeyGrid({ codes, labels, pressed }) {
-  return <div className="key-grid">{codes.map((code, i) => <kbd key={code} data-key={code} className={pressed.includes(code) ? 'pressed' : ''}>{labels[i]}</kbd>)}</div>;
+// Bottom-right: the local fighter's F skill with a cooldown ring.
+function SkillWidget({ skill, pressed }) {
+  const info = SKILLS[skill?.id];
+  if (!info) return null;
+  const state = skill.active ? 'active' : skill.cooldown > 0 ? 'cooling' : 'ready';
+  const progress = skill.active ? skill.time / info.duration : 1 - skill.cooldown / info.cooldown;
+  return <div className={`skill-widget ${state}${pressed ? ' pressed' : ''}`} style={{ '--progress': progress }} aria-label={`技能 ${info.name}`}>
+    <div className="skill-ring"><SkillIcon id={info.id} />{state === 'cooling' && <b>{Math.ceil(skill.cooldown)}</b>}</div>
+    <div className="skill-text">
+      <span><kbd>F</kbd>{info.name}</span>
+      <small>{state === 'active' ? `生效中 ${skill.time.toFixed(1)}s` : state === 'cooling' ? `冷却 ${skill.cooldown.toFixed(1)}s` : '就绪 · 按 F 发动'}</small>
+    </div>
+  </div>;
 }
 
 function HeadingGuide() {
-  return <div className="heading-guide" aria-label="武器挥动平面，相对当前视角。">
-    <strong>武器朝向</strong><span>相对当前视角</span>
-    <div className="heading-dial"><div id="staff-heading-arrow" className="heading-arrow">↑</div></div>
-    <small>A / D 转动武器</small>
+  return <div className="heading-guide" aria-label="武器朝向，相对当前视角">
+    <div className="heading-dial"><div id="staff-heading-arrow" className="heading-arrow" /></div>
+    <span>武器朝向</span>
+  </div>;
+}
+
+function Keys({ game }) {
+  const pressed = code => game.pressed.includes(code) ? ' pressed' : '';
+  return <div className="key-hints" aria-label="操作提示">
+    <span><kbd className={pressed('KeyW')}>W</kbd><kbd className={pressed('KeyS')}>S</kbd>挥动</span>
+    <span><kbd className={pressed('KeyA')}>A</kbd><kbd className={pressed('KeyD')}>D</kbd>转动武器</span>
+    <span><kbd className="mouse">鼠标</kbd>视角</span>
+    <span><kbd>Esc</kbd>菜单</span>
+  </div>;
+}
+
+function Slider({ label, value, display, min, max, step, onChange }) {
+  return <label className="setting">
+    <span>{label}<b>{display}</b></span>
+    <input type="range" min={min} max={max} step={step} value={value} style={{ '--fill': `${(value - min) / (max - min) * 100}%` }}
+      onChange={event => onChange(Number(event.target.value))} />
+  </label>;
+}
+
+function SettingsPanel({ settings, update }) {
+  return <div className="settings-panel">
+    <h3>操控</h3>
+    <Slider label="鼠标灵敏度" value={settings.sensitivity} display={`${settings.sensitivity.toFixed(2)}×`}
+      min={SENSITIVITY_RANGE.min} max={SENSITIVITY_RANGE.max} step={0.05} onChange={sensitivity => update({ sensitivity })} />
+    <label className="setting toggle">
+      <span>反转上下视角<small>开启后鼠标上推为向下看</small></span>
+      <input type="checkbox" checked={settings.invertY} onChange={event => update({ invertY: event.target.checked })} />
+    </label>
+    <h3>声音</h3>
+    <label className="setting toggle">
+      <span>声音总开关</span>
+      <input type="checkbox" checked={settings.sound} onChange={event => update({ sound: event.target.checked })} />
+    </label>
+    <Slider label="背景音乐" value={settings.music} display={`${Math.round(settings.music * 100)}%`} min={0} max={1} step={0.05} onChange={music => update({ music })} />
+    <Slider label="音效" value={settings.sfx} display={`${Math.round(settings.sfx * 100)}%`} min={0} max={1} step={0.05} onChange={sfx => update({ sfx })} />
+    <h3>音乐署名</h3>
+    <div className="credits">
+      {MUSIC_CREDITS.map(credit => <p key={credit.file}>
+        <span><b>“{credit.title}”</b> {credit.author}</span><small>{credit.use}</small>
+      </p>)}
+      <small>Licensed under {MUSIC_LICENSE.name}<br />{MUSIC_LICENSE.url}<br />{MUSIC_CHANGES}</small>
+    </div>
   </div>;
 }
 
 function HelpContent({ close }) {
   return <>
     <button className="modal-close" onClick={close} aria-label="关闭玩法说明">×</button>
-    <span className="eyebrow">A LITTLE FIELD GUIDE</span><h2>四个按键，转动武器。</h2>
-    <p className="modal-intro">你控制的是兵器、双耳或巨爪的转动力。角色与武器分别选择：基础丸人和比格犬均可使用漂浮的短剑、长柄刀或战锤。橘猫装备巨爪，低空悬浮时可按 W / S 挥爪，S 触地后撑起身体；A / D 转向，也可与 W / S 组合。巨爪共用耐力，没有额外技能。只有比格犬装备长耳时，W / S 前后挥耳撑地，A / D 同时转向，普通转向时双耳保持并列。按 F 启动 5 秒旋耳悬停，不消耗耐力，时间到后自动收耳落地。松开技能键不会提前结束。悬停时 W / S 暂停挥耳，A / D 可改变旋转方向。点击画面锁定鼠标后，移动鼠标转动视角，角色的身体和脸始终朝向视角方向，滚轮调整远近，Esc 释放鼠标并暂停。A / D 只转动武器，不会带着镜头或身体转向。</p>
+    <span className="eyebrow">HOW TO PLAY</span>
+    <h2>武器才是主角</h2>
     <div className="guide-steps">
-      <article><span>01</span><div><h3>撑地，才走得动</h3><p>用 A / D 调整水平方向，再用 W 或 S 选择挥动方向。武器触地后，继续挥动可撑起并带动身体；角色没有独立行走按键。</p></div></article>
-      <article><span>02</span><div><h3>选择挥动方向</h3><p>W 让武器向角色正面旋转，S 向背面旋转；在头顶可以选前后，触地后继续按住可撑起身体并转到另一侧。A / D 只改变水平方向，也可与 W 或 S 同时按。松手后保留惯性，并受重力和阻尼影响。</p></div></article>
-      <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>武器撞中头部或躯干都会扣血，伤害相同。相同碰撞速度与发力下，纯横转命中伤害为竖挥的一半；组合挥动按实际碰撞方向混合计算。松手后的惯性命中也遵循此规则。武器之间可以互相格挡，有力相撞会让双方沿各自面向的反方向后退；轻触和持续贴住不会反复触发。</p></div></article>
-      <article><span>04</span><div><h3>留些耐力，再挥下一棍</h3><p>每人 200 耐力。竖挥每秒消耗 20，横转每秒消耗 8，同时操作叠加。比格犬装备长耳时，旋耳悬停使用独立的 5 秒计时，不消耗耐力，低耐力也可发动。放开武器操作半秒后，每秒恢复 30。耐力低于 25 时逐渐变慢；耗尽仍可弱控、撑地与格挡，反向刹车保持灵敏。转动镜头不耗耐力。</p></div></article>
+      <article><span>01</span><div><h3>撑地才走得动</h3><p>角色没有走路键。按住 W 让武器朝正面翻滚撑地，身体就会向前移动；S 朝背面翻滚，向后移动。A / D 转动武器的水平方向，也就决定了前进的方向。</p></div></article>
+      <article><span>02</span><div><h3>鼠标看哪，身体就朝哪</h3><p>点击画面锁定鼠标，左右移动鼠标转动视角，角色的身体和脸会转向视角方向。开心小猫的身体随猫爪转动。灵敏度和上下反转可在设置中调整。</p></div></article>
+      <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>同样速度下，纯横转命中只有竖挥一半的伤害。武器之间可以格挡。场上的障碍会挡住身体，也能用武器撑着借力。</p></div></article>
+      <article><span>04</span><div><h3>F 发动角色技能</h3><p>{CHARACTER_CATALOG.map(c => `${c.name}：${SKILLS[c.skill].name}`).join('；')}。技能发动后进入冷却，右下角显示剩余时间。</p></div></article>
     </div>
-    <div className="guide-note"><b>100 HP · 血量归零判负</b><span>圆台有边界，不会掉落。</span></div>
-    <button className="primary-button" onClick={close}>明白了，抡起来 <span>↗</span></button>
+    <div className="guide-note"><b>100 生命 · 200 体力 · 先归零者输</b><span>挥动和转动消耗体力，停手半秒后恢复；体力低时动作变慢。AI 对战中 AI 的角色与武器每局随机。联机通过 Steam：快速匹配或邀请好友，需要 Steam 在运行并已登录。</span></div>
+    <button className="primary-button" onClick={close}>明白了，抡起来 <span>→</span></button>
   </>;
 }
 
-function App({session=defaultSession}) {
+// What the Steam link is doing, in words (statuses from electron/steam-link.cjs).
+function onlineStatusText(link) {
+  if (link.type === 'searching') return '正在寻找对手…';
+  if (link.type === 'joining') return '正在加入好友的房间…';
+  if (link.type === 'waiting') return link.mode === 'invite' ? '房间已创建，等待好友接受邀请…' : '正在寻找对手…（已开放房间，等待其他玩家加入）';
+  if (link.type === 'connected') return `已找到对手${link.peer?.name ? `：${link.peer.name}` : ''}，正在握手…`;
+  return '正在连接 Steam…';
+}
+
+// Online over Steam: 快速匹配 (public lobby of the same version) or 邀请好友
+// (friends-only lobby + Steam invite dialog). Once both players are in the
+// lobby, the shared setup screen opens.
+function OnlinePanel({ game, session, close, onConnected, invite, onInviteHandled }) {
+  const [steam, setSteam] = useState(null);
+  const [link, setLink] = useState(null);
+  const info = game.net, available = onlineAvailable();
+  useEffect(() => { if (available) steamStatus().then(setSteam); }, []);
+  useEffect(() => { if (info?.phase === 'connected') onConnected(); }, [info?.phase]);
+  const run = action => {
+    setLink({ type: 'connecting' });
+    action(status => { if (status?.type === 'connected' || status?.type === 'error') steamStatus().then(setSteam); setLink(status); })
+      .catch(failure => setLink({ type: 'error', message: failure.message }));
+  };
+  useEffect(() => { if (invite) { onInviteHandled(); run(onStatus => joinInvite(session, invite, onStatus)); } }, [invite]);
+  const cancel = () => { cancelOnline(session); close(); };
+  const stop = () => { cancelOnline(session); setLink(null); };
+  const closedMessage = info?.phase === 'closed' ? info.message : '';
+  const idle = !link || link.type === 'error' || (link.type === 'disconnected' && !info) || !!closedMessage;
+  const warning = closedMessage || (idle && link?.message) || '';
+  return <>
+    <button className="modal-close" onClick={cancel} aria-label="关闭联机面板">×</button>
+    <span className="eyebrow">ONLINE · STEAM</span>
+    <h2>联机对战</h2>
+    {!available && <p className="online-note warn">联机需要桌面版（通过 Steam 启动的游戏或 npm start）。浏览器预览中无法联机。</p>}
+    {available && idle && <>
+      <div className="online-choices">
+        <section>
+          <h3>快速匹配</h3>
+          <p>自动寻找正在等待的同版本玩家；暂时没有就开放一个房间，等别人加入。</p>
+          <button className="primary-button" onClick={() => run(onStatus => quickMatch(session, onStatus))}>快速匹配 <span>→</span></button>
+        </section>
+        <section>
+          <h3>邀请好友</h3>
+          <p>创建只有好友能加入的房间，并打开 Steam 邀请窗口。好友接受后自动进入准备页。</p>
+          <button className="primary-button" onClick={() => run(onStatus => inviteFriend(session, onStatus))}>邀请好友 <span>→</span></button>
+        </section>
+      </div>
+      {!steam?.local && <p className={`online-note${steam && !steam.ok ? ' warn' : ''}`}>{!steam ? '正在连接 Steam…' : steam.ok ? `Steam 已连接 · ${steam.name}` : steam.message}</p>}
+    </>}
+    {steam?.local && <p className="online-note dev-note">开发模式 · 本机联机（不经过 Steam）：{steam.local.role === 'host' ? '房主' : '加入'} · 127.0.0.1:{steam.local.port}</p>}
+    {available && !idle && <div className="online-status">
+      <p className="online-note"><span className="waiting-dot" />{onlineStatusText(link)}</p>
+      {link.type === 'waiting' && link.mode === 'invite' && <button className="secondary-button" onClick={openInviteDialog}>再次打开 Steam 邀请</button>}
+      <button className="secondary-button" onClick={stop}>取消</button>
+    </div>}
+    {warning && <p className="online-note warn" role="alert">{warning}</p>}
+  </>;
+}
+
+function TitleScreen({ started, openSetup, openOnline, openSettings, openHelp, openQuit }) {
+  return <section className={`title-screen${started ? ' started' : ''}`} aria-label="开始界面">
+    <div className="title-shade" />
+    <header className="title-logo">
+      <h1><span>木昆</span>竞技场</h1>
+      <p>MU KUN ARENA · 挥起武器，撑地前进，把对手抡出局</p>
+    </header>
+    {!started && <div className="title-prompt">点击任意处开始</div>}
+    {started && <>
+      <nav className="title-menu" aria-label="主菜单">
+        <button onClick={openSetup}><b>AI 对战</b><small>VS COMPUTER</small></button>
+        <button onClick={openOnline}><b>联机对战</b><small>ONLINE · STEAM</small></button>
+        <button onClick={openSettings}><b>设置</b><small>SETTINGS</small></button>
+        <button onClick={openHelp}><b>玩法说明</b><small>HOW TO PLAY</small></button>
+        <button className="quit" onClick={openQuit}><b>退出游戏</b><small>QUIT</small></button>
+      </nav>
+    </>}
+  </section>;
+}
+
+function App({ session = defaultSession }) {
   const game = useSyncExternalStore(session.subscribe, session.getSnapshot);
-  const [helpOpen, setHelpOpen] = useState(false);
-  const optionsRef = useRef(null);
+  const [settings, setSettings] = useState(loadSettings);
+  const updateSettings = patch => setSettings(current => { const next = { ...current, ...patch }; saveSettings(next); return next; });
+  useEffect(() => { session.setAiDifficulty(settings.difficulty); session.setArenaSkin(settings.arena); }, []);
   useEffect(() => {
-    const closeOutside = event => {
-      if (optionsRef.current && !optionsRef.current.contains(event.target)) optionsRef.current.open = false;
-    };
-    window.addEventListener('pointerdown', closeOutside);
-    return () => window.removeEventListener('pointerdown', closeOutside);
-  }, []);
-  const [armoryMode, setArmoryMode] = useState(null);
+    session.toggleSound(settings.sound);
+    session.sound.setVolumes?.({ music: settings.music, sfx: settings.sfx });
+  }, [settings.sound, settings.music, settings.sfx]);
+  const [started, setStarted] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [onlineOpen, setOnlineOpen] = useState(false);
+  const [quitOpen, setQuitOpen] = useState(false);
+  const [toast, setToast] = useState('');
+  const [setupMode, setSetupMode] = useState(null);
   const [mouseLocked, setMouseLocked] = useState(false);
+  const [ready, setReady] = useState(false);
+  // Draw the arena pictures for the setup screen in the background as soon as
+  // the game is up, so they are already there when the screen opens.
+  useEffect(() => { if (ready) return loadArenaPreviews(() => {}); }, [ready]);
   useEffect(() => {
     const change = () => setMouseLocked(!!document.pointerLockElement);
     document.addEventListener('pointerlockchange', change);
     return () => document.removeEventListener('pointerlockchange', change);
   }, []);
-  const [ready, setReady] = useState(false);
-  const [introPhase, setIntroPhase] = useState('cover');
-  const intro = useRef({ phase: 'cover', elapsed: 0, transition: 0, angle: -.72 });
-  const finishIntro = () => {
-    if (intro.current.phase === 'returning') {
-      intro.current.orbitBase = intro.current.angle;
-      intro.current.elapsed = 0;
-      intro.current.phase = 'cover';
-      setIntroPhase('cover');
-    } else {
-      intro.current.idle = 0;
-      intro.current.phase = 'done';
-      setIntroPhase('done');
-    }
-  };
-  const beginIntro = () => {
-    if (!ready || intro.current.phase !== 'cover') return;
-    intro.current.transition = 0;
-    intro.current.phase = 'transition';
-    intro.current.startAngle = Math.atan2(Math.sin(intro.current.angle), Math.cos(intro.current.angle));
-    session.clearKeys();
-    setIntroPhase('transition');
+
+  // The first click unlocks audio (browsers require a gesture) and starts the menu music.
+  const start = () => {
+    if (started) return;
+    setStarted(true);
+    void session.sound.unlock();
+    session.sound.playMusic?.('menu');
   };
   useEffect(() => {
-    const onPointer = event => {
-      if (intro.current.phase === 'done' || session.error) return;
-      event.preventDefault(); event.stopPropagation(); beginIntro();
+    if (started) return;
+    const onPointer = () => start();
+    window.addEventListener('pointerdown', onPointer);
+    return () => window.removeEventListener('pointerdown', onPointer);
+  }, [started]);
+
+  // The online link closed (peer left, network dropped): tidy up and say why.
+  useEffect(() => {
+    if (game.net?.phase !== 'closed' || onlineOpen) return;
+    setToast(game.net.message || '联机已结束。');
+    session.net?.dispose();
+    setSetupMode(null);
+    session.goHome();
+  }, [game.net?.phase, onlineOpen]);
+  useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(''), 4500); return () => clearTimeout(timer); }, [toast]);
+  // A Steam invite accepted in the overlay, or the one Steam launched the game with.
+  const [invite, setInvite] = useState(null);
+  useEffect(() => {
+    const api = onlineAvailable() ? window.wankaiNet : null;
+    if (!api?.onInvite) return;
+    const accept = lobbyId => {
+      if (!lobbyId) return;
+      if (session.net?.phase === 'connected') { setToast('正在联机对战中，无法接受新的邀请。'); return; }
+      if (session.state !== 'lobby') session.goHome();
+      setSetupMode(null);
+      setInvite(lobbyId);
+      setOnlineOpen(true);
     };
-    window.addEventListener('pointerdown', onPointer, true);
-    return () => window.removeEventListener('pointerdown', onPointer, true);
-  }, [ready]);
-  const helpResume = useRef(false);
-  const preparationTrigger = useRef(null);
+    api.takeInvite?.().then(accept, () => {});
+    return api.onInvite(accept);
+  }, []);
+
   const active = game.state !== 'lobby';
+  const online = game.mode === 'online' && !!game.net;
+  const menuOpen = game.state === 'paused' || game.menuOpen;
+  const overlayOpen = helpOpen || settingsOpen || onlineOpen || quitOpen || setupMode !== null;
+  // The desktop app closes its window; a browser preview can only try.
+  const quitGame = () => { if (window.wankaiApp) window.wankaiApp.quit(); else window.close(); };
+  const click = () => session.sound.ui?.('click');
 
-  const openPreparation = mode => {
-    preparationTrigger.current = document.activeElement;
-    session.clearKeys();
-    setArmoryMode(mode);
+  const leaveOnline = () => { session.net?.leave('你离开了房间。'); session.net?.dispose(); };
+  const goHome = () => { if (online) leaveOnline(); session.goHome(); };
+  const openSetup = mode => { click(); session.clearKeys(); setSetupMode(mode); };
+  const closeSetup = () => { session.sound.ui?.('back'); if (setupMode === 'online') leaveOnline(); setSetupMode(null); };
+  const startOrResume = () => { session.resume(); lockView(); };
+  const rematch = () => { if (online) session.net?.requestRematch(); else { session.startRound(); lockView(); } };
+  const chooseArena = skin => {
+    if (online) session.net?.setArena(skin); else session.setArenaSkin(skin);
+    if (!online || game.net?.role === 'host') updateSettings({ arena: skin });
   };
+  const chooseDifficulty = difficulty => { session.setAiDifficulty(difficulty); updateSettings({ difficulty }); };
+
+  // Round starts (including online starts sent by the host) take the mouse.
+  const lastState = useRef(game.state);
   useEffect(() => {
-    if (armoryMode === null && preparationTrigger.current) {
-      const trigger = preparationTrigger.current;
-      preparationTrigger.current = null;
-      if (trigger.isConnected) trigger.focus({preventScroll:true});
-    }
-  }, [armoryMode]);
-
-  const openHelp = () => {
-    helpResume.current = session.state === 'playing' || session.state === 'countdown';
-    if (helpResume.current) session.pause();
-    session.clearKeys();
-    setHelpOpen(true);
-  };
-  const closeHelp = () => {
-    setHelpOpen(false);
-    if (helpResume.current) { helpResume.current = false; session.resume(); }
-  };
+    if (lastState.current !== 'countdown' && game.state === 'countdown') { setSetupMode(null); lockView(); }
+    lastState.current = game.state;
+  }, [game.state]);
 
   useEffect(() => {
     const onKeyDown = event => {
-      if (intro.current.phase !== 'done' && !session.error) {
-        event.preventDefault();
-        if (!event.repeat) beginIntro();
-        return;
-      }
-      if (armoryMode !== null) {
-        if (event.code === 'Escape') { event.preventDefault(); setArmoryMode(null); }
+      if (!started) { event.preventDefault(); if (!event.repeat) start(); return; }
+      if (setupMode !== null) {
+        if (event.code === 'Escape' && !event.target.closest?.('dialog')) { event.preventDefault(); closeSetup(); }
         return;
       }
       if (CONTROL_KEYS.has(event.code)) {
         event.preventDefault();
-        if (!helpOpen) session.keyDown(event.code);
+        if (!overlayOpen) session.keyDown(event.code);
       }
-      if (event.repeat || helpOpen || event.target.closest?.('dialog')) return;
-      if (event.code === 'Escape') {
-        event.preventDefault();
-        if (session.state === 'lobby' && intro.current.lastPose) {
-          intro.current.returnFrom = {...intro.current.lastPose};
-          intro.current.returnTime = 0;
-          intro.current.returnAngle = Math.atan2(intro.current.lastPose.x, intro.current.lastPose.z);
-          intro.current.phase = 'returning';
-          session.clearKeys();
-          if (optionsRef.current) optionsRef.current.open = false;
-          setIntroPhase('returning');
-        } else session.pause();
-      }
-      if (event.code === 'KeyR' && session.state === 'playing') session.startRound();
-      if (event.code === 'Enter' && session.state === 'lobby' && event.target.tagName !== 'BUTTON') {
-        event.preventDefault(); openPreparation('ai');
-      }
+      if (event.repeat || overlayOpen || event.target.closest?.('dialog')) return;
+      if (event.code === 'Escape') { event.preventDefault(); session.pause(); }
+      if (event.code === 'KeyR' && session.state === 'playing' && session.mode === 'ai') { session.startRound(); lockView(); }
+      if (event.code === 'Enter' && session.state === 'lobby' && event.target.tagName !== 'BUTTON') { event.preventDefault(); openSetup('ai'); }
     };
     const onKeyUp = event => session.keyUp(event.code);
-    const onBlur = () => { session.clearKeys(); session.pause(); };
+    const onBlur = () => { session.clearKeys(); if (LOOK_STATES.has(session.state)) session.pause(); };
     const onVisibility = () => { if (document.hidden) onBlur(); };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -205,97 +352,106 @@ function App({session=defaultSession}) {
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [helpOpen, armoryMode, ready]);
+  }, [overlayOpen, setupMode, started]);
 
   useEffect(() => {
     Object.defineProperty(window, '__arena', { configurable: true, value: Object.freeze({
-      snapshot: () => JSON.parse(JSON.stringify({ state: session.state, mode: session.mode, loadouts: session.loadouts.map(p=>({...p})), time: session.world.time, winner: session.world.winner, players: session.world.players, lastHit: session.world.lastHit })),
+      session,
+      snapshot: () => JSON.parse(JSON.stringify({ state: session.state, mode: session.mode, menuOpen: session.menuOpen, localPlayerId: session.localPlayerId,
+        loadouts: session.loadouts.map(p => ({ ...p })), time: session.world.time, winner: session.world.winner, players: session.world.players,
+        projectiles: session.world.projectiles, arenaSkin: session.arenaSkin, lastHit: session.world.lastHit, net: session.netInfo })),
       rendererInfo: () => session.renderer ? ({ geometries: session.renderer.info.memory.geometries, textures: session.renderer.info.memory.textures, calls: session.renderer.info.render.calls }) : null,
     }) });
     return () => { delete window.__arena; };
   }, []);
 
+  const local = game.localPlayerId, other = 1 - local;
   const winner = game.winner;
-  const resultTitle = winner === -1 ? '平局' : winner === game.localPlayerId ? '你赢了' : `${FIGHTER_LABELS[winner]} 获胜`;
-  const winningCharacter = winner >= 0 ? CHARACTERS[game.loadouts[winner]?.characterId] : null;
+  const resultTitle = winner === -1 ? '平局' : winner === local ? '你赢了！' : online ? '对手获胜' : 'AI 获胜';
+  const waitingRematch = online && game.net?.local?.rematch;
 
   return <>
-    <div className={`arena-screen${active ? '' : ' lobby-screen'} intro-${introPhase}`} hidden={armoryMode !== null}>
-    <header className="topbar">
-      <a className="brand" href="./" aria-label="丸棍竞技场首页" onClick={event => { event.preventDefault(); session.goHome(); }}><span className="brand-mark"><i></i><b></b></span><span><span className="brand-name">木昆</span><span className="brand-light">竞技场</span><small> MU KUN / ARENA</small></span></a>
-      <nav aria-label="游戏选项">
-        <details className="options-menu" ref={optionsRef} onKeyDown={event => {
-          if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); optionsRef.current.open = false; optionsRef.current.querySelector('summary').focus(); }
-        }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false; }}>
-          <summary className="options-toggle" aria-label="展开游戏选项" title="游戏选项">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-          </summary>
-          <div className="options-dropdown">
-            <button onClick={() => session.toggleSound()} aria-pressed={game.soundEnabled}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/>{game.soundEnabled && <path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>}</svg>
-              {game.soundEnabled ? '关闭声音' : '开启声音'}
-            </button>
-            <button onClick={() => { optionsRef.current.open = false; openHelp(); }}><span className="help-icon">?</span>玩法说明</button>
-          </div>
-        </details>
-      </nav>
-    </header>
+    <div className={`arena-screen${active ? ' in-match' : ' lobby-screen'}`} hidden={setupMode !== null}>
+      <main id="game-shell">
+        <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}>
+          <ArenaCanvas key={`${game.loadouts.map(loadoutKey).join('-')}:${game.arenaSkin}`} session={session} loadouts={game.loadouts} skin={game.arenaSkin}
+            onReady={() => setReady(true)} sensitivity={settings.sensitivity} invertY={settings.invertY} />
+        </CanvasBoundary></div>
 
-    <main id="game-shell">
-      <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}><ArenaCanvas key={game.loadouts.map(loadoutKey).join('-')} session={session} loadouts={game.loadouts} intro={intro.current} onIntroComplete={finishIntro} onReady={() => setReady(true)} /></CanvasBoundary></div>
-      <div className="arena-caption"><span className="eyebrow">THE PIT / 01</span><span>兵器与双耳，各有所长。</span></div>
-      <div className="arena-coordinate" aria-hidden="true">{active ? '自由视角' : 'N ↑'}<br/><span>{active ? 'MOUSE LOOK' : '35° / FIXED VIEW'}</span></div>
-      {active && !mouseLocked && (game.state === 'playing' || game.state === 'countdown') && <div className="look-hint" aria-live="polite">点击画面锁定鼠标 · 移动鼠标转动视角</div>}
-      {active && <HeadingGuide />}
-      <section className="scoreboard" aria-label="对战血量">
-        <FighterScore id={0} health={game.health[0]} stamina={game.stamina[0]} loadout={game.loadouts[0]} />
-        <FighterScore id={1} health={game.health[1]} stamina={game.stamina[1]} loadout={game.loadouts[1]} />
-      </section>
-      <div id="effects" aria-hidden="true">{game.effects.map(effect => <div key={effect.id} id={`effect-${effect.id}`} className="damage-number">{effect.damage >= 22 && <span className="impact-word">重 击 !</span>}−{effect.damage}</div>)}</div>
-      <div key={game.countdownText} id="countdown" className={/^[1-9]$/.test(game.countdownText) ? 'pop' : ''} style={game.countdownText === '抡起来' ? { fontSize: 56 } : undefined} aria-live="polite">{game.countdownText}</div>
-      <div className={`hit-readout${game.readout ? ' visible' : ''}`}><span>{game.readout?.label ?? '有效命中'}</span><strong>−{game.readout?.damage ?? 0}</strong><small>{game.readout?.detail ?? ''}</small></div>
+        {!active && ready && !game.error && <TitleScreen started={started} openSetup={() => openSetup('ai')}
+          openOnline={() => { click(); setOnlineOpen(true); }} openSettings={() => { click(); setSettingsOpen(true); }} openHelp={() => { click(); setHelpOpen(true); }}
+          openQuit={() => { click(); setQuitOpen(true); }} />}
 
-      {(introPhase === 'cover' || introPhase === 'transition') && ready && !game.error && <>
-        <h1 className={`intro-title ${introPhase === 'transition' ? 'leaving' : ''}`}>Gun !</h1>
-        <div className={`intro-prompt ${introPhase === 'transition' ? 'leaving' : ''}`}>按下任意地方开始游戏</div>
-      </>}
-      {game.state === 'lobby' && <nav className="lobby-actions" aria-label="主菜单">
-        <button className="secondary-button" onClick={() => openPreparation('browse')}><span className="lobby-button-content">角色与武器</span></button>
-        <button className="primary-button" onClick={() => openPreparation('ai')}><span className="lobby-button-content">AI 对战</span></button>
-      </nav>}
-      {active && <div className="match-tools"><button className="pill-button" onClick={() => session.pause()}>Ⅱ 暂停 <kbd>ESC</kbd></button><button className="pill-button" onClick={() => session.startRound()} title="重新开始当前对局">↻ 重开</button><button className="pill-button" onClick={() => session.goHome()} title="回到主菜单">返回</button></div>}
-      {active && <div className="live-tip"><span className="status-dot"></span><span>W / S 前后挥动 · A / D 转动武器 · 鼠标转动视角与身体朝向 · Esc 释放鼠标</span></div>}
-      {!ready && !game.error && <div className="loading"><span className="loader"></span><p>正在布置角斗场…</p></div>}
-      {game.error && <div className="error-panel"><h2>角斗场暂时无法载入</h2><p>{game.error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载 ↗</button></div>}
-    </main>
+        {active && <>
+          <section className="hud-top" aria-label="对战状态">
+            <FighterCard id={local} side="left" tag="你" health={game.health[local]} stamina={game.stamina[local]} loadout={game.loadouts[local]} skill={game.skills[local]} />
+            <div className="hud-center">
+              <div className="match-clock"><b>{clock(game.seconds)}</b>
+                <small>{online ? `联机${game.net?.ping != null ? ` · ${game.net.ping} ms` : ''}` : `AI · ${AI_DIFFICULTIES[game.aiDifficulty]?.label ?? ''}`}</small></div>
+              <button className="menu-button" onClick={() => session.pause()} aria-label="打开菜单">Ⅱ</button>
+            </div>
+            <FighterCard id={other} side="right" tag={online ? '对手' : 'AI'} health={game.health[other]} stamina={game.stamina[other]} loadout={game.loadouts[other]} skill={game.skills[other]} />
+          </section>
+          {game.state !== 'result' && <>
+            <HeadingGuide />
+            <Keys game={game} />
+            <SkillWidget skill={game.skills[local]} pressed={game.pressed.includes('KeyF')} />
+          </>}
+          {!mouseLocked && LOOK_STATES.has(game.state) && !menuOpen && <div className="look-hint" aria-live="polite">点击画面锁定鼠标 · 移动鼠标转动视角</div>}
+        </>}
+        <div id="effects" aria-hidden="true">{game.effects.map(effect => effect.text
+          ? <div key={effect.id} id={`effect-${effect.id}`} className={`skill-word kind-${effect.kind}`}>{effect.text}</div>
+          : <div key={effect.id} id={`effect-${effect.id}`} className="damage-number">{effect.damage >= 22 && <span className="impact-word">重击!</span>}−{effect.damage}</div>)}</div>
+        <div key={game.countdownText} id="countdown" className={/^[1-9]$/.test(game.countdownText) ? 'pop' : ''} aria-live="polite">{game.countdownText}</div>
+        <div className={`hit-readout${game.readout ? ' visible' : ''}`}><span>{game.readout?.label ?? '有效命中'}</span><strong>−{game.readout?.damage ?? 0}</strong><small>{game.readout?.detail ?? ''}</small></div>
 
-    <footer className="controls-bar">
-      <div className="control-block"><span className="player-chip red">你</span><KeyGrid codes={['KeyW', 'KeyA', 'KeyS', 'KeyD']} labels={['W', 'A', 'S', 'D']} pressed={game.pressed}/><div className="control-copy"><b>{loadoutName(game.loadouts[0])}</b><span>W 朝正面挥 <i>·</i> S 朝背面挥 <i>·</i> A / D 水平转向 · 可组合{isPawLoadout(game.loadouts[0])&&<><br/>S 触地撑起身体 · 巨爪共用耐力</>}{isEarLoadout(game.loadouts[0])&&<><br/><kbd data-key="KeyF" className={game.pressed.includes('KeyF')?'pressed':''}>F</kbd> 旋耳悬停{game.skills[0]?.active?` · ${game.skills[0].remaining.toFixed(1)} 秒`:''}</>}</span></div></div>
-      <div className="control-motto"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m10 30 20-20M9 27l4 4M27 9l4 4"/></svg><span>身体不听指挥<br/><b>武器才是主角</b></span></div>
-      <div className="control-copy view-help"><b>鼠标控制视角</b><span>移动鼠标转动视角 <i>·</i> 身体朝向视角 <i>·</i> 滚轮缩放</span></div>
-    </footer>
+        {toast && <div className="toast" role="status">{toast}</div>}
+        {!ready && !game.error && <div className="loading"><span className="loader" /><p>正在布置竞技场…</p></div>}
+        {game.error && <div className="error-panel"><h2>竞技场暂时无法载入</h2><p>{game.error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载</button></div>}
+      </main>
     </div>
 
-    {helpOpen && <Modal onCancel={closeHelp}><HelpContent close={closeHelp}/></Modal>}
-    {armoryMode !== null && <main className={`preparation-stage${armoryMode === 'ai' ? ' styled-versus' : ''}`} aria-labelledby={armoryMode==='ai'?undefined:'preparation-title'} aria-label={armoryMode==='ai'?'AI 对战出战配置':undefined}><Armory game={game} session={session} mode={armoryMode} close={() => setArmoryMode(null)} start={() => { session.startRound(armoryMode); setArmoryMode(null); lockView(); }}/></main>}
-    {game.state === 'paused' && !helpOpen && !game.error && <Modal className="pause-menu" onCancel={() => session.resume()}>
-      <h2>停！</h2>
-      <div className="pause-actions">
-        <button onClick={() => { session.resume(); lockView(); }}><span className="lobby-button-content">继续对战</span></button>
-        <button onClick={() => session.goHome()}><span className="lobby-button-content">回到主菜单</span></button>
+    {helpOpen && <Modal label="玩法说明" onCancel={() => setHelpOpen(false)}><HelpContent close={() => setHelpOpen(false)} /></Modal>}
+    {quitOpen && <Modal label="退出游戏" className="quit-modal" onCancel={() => setQuitOpen(false)}>
+      <span className="eyebrow">QUIT</span>
+      <h2>要退出游戏吗？</h2>
+      <div className="quit-actions">
+        <button className="secondary-button" onClick={() => setQuitOpen(false)}>再玩一会</button>
+        <button className="primary-button" onClick={quitGame}>退出游戏<span>→</span></button>
       </div>
     </Modal>}
-    {game.state === 'result' && <section className="victory-overlay" aria-label="对战结果">
+    {settingsOpen && <Modal label="设置" className="settings-modal" onCancel={() => setSettingsOpen(false)}>
+      <button className="modal-close" onClick={() => setSettingsOpen(false)} aria-label="关闭设置">×</button>
+      <span className="eyebrow">SETTINGS</span><h2>设置</h2>
+      <SettingsPanel settings={settings} update={updateSettings} />
+    </Modal>}
+    {onlineOpen && <Modal label="联机对战" className="online-modal" onCancel={() => { if (!session.net || session.net.phase !== 'connected') cancelOnline(session); setOnlineOpen(false); }}>
+      <OnlinePanel game={game} session={session} close={() => setOnlineOpen(false)} onConnected={() => { setOnlineOpen(false); openSetup('online'); }}
+        invite={invite} onInviteHandled={() => setInvite(null)} />
+    </Modal>}
+    {setupMode !== null && <MatchSetup game={game} session={session} net={session.net} mode={setupMode} close={closeSetup}
+      chooseArena={chooseArena} chooseDifficulty={chooseDifficulty}
+      start={() => { session.sound.ui?.('confirm'); session.startRound(setupMode); setSetupMode(null); lockView(); }} />}
+    {menuOpen && !overlayOpen && !game.error && <Modal label="菜单" className="pause-menu" onCancel={startOrResume}>
+      <span className="eyebrow">{online ? 'MENU' : 'PAUSED'}</span>
+      <h2>{online ? '菜单' : '暂停'}</h2>
+      {online && <p className="pause-note">联机对战不会暂停，对局仍在进行。</p>}
+      <div className="pause-actions">
+        <button className="menu-item" onClick={startOrResume}>继续</button>
+        {!online && <button className="menu-item" onClick={() => { session.startRound(); lockView(); }}>重新开始</button>}
+        <button className="menu-item" onClick={() => setSettingsOpen(true)}>设置</button>
+        <button className="menu-item quiet" onClick={goHome}>{online ? '离开房间' : '回到主菜单'}</button>
+      </div>
+    </Modal>}
+    {game.state === 'result' && !menuOpen && <section className={`victory-panel${winner === local ? ' won' : winner === -1 ? '' : ' lost'}`} aria-label="对战结果">
+      <span className="eyebrow">{winner === -1 ? 'DRAW' : winner === local ? 'VICTORY' : 'DEFEAT'}</span>
       <h2>{resultTitle}</h2>
-      {winningCharacter&&<div className="victory-portrait" key={winningCharacter.id}>
-        {winningCharacter.victoryPortrait?<img src={`${import.meta.env.BASE_URL}${winningCharacter.victoryPortrait}`} alt={`${winningCharacter.name}胜利姿态`}/>:<CharacterPortrait id={winningCharacter.id}/>}
-      </div>}
+      {winner >= 0 && <p>{loadoutName(game.loadouts[winner])} · 用时 {clock(game.seconds)}</p>}
       <div className="victory-actions">
-        <button type="button" onClick={() => { session.startRound(); lockView(); }}><span className="lobby-button-content">再战一局</span></button>
-        <button type="button" onClick={() => session.goHome()}><span className="lobby-button-content">回到主菜单</span></button>
+        <button type="button" className="primary-button" onClick={rematch} disabled={waitingRematch}>{waitingRematch ? '等待对方…' : online && game.net?.peer?.rematch ? '接受再战' : '再战一局'}<span>↻</span></button>
+        <button type="button" className="secondary-button" onClick={goHome}>{online ? '离开房间' : '回到主菜单'}</button>
       </div>
     </section>}
-
   </>;
 }
 

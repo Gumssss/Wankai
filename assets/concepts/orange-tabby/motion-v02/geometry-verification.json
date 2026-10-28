@@ -1,8 +1,0 @@
-{
-  "max_upper_length_error": 2.911706544761472e-07,
-  "max_forearm_length_error": 2.512475080207466e-07,
-  "minimum_paw_to_head_clearance": 0.08399999999999996,
-  "minimum_arm_to_head_sphere_gap": 0.015780468863284908,
-  "max_body_pitch": 0,
-  "note": "Paw/head uses a lateral envelope; arm/head uses an enclosing head sphere. Final Tripo surface/rig/contact fit is unperformed."
-}

@@ -1,52 +1,52 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ACESFilmicToneMapping, PCFShadowMap, Vector3 } from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { ArenaView } from './scene.js';
-import {createDeathPortraits} from './death-portrait.js';
-import { advanceLobbyCamera } from './lobby-camera.js';
-import {resolveLoadout,loadoutKey} from './loadouts.js';
-import { ARENA_PROFILE, ACTIVE_ARENA_STYLE } from './arena-profile.js';
-import {loadArenaFloorTexture} from './arena-floor.js';
-import {disposeModelResources} from './model-assets.js';
-import {cameraYaw} from './free-camera.js';
+import { createDeathPortraits } from './death-portrait.js';
+import { loadoutKey } from './loadouts.js';
+import { cameraYaw } from './free-camera.js';
+import { preloadCharacterModels, characterModelsReady } from './models/character-assets.js';
+
+// The imported character models start downloading as soon as the game loads;
+// the arena (and the loading screen) waits for them.
+const modelsLoading = preloadCharacterModels();
+modelsLoading.catch(() => {});
 
 // States in which the mouse steers the view and should stay captured.
-const LOOK_STATES = new Set(['countdown', 'playing']);
+export const LOOK_STATES = new Set(['countdown', 'playing']);
 
-function ArenaEnvironment({ group }) { return <primitive object={group} dispose={null} />; }
-function FighterModels({ group }) { return <primitive object={group} dispose={null} />; }
-function ImpactEffects({ group }) { return <primitive object={group} dispose={null} />; }
+// Pointer lock with raw (unaccelerated) mouse input where the platform allows it.
+// Overlapping requests make Chromium reject the lock, so only one is in flight.
+let lookPending = false;
+export function requestLook(canvas) {
+  if (!canvas?.requestPointerLock || lookPending || document.pointerLockElement === canvas) return;
+  lookPending = true;
+  const done = () => { lookPending = false; };
+  const plain = () => Promise.resolve(canvas.requestPointerLock()).catch(() => {}).finally(done);
+  try {
+    Promise.resolve(canvas.requestPointerLock({ unadjustedMovement: true })).then(done, error => {
+      // Raw input is not supported everywhere; fall back to the ordinary lock.
+      if (error?.name === 'NotSupportedError') plain(); else done();
+    });
+  } catch { plain(); }
+}
 
-function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
-  const [first,second]=loadouts;
-  const { gl, camera, scene, size } = useThree();
-  const view = useMemo(() => new ArenaView(gl, camera, first, second), [gl, camera, first, second]);
+function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
+  const [first, second] = loadouts;
+  const { gl, scene, size } = useThree();
+  const view = useMemo(() => new ArenaView(gl, null, first, second, skin), [gl, first, second, skin]);
   const deathPortraits = useRef(null);
   useEffect(() => {
-    const portraits = createDeathPortraits(scene, [first, second], import.meta.env.BASE_URL);
+    const portraits = createDeathPortraits(scene, [first, second]);
     deathPortraits.current = portraits;
     return () => { portraits.dispose(); deathPortraits.current = null; };
   }, [scene, first, second]);
+  useEffect(() => { scene.fog = view.fog; return () => { scene.fog = null; }; }, [scene, view]);
+  useEffect(() => { view.sensitivity = sensitivity; view.invertY = invertY; }, [view, sensitivity, invertY]);
   const revision = useRef(session.visualRevision);
   const point = useMemo(() => new Vector3(), []);
   const headingForward = useMemo(() => new Vector3(), []);
   const headingRight = useMemo(() => new Vector3(), []);
-
-  useEffect(() => {
-    if (ACTIVE_ARENA_STYLE === 'classic') return;
-    let cancelled = false;
-    let cancelFloorTexture;
-    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/${ARENA_PROFILE.model}`, gltf => {
-      if(cancelled) { disposeModelResources([gltf.scene]); return; }
-      try {
-        if(!view.setArenaModel(gltf.scene)) disposeModelResources([gltf.scene]);
-        else cancelFloorTexture = loadArenaFloorTexture(view,`${import.meta.env.BASE_URL}textures/${ARENA_PROFILE.floorTexture}`,gl.capabilities.getMaxAnisotropy());
-      }
-      catch(error) { disposeModelResources([gltf.scene]); console.warn('Colosseum unavailable; using the local arena fallback.', error); }
-    }, undefined, error => { if(!cancelled) console.warn('Colosseum unavailable; using the local arena fallback.', error); });
-    return () => { cancelled = true; cancelFloorTexture?.(); };
-  }, [view]);
 
   useEffect(() => {
     if (!import.meta.env.DEV) return;
@@ -54,29 +54,7 @@ function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
     return () => { if (session.view === view) delete session.view; };
   }, [session, view]);
 
-  useEffect(() => {
-    view.resize(size.width, size.height);
-  }, [view, size.width, size.height]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const jobs=new Map();
-    for(const selection of [first,second]){
-      const resolved=resolveLoadout(selection);
-      if(resolved.bodyModel)jobs.set(resolved.bodyModel,{kind:'character',id:resolved.bodyModel});
-      if(resolved.weaponModel)jobs.set(resolved.weaponModel,{kind:'weapon',id:resolved.weaponId});
-    }
-    for(const [filename,job] of jobs){
-      new GLTFLoader().load(`${import.meta.env.BASE_URL}models/${filename}`,gltf=>{
-        if(cancelled){disposeModelResources([gltf.scene]);return;}
-        try{
-          if(job.kind==='character')view.setCharacterModel(gltf.scene,job.id);else view.setWeaponModel(gltf.scene,job.id);
-          gltf.scene.traverse(o=>{for(const mat of Array.isArray(o.material)?o.material:[o.material])mat?.dispose();});
-        }catch(error){if(job.kind==='character')view.showCharacterFallback(job.id);console.warn(`Could not attach ${filename}; using its fallback.`,error);}
-      },undefined,error=>{if(!cancelled){if(job.kind==='character')view.showCharacterFallback(job.id);console.warn(`Could not load ${filename}; using its fallback.`,error);}});
-    }
-    return () => { cancelled = true; };
-  }, [view, first, second]);
+  useEffect(() => { view.resize(size.width, size.height); }, [view, size.width, size.height]);
 
   useEffect(() => {
     const onContextLost = event => { event.preventDefault(); session.contextLost(); };
@@ -93,13 +71,13 @@ function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
     const canvas = gl.domElement;
     const locked = () => document.pointerLockElement === canvas;
     const down = event => {
-      if (event.button !== 0 || !LOOK_STATES.has(session.state) || locked()) return;
-      canvas.requestPointerLock?.()?.catch?.(() => {});
+      if (event.button !== 0 || !LOOK_STATES.has(session.state) || session.menuOpen || locked()) return;
+      requestLook(canvas);
     };
     const move = event => { if (locked()) view.orbit(event.movementX, event.movementY); };
     const wheel = event => { if (session.state === 'lobby') return; event.preventDefault(); view.zoom(event.deltaY); };
-    // Leaving pointer lock (Esc, Alt+Tab) during a match pauses it.
-    const change = () => { if (!locked() && LOOK_STATES.has(session.state)) session.pause(); };
+    // Leaving pointer lock (Esc, Alt+Tab) during a match opens the menu.
+    const change = () => { if (!locked() && LOOK_STATES.has(session.state) && !session.menuOpen) session.pause(); };
     canvas.addEventListener('pointerdown', down);
     document.addEventListener('mousemove', move);
     document.addEventListener('pointerlockchange', change);
@@ -115,42 +93,33 @@ function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
 
   useFrame((_, delta) => {
     const impacts = session.tick(delta);
-    deathPortraits.current?.update(session.world.players, session.world.winner, session.state, Math.min(delta, .06));
-    const matchView = session.state !== 'lobby';
+    const world = session.world;
+    deathPortraits.current?.update(world.players, world.winner, session.state, Math.min(delta, 0.06));
+    const mode = session.state === 'lobby' ? 'lobby' : session.state === 'result' && world.winner >= 0 ? 'victory' : 'match';
     if (revision.current !== session.visualRevision) {
       view.clearEffects();
       view.resetCamera();
       revision.current = session.visualRevision;
     }
-    for (const event of impacts) view.impact(event);
-    const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
-    view.update(session.world.players, effectDelta, session.state === 'playing' || session.state === 'result', Math.min(delta, 0.06), matchView, session.localPlayerId);
-    session.localFaceYaw = matchView ? cameraYaw(view.followCamera) : null;
-    // Hand the cursor back for menus, results and pause.
-    if (!LOOK_STATES.has(session.state) && document.pointerLockElement === gl.domElement) document.exitPointerLock();
-
-    // Keep the same viewport and camera controller through the menu handoff.
-    if (intro && session.state === 'lobby') {
-      const pose = advanceLobbyCamera(intro, delta, view.reducedMotion);
-      camera.position.set(pose.x, pose.y, pose.z);
-      camera.lookAt(view.target);
-      camera.zoom = pose.zoom;
-      camera.updateProjectionMatrix();
-      if (pose.complete || pose.returned) onIntroComplete?.();
-    } else if (camera.zoom !== 1) {
-      camera.zoom = 1;
-      camera.updateProjectionMatrix();
+    for (const event of impacts) {
+      view.impact(event);
+      // After teleporting behind the opponent, turn the view to face them.
+      if (event.type === 'skill' && event.skill === 'twist' && event.player === session.localPlayerId && event.to) view.faceTowards(event.to.face);
     }
+    const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
+    view.update(world.players, effectDelta, { active: session.state === 'playing' || session.state === 'result', cameraDt: Math.min(delta, 0.06),
+      view: mode, localPlayerId: session.localPlayerId, winner: world.winner, projectiles: world.projectiles || [] });
+    session.localFaceYaw = mode === 'match' ? cameraYaw(view.followCamera) : null;
+    // Hand the cursor back for menus, results and pause.
+    if ((!LOOK_STATES.has(session.state) || session.menuOpen) && document.pointerLockElement === gl.domElement) document.exitPointerLock();
 
-    const activeCamera = matchView ? view.followCamera.camera : camera;
+    const activeCamera = view.activeCamera(mode);
     gl.setViewport(0, 0, size.width, size.height);
-    view.prepareArenaCamera(activeCamera, session.world.players);
     gl.render(scene, activeCamera);
-    view.restoreArenaCamera();
 
-    if (matchView) {
+    if (mode === 'match') {
       const arrow = document.getElementById('staff-heading-arrow');
-      const player = session.world.players[session.localPlayerId];
+      const player = world.players[session.localPlayerId];
       if (arrow && player) {
         headingForward.set(0, 0, -1).applyQuaternion(activeCamera.quaternion).setY(0).normalize();
         headingRight.set(1, 0, 0).applyQuaternion(activeCamera.quaternion).setY(0).normalize();
@@ -163,7 +132,10 @@ function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
     for (const effect of session.effects) {
       const element = document.getElementById(`effect-${effect.id}`);
       if (!element) continue;
-      point.set(effect.point.x, effect.point.y + 0.5 + (effect.maxLife - effect.life) * 1.4, effect.point.z);
+      const followed = effect.follow != null ? world.players[effect.follow]?.p : null;
+      const rise = (effect.maxLife - effect.life) * (effect.text ? 0.35 : 1.4);
+      if (followed) point.set(followed.x, followed.y + 1.9 + rise, followed.z);
+      else point.set(effect.point.x, effect.point.y + 0.5 + rise, effect.point.z);
       const screen = view.project(point, activeCamera, viewport);
       element.style.visibility = screen.visible ? 'visible' : 'hidden';
       element.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-50%)`;
@@ -172,33 +144,54 @@ function ArenaScene({ session, loadouts, intro, onIntroComplete }) {
   }, 1);
 
   return <>
-    <ArenaEnvironment group={view.arena} />
-    <FighterModels group={view.actors} />
-    <ImpactEffects group={view.effectsRoot} />
+    <primitive object={view.arena} dispose={null} />
+    <primitive object={view.actors} dispose={null} />
+    <primitive object={view.effectsRoot} dispose={null} />
   </>;
 }
 
-export function ArenaCanvas({ session, loadouts, onReady, intro, onIntroComplete }) {
-  const key=loadouts.map(loadoutKey).join('|');
-  const selections=useMemo(()=>loadouts.map(p=>({...p})),[key]);
+export function ArenaCanvas({ session, loadouts, skin, onReady, sensitivity = 1, invertY = false }) {
+  const key = loadouts.map(loadoutKey).join('|');
+  const selections = useMemo(() => loadouts.map(p => ({ ...p })), [key]);
+  const [models, setModels] = useState(characterModelsReady);
+  const [created, setCreated] = useState(false);
+  const readyCalled = useRef(false);
+  const latestReady = useRef(onReady);
+  latestReady.current = onReady;
+  useEffect(() => {
+    if (models) return;
+    let live = true;
+    preloadCharacterModels().then(() => { if (live) setModels(true); }, error => {
+      if (!live) return;
+      console.error(error);
+      session.error = '角色模型无法载入，请重新加载。';
+      session.publish();
+      latestReady.current();
+    });
+    return () => { live = false; };
+  }, [models, session]);
+  // Ready once the canvas exists and the fighters can be built.
+  useEffect(() => {
+    if (!models || !created || readyCalled.current) return;
+    readyCalled.current = true;
+    latestReady.current();
+  }, [models, created]);
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={{ position: [0, 15.4, 21], near: 0.1, far: 120 }}
-      orthographic
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => {
         session.renderer = gl;
         gl.shadowMap.type = PCFShadowMap;
         gl.toneMapping = ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.28;
-        gl.domElement.setAttribute('aria-label', '三维圆形角斗场');
-        onReady();
+        gl.toneMappingExposure = 1.12;
+        gl.domElement.setAttribute('aria-label', '三维竞技场');
+        setCreated(true);
       }}
     >
-      <color attach="background" args={[0xebe9dc]} />
-      <ArenaScene session={session} loadouts={selections} intro={intro} onIntroComplete={onIntroComplete} />
+      <color attach="background" args={[0xf3e9d4]} />
+      {models && <ArenaScene session={session} loadouts={selections} skin={skin} sensitivity={sensitivity} invertY={invertY} />}
     </Canvas>
   );
 }

@@ -1,17 +1,8 @@
-// Switch to 'colosseum' to restore the imported arena.
-export const ACTIVE_ARENA_STYLE = 'classic';
-
-// Measured/regularized in assets/concepts/colosseum/prepared-v01/.
-// One game unit per GLB unit, Y up, level playable floor at the root origin.
+// Base podium measurements. Matches scale them with MATCH_ARENA_SCALE.
 export const ARENA_PROFILE = Object.freeze({
-  model: 'colosseum-prepared-v01.glb',
-  floorTexture: 'colosseum-roman-floor-v01.jpg',
   floorHeight: 0,
   radius: 6.45,
   weaponContactHeight: 0.84,
-  floorMesh: 'SM_Arena_Floor',
-  sectorPrefix: 'SM_Arena_Shell_',
-  sectorCount: 8,
 });
 
 export function arenaPlacement(scale = 1) {

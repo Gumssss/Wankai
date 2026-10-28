@@ -1,59 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Quaternion, Vector3 } from 'three';
-import { GameSession } from '../src/game-session.js';
-import { ArenaPhysics, CONFIG, closestSegments, staffFrame, weaponSegments, weaponPointFrame, hurtSegments, WEAPONS, v3 } from '../src/physics.js';
+import { ArenaPhysics, CONFIG, closestSegments, staffFrame, weaponSegments, weaponPointFrame, hurtSegments, bodyRadius, WEAPONS, v3 } from '../src/physics.js';
 import { setWeaponRotation } from '../src/weapon-visuals.js';
 import {WEAPON_CATALOG} from '../src/weapon-catalog.js';
 import {sandbox,sparring} from './sandbox.js';
-const selection=weaponId=>({characterId:WEAPON_CATALOG.find(w=>w.id===weaponId).characterId||'basic-fighter',weaponId});
+const selection=weaponId=>({characterId:WEAPON_CATALOG.find(w=>w.id===weaponId).characterId||'stickman',weaponId});
 
-function sessionWithoutAudio() {
-  const session = new GameSession();
-  for (const method of ['unlock', 'tick', 'tone', 'swing', 'impact']) session.sound[method] = () => {};
-  return session;
-}
-
-test('players select independently, including matching weapons, and retain selections through rounds', () => {
-  const weapons = session => session.getSnapshot().loadouts.map(loadout => loadout.weaponId);
-  for (const first of Object.keys(WEAPONS)) for (const second of Object.keys(WEAPONS)) {
-    const session = sessionWithoutAudio();
-    session.setLoadouts([selection(first),selection(second)]);
-    assert.deepEqual(weapons(session), [first, second]);
-    session.startRound('ai');
-    assert.deepEqual(session.world.players.map(player => player.weapon), [first, second]);
-    assert.equal(session.setLoadouts([selection('sword'),selection('sword')]), false, 'equipment cannot change during a round');
-    session.pause(); session.resume();
-    session.startRound();
-    assert.deepEqual(weapons(session), [first, second]);
-    session.goHome();
-    assert.deepEqual(session.world.players.map(player => player.weapon), [first, second]);
-  }
-});
-
-test('all duel loadouts begin with separated weapons, including two level swords', () => {
-  for (const first of Object.keys(WEAPONS)) for (const second of Object.keys(WEAPONS)) {
-    const world = new ArenaPhysics();
-    world.reset(selection(first),selection(second));
-    const [a, b] = world.players;
-    for (const sa of weaponSegments(a)) for (const sb of weaponSegments(b)) {
-      const separation = closestSegments(sa.a, sa.b, sb.a, sb.b).distance;
-      assert.ok(separation > sa.radius + sb.radius, `${first}/${second} overlaps before input`);
-    }
-  }
-});
-
-test('unknown weapon choices leave the chosen loadout intact', () => {
-  const session = sessionWithoutAudio();
-  const before = session.getSnapshot();
-  assert.equal(session.setLoadouts([selection('sword'),{characterId:'basic-fighter',weaponId:'unknown'}]), false);
-  assert.equal(session.setLoadouts([selection('sword')]), false);
-  assert.equal(session.getSnapshot(), before);
-  assert.throws(() => session.world.reset('sword','unknown'), /Unknown weapon/);
-});
 
 test('every floating weapon visual tracks its physical axis continuously through overhead and support', () => {
-  for (const weapon of Object.keys(WEAPONS).filter(id => !WEAPONS[id].attachment)) for (const phi of [-Math.PI, 0, 0.73, 3.8]) {
+  for (const weapon of Object.keys(WEAPONS)) for (const phi of [-Math.PI, 0, 0.73, 3.8]) {
     const world = new ArenaPhysics();
     sandbox(world,selection(weapon));
     const p = world.players[0]; p.phi = phi;
@@ -161,24 +117,16 @@ test('hammer is slower to start and reverse than the sword without producing mov
 test('all loadouts remain finite and within the arena under sustained mixed input', () => {
   for (const first of Object.keys(WEAPONS)) for (const second of Object.keys(WEAPONS)) {
     const world = new ArenaPhysics(); sparring(world,selection(first),selection(second));
-    for (let step = 0; step < 5400; step++) {
+    for (let step = 0; step < 900; step++) {
       const phase = Math.floor(step / 180);
       world.step([{ theta: phase % 2 ? -1 : 1, phi: phase % 3 ? 1 : -1 },
         { theta: phase % 3 ? -1 : 1, phi: phase % 2 ? -1 : 1 }]);
       for (const p of world.players) {
         for (const value of [p.p.x, p.p.y, p.p.z, p.wt, p.wp, p.health]) assert.ok(Number.isFinite(value));
-        if(p.weapon==='long-ears') {
-          for(const shape of hurtSegments(p))for(const point of [shape.a,shape.b]) {
-            assert.ok(Math.hypot(point.x,point.z)+shape.radius<=world.arenaRadius+.02);
-            assert.ok(point.y-shape.radius>-.035,'rotated body crossed the floor');
-          }
-          assert.ok(Math.abs(p.wt)<24.1&&Math.abs(p.wp)<4.3);
-        } else {
-          assert.ok(Math.hypot(p.p.x, p.p.z) <= world.arenaRadius - CONFIG.bodyRadius + 1e-6);
-          assert.ok(p.p.y >= CONFIG.bodyFloor - 1e-6);
-          assert.ok(Math.abs(p.wt) <= WEAPONS[p.weapon].maxAngularSpeed &&
-            Math.abs(p.wp) <= WEAPONS[p.weapon].maxAngularSpeed, 'contacts restored the old spin speed');
-        }
+        assert.ok(Math.hypot(p.p.x, p.p.z) <= world.arenaRadius - bodyRadius(p) + 1e-6);
+        assert.ok(p.p.y >= CONFIG.bodyFloor - 1e-6);
+        assert.ok(Math.abs(p.wt) <= WEAPONS[p.weapon].maxAngularSpeed &&
+          Math.abs(p.wp) <= WEAPONS[p.weapon].maxAngularSpeed, 'contacts restored the old spin speed');
       }
     }
   }

@@ -1,7 +1,0 @@
-Use case: precise-object-edit
-Asset type: 3D game character concept scale refinement
-Edit the supplied cat concept with one targeted change: ENLARGE BOTH FLOATING PAW WEAPONS relative to the central cat. The current head is wider than each paw. In the final picture each paw must be about 1.4 TIMES THE WIDTH OF THE CAT'S HEAD. The two paws should be enormous soft rounded cat-paw weapons, clearly dominant beside the tiny seated cat.
-
-Preserve the exact same cat face, rounded-square head, heavy half-lidded beagle-like eyes and small smirk, same seated tiny-body proportions, haunches, two little tucked hind feet, curled tail, simple orange tabby color patches, smooth matte 3D materials, warm cream/pink paw colors and four toe beans plus one central pad per paw. Keep all surfaces smooth and hairless. Exactly two detached short broad feline paws, no human fingers, thumbs, wrists, arms or connectors.
-
-Adjust only the paw scale and their lateral positions, plus the overall camera framing as necessary. Move the giant paws farther out to preserve visible air gaps to the cat. Reframe to fit the full cat and both giant paws within a landscape 3:2 image with margins: a smaller central cat flanked by two much larger paws. Keep the low floating seated pose, clear soft shadows and the same plain light gray studio backdrop. Single image, no text, no UI, no other characters.

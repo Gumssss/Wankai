@@ -1,11 +1,35 @@
-import {CHARACTERS} from './character-catalog.js';
+import { CHARACTERS } from './character-catalog.js';
+import { characterPortrait } from './models/portraits.js';
+
 const icons = {
-  'yellow-staff': '<path d="M11 45 36 9" stroke="#d7a838" stroke-width="10" stroke-linecap="round"/><path d="M11 45 36 9" stroke="#f5d45a" stroke-width="7" stroke-linecap="round"/>',
-  sword: '<path d="m8 47 8-11 18-31 7-1 1 7-22 28-8 10Z" fill="#bfc8bd" stroke="#6d7b6a" stroke-width="1.3"/><path d="m16 36 21-29" stroke="#f6f7dc" stroke-width="2"/><path d="m9 32 17 11" stroke="#b49150" stroke-width="4"/><path d="m6 45 9-12" stroke="#776a4e" stroke-width="4"/>',
-  polearm: '<path d="m9 48 22-38" stroke="#8a7556" stroke-width="4"/><path d="M29 13Q39 18 43 3L46 6Q46 23 28 27L23 22Z" fill="#a4b0a0" stroke="#6d7b6a" stroke-width="1.2"/><path d="m10 45 3 2" stroke="#c7b887" stroke-width="3"/>',
-  hammer: '<path d="M22 19v31" stroke="#8a7556" stroke-width="5"/><path d="M6 9h32v18H6z" fill="#98a392" stroke="#677662" stroke-width="1.2"/><path d="M11 10v16M32 10v16" stroke="#cbd0b8" stroke-width="2"/><path d="M21 32q-10 7-4 14" fill="none" stroke="#bb7860" stroke-width="3"/>',
-  'long-ears': '<path d="M11 5q-9 5-6 29 1 15 10 15 9-1 6-13L17 8q-1-5-6-3Z" fill="#d6a55f" stroke="#b38b50"/><path d="M34 5q9 5 6 29-1 15-10 15-9-1-6-13l4-28q1-5 6-3Z" fill="#d6a55f" stroke="#b38b50"/>',
-  'cat-paws': '<path d="M5 22Q0 6 9 8l5 7q-4-16 5-15l5 13Q24-3 32 2l1 15q8-12 13-3 4 7-5 16l-1 17H10Z" fill="#fff9e9" stroke="#b3ac94" stroke-width="1.4"/><path d="M16 30q10-9 16 0l2 10H14Z" fill="#dfa9a0"/><ellipse cx="10" cy="22" rx="4" ry="5" fill="#e4b5a8"/><ellipse cx="21" cy="18" rx="4" ry="5" fill="#e4b5a8"/><ellipse cx="32" cy="20" rx="4" ry="5" fill="#e4b5a8"/>'
+  'yellow-staff': '<path d="M11 45 36 9" stroke="#d7a838" stroke-width="10" stroke-linecap="round"/><path d="M11 45 36 9" stroke="#f6cf45" stroke-width="7" stroke-linecap="round"/><path d="m16 38 4 3M29 19l4 3" stroke="#e2ad2b" stroke-width="3"/>',
+  sword: '<path d="m10 46 7-9 17-26 6-2 0 6-21 25-7 8Z" fill="#ece4cf" stroke="#30372e" stroke-width="1.6"/><path d="m18 36 18-24" stroke="#7f8a8a" stroke-width="2"/><path d="m11 31 15 11" stroke="#c4684f" stroke-width="5" stroke-linecap="round"/><path d="m7 47 7-9" stroke="#a4733f" stroke-width="5" stroke-linecap="round"/>',
+  polearm: '<path d="m9 49 20-34" stroke="#8a3426" stroke-width="4.5" stroke-linecap="round"/><path d="M27 18 34 6q2-4 8-5-4 6-3 11-2 9-12 11Z" fill="#cfd7d9" stroke="#30372e" stroke-width="1.5"/><path d="m26 20 3 2" stroke="#e8b54a" stroke-width="4"/><path d="m24 22-4 7" stroke="#c4684f" stroke-width="2.5"/>',
+  hammer: '<path d="M22 14v36" stroke="#d9b27c" stroke-width="5" stroke-linecap="round"/><rect x="16" y="9" width="22" height="12" rx="4" fill="#9aa3a5" stroke="#30372e" stroke-width="1.5"/><rect x="37" y="7.5" width="5" height="15" rx="2" fill="#6f7a7c" stroke="#30372e" stroke-width="1.2"/><path d="M16 15 5 19" stroke="#6f7a7c" stroke-width="4" stroke-linecap="round"/><path d="M22 9V3" stroke="#6f7a7c" stroke-width="3" stroke-linecap="round"/>',
+  'happy-paws': '<rect x="19" y="33" width="10" height="19" rx="4" fill="#8d8070" stroke="#30372e" stroke-width="1.5"/><path d="M19.5 44h9M19.5 48h9" stroke="#5d554b" stroke-width="2"/><path d="M17 38h14" stroke="#c4684f" stroke-width="3.5" stroke-linecap="round"/><g fill="#f3ece0" stroke="#30372e" stroke-width="1.5"><circle cx="10.5" cy="16" r="5"/><circle cx="18.5" cy="10.5" r="5.5"/><circle cx="29.5" cy="10.5" r="5.5"/><circle cx="37.5" cy="16" r="5"/><ellipse cx="24" cy="25" rx="15" ry="12"/></g><g fill="#f29aa6"><ellipse cx="10.5" cy="16" rx="2.3" ry="2.8"/><ellipse cx="18.5" cy="10" rx="2.5" ry="3"/><ellipse cx="29.5" cy="10" rx="2.5" ry="3"/><ellipse cx="37.5" cy="16" rx="2.3" ry="2.8"/><path d="M24 20c-5 0-9 4-9 8 0 3 3 4 5 3l4-1 4 1c2 1 5 0 5-3 0-4-4-8-9-8Z"/></g>',
+  'takeout-box': '<path d="M18 13q5-6 10 0" fill="none" stroke="#2f3437" stroke-width="2.5" stroke-linecap="round"/><rect x="6" y="13" width="36" height="34" rx="6" fill="#f5c518" stroke="#30372e" stroke-width="1.6"/><path d="M6 20h36M6 41h36" stroke="#d9a10c" stroke-width="3.5"/><circle cx="24" cy="30.5" r="7" fill="#fff"/><circle cx="21.6" cy="30" r="1.3" fill="#30372e"/><circle cx="26.4" cy="30" r="1.3" fill="#30372e"/><ellipse cx="24" cy="33" rx="1.6" ry="1.2" fill="#7c2f15"/>',
+  axe: '<path d="M14 50 30 6" stroke="#a4733f" stroke-width="5" stroke-linecap="round"/><path d="M26 12q14-6 18 6-2 14-14 16L24 26Z" fill="#c3ced1" stroke="#30372e" stroke-width="1.5"/><path d="M27 17l-9-3" stroke="#7f8b8d" stroke-width="4" stroke-linecap="round"/>',
+  mace: '<path d="M18 50 28 22" stroke="#9a6a3c" stroke-width="6" stroke-linecap="round"/><ellipse cx="31" cy="14" rx="10" ry="12" fill="#6e4526" stroke="#30372e" stroke-width="1.5"/><path d="M31 0v5M42 10l-4 2M44 20l-5-1M20 8l4 3M21 20l4-1M36 26l-2-3M27 26l1-3" stroke="#7c8587" stroke-width="3" stroke-linecap="round"/>',
+  pan: '<path d="M10 50 22 30" stroke="#a4733f" stroke-width="6" stroke-linecap="round"/><path d="m22 30 4-6" stroke="#3a3f42" stroke-width="4"/><circle cx="32" cy="15" r="13" fill="#3a3f42" stroke="#30372e" stroke-width="1.5"/><circle cx="32" cy="15" r="9.5" fill="#24282a"/><path d="M26 10q3-3 7-2" stroke="#7d8588" stroke-width="2" fill="none" stroke-linecap="round"/>',
 };
-export function WeaponIcon({id}) {return <svg viewBox="0 0 48 54" aria-hidden="true" dangerouslySetInnerHTML={{__html:icons[id]||""}}/>;}
-export function CharacterPortrait({id, critical=false}) {const character=CHARACTERS[id]; const portrait=critical ? character?.criticalPortrait || character?.portrait : character?.portrait; if(portrait)return <img src={`${import.meta.env.BASE_URL}${portrait}`} alt={`${character.name}${critical?'濒死':'常态'}形象`}/>; return id==="basic-fighter" ? <svg viewBox="0 0 120 100" aria-hidden="true"><ellipse cx="60" cy="82" rx="29" ry="35" fill="#bd6048"/><ellipse cx="60" cy="38" rx="29" ry="30" fill="#e8c6a8"/><ellipse cx="51" cy="38" rx="2" ry="3" fill="#30372e"/><ellipse cx="69" cy="38" rx="2" ry="3" fill="#30372e"/></svg> : <svg viewBox="0 0 120 100" aria-hidden="true"><path d="M26 41 22 10 45 28Q60 20 75 28L98 10 94 41Q110 96 60 98 10 96 26 41" fill="#e0b379"/><path d="M49 32 53 45M60 29v15M72 32 68 45" stroke="#c68e50" strokeWidth="5" strokeLinecap="round"/><path d="M36 59q9-9 18 0M66 59q9-9 18 0" stroke="#7d725b" fill="none" strokeWidth="3"/><ellipse cx="60" cy="78" rx="20" ry="13" fill="#fff8e8"/></svg>;}
+
+const SKILL_GLYPHS = { laugh: '😆', twist: '🌀', delivery: '🥡', happy: '💖' };
+export function SkillIcon({ id }) {
+  return <span className={`skill-icon skill-${id}`} aria-hidden="true">{SKILL_GLYPHS[id] ?? '★'}</span>;
+}
+
+export function WeaponIcon({ id }) {
+  return <svg viewBox="0 0 48 54" aria-hidden="true" dangerouslySetInnerHTML={{ __html: icons[id] || '' }} />;
+}
+
+// Rendered from the 3D model; a lettered disc stands in if WebGL is missing.
+export function CharacterPortrait({ id, playerId = 0, critical = false, crop = 'bust' }) {
+  const character = CHARACTERS[id];
+  const url = characterPortrait(id, playerId, crop);
+  const label = `${character?.name ?? '角色'}${critical ? '（濒危）' : ''}`;
+  if (url) return <img className={`portrait${critical ? ' critical' : ''}`} src={url} alt={label} draggable={false} />;
+  return <svg className="portrait" viewBox="0 0 100 100" role="img" aria-label={label}>
+    <circle cx="50" cy="50" r="44" fill={playerId ? '#568d92' : '#c4684f'} />
+    <text x="50" y="62" textAnchor="middle" fontSize="36" fill="#fbf6e8">{character?.name?.[0] ?? '?'}</text>
+  </svg>;
+}

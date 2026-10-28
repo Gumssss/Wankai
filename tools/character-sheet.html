@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>角色对照表</title>
+  <style>
+    body { margin: 0; background: #f7f1e3; font: 13px system-ui, "Microsoft YaHei", sans-serif; color: #30372e; }
+    #sheet { display: grid; grid-template-columns: repeat(4, 360px); gap: 4px; padding: 4px; width: max-content; }
+    .cell { position: relative; width: 360px; height: 420px; background: #fffaf0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .cell img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .cell span { position: absolute; left: 6px; top: 4px; background: rgba(255,250,240,.85); padding: 0 4px; }
+  </style>
+</head>
+<body>
+  <div id="sheet"></div>
+  <script type="module">
+    // One contact sheet per character for sculpting by eye: the reference next
+    // to the in-game body from the reference's own angle and from all around.
+    // ?id=naiwa&ref=奶蛙.webp&yaw=20&pitch=8&fov=22 (optional &weapon=sword&theta=0.82:
+    // the weapon floats beside the body exactly as in the arena)
+    import * as THREE from 'three';
+    import { buildCharacter, preloadCharacterModels } from '/src/models/characters.js';
+    import { CHARACTERS } from '/src/character-catalog.js';
+    import { makePlayer, staffFrame, v3 } from '/src/physics.js';
+    import { buildWeapon } from '/src/models/weapons.js';
+    import { setWeaponRotation } from '/src/weapon-visuals.js';
+
+    const LOADOUTS = { naiwa: { characterId: 'naiwa', weaponId: 'yellow-staff' }, dudu: { characterId: 'dudu', weaponId: 'takeout-box' },
+      'happy-cat': { characterId: 'happy-cat', weaponId: 'sword' }, stickman: { characterId: 'stickman', weaponId: 'sword' } };
+    const SKILLS = { naiwa: 'laugh', dudu: 'delivery', 'happy-cat': 'happy', stickman: 'twist' };
+    const query = new URLSearchParams(location.search), id = query.get('id') ?? 'naiwa';
+    const number = (key, fallback) => query.has(key) ? Number(query.get(key)) : fallback;
+    const yaw = number('yaw', 30), pitch = number('pitch', 8), fov = number('fov', 22);
+    // yaw 0 looks at the face (+X), 90 at the character's right side (+Z).
+    const VIEWS = [['匹配参考图', yaw, pitch], ['正面', 0, 6], ['右前 3/4', 45, 10], ['左前 3/4', -45, 10],
+      ['右侧', 90, 4], ['背面', 180, 8], ['技能动作（匹配视角）', yaw, pitch, true]];
+
+    const W = 360, H = 420, sheet = document.getElementById('sheet');
+    const cell = label => { const div = document.createElement('div'); div.className = 'cell'; div.innerHTML = `<span>${label}</span>`; sheet.appendChild(div); return div; };
+    if (query.get('ref')) {
+      const image = new Image();
+      image.src = `/${query.get('ref')}`;
+      await image.decode().catch(() => {});
+      cell(`参考图 ${query.get('ref')}`).appendChild(image);
+    }
+
+    await preloadCharacterModels();
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.setSize(W, H);
+    renderer.setClearColor(0xffffff);
+    const scene = new THREE.Scene();
+    scene.add(new THREE.HemisphereLight(0xfff6e4, 0x9aa48a, 2.4));
+    const key = new THREE.DirectionalLight(0xffe9c8, 2.6); key.position.set(4, 6, 3); scene.add(key);
+    const rim = new THREE.DirectionalLight(0xcfe6ff, 0.9); rim.position.set(-3, 3, -4); scene.add(rim);
+    const camera = new THREE.PerspectiveCamera(fov, W / H, 0.05, 60);
+
+    const character = CHARACTERS[id], loadout = query.get('weapon') ? { characterId: id, weaponId: query.get('weapon') } : LOADOUTS[id];
+    const fighter = buildCharacter(loadout, 0);
+    fighter.root.position.y = character.bodyFloor;
+    scene.add(fighter.root);
+    const player = makePlayer(0, loadout);
+    player.p = v3(0, 0, 0);
+    player.phi = player.bodyYaw = 0;
+    player.theta = number('theta', 0.55);
+    let height = character.bounds.max[1];
+    if (query.get('weapon')) {
+      // The arena places the weapon from the body pivot (bodyFloor above the floor).
+      const holder = new THREE.Group(), lifted = { ...player, p: v3(0, character.bodyFloor, 0) };
+      holder.position.copy(staffFrame(lifted, 0).point);
+      setWeaponRotation(holder.quaternion, player.theta, player.phi);
+      holder.add(buildWeapon(loadout.weaponId, 0).root);
+      scene.add(holder);
+      height = Math.max(height, staffFrame(lifted).point.y + 0.3);
+    }
+    const target = new THREE.Vector3(0, height * 0.5, 0);
+    const distance = height * (query.get('weapon') ? 0.8 : 0.62) / Math.tan(THREE.MathUtils.degToRad(fov / 2));
+
+    for (const [label, y, p, skill] of VIEWS) {
+      // Ease the skill pose in over a second of animation, then hold it.
+      Object.assign(player, { skill: SKILLS[id], skillActive: !!skill });
+      for (let t = 0; t <= 1.2; t += 1 / 30) fighter.pose(player, 10 + t);
+      const a = THREE.MathUtils.degToRad(y), b = THREE.MathUtils.degToRad(p);
+      camera.position.copy(target).add(new THREE.Vector3(Math.cos(b) * Math.cos(a), Math.sin(b), Math.cos(b) * Math.sin(a)).multiplyScalar(distance));
+      camera.lookAt(target);
+      renderer.render(scene, camera);
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      canvas.getContext('2d').drawImage(renderer.domElement, 0, 0);
+      cell(`${label} · yaw ${y}° pitch ${p}°`).appendChild(canvas);
+    }
+    window.__sheetReady = true;
+  </script>
+</body>
+</html>
