@@ -4,7 +4,7 @@ import { createKit, geometry as G } from '../models/toy-kit.js';
 import { createSculpt, shape, smin } from '../models/sculpt.js';
 import {
   TAU, INK, seeded, smoothstep, clamp01, createNoise, addLights, createBatch, coloredGeometry, instanced, latheBands, terrainRing,
-  canvasTexture, drawStartMarks, fallingFlakes, birdFlock, createProp, finishProp, fadeProps, softMaterial, farMaterial,
+  canvasTexture, fallingFlakes, birdFlock, createProp, finishProp, fadeProps, softMaterial, farMaterial,
   createLayout, groundUnder, pebbleGeometry, horizonNoise, canopyGeometry, NOISE_GLSL, paintedSky, paintedRanges, featherMist,
   createSeeThrough,
 } from './common.js';
@@ -163,7 +163,6 @@ function terraceTexture(radius, R, anisotropy) {
     for (const [x, y] of [[0, 0], ...Array.from({ length: 6 }, (_, i) => [Math.cos(i / 6 * TAU) * 0.45, Math.sin(i / 6 * TAU) * 0.45])]) {
       c.beginPath(); c.arc(x * k, y * k, 0.09 * k, 0, TAU); c.fill();
     }
-    drawStartMarks(c, k, ['#c4684f', '#3f7f88'], 'c8');
   }, anisotropy);
 }
 

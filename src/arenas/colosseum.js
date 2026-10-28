@@ -3,7 +3,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createKit, geometry as G } from '../models/toy-kit.js';
 import {
   TAU, seeded, smoothstep, createNoise, skyDome, addLights, createBatch, coloredGeometry, instanced, latheBands, terrainRing,
-  canvasTexture, drawStartMarks, fallingFlakes, cloudLayer, birdFlock, createProp, finishProp, fadeProps, softMaterial, farMaterial,
+  canvasTexture, fallingFlakes, cloudLayer, birdFlock, createProp, finishProp, fadeProps, softMaterial, farMaterial,
   createLayout, groundUnder, findSite, pebbleGeometry, horizonNoise, ridgeRanges, mistLayers, canopyGeometry, createSeeThrough,
 } from './common.js';
 
@@ -64,7 +64,6 @@ function sandTexture(radius, anisotropy) {
     c.fill();
     c.fillStyle = '#b5523bb0';
     c.beginPath(); c.arc(0, 0, 0.55 * k, 0, TAU); c.fill();
-    drawStartMarks(c, k, ['#b5523b', '#3f7f88'], 'b0');
   }, anisotropy);
 }
 
@@ -462,7 +461,7 @@ export function buildColosseum({ radius, obstacles, anisotropy = 4 }) {
   cavea.receiveShadow = true;
   group.add(cavea);
 
-  // Two gates on the x axis, behind the start marks.
+  // Two gates on the x axis, behind the start positions.
   const gateAngles = [0, Math.PI];
   const gateBatch = createBatch(), wood = see.patch(kit.material(0x8a5a35)), dark = see.patch(kit.material(0x3f2f25, { sheen: 0 }));
   const bronze = see.patch(kit.material(0xc08a3e, { metalness: 0.3, roughness: 0.45 })), marbleTrim = see.patch(kit.material(MARBLE));

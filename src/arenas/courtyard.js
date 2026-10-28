@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { createKit, geometry as G, PALETTE as C } from '../models/toy-kit.js';
 import {
   TAU, seeded, smoothstep, createNoise, skyDome, addLights, createBatch, coloredGeometry, instanced, terrainRing, latheBands,
-  canvasTexture, drawStartMarks, fallingFlakes, cloudLayer, birdFlock, createProp, finishProp, fadeProps, softMaterial, farMaterial,
+  canvasTexture, fallingFlakes, cloudLayer, birdFlock, createProp, finishProp, fadeProps, softMaterial, farMaterial,
   createLayout, groundUnder, pebbleGeometry, findSite, horizonNoise, ridgeRanges, mistLayers, canopyGeometry, createSeeThrough,
 } from './common.js';
 
@@ -48,7 +48,6 @@ function floorTexture(radius, anisotropy) {
       i ? c.lineTo(Math.cos(a) * r, Math.sin(a) * r) : c.moveTo(Math.cos(a) * r, Math.sin(a) * r);
     }
     c.fill();
-    drawStartMarks(c, k);
     // Petal dots scattered in the outer band.
     for (let i = 0; i < 48; i++) {
       const a = i / 48 * TAU, r = (radius - 4.6 + (i % 3) * 0.9) * k;

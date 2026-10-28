@@ -33,6 +33,9 @@ export class GameSession {
     this.localPlayerId = 0;
     // Camera yaw the local body turns toward; written by the renderer each frame.
     this.localFaceYaw = null;
+    // The setup screen's draft { id, characterId, weaponId }; the renderer
+    // shows it alone in the arena while set. Not part of the snapshot.
+    this.setupPreview = null;
     // A skill press between frames still triggers on the next physics step.
     this.skillTap = false;
     this.aiDifficulty = 'normal';

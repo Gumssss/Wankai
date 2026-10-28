@@ -121,7 +121,7 @@ npm run dist:mac   # release/ 下生成 arm64 与 x64 的 .dmg 和 .zip
 
 ## 音频
 
-音效在代码中实时合成。背景音乐使用 Kevin MacLeod（incompetech.com）的 CC BY 4.0 曲目，剪辑成无缝循环后放在 `public/audio/music/`：菜单是 “Daily Beetle”；对战按竞技场换曲，玩具庭院 “Mischief Maker”、罗马角斗场 “Bushwick Tarantella Loop”、湖中庭院 “Shenyang”。署名在「设置 → 音乐署名」；文件缺失时退回合成曲。角色语音（奶蛙大笑、「你的胆子真的肥嘟嘟的」、Happy Happy）使用你提供并经过降噪、均衡和响度处理的录音，放在 `public/audio/voices/`；详情见 [public/audio/README.md](public/audio/README.md)。
+音效在代码中实时合成。背景音乐使用 Kevin MacLeod（incompetech.com）的 CC BY 4.0 曲目，剪辑成无缝循环后放在 `public/audio/music/`：菜单是 “Daily Beetle”；对战按竞技场换曲，玩具庭院 “Mischief Maker”、罗马角斗场 “Crusade”、湖中庭院 “Shenyang”。署名在「设置 → 音乐署名」；文件缺失时退回合成曲。角色语音（奶蛙大笑、「你的胆子真的肥嘟嘟的」、Happy Happy）使用你提供并经过降噪、均衡和响度处理的录音，放在 `public/audio/voices/`；详情见 [public/audio/README.md](public/audio/README.md)。
 
 ## 目录
 
@@ -140,7 +140,7 @@ src/
   models/               程序化角色、武器、头像（toy-kit 统一材质与描边）
   audio.js audio/       合成音乐、音效与语音槽位
   scene.js ArenaCanvas.jsx free-camera.js   渲染、特效、自由视角、胜利特写
-  App.jsx MatchSetup.jsx LoadoutPreview.jsx    界面
+  App.jsx MatchSetup.jsx   界面
 tools/      角色对照图、图标生成（make-icon.mjs + make-icon.py）等工具
 tests/      node:test 单元测试
 docs/ARCHITECTURE.md    架构与约定

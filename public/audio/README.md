@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | music/menu.ogg | 标题 / 菜单，172.79 秒循环 | “Daily Beetle” Kevin MacLeod，[incompetech](https://incompetech.com/music/royalty-free/mp3-royaltyfree/Daily%20Beetle.mp3)，CC BY 4.0；取原曲 42.56–215.35 秒（第 70 拍起 72 小节） |
 | music/battle.ogg | 对战 · 玩具庭院（也是其他竞技场缺文件时的回退），122.88 秒循环 | “Mischief Maker” Kevin MacLeod，[incompetech](https://incompetech.com/music/royalty-free/mp3-royaltyfree/Mischief%20Maker.mp3)，CC BY 4.0；取原曲 38.36–161.24 秒（64 小节） |
-| music/battle-colosseum.ogg | 对战 · 罗马角斗场，40.24 秒循环 | “Bushwick Tarantella Loop” Kevin MacLeod，[incompetech](https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bushwick%20Tarantella%20Loop.mp3)，CC BY 4.0；取原曲 31.80–72.04 秒（144 拍） |
+| music/battle-colosseum.ogg | 对战 · 罗马角斗场，42.67 秒循环 | “Crusade” Kevin MacLeod，[incompetech](https://incompetech.com/music/royalty-free/mp3-royaltyfree/Crusade.mp3)，CC BY 4.0；取原曲 9.46–52.13 秒（16 小节） |
 | music/battle-lakeside.ogg | 对战 · 湖中庭院，59.08 秒循环 | “Shenyang” Kevin MacLeod，[incompetech](https://incompetech.com/music/royalty-free/mp3-royaltyfree/Shenyang.mp3)，CC BY 4.0；取原曲 40.11–99.19 秒（32 小节） |
 | sfx/weapon-clash.m4a | 金属武器相撞（clash），音量随碰撞力度变化，播放速度随机 ±6% 避免重复感；加载失败时使用合成碰撞声 | 用户提供的 copy_477441E3-12EB-47C8-B409-25773B8AF1CA.MOV，提取完整音轨 |
 | voices/naiwa-laugh.wav | 奶蛙技能「大笑」语音，3.35 秒 | 用户提供的 `大笑.m4a`（原长 5.76 秒） |
@@ -40,14 +40,14 @@
 **选曲**：原合成曲是玩具箱配器（马林巴、拇指琴、毡锤钢琴），菜单 96 BPM、对战 132 BPM。候选曲用 incompetech 的曲目数据（BPM、配器、风格标签）初筛，再按信号分析结果定曲：速度是否恒定（逐 30 秒检测）、整首能量是否平稳（3 秒短时响度）、能否切出接缝干净的长循环。
 - 菜单 Daily Beetle：尤克里里、马林巴、八音盒、玩具钢琴，和原合成曲配器最接近；固定 100 BPM。备选 Carefree、Life of Riley 母带偏轻、配器没那么“玩具”。
 - 玩具庭院 Mischief Maker：木琴、扬琴、维金纳琴加鼓组，调皮又有推进感；固定 125 BPM，64 小节段落几乎原样重复（接缝处波形相关 0.999）。淘汰 Quirky Dog（摇摆节奏，节拍网格对不齐，无法无缝循环）、Run Amok（管弦乐动态起伏大，只有 1:47）。
-- 罗马角斗场 Bushwick Tarantella：意大利塔兰泰拉，手风琴和单簧管。完整版的速度在 208–218 BPM 之间漂移，找不到干净的长循环；Loop 版速度恒定（214.8 BPM），但整段首尾相接有 +14 dB 的跳变，所以取它中间 144 拍的一段。淘汰 Movement Proposition（中段有一次大停顿）。
+- 罗马角斗场 Crusade：圆号、长号、小号加打击乐和铁砧的铜管史诗曲，像罗马军团的号角，配角斗场；固定 90 BPM。取开头铜管反复推进的一段（后面的高潮段通篇不重复，切不出干净的循环），64 拍正好 42.667 秒，接缝处波形相关 0.97。最初用的是 Bushwick Tarantella Loop（意大利塔兰泰拉，手风琴和单簧管），但它有长段铃鼓/镲的滚奏，2–8 kHz 几乎是白噪声，听起来像噪音，所以换掉。换曲时多查了一项噪声指标：2–8 kHz 的频谱底噪（每帧取 20% 分位，再取 0.3 秒内的最小值，只有持续的噪声才会抬高它；相对整曲中位帧功率），新循环 90 分位为 -42 dB（玩具庭院 -32、湖中庭院 -35、旧 Tarantella -31.5 dB），没有一帧超过 -30 dB（旧曲 5.8%，最长连续 1.5 秒）；0.1–8 kHz 频谱平坦度中位数 0.001（其他两首对战曲约 0.008，旧曲 0.011）。淘汰 Five Armies、At Launch（通篇不重复，切不出接缝干净的循环）、Clash Defiant（能循环，但很暗，高频几乎全是打击乐噪声）、Adventures in Adventureland 和 Call to Adventure（每隔半分钟左右就有 2–3 秒的镲滚奏，后者速度还会变）。
 - 湖中庭院 Shenyang：二胡、琵琶、扬琴加打击乐，明亮的中国民乐风，配汉白玉栏杆、荷花和六角亭；固定 130 BPM。曾试 Guzheng City（节拍弱、中间有停顿，切不出好循环）和 88.6 秒的 Shenyang 长循环（接缝落在音符中间，波形相关只有 0.48），最终用 32 小节的循环。
 
 **处理流程**（Python + numpy/scipy/soundfile；脚本没有入库）：
 1. 解码 MP3，用频谱通量的起音包络在 ±3% 范围内细调 BPM 和第一拍相位，得到恒定节拍网格。
 2. 每拍提取 12 维色度（和声）和 24 段对数频带能量（配器/音色），在所有“起点拍 × 长度（整小节）”组合中找接缝两侧 ±4 秒最相似的循环；排除原曲结尾的收束段。
 3. 起点和终点提前 12 ms（保住重拍的起音），终点在 ±12 ms 内按波形互相关微调；循环开头 50 ms 与终点之后的原曲做交叉淡化（相关性高时线性，低时等功率），所以循环回到开头时和原曲连续演奏一样。
-4. 所有滤波都按循环处理（前后拼接自身再滤波、取中段），接缝不会因滤波产生突变：30 Hz 高通；两首对战曲（Mischief Maker、Tarantella）在 3 kHz 削 1.5 dB（Q 0.9），给武器打击声留空间。
+4. 所有滤波都按循环处理（前后拼接自身再滤波、取中段），接缝不会因滤波产生突变：30 Hz 高通；两首对战曲（Mischief Maker、Crusade）在 3 kHz 削 1.5 dB（Q 0.9），给武器打击声留空间。
 5. 响度按原合成曲对齐（用 OfflineAudioContext 渲染原 `MusicPlayer` 测得：菜单 -17.2 LUFS，对战 -15.0 LUFS）：菜单 -17 LUFS，对战曲 -15 LUFS（ITU-R BS.1770）；4 倍过采样的真峰值超过 -1 dBTP 时用前瞻限幅器压到 -1.2 dBTP。
 6. 导出 44.1/48 kHz 立体声 OGG Vorbis（约 200–220 kbps）。不用 MP3：MP3 编码器会在首尾补静音，循环时会有空隙。在 Electron 里用 `decodeAudioData` 验证过：时长和循环长度完全一致；循环播放时接缝处的采样跳变（约 0.02）远小于曲内 99.9 分位的跳变（0.07–0.22），没有爆音。接缝前后 250 ms 的电平变化与原曲在循环起点、终点处本来就有的变化相当（相差 0.03–1.1 dB）。
 

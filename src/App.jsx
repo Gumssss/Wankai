@@ -2,7 +2,7 @@ import { Component, useEffect, useRef, useState, useSyncExternalStore } from 're
 import { ArenaCanvas, LOOK_STATES, requestLook } from './ArenaCanvas.jsx';
 import { CONTROL_KEYS, GameSession } from './game-session.js';
 import { MatchSetup } from './MatchSetup.jsx';
-import { loadoutKey, loadoutName } from './loadouts.js';
+import { loadoutName } from './loadouts.js';
 import { CHARACTER_CATALOG, characterName } from './character-catalog.js';
 import { CharacterPortrait, SkillIcon } from './selection-icons.jsx';
 import { STAMINA } from './physics.js';
@@ -209,8 +209,8 @@ function OnlinePanel({ game, session, close, onConnected, invite, onInviteHandle
   </>;
 }
 
-function TitleScreen({ started, openSetup, openOnline, openSettings, openHelp, openQuit }) {
-  return <section className={`title-screen${started ? ' started' : ''}`} aria-label="开始界面">
+function TitleScreen({ started, leaving, openSetup, openOnline, openSettings, openHelp, openQuit }) {
+  return <section className={`title-screen${started ? ' started' : ''}${leaving ? ' leaving' : ''}`} aria-label="开始界面" inert={leaving || undefined}>
     <div className="title-shade" />
     <header className="title-logo">
       <h1><span>木昆</span>竞技场</h1>
@@ -245,6 +245,12 @@ function App({ session = defaultSession }) {
   const [quitOpen, setQuitOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [setupMode, setSetupMode] = useState(null);
+  // Title ↔ setup: the screen being left slides away while the camera flies
+  // to the next shot (ArenaView's flight), then it unmounts.
+  const [titleLeaving, setTitleLeaving] = useState(false);
+  const [setupLeaving, setSetupLeaving] = useState(false);
+  const leaveTimer = useRef(0);
+  useEffect(() => () => clearTimeout(leaveTimer.current), []);
   const [mouseLocked, setMouseLocked] = useState(false);
   const [ready, setReady] = useState(false);
   // Draw the arena pictures for the setup screen in the background as soon as
@@ -275,7 +281,7 @@ function App({ session = defaultSession }) {
     if (game.net?.phase !== 'closed' || onlineOpen) return;
     setToast(game.net.message || '联机已结束。');
     session.net?.dispose();
-    setSetupMode(null);
+    dropSetup();
     session.goHome();
   }, [game.net?.phase, onlineOpen]);
   useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(''), 4500); return () => clearTimeout(timer); }, [toast]);
@@ -288,7 +294,7 @@ function App({ session = defaultSession }) {
       if (!lobbyId) return;
       if (session.net?.phase === 'connected') { setToast('正在联机对战中，无法接受新的邀请。'); return; }
       if (session.state !== 'lobby') session.goHome();
-      setSetupMode(null);
+      dropSetup();
       setInvite(lobbyId);
       setOnlineOpen(true);
     };
@@ -306,8 +312,18 @@ function App({ session = defaultSession }) {
 
   const leaveOnline = () => { session.net?.leave('你离开了房间。'); session.net?.dispose(); };
   const goHome = () => { if (online) leaveOnline(); session.goHome(); };
-  const openSetup = mode => { click(); session.clearKeys(); setSetupMode(mode); };
-  const closeSetup = () => { session.sound.ui?.('back'); if (setupMode === 'online') leaveOnline(); setSetupMode(null); };
+  const openSetup = mode => {
+    click(); session.clearKeys(); clearTimeout(leaveTimer.current);
+    setSetupLeaving(false); setTitleLeaving(true); setSetupMode(mode);
+    leaveTimer.current = setTimeout(() => setTitleLeaving(false), 340);
+  };
+  const closeSetup = () => {
+    if (setupLeaving) return;
+    session.sound.ui?.('back'); if (setupMode === 'online') leaveOnline();
+    clearTimeout(leaveTimer.current); setTitleLeaving(false); setSetupLeaving(true);
+    leaveTimer.current = setTimeout(() => { setSetupMode(null); setSetupLeaving(false); }, 300);
+  };
+  const dropSetup = () => { clearTimeout(leaveTimer.current); setSetupLeaving(false); setTitleLeaving(false); setSetupMode(null); };
   const startOrResume = () => { session.resume(); lockView(); };
   const rematch = () => { if (online) session.net?.requestRematch(); else { session.startRound(); lockView(); } };
   const chooseArena = skin => {
@@ -319,7 +335,7 @@ function App({ session = defaultSession }) {
   // Round starts (including online starts sent by the host) take the mouse.
   const lastState = useRef(game.state);
   useEffect(() => {
-    if (lastState.current !== 'countdown' && game.state === 'countdown') { setSetupMode(null); lockView(); }
+    if (lastState.current !== 'countdown' && game.state === 'countdown') { dropSetup(); lockView(); }
     lastState.current = game.state;
   }, [game.state]);
 
@@ -352,7 +368,7 @@ function App({ session = defaultSession }) {
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [overlayOpen, setupMode, started]);
+  }, [overlayOpen, setupMode, setupLeaving, started]);
 
   useEffect(() => {
     Object.defineProperty(window, '__arena', { configurable: true, value: Object.freeze({
@@ -371,14 +387,14 @@ function App({ session = defaultSession }) {
   const waitingRematch = online && game.net?.local?.rematch;
 
   return <>
-    <div className={`arena-screen${active ? ' in-match' : ' lobby-screen'}`} hidden={setupMode !== null}>
+    <div className={`arena-screen${active ? ' in-match' : ' lobby-screen'}`}>
       <main id="game-shell">
         <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}>
-          <ArenaCanvas key={`${game.loadouts.map(loadoutKey).join('-')}:${game.arenaSkin}`} session={session} loadouts={game.loadouts} skin={game.arenaSkin}
+          <ArenaCanvas session={session} loadouts={game.loadouts} skin={game.arenaSkin}
             onReady={() => setReady(true)} sensitivity={settings.sensitivity} invertY={settings.invertY} />
         </CanvasBoundary></div>
 
-        {!active && ready && !game.error && <TitleScreen started={started} openSetup={() => openSetup('ai')}
+        {!active && ready && !game.error && (setupMode === null || titleLeaving) && <TitleScreen started={started} leaving={titleLeaving} openSetup={() => openSetup('ai')}
           openOnline={() => { click(); setOnlineOpen(true); }} openSettings={() => { click(); setSettingsOpen(true); }} openHelp={() => { click(); setHelpOpen(true); }}
           openQuit={() => { click(); setQuitOpen(true); }} />}
 
@@ -429,9 +445,9 @@ function App({ session = defaultSession }) {
       <OnlinePanel game={game} session={session} close={() => setOnlineOpen(false)} onConnected={() => { setOnlineOpen(false); openSetup('online'); }}
         invite={invite} onInviteHandled={() => setInvite(null)} />
     </Modal>}
-    {setupMode !== null && <MatchSetup game={game} session={session} net={session.net} mode={setupMode} close={closeSetup}
+    {setupMode !== null && <MatchSetup game={game} session={session} net={session.net} mode={setupMode} leaving={setupLeaving} close={closeSetup}
       chooseArena={chooseArena} chooseDifficulty={chooseDifficulty}
-      start={() => { session.sound.ui?.('confirm'); session.startRound(setupMode); setSetupMode(null); lockView(); }} />}
+      start={() => { session.sound.ui?.('confirm'); session.startRound(setupMode); dropSetup(); lockView(); }} />}
     {menuOpen && !overlayOpen && !game.error && <Modal label="菜单" className="pause-menu" onCancel={startOrResume}>
       <span className="eyebrow">{online ? 'MENU' : 'PAUSED'}</span>
       <h2>{online ? '菜单' : '暂停'}</h2>

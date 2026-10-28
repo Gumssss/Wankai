@@ -274,14 +274,6 @@ export function canvasTexture(size, draw, anisotropy = 4, height = size) {
   return texture;
 }
 
-// Start rings for both fighters at x = ±2.2 (context already centred, k px/unit).
-export function drawStartMarks(c, k, colors = ['#c4684f', '#568d92'], alpha = 'aa') {
-  for (const [x, color] of [[-2.2, colors[0]], [2.2, colors[1]]]) {
-    c.strokeStyle = color + alpha; c.lineWidth = 0.12 * k;
-    c.beginPath(); c.arc(x * k, 0, 0.62 * k, 0, TAU); c.stroke();
-  }
-}
-
 // Puffy clouds in one instanced mesh, in a group that update() can spin.
 export function cloudLayer({ count = 8, radius = 95, height = 32, seed = 3, color = 0xffffff, emissive = 0xfff8ec, scale = 3.2 }) {
   const random = seeded(seed), puffs = [];

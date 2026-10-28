@@ -7,7 +7,7 @@ export const MUSIC_LICENSE = Object.freeze({
 export const MUSIC_CREDITS = Object.freeze([
   { title: 'Daily Beetle', use: '标题 / 菜单', file: 'menu' },
   { title: 'Mischief Maker', use: '对战 · 玩具庭院', file: 'battle' },
-  { title: 'Bushwick Tarantella Loop', use: '对战 · 罗马角斗场', file: 'battle-colosseum' },
+  { title: 'Crusade', use: '对战 · 罗马角斗场', file: 'battle-colosseum' },
   { title: 'Shenyang', use: '对战 · 湖中庭院', file: 'battle-lakeside' },
 ].map(credit => Object.freeze({ ...credit, author: 'Kevin MacLeod (incompetech.com)' })));
 

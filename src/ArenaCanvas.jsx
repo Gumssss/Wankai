@@ -95,7 +95,7 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
     const impacts = session.tick(delta);
     const world = session.world;
     deathPortraits.current?.update(world.players, world.winner, session.state, Math.min(delta, 0.06));
-    const mode = session.state === 'lobby' ? 'lobby' : session.state === 'result' && world.winner >= 0 ? 'victory' : 'match';
+    const mode = session.state === 'lobby' ? (session.setupPreview ? 'setup' : 'lobby') : session.state === 'result' && world.winner >= 0 ? 'victory' : 'match';
     if (revision.current !== session.visualRevision) {
       view.clearEffects();
       view.resetCamera();
@@ -108,7 +108,7 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
     }
     const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
     view.update(world.players, effectDelta, { active: session.state === 'playing' || session.state === 'result', cameraDt: Math.min(delta, 0.06),
-      view: mode, localPlayerId: session.localPlayerId, winner: world.winner, projectiles: world.projectiles || [] });
+      view: mode, localPlayerId: session.localPlayerId, winner: world.winner, projectiles: world.projectiles || [], preview: session.setupPreview });
     session.localFaceYaw = mode === 'match' ? cameraYaw(view.followCamera) : null;
     // Hand the cursor back for menus, results and pause.
     if ((!LOOK_STATES.has(session.state) || session.menuOpen) && document.pointerLockElement === gl.domElement) document.exitPointerLock();

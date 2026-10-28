@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { CONFIG, MATCH_ARENA_SCALE, weaponStats, staffFrame, fighterHeading, clamp } from './physics.js';
+import { CONFIG, MATCH_ARENA_SCALE, weaponStats, staffFrame, fighterHeading, clamp, makePlayer, v3 } from './physics.js';
+import { CHARACTERS } from './character-catalog.js';
 import { setWeaponRotation } from './weapon-visuals.js';
 import { createFreeCameraRig, updateFreeCamera, updateVictoryCamera, updateShowcaseCamera, resetFreeCamera, orbitFreeCamera,
   zoomFreeCamera, faceFreeCamera } from './free-camera.js';
@@ -27,6 +28,26 @@ function buildDeliveryBag(radius) {
   return root;
 }
 
+// Where the setup screen's fighter stands, as a fraction of the window width:
+// midway between the choices on the left and the side column on the right.
+const SETUP_FRAME_X = 0.54;
+// Camera flights between screens, in seconds.
+const FLIGHTS = { 'lobby>setup': 1.25, 'setup>lobby': 1.05 };
+// Changing the arena on the setup screen rebuilds the whole view. The fighter
+// already standing there must not spring up again, and the camera's sway
+// carries on where it was, so both outlive a single view.
+let shownPreviewKey = '';
+let viewClock = 0;
+const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+const easeOutBack = t => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2;
+// aim: the point the camera looks at, as far along its view as the pivot is.
+function cameraPose(camera, pivot) {
+  const view = camera.view?.enabled ? camera.view : null;
+  const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+  const aim = camera.position.clone().addScaledVector(forward, Math.max(1, camera.position.distanceTo(pivot)));
+  return { position: camera.position.clone(), aim, fov: camera.fov, offsetX: view ? view.offsetX : 0, offsetY: view ? view.offsetY : 0 };
+}
+
 export class ArenaView {
   constructor(renderer, camera, first, second, skin = 'courtyard') {
     this.renderer = renderer;
@@ -44,13 +65,22 @@ export class ArenaView {
     this.followCamera = createFreeCameraRig();
     // Title screen: a perspective orbit so the scenery beyond the wall shows.
     this.showcaseCamera = new THREE.PerspectiveCamera(42, 1, 0.1, 320);
+    // Setup screen: a close shot of the draft fighter, between the two columns.
+    this.setupCamera = new THREE.PerspectiveCamera(34, 1, 0.1, 320);
+    this.preview = null;
+    // Title ↔ setup: instead of cutting, a camera flies from the last shot drawn to the new one.
+    this.flightCamera = new THREE.PerspectiveCamera(42, 1, 0.1, 320);
+    this.flight = null;
+    this.lastView = null;
+    // What the flight keeps in frame: the setup fighter, or the arena's middle before there is one.
+    this.flightPivot = new THREE.Vector3(0, 1, 0);
     this.focus = new THREE.Vector3();
     this.particles = [];
     this.rings = [];
     this.bags = new Map();
     this.laughPulse = [0, 0];
     this.trailTime = 0;
-    this.time = 0;
+    this.time = viewClock;
     this.shake = 0;
     this.reducedMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.players = [this.makeFighter(0), this.makeFighter(1)];
@@ -102,15 +132,95 @@ export class ArenaView {
     this.width = width;
     this.height = height;
     const aspect = width / Math.max(1, height);
-    for (const camera of [this.followCamera.camera, this.showcaseCamera]) {
+    for (const camera of [this.followCamera.camera, this.showcaseCamera, this.setupCamera, this.flightCamera]) {
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
     }
+    // The setup screen's columns cover the left and right of the window: shift
+    // the image so the fighter in the middle of the shot lands between them.
+    this.setupCamera.setViewOffset(width, height, -width * (SETUP_FRAME_X - 0.5), height * 0.02, width, height);
   }
 
-  // view: 'lobby' | 'match' | 'victory'. winner: the fighter the victory camera frames.
-  update(players, dt, { active = false, cameraDt = dt, view = 'lobby', localPlayerId = 0, winner = null, projectiles = [] } = {}) {
+  // The setup screen's fighter: the draft character with its weapon raised
+  // beside it, the same pose as the old turntable preview. Rebuilt on change.
+  // keep: leave shownPreviewKey alone (the view is only being rebuilt).
+  showPreview(selection, keep = false) {
+    const key = selection ? `${selection.id}:${selection.characterId}:${selection.weaponId}` : '';
+    if (!key && !keep) shownPreviewKey = '';
+    if (this.preview?.key === key) return;
+    if (this.preview) { this.actors.remove(this.preview.root); disposeObject(this.preview.root); this.preview = null; }
+    if (!selection) return;
+    const { id, characterId, weaponId } = selection, character = CHARACTERS[characterId];
+    if (!character) return;
+    const full = weaponId ? resolveLoadout({ characterId, weaponId }) : null;
+    const loadout = full ?? { characterId, weaponId: character.weaponIds?.[0] ?? 'sword' };
+    const root = new THREE.Group(), player = makePlayer(id, loadout);
+    player.p = v3(0, character.bodyFloor, 0);
+    player.phi = player.bodyYaw = 0;
+    player.theta = 0.82;
+    const body = buildCharacter(loadout, id);
+    body.root.position.set(player.p.x, player.p.y, player.p.z);
+    root.add(body.root);
+    if (full) {
+      const holder = new THREE.Group();
+      holder.position.copy(vec(staffFrame(player, 0).point));
+      setWeaponRotation(holder.quaternion, player.theta, player.phi, this.swordPitch);
+      holder.add(buildWeapon(full.weaponId, id).root);
+      root.add(holder);
+    }
+    root.traverse(object => { if (object.isMesh && !object.userData.outline) object.castShadow = true; });
+    root.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(root, true);
+    this.actors.add(root);
+    // It springs up from the floor when it appears (the box above is its full
+    // size), but not when the same fighter is only moved into a rebuilt view.
+    const fresh = key !== shownPreviewKey;
+    shownPreviewKey = key;
+    root.scale.setScalar(fresh ? 0.001 : 1);
+    this.preview = { key, root, body, player, box, center: box.getCenter(new THREE.Vector3()), born: fresh ? this.time : -Infinity };
+  }
+
+  // Three-quarter front view of the preview, swaying gently so the arena
+  // behind it moves. Distance fits the whole silhouette between the columns.
+  updateSetupCamera(time) {
+    const camera = this.setupCamera, preview = this.preview;
+    if (!preview) return;
+    // Looks past the fighter between a pillar and a low wall, so the arena's edge shows behind it.
+    const angle = 0.3 + Math.sin(time * 0.23) * 0.1;
+    const direction = new THREE.Vector3(Math.cos(angle), 0.2, Math.sin(angle)).normalize();
+    const right = new THREE.Vector3(-direction.z, 0, direction.x).normalize(), up = new THREE.Vector3().crossVectors(right, direction).negate();
+    const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), tanH = tanV * camera.aspect;
+    const { box, center } = preview, corner = new THREE.Vector3();
+    let distance = 2;
+    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
+      corner.set(x, y, z).sub(center);
+      const depth = corner.dot(direction);
+      distance = Math.max(distance, depth + Math.abs(corner.dot(right)) / (tanH * 0.32), depth + Math.abs(corner.dot(up)) / (tanV * 0.74));
+    }
+    camera.position.copy(center).addScaledVector(direction, distance);
+    camera.lookAt(center);
+    camera.updateMatrixWorld();
+  }
+
+  // view: 'lobby' | 'setup' | 'match' | 'victory'. winner: the fighter the victory camera frames.
+  update(players, dt, { active = false, cameraDt = dt, view = 'lobby', localPlayerId = 0, winner = null, projectiles = [], preview = null } = {}) {
+    const setup = view === 'setup';
+    this.showPreview(setup ? preview : null);
+    // Flying back to the title shot, the fighters there would fill the lens
+    // while the camera is still close in: they show once it has pulled back.
+    const returning = view === 'lobby' && (this.lastView === 'setup' || (this.flight?.view === 'lobby' && this.flight.time < this.flight.duration * 0.5));
+    const hidden = setup || returning;
+    for (const model of this.players) {
+      model.character.root.visible = model.staff.visible = model.marker.visible = !hidden;
+      if (hidden) model.contact.visible = false;
+    }
+    if (this.preview) {
+      this.preview.body.pose(this.preview.player, this.time);
+      const grow = this.reducedMotion ? 1 : Math.min(1, (this.time - this.preview.born) / 0.5);
+      this.preview.root.scale.setScalar(grow >= 1 ? 1 : Math.max(0.001, easeOutBack(grow)));
+    }
     this.time += dt;
+    viewClock = this.time;
     this.trailTime += dt;
     const recordTrail = this.trailTime > 1 / 90;
     if (recordTrail) this.trailTime = 0;
@@ -125,7 +235,7 @@ export class ArenaView {
       model.marker.position.set(p.p.x, 0.02, p.p.z);
       model.marker.material.opacity = clamp(0.5 - (p.p.y - CONFIG.bodyFloor) * 0.09, 0.16, 0.5);
       const frame = staffFrame(p);
-      model.contact.visible = p.staffGrounded;
+      model.contact.visible = !hidden && p.staffGrounded;
       model.contact.position.set(frame.point.x, 0.023, frame.point.z);
       const strength = clamp((p.contactSpeed - 3) / 9, 0, 1);
       for (const trail of model.trails) {
@@ -190,16 +300,53 @@ export class ArenaView {
     } else if (view === 'match' && local) {
       updateFreeCamera(this.followCamera, local, cameraDt, (Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake * 0.65);
       this.focus.set(local.p.x, local.p.y + 0.6, local.p.z);
+    } else if (setup) {
+      this.updateSetupCamera(this.reducedMotion ? 0 : this.time);
     } else {
       updateShowcaseCamera(this.showcaseCamera, this.reducedMotion ? 0 : this.time);
     }
+    this.updateFlight(view, cameraDt);
     const camera = this.activeCamera(view);
     // Both fighters, so occluding walls and props open up for either; off on the title orbit.
     const fighters = view === 'match' || view === 'victory' ? players.map(p => p.p) : null;
     this.arenaBuild.update(dt || cameraDt, camera, view === 'match' ? this.focus : null, fighters);
   }
 
-  activeCamera(view) { return view === 'lobby' ? this.showcaseCamera : this.followCamera.camera; }
+  baseCamera(view) { return view === 'lobby' ? this.showcaseCamera : view === 'setup' ? this.setupCamera : this.followCamera.camera; }
+
+  activeCamera(view) { return this.flight && this.flight.view === view ? this.flightCamera : this.baseCamera(view); }
+
+  // Between the title orbit and the setup close-up the camera flies: from the
+  // pose last drawn (mid-flight too, if the player turns back) to the new
+  // shot, which keeps moving underneath, so the flight lands on it exactly.
+  // Position and aim point are blended (not the rotation), so the fighter
+  // stays in the picture the whole way.
+  updateFlight(view, dt) {
+    const last = this.lastView;
+    this.lastView = view;
+    if (this.preview) this.flightPivot.copy(this.preview.center);
+    if (last && last !== view && !this.reducedMotion && FLIGHTS[`${last}>${view}`]) {
+      const from = this.activeCamera(last);
+      this.flight = { view, time: 0, duration: FLIGHTS[`${last}>${view}`], from: cameraPose(from, this.flightPivot) };
+    }
+    if (!this.flight) return;
+    if (this.flight.view !== view) { this.flight = null; return; }
+    const flight = this.flight;
+    flight.time += dt;
+    const t = Math.min(1, flight.time / flight.duration);
+    if (t >= 1) { this.flight = null; return; }
+    const to = cameraPose(this.baseCamera(view), this.flightPivot), from = flight.from, k = easeInOutCubic(t);
+    const camera = this.flightCamera;
+    camera.position.lerpVectors(from.position, to.position, k);
+    // A slight rise mid-flight, so the push reads as a swoop rather than a slide.
+    camera.position.y += Math.sin(Math.PI * k) * from.position.distanceTo(to.position) * 0.06;
+    camera.lookAt(new THREE.Vector3().lerpVectors(from.aim, to.aim, k));
+    camera.fov = THREE.MathUtils.lerp(from.fov, to.fov, k);
+    if (this.width && this.height) camera.setViewOffset(this.width, this.height,
+      THREE.MathUtils.lerp(from.offsetX, to.offsetX, k), THREE.MathUtils.lerp(from.offsetY, to.offsetY, k), this.width, this.height);
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
+  }
 
   updateBags(projectiles, dt) {
     const seen = new Set();
@@ -314,6 +461,7 @@ export class ArenaView {
   dispose() {
     this.disposed = true;
     this.clearEffects();
+    this.showPreview(null, true);
     for (const root of [this.arena, this.actors, this.effectsRoot]) disposeObject(root);
   }
 }

@@ -13,12 +13,12 @@ const pillar = ARENA_OBSTACLES.find(o => o.kind === 'pillar');
 const wall = ARENA_OBSTACLES.find(o => o.kind === 'wall' && o.angle === 0);
 const inside = (o, p, radius) => o && p.y - CONFIG.bodyFloor < o.height && obstacleContact(o, p.x, p.z, radius);
 
-test('the layout is point-symmetric, inside the rim, and leaves both start marks open', () => {
+test('the layout is point-symmetric, inside the rim, and leaves both start positions open', () => {
   const radius = CONFIG.arenaRadius * MATCH_ARENA_SCALE;
   for (const o of ARENA_OBSTACLES) {
     assert.ok(ARENA_OBSTACLES.some(other => other.kind === o.kind && Math.abs(other.x + o.x) < 1e-9 && Math.abs(other.z + o.z) < 1e-9), 'mirrored');
     assert.ok(Math.hypot(o.x, o.z) + o.extent < radius - 2, 'room to pass behind every prop');
-    for (const x of [-2.2, 2.2]) assert.equal(obstacleContact(o, x, 0, 3.5), null, 'start marks stay open');
+    for (const x of [-2.2, 2.2]) assert.equal(obstacleContact(o, x, 0, 3.5), null, 'start positions stay open');
   }
 });
 
