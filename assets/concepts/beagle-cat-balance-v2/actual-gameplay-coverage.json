@@ -1,0 +1,212 @@
+[
+  {
+    "id": "cat-paws-w",
+    "offset": 0,
+    "duration": 3.012100000023842,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s",
+    "offset": 3.012100000023842,
+    "duration": 6.031,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-a",
+    "offset": 9.043100000023841,
+    "duration": 3.004,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-d",
+    "offset": 12.04710000002384,
+    "duration": 3.009,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-w-a",
+    "offset": 15.056100000023841,
+    "duration": 3.013,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-w-d",
+    "offset": 18.06910000002384,
+    "duration": 3.0112000000178814,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s-a",
+    "offset": 21.080300000041724,
+    "duration": 3.0102000000178815,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s-d",
+    "offset": 24.090500000059606,
+    "duration": 3.0235999999940395,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-w-release-s",
+    "offset": 27.114100000053647,
+    "duration": 6.027,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-opposites-cancel",
+    "offset": 33.14110000005365,
+    "duration": 1.0072999999821186,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-w",
+    "offset": 34.148400000035764,
+    "duration": 3.0200999999940397,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-s",
+    "offset": 37.1685000000298,
+    "duration": 6.00709999999404,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-a",
+    "offset": 43.17560000002384,
+    "duration": 3.014,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-d",
+    "offset": 46.189600000023844,
+    "duration": 3.0120999999940397,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-w-a",
+    "offset": 49.20170000001789,
+    "duration": 3.0070999999940393,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-w-d",
+    "offset": 52.20880000001193,
+    "duration": 3.0305,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-s-a",
+    "offset": 55.23930000001192,
+    "duration": 3.0114000000059606,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-s-d",
+    "offset": 58.250700000017886,
+    "duration": 3.003699999988079,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-w-release-s",
+    "offset": 61.254400000005965,
+    "duration": 6.012199999988079,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-opposites-cancel",
+    "offset": 67.26659999999404,
+    "duration": 1.0056000000238419,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-f-rotor-d-expiry-land",
+    "offset": 68.27220000001789,
+    "duration": 8.02490000000596,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-strike-clash-recovery",
+    "offset": 76.29710000002385,
+    "duration": 5.301699999988079,
+    "speed": 1
+  },
+  {
+    "id": "long-ears-strike-clash-recovery",
+    "offset": 81.59880000001192,
+    "duration": 5.1102000000178815,
+    "speed": 1
+  },
+  {
+    "id": "cat-block-clash",
+    "offset": 86.7090000000298,
+    "duration": 4.15,
+    "speed": 1
+  },
+  {
+    "id": "identical-character-trade",
+    "offset": 90.85900000002981,
+    "duration": 3.181,
+    "speed": 1
+  },
+  {
+    "id": "cat-vertical-hit",
+    "offset": 94.0400000000298,
+    "duration": 3.0882999999821186,
+    "speed": 1
+  },
+  {
+    "id": "cat-horizontal-hit",
+    "offset": 97.12830000001192,
+    "duration": 3.2652999999821186,
+    "speed": 1
+  },
+  {
+    "id": "cat-clean-miss",
+    "offset": 100.39359999999404,
+    "duration": 3.046,
+    "speed": 1
+  },
+  {
+    "id": "cat-paws-s-support-same-event-slow",
+    "offset": 103.43959999999404,
+    "sourceOffset": 3.6753985212807736,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "long-ears-f-rotor-d-expiry-land-expiry-same-event-slow",
+    "offset": 107.43959999999404,
+    "sourceOffset": 73.13054791957768,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "cat-block-clash-hit-same-event-slow",
+    "offset": 111.43959999999404,
+    "sourceOffset": 88.59946867563792,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "cat-horizontal-hit-hit-same-event-slow",
+    "offset": 115.43959999999404,
+    "sourceOffset": 98.1372429726769,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "cat-block-clash-clash-same-event-slow",
+    "offset": 119.43959999999404,
+    "sourceOffset": 86.98975944193741,
+    "duration": 4,
+    "speed": 0.25
+  },
+  {
+    "id": "identical-character-trade-hit-same-event-slow",
+    "offset": 123.43959999999404,
+    "sourceOffset": 90.85900000002981,
+    "duration": 4,
+    "speed": 0.25
+  }
+]

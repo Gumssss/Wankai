@@ -1,0 +1,100 @@
+{
+  "duration": 50.99089999997616,
+  "chapters": 14,
+  "allModelsReady": true,
+  "matrix": {
+    "W": {
+      "offset": 0,
+      "peak": 2.3007823616572485,
+      "finalHeight": 1.7319662811875474
+    },
+    "S": {
+      "offset": 3.143199999988079,
+      "peak": 2.3929262598636156,
+      "finalHeight": 0.3500004134118889
+    },
+    "A": {
+      "offset": 9.315199999988078,
+      "peak": 0.35,
+      "finalHeight": 0.35
+    },
+    "D": {
+      "offset": 12.346299999982117,
+      "peak": 0.35,
+      "finalHeight": 0.35
+    },
+    "W + A": {
+      "offset": 15.378699999988077,
+      "peak": 2.2956314319828257,
+      "finalHeight": 1.7505838865857277
+    },
+    "W + D": {
+      "offset": 18.470199999988075,
+      "peak": 2.3036055178318584,
+      "finalHeight": 1.9340613410672902
+    },
+    "S + A": {
+      "offset": 21.477099999994035,
+      "peak": 2.403722596842941,
+      "finalHeight": 0.766117907330614
+    },
+    "S + D": {
+      "offset": 24.500599999994034,
+      "peak": 2.3795751909009564,
+      "finalHeight": 0.7451297044245012
+    }
+  },
+  "contacts": {
+    "cat-vertical-hit": [
+      {
+        "type": "hit",
+        "attacker": 0,
+        "target": 1,
+        "damage": 3,
+        "turnShare": 0,
+        "time": 0.48477918836805484
+      },
+      {
+        "type": "hit",
+        "attacker": 1,
+        "target": 0,
+        "damage": 2,
+        "turnShare": 0,
+        "time": 1.4111287434895794
+      },
+      {
+        "type": "hit",
+        "attacker": 0,
+        "target": 1,
+        "damage": 5,
+        "turnShare": 0,
+        "time": 1.6630560980902729
+      }
+    ],
+    "cat-horizontal-hit": [
+      {
+        "type": "hit",
+        "attacker": 0,
+        "target": 1,
+        "damage": 1,
+        "turnShare": 1,
+        "time": 1.1187337239583304
+      }
+    ],
+    "cat-block-clash": [
+      {
+        "type": "clash",
+        "time": 0.4894911024305548
+      },
+      {
+        "type": "hit",
+        "attacker": 0,
+        "target": 1,
+        "damage": 11,
+        "turnShare": 0,
+        "time": 1.7590530960648096
+      }
+    ],
+    "cat-clean-miss": []
+  }
+}

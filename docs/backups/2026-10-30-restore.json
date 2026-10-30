@@ -1,0 +1,393 @@
+{
+  "head": "201cbfc71f3b5b0c35abf671aa9abf9dd05fb60b",
+  "untracked": [
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/README.md",
+      "bytes": 1377,
+      "sha256": "7d0fbb46bd9c7f033b8ef0d0887f4be9399f6b42ba105962ad4db639e67d236c"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/actual-gameplay-complete.mp4",
+      "bytes": 22276905,
+      "sha256": "29b4a20887afcadbbd7aae98f33f20ca5e4f25f0fa030c40011d5c63ec70595b"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/actual-gameplay-coverage.json",
+      "bytes": 4348,
+      "sha256": "9c2254e00a68da194dadada56add3dda399f48228de3a28d53dfae39c3f77245"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/actual-gameplay-report.json",
+      "bytes": 1608718,
+      "sha256": "6618469b1e644ca66c430ee2b5bc65ff81cc1617b1910735452f432d832fc2fc"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/actual-gameplay-validation.json",
+      "bytes": 3544,
+      "sha256": "eeed06e0275a28bf5ebf11a773f3528db05f07b9b19121e32e7b19f3b2d9dc0e"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/balance-trial-v2.json",
+      "bytes": 65043,
+      "sha256": "06f6880ba984b263e55fc5e3bfd512c16dda650f0371d0a3bb673ba1ae649013"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/live-game.png",
+      "bytes": 105213,
+      "sha256": "69e0e3c2abc14f1bf7b8e2fe7d81eb05340fbcc47739a1d359f52af968b24cad"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/motion-comparison.mp4",
+      "bytes": 8572582,
+      "sha256": "d65f51ef9692b7ddf825d7510f6d17dcd3cb43f71c0c400f3089e785454b965f"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/preview-coverage.json",
+      "bytes": 3088,
+      "sha256": "9c34bac93259813deef60a16df115f38423f325fb5cdf2d276cc02b89a47e778"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/split-desktop.png",
+      "bytes": 100958,
+      "sha256": "ec654f45231cbc68b9be79b54b686a5e2c80450b316e38b44da613ea1ff356e7"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/trade-desktop-final.png",
+      "bytes": 67948,
+      "sha256": "58a4083e06f777866dc18954519a9aab9414c6278d691f39c8e3f507458376f3"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/trade-mobile-final.png",
+      "bytes": 46036,
+      "sha256": "a1ba6888573744154c29aded4b87de8c32bf81ae6c9e354ca1e0f18394593768"
+    },
+    {
+      "path": "assets/concepts/beagle-cat-balance-v2/verification.json",
+      "bytes": 3688,
+      "sha256": "3f479005946eba0dea9a904a0071c6f401536e254bea10d1290172e8bd533fca"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/README.md",
+      "bytes": 1292,
+      "sha256": "b9783ed55db208aa70d94b75e73b938e19dd5a37ca688512ea23dad5ced0e4cb"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/actual-gameplay-complete.mp4",
+      "bytes": 8552285,
+      "sha256": "ea5a8f63cd7b9a1760998da87684117df97e0331dde75b6802deda8612741638"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/actual-gameplay-coverage.json",
+      "bytes": 2300,
+      "sha256": "b2f42829fa4bb1fb155e84db76db4898645a7d5e691cc75f51fb603cf4c67164"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/actual-gameplay-report.json",
+      "bytes": 573399,
+      "sha256": "6bc1a9e3ecad5bf43f1e63ee6fb0514547ba86dddd4c3adf235e0d0a2bbfc62b"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/actual-gameplay-validation.json",
+      "bytes": 2102,
+      "sha256": "cb812768498f5f7f0aa79ffa6a253fbd0b27e11589eee69aed064fa568fb1dc4"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/live-game.png",
+      "bytes": 98658,
+      "sha256": "da6808fc097aa9971095d45347932b8d9aabe51070a28a22dee09f74ae33f9b4"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/motion-comparison.mp4",
+      "bytes": 5329171,
+      "sha256": "30f305d3ff36fd992082892d21854657354e1673c0f9e7cf1c331ada02e2b31b"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/preview-coverage.json",
+      "bytes": 1401,
+      "sha256": "716f82c904c8b83674b545536c9d6506ab942941fb802a63b9450d8ad3dbe416"
+    },
+    {
+      "path": "assets/concepts/cat-paws-v3/verification.json",
+      "bytes": 1968,
+      "sha256": "3b7c33be9b6c9511608ff7ce7eae7cb1a99373ef0354fa8139735c84969fb8bb"
+    },
+    {
+      "path": "assets/concepts/colosseum/manifest 2.json",
+      "bytes": 26786,
+      "sha256": "9ccfd3bb35ccd81f9c7913e97b9d9f117349002c6cad0f87cd238b6925e23546"
+    },
+    {
+      "path": "assets/concepts/colosseum/tripo-multiview-preflight-v01 2.png",
+      "bytes": 89464,
+      "sha256": "dcd8a9a9f9ab78263c93142e348d78b62b414519cf870a8c914f813c0eea5542"
+    },
+    {
+      "path": "assets/concepts/publish-2026-10-24/build.log",
+      "bytes": 859,
+      "sha256": "c49ab7828f670597362a0b85986a23ee1ae58698968415259de4774944aa1f96"
+    },
+    {
+      "path": "assets/concepts/publish-2026-10-24/shared-match.png",
+      "bytes": 2052774,
+      "sha256": "8f1b3eb4c4627f3c95df50a9bb6a09788b9377fd66fabbb124056b0c5420bce6"
+    },
+    {
+      "path": "assets/concepts/publish-2026-10-24/tests.log",
+      "bytes": 53536,
+      "sha256": "3967eef00dc9312f6dd9f82c8b891cc4af7d40c7d585882eb566fc3af7f7a187"
+    },
+    {
+      "path": "assets/concepts/publish-2026-10-24/verification.json",
+      "bytes": 5600,
+      "sha256": "bc494f1d18b5ae61e250a8ed6dcf611e7b4f6f402bf84562aa9445333eebe7cc"
+    },
+    {
+      "path": "assets/source/blender/colosseum-prepared-v01 2.blend",
+      "bytes": 3754263,
+      "sha256": "1a4003a8928b278eca0037736e924b6532bad494559599eb0d9f472f93a75768"
+    },
+    {
+      "path": "docs/balance-trial-v1.json",
+      "bytes": 64840,
+      "sha256": "dba9acd0dcbe09052dd63c2ec9139e4b2f71d988bd952e555fab394a6580eea6"
+    },
+    {
+      "path": "docs/performance-trial-2026-10-23.json",
+      "bytes": 2661,
+      "sha256": "9b355b1d4c09e13bf1c6087719c62667bae890681486c8e4f8971453c3af90a2"
+    },
+    {
+      "path": "docs/previews/beagle-cat-balance-v2/fixtures.json",
+      "bytes": 167517,
+      "sha256": "4e5cfeb882abc19ac9e1c130fb0f2f3af8c0e65937722e9ad5ee8d37f6abc6fd"
+    },
+    {
+      "path": "docs/previews/beagle-cat-balance-v2/gameplay.html",
+      "bytes": 1283,
+      "sha256": "5d84fa5380851375a149f43ff3eb8de7b1bd6d239c447efd0f079f5b11e62cc9"
+    },
+    {
+      "path": "docs/previews/beagle-cat-balance-v2/gameplay.mjs",
+      "bytes": 14820,
+      "sha256": "565c5653c5c3eae626d6ba36d8625040346bff49eaf0d2727e641ab0ea1d5bfd"
+    },
+    {
+      "path": "docs/previews/cat-paws-v3/fixtures.json",
+      "bytes": 78179,
+      "sha256": "b212f5f37d0c4d2d2bc4784a29346c214bb9ca9052f88684c08be33ee6ed55f6"
+    },
+    {
+      "path": "docs/previews/cat-paws-v3/gameplay.html",
+      "bytes": 1223,
+      "sha256": "f632324ee00d61be066c5f3a6b5960a028a3bc6a5d7ca052f643d403e09dc0e5"
+    },
+    {
+      "path": "docs/previews/cat-paws-v3/gameplay.mjs",
+      "bytes": 14112,
+      "sha256": "9faa1b4efeaa76974b00dbed83f7974fea40a0f6348d3ebdc6495c304aaf95c2"
+    },
+    {
+      "path": "docs/previews/colosseum/camera-preview-v01 2.html",
+      "bytes": 323,
+      "sha256": "34217d7640a0bc5251b0c956d007ecbf649e3d361d39f4d28f985865fbf2a070"
+    },
+    {
+      "path": "docs/previews/colosseum/camera-preview-v01 2.jsx",
+      "bytes": 3853,
+      "sha256": "6f6ae83398e926c104284160fcc5ac3db36706243270485954f13845867ce205"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-helpers 2.js",
+      "bytes": 536,
+      "sha256": "f103434cccdc4b23dac7c9ce909e4ca568a08b19b16734954c1e705b5b28c943"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v01 2.html",
+      "bytes": 334,
+      "sha256": "827bba38c0257e51b1229c8249e8b9779bad3a846198982ffb58cd86a0976466"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v01 2.jsx",
+      "bytes": 6353,
+      "sha256": "eac7ec64a9840d6d2c252ed1719263727d6338a1861f5ba14130ba4fd7876d27"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v02 2.html",
+      "bytes": 335,
+      "sha256": "4ef93466b0b494a242cecb3ba2531612a5cdca98ce2620aa70491b91bd694a91"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v02 2.jsx",
+      "bytes": 8210,
+      "sha256": "037cbdbda456efb143bb77447a1e22c0ea3a4b8abc9e5d731aa7c82f5b66671d"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v03 2.html",
+      "bytes": 335,
+      "sha256": "573f007495e04004cafbbcbed217cc8a6730fa48e0217ed6a5a58c4d8aad2d37"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v03 2.jsx",
+      "bytes": 8110,
+      "sha256": "9b8699cc9211ddefd2872702596cebeb2e5eaed318d91e95ca8b0991a917a8e3"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v04 2.html",
+      "bytes": 335,
+      "sha256": "4200a762c86e70501c8e7ab90781e9da64011bc4f92cd4974ca828fd26d2a983"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v04 2.jsx",
+      "bytes": 8746,
+      "sha256": "76282c8cb8aa469f41b4091d5f03c88368cd4678d136a2bf29cad64b822a4f74"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v05 2.html",
+      "bytes": 337,
+      "sha256": "8c7b7e3056b31dde099f5bfcf95060bd141accdf2e38b02380101de7188bbb85"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v05 2.jsx",
+      "bytes": 9239,
+      "sha256": "ddcec16d5b2ad02142b4407d8b5ed9fc9dde8e4772125df2f75df27ef39c06bd"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v06 2.html",
+      "bytes": 339,
+      "sha256": "2827b0cb2bf6e508a4bf6eee5416dae8cec1cb75f9d46cbaf455a153e6c0529a"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v06 2.jsx",
+      "bytes": 5296,
+      "sha256": "c0468d4d6c4b560699fa3827d951a0d9b2c97192fb6f8a50d101312085b57191"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v07 2.html",
+      "bytes": 346,
+      "sha256": "cf7ed3d7d34ca32443d6d856a7318064941d089bf6a557a80aa568aa97a32a01"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v07 2.jsx",
+      "bytes": 6209,
+      "sha256": "00b86d0e87662e02c380fb62fdeff42f7208fc8791c0c74da5c185d66e2b510b"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v08 2.html",
+      "bytes": 345,
+      "sha256": "415c289921754797cbaea59d05875e95c882f3a33a0deae74a0d59f68147edf3"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v08 2.jsx",
+      "bytes": 6901,
+      "sha256": "40d1dba4e92cc395a211460e747ae49901ac96d4194ce4f857aa3ae54dbbb1db"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v09 2.html",
+      "bytes": 344,
+      "sha256": "b753c44c15fa41b913957e4f9c7b6b026375105a57f59eaf5dba03f70a8bde3c"
+    },
+    {
+      "path": "docs/previews/colosseum/fixed-camera-preview-v09 2.jsx",
+      "bytes": 6970,
+      "sha256": "98d608ba354f181454160dcd9cab2828f044c3b467bf757ed31b15bbf183b2e7"
+    },
+    {
+      "path": "docs/previews/colosseum/floor-pattern-preview-v01 2.html",
+      "bytes": 332,
+      "sha256": "bb269cd1687aa11a19bac624c2f64f81f9d1dc03ba0abdf6136d34aa978c6932"
+    },
+    {
+      "path": "docs/previews/colosseum/floor-pattern-preview-v01 2.jsx",
+      "bytes": 3416,
+      "sha256": "3ad50de56f2971faa24fc92d33daabb40c22c2366a8471ce479b2c72ccf25a11"
+    },
+    {
+      "path": "docs/previews/colosseum/game-review-v01 2.html",
+      "bytes": 318,
+      "sha256": "80f390195426fa296c5ac045087eaf287a07eff328728f6d3636cd3b561ed642"
+    },
+    {
+      "path": "docs/previews/colosseum/game-review-v01 2.jsx",
+      "bytes": 5132,
+      "sha256": "8644e2f09ab6f7fe3614eda77e29dd9a3d7be557b7f99ef0c0e24ea0031b5599"
+    },
+    {
+      "path": "docs/previews/colosseum/review-tripo-v01 2.html",
+      "bytes": 2457,
+      "sha256": "2b197bda4c112d6c1d30f5472bfa913482aafedce8899cabae62bd7927b1f978"
+    },
+    {
+      "path": "docs/updates/2026-10-24-github-delivery.md",
+      "bytes": 6060,
+      "sha256": "adcd75b8db6058d239521777f6f7f81e667b729a0368a346358054af52fc357b"
+    },
+    {
+      "path": "scripts/blender/build_colosseum_input_v01 2.py",
+      "bytes": 10215,
+      "sha256": "b232bdcb1e41a9184260575955e4602ca44c098676730898dfc62056ee42e537"
+    },
+    {
+      "path": "scripts/blender/inspect_colosseum_tripo_v01 2.py",
+      "bytes": 4416,
+      "sha256": "f73267c76b1f91596ebc25291d51418c6be3339b7c3ad80a3056a80abcbbb9f7"
+    },
+    {
+      "path": "scripts/blender/measure_colosseum_floor 2.py",
+      "bytes": 2643,
+      "sha256": "37a9ab61699ae6f42d58f8194c6a9f8552189a8ce01a9a7ebad445aa04381c05"
+    },
+    {
+      "path": "scripts/blender/prepare_colosseum_v01 2.py",
+      "bytes": 12076,
+      "sha256": "51c40a3fd6937330156389d212f3ffad90b93833719d82d5fa467ac46ed26dc2"
+    },
+    {
+      "path": "scripts/blender/render_colosseum_preparation_v01 2.py",
+      "bytes": 2256,
+      "sha256": "d8122ba7d45f22d60a5e1b6e39375c02da9b9adfc6b2cf24c3c803333097f297"
+    },
+    {
+      "path": "scripts/blender/verify-colosseum-prepared-v01 2.mjs",
+      "bytes": 4840,
+      "sha256": "7f76b817eee8145e3bb33a30dfc009a0c71ab99914b2e2cda644e3c8fdd6736b"
+    },
+    {
+      "path": "src/arena-floor 2.js",
+      "bytes": 3502,
+      "sha256": "524f1071e366e3a8278a7eceed42e88d4f9814c00c547329738fb8ef4df94f3a"
+    },
+    {
+      "path": "src/arena-model 2.js",
+      "bytes": 4922,
+      "sha256": "ec0af2f8b99489e66253405c602dfdbdb9d6a4db70ffec43635def7911795d43"
+    },
+    {
+      "path": "src/arena-profile 2.js",
+      "bytes": 647,
+      "sha256": "30bada61c4419e37bbd10d1b3150ce4e460f6fa5c12678277f7e1cf8830cc92d"
+    },
+    {
+      "path": "src/fixed-camera 2.js",
+      "bytes": 378,
+      "sha256": "f8044ff6b93d5e31b7eb1378dd4be334eff0bbfc2f0c86890c19a5e6b8371fbc"
+    },
+    {
+      "path": "tests/arena-environment.test 2.js",
+      "bytes": 4249,
+      "sha256": "03d02dc1199ab6d53fc17b57d5b32343f65b701102efb902af341fe8f5088fd4"
+    },
+    {
+      "path": "tests/arena-floor.test 2.js",
+      "bytes": 4770,
+      "sha256": "a0e93479ce6255f3a4b2a7fe03b72d50e7aa55f20065f5a7bb468b5cf479d6f5"
+    },
+    {
+      "path": "tests/fixed-camera.test 2.js",
+      "bytes": 3525,
+      "sha256": "f733f689fe385282ca8b1809279e171939548d5b914eaed71c0b267afc42855e"
+    }
+  ],
+  "backupBranch": "backup/pre-update-2026-10-30-201cbfc",
+  "scope": "Original tracked game plus all 77 local untracked extras; ignored authoring outputs remain in the local archive.",
+  "restore": "git fetch origin; git switch --create restored-2026-10-30 origin/backup/pre-update-2026-10-30-201cbfc"
+}
