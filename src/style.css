@@ -41,7 +41,7 @@
   --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M5 3 L5 25 L11 19.5 L15 28 L19.5 26 L15.6 17.6 L23.5 17.2 Z' fill='%23fbf7ec' stroke='%2330372e' stroke-width='2.2' stroke-linejoin='round'/%3E%3Ccircle cx='8.6' cy='10' r='1.7' fill='%23c4684f'/%3E%3C/svg%3E") 5 3, default;
   --cursor-hand: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M5 3 L5 25 L11 19.5 L15 28 L19.5 26 L15.6 17.6 L23.5 17.2 Z' fill='%23c4684f' stroke='%2330372e' stroke-width='2.2' stroke-linejoin='round'/%3E%3Ccircle cx='8.6' cy='10' r='1.7' fill='%23fbf7ec'/%3E%3C/svg%3E") 5 3, pointer;
 
-  font-family: Inter, "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--display);
   font-size: 15px;
   color: var(--ink);
   background: var(--cream);
@@ -63,7 +63,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 [hidden] { display: none !important; }
 kbd {
   display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 7px; border: 1px solid #cfc8b2; border-bottom-width: 3px; border-radius: 7px;
-  background: var(--card); color: var(--ink); font: 700 12px/1 inherit;
+  background: var(--card); color: var(--ink); font: 700 12px/1 var(--display);
 }
 
 /* ---------- Full-screen stage ---------- */
@@ -278,7 +278,7 @@ kbd {
 .skill-widget.ready .skill-text small { color: #4f6236; font-weight: 700; }
 @keyframes glow { from { box-shadow: 0 0 0 2px #e9c46a55, 0 0 10px #e9c46a66; } to { box-shadow: 0 0 0 4px #e9c46a99, 0 0 26px #e9c46acc; } }
 @keyframes ready-pulse { 0%, 100% { box-shadow: 0 0 0 2px #7e916033, 0 0 8px #9fbf6a55; } 50% { box-shadow: 0 0 0 4px #7e916055, 0 0 20px #9fbf6aaa; } }
-.skill-icon { display: inline-block; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+.skill-icon { display: inline-block; font-family: var(--display); }
 
 .look-hint {
   position: absolute; z-index: 4; left: 50%; top: 62%; transform: translateX(-50%); display: grid; place-items: center; height: 48px; padding: 0 24px;
@@ -355,7 +355,7 @@ kbd {
 .modal-close:hover { border-color: var(--line); background: var(--card); color: var(--ink); }
 .guide-steps { display: flex; flex-direction: column; gap: 20px; }
 .guide-steps article { display: flex; gap: 18px; }
-.guide-steps article > span { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #ece5d0; font: 800 14px/1 inherit; color: var(--ink-soft); }
+.guide-steps article > span { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #ece5d0; font: 800 14px/1 var(--display); color: var(--ink-soft); }
 .guide-steps h3 { margin: 2px 0 6px; font-size: 16px; }
 .guide-steps p { margin: 0; font-size: 13.5px; line-height: 1.8; color: #6f7863; }
 .guide-note { display: flex; flex-direction: column; gap: 6px; margin: 22px 0; padding: 16px 0; border-block: 1px solid var(--line); }
@@ -580,7 +580,6 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px #a
   display: flex; gap: 14px; align-items: center; align-self: stretch; height: 104px; padding: 0 16px; border-radius: var(--radius);
   border: 2px solid #ffffffd0; background: #fbf7ecdc; backdrop-filter: blur(8px); box-shadow: var(--shadow-sm);
 }
-.skill-card > .skill-icon { font-size: 32px; line-height: 1; }
 .skill-card > div { flex: 1; min-width: 0; }
 .skill-card b { display: flex; align-items: center; gap: 8px; font-size: 16px; }
 .skill-card b small { margin-left: auto; font-size: 13px; font-weight: 650; color: var(--muted); }
@@ -647,3 +646,6 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px #a
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Keep native form controls and semantic monospace elements in the game font. */
+input, select, textarea, option, code, pre, samp { font-family: var(--display); }

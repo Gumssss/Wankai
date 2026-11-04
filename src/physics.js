@@ -520,7 +520,7 @@ export class ArenaPhysics {
     p.skillTime -= dt;
     if (skill.id === 'laugh') {
       for (const other of this.players) if (other !== p) {
-        other.stamina = Math.max(0, other.stamina - skill.drain * share);
+        other.stamina = Math.max(0, other.stamina - skill.drain * share - 1e-10);
         other.staminaRestTime = 0;
       }
     }

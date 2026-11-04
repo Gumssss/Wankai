@@ -6,7 +6,7 @@ import { createDrafts, updateDraft, toggleReady } from './armory-drafts.js';
 import { AI_DIFFICULTIES } from './ai-opponent.js';
 import { ARENA_SKINS } from './arena-skins.js';
 import { SKILLS } from './skills.js';
-import { CharacterPortrait, WeaponIcon, SkillIcon } from './selection-icons.jsx';
+import { CharacterPortrait, WeaponIcon } from './selection-icons.jsx';
 import { arenaPreview, loadArenaPreviews } from './models/arena-previews.js';
 
 // One setup screen for AI and online, laid out like the title screen: the
@@ -20,7 +20,6 @@ function SkillCard({ characterId }) {
   const skill = SKILLS[CHARACTERS[characterId]?.skill];
   if (!skill) return null;
   return <div className="skill-card">
-    <SkillIcon id={skill.id} />
     <div><b><kbd>F</kbd>{skill.name}<small>冷却 {skill.cooldown}s</small></b><p>{skill.description}</p></div>
   </div>;
 }
@@ -38,7 +37,7 @@ function WeaponChoice({ draft, onChange }) {
   return <div className="picker-weapons" role="group" aria-label="武器">
     {weaponsFor(draft.characterId).map(weapon => <button key={weapon.id} type="button" aria-label={`选择${weapon.name}`} aria-pressed={draft.weaponId === weapon.id}
       className={weapon.characterId ? 'exclusive' : undefined} title={weapon.description} onClick={() => onChange({ weaponId: weapon.id })}>
-      <WeaponIcon id={weapon.id} /><span><b>{weapon.name}</b><small>{weapon.characterId ? '专属' : weapon.role}</small></span>
+      <WeaponIcon id={weapon.id} /><span><b>{weapon.name}</b></span>
     </button>)}
   </div>;
 }
@@ -130,7 +129,7 @@ export function MatchSetup({ game, session, net, mode, leaving = false, close, s
       <header className="setup-header">
         <button ref={backRef} type="button" className="setup-back" onClick={close}>← {online ? '离开房间' : '返回'}</button>
         <div className="setup-title"><h1>{online ? '联机对战' : 'AI 对战'}</h1>
-          <span className="setup-badge">{online ? (host ? '房主 · 红方' : '加入者 · 蓝方') : '你 · 红方'}</span></div>
+          {online && <span className="setup-badge">{host ? '房主 · 红方' : '加入者 · 蓝方'}</span>}</div>
       </header>
       <div className="setup-sections">
         <section aria-label="角色"><h2>角色</h2><CharacterChoice id={localId} draft={mine} onChange={patch => change(0, patch)} /></section>
@@ -143,7 +142,7 @@ export function MatchSetup({ game, session, net, mode, leaving = false, close, s
       {online ? <OpponentCard id={otherId} loadout={peer?.loadout ?? null} ready={!!peer?.ready} ping={netInfo?.ping} name={peer?.name} />
         : <AiCard difficulty={game.aiDifficulty} onChange={key => { session.sound.ui?.('click'); chooseDifficulty(key); }} />}
       <div className="setup-you" aria-label="你的出战配置">
-        <span className="panel-tag">你{online && mine.ready ? ' · ✓ 已准备' : ''}</span>
+        {online && mine.ready && <span className="panel-tag">✓ 已准备</span>}
         <h2>{characterName(mine.characterId)}</h2>
         <p>{mine.weaponId ? weaponName(mine.weaponId) : '选择一件武器'}</p>
         <SkillCard characterId={mine.characterId} />
