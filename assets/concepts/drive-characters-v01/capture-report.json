@@ -1,0 +1,522 @@
+{
+  "format": "actual current App, scripted ordinary inputs, independent fixtures",
+  "chapters": [
+    {
+      "title": "CR7 / W / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 0,
+      "duration": 2.1915,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 33,
+      "peak": 2.9685532441784037,
+      "peakAt": 1.0172999999821186
+    },
+    {
+      "title": "CR7 / S / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 2.1915,
+      "duration": 2.0222999999821187,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 32,
+      "peak": 2.9640722973087845,
+      "peakAt": 1.0245999999940396
+    },
+    {
+      "title": "CR7 / A / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 4.213799999982118,
+      "duration": 2.068800000011921,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 66,
+      "peak": 1.3180956348395518,
+      "peakAt": 1.3337000000178814
+    },
+    {
+      "title": "CR7 / D / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 6.282599999994039,
+      "duration": 2.0339000000059606,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 66,
+      "peak": 1.318130693669645,
+      "peakAt": 1.2637000000178813
+    },
+    {
+      "title": "CR7 / W + A / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 8.3165,
+      "duration": 2.024,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 33,
+      "peak": 2.9407921417462353,
+      "peakAt": 0.8606999999880791
+    },
+    {
+      "title": "CR7 / W + D / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 10.340499999999999,
+      "duration": 2.0154000000059606,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 34,
+      "peak": 2.9407068696573844,
+      "peakAt": 0.8524000000059605
+    },
+    {
+      "title": "CR7 / S + A / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 12.35590000000596,
+      "duration": 2.0215999999940397,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 33,
+      "peak": 2.933826296286932,
+      "peakAt": 1.0202999999821185
+    },
+    {
+      "title": "CR7 / S + D / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 14.3775,
+      "duration": 2.0198000000119207,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 34,
+      "peak": 2.933826296286932,
+      "peakAt": 1.031300000011921
+    },
+    {
+      "title": "CR7 / W → release → S / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 16.39730000001192,
+      "duration": 4.028399999976158,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 56,
+      "peak": 2.9685532441784037,
+      "peakAt": 0.8601999999880791
+    },
+    {
+      "title": "MEAN GIRL / W / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 20.42569999998808,
+      "duration": 1.9647000000178814,
+      "hits": 0,
+      "clashes": 1,
+      "groundFrames": 19,
+      "peak": 2.942473867585641,
+      "peakAt": 0.9013000000119209,
+      "firstContactAt": 1.8173000000119208
+    },
+    {
+      "title": "MEAN GIRL / S / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 22.39040000000596,
+      "duration": 2.0233999999761583,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 20,
+      "peak": 2.9136449306490046,
+      "peakAt": 1.1680999999940396
+    },
+    {
+      "title": "MEAN GIRL / A / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 24.413799999982118,
+      "duration": 2.0309000000059605,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 61,
+      "peak": 1.45882743257933,
+      "peakAt": 1.3104000000059606
+    },
+    {
+      "title": "MEAN GIRL / D / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 26.444699999988078,
+      "duration": 2.0189000000059605,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 63,
+      "peak": 1.4894398967962972,
+      "peakAt": 1.3274000000059605
+    },
+    {
+      "title": "MEAN GIRL / W + A / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 28.463599999994038,
+      "duration": 2.022300000011921,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 42,
+      "peak": 3.9326643999245836,
+      "peakAt": 2.0090999999940395
+    },
+    {
+      "title": "MEAN GIRL / W + D / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 30.48590000000596,
+      "duration": 2.0231000000238417,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 28,
+      "peak": 2.9144315543223707,
+      "peakAt": 0.935
+    },
+    {
+      "title": "MEAN GIRL / S + A / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 32.5090000000298,
+      "duration": 2.0242999999821185,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 24,
+      "peak": 2.8786281755114427,
+      "peakAt": 1.160399999976158
+    },
+    {
+      "title": "MEAN GIRL / S + D / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 34.53330000001192,
+      "duration": 2.023600000023842,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 23,
+      "peak": 2.866909345100049,
+      "peakAt": 1.1517000000178814
+    },
+    {
+      "title": "MEAN GIRL / W → release → S / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 36.55690000003576,
+      "duration": 4.012200000017882,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 57,
+      "peak": 2.9413231476348534,
+      "peakAt": 0.9435
+    },
+    {
+      "title": "MAODIE / W / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 40.569100000053645,
+      "duration": 2.020300000011921,
+      "hits": 0,
+      "clashes": 1,
+      "groundFrames": 21,
+      "peak": 2.999455010608176,
+      "peakAt": 0.9638000000119209,
+      "firstContactAt": 1.8459000000059604
+    },
+    {
+      "title": "MAODIE / S / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 42.58940000006557,
+      "duration": 2.0205,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 19,
+      "peak": 2.9994996239079934,
+      "peakAt": 1.152
+    },
+    {
+      "title": "MAODIE / A / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 44.609900000065565,
+      "duration": 2.033,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 61,
+      "peak": 1.4337608722142576,
+      "peakAt": 1.2963999999761582
+    },
+    {
+      "title": "MAODIE / D / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 46.642900000065566,
+      "duration": 2.0270999999940393,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 66,
+      "peak": 1.5072793418216575,
+      "peakAt": 1.3292000000178814
+    },
+    {
+      "title": "MAODIE / W + A / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 48.6700000000596,
+      "duration": 2.0334000000059604,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 33,
+      "peak": 3.7103109206238756,
+      "peakAt": 2.029
+    },
+    {
+      "title": "MAODIE / W + D / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 50.703400000065564,
+      "duration": 2.0249000000059603,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 30,
+      "peak": 2.967288334715525,
+      "peakAt": 0.9559000000059604
+    },
+    {
+      "title": "MAODIE / S + A / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 52.72830000007153,
+      "duration": 2.0234000000059607,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 24,
+      "peak": 2.966910849609477,
+      "peakAt": 1.1635
+    },
+    {
+      "title": "MAODIE / S + D / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 54.75170000007749,
+      "duration": 2.027699999988079,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 25,
+      "peak": 2.9538609628167833,
+      "peakAt": 1.155
+    },
+    {
+      "title": "MAODIE / W → release → S / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 56.77940000006557,
+      "duration": 4.013200000017881,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 58,
+      "peak": 2.999455010608176,
+      "peakAt": 0.9592000000178814
+    },
+    {
+      "title": "CR7 / physical hit, block, clash / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 60.79260000008345,
+      "duration": 3.615,
+      "hits": 4,
+      "clashes": 3,
+      "groundFrames": 48,
+      "peak": 2.8723382443911096,
+      "firstContactAt": 0.0762000000178814,
+      "peakAt": 2.3945
+    },
+    {
+      "title": "MEAN-GIRL / physical hit, block, clash / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 64.40760000008345,
+      "duration": 3.3319000000059606,
+      "hits": 2,
+      "clashes": 1,
+      "groundFrames": 39,
+      "peak": 2.951204488089821,
+      "firstContactAt": 0.11109999999403954,
+      "peakAt": 2.5955999999940396
+    },
+    {
+      "title": "MAODIE / physical hit, block, clash / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 67.73950000008941,
+      "duration": 3.3495999999940396,
+      "hits": 2,
+      "clashes": 1,
+      "groundFrames": 39,
+      "peak": 3.0016756812802083,
+      "firstContactAt": 0.0937999999821186,
+      "peakAt": 2.5955999999940396
+    },
+    {
+      "title": "CR7 / common sword + W/D / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "sword"
+      },
+      "offset": 71.08910000008345,
+      "duration": 1.5256999999880791,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 38,
+      "peak": 3.2534944240936174,
+      "peakAt": 0.8220999999940395
+    },
+    {
+      "title": "CR7 / F has no ability / 1x",
+      "loadout": {
+        "characterId": "cr7",
+        "weaponId": "soccer-ball"
+      },
+      "offset": 72.61480000007153,
+      "duration": 0.8105999999940395,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 3,
+      "peak": 0.6830800719218466,
+      "peakAt": 0.8078999999761581
+    },
+    {
+      "title": "MEAN GIRL / common sword + W/D / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "sword"
+      },
+      "offset": 73.42540000006557,
+      "duration": 1.5207000000178814,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 37,
+      "peak": 3.2534944240936174,
+      "peakAt": 0.8302000000178814
+    },
+    {
+      "title": "MEAN GIRL / F has no ability / 1x",
+      "loadout": {
+        "characterId": "mean-girl",
+        "weaponId": "crowned-heart"
+      },
+      "offset": 74.94610000008345,
+      "duration": 0.8096999999880791,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 0,
+      "peak": 0.59
+    },
+    {
+      "title": "MAODIE / common sword + W/D / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "sword"
+      },
+      "offset": 75.75580000007153,
+      "duration": 1.526899999976158,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 38,
+      "peak": 3.2538302598647353,
+      "peakAt": 0.8080999999940396
+    },
+    {
+      "title": "MAODIE / F has no ability / 1x",
+      "loadout": {
+        "characterId": "maodie",
+        "weaponId": "maodie-paw"
+      },
+      "offset": 77.28270000004768,
+      "duration": 0.8327000000178814,
+      "hits": 0,
+      "clashes": 0,
+      "groundFrames": 0,
+      "peak": 0.59
+    }
+  ],
+  "errors": [],
+  "assets": {
+    "beagle-smooth-ear-duelist-v05.glb": "ready",
+    "beagle-smooth-appearance-v05.glb": "ready",
+    "orange-tabby-prepared-v02.glb": "ready"
+  },
+  "recordedDuration": 78.11540000006556,
+  "models": "Supplied Drive characters with existing floating-weapon controls and no F skills",
+  "size": 29355176,
+  "offsetBasis": "Active recorder wall time from each fixture; source media labels identify chapter boundaries. Replay cuts are separately validated media timestamps."
+}

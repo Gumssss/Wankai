@@ -65,7 +65,7 @@ test('loadouts commit atomically for both fighters and survive rematch and retur
 
 test('catalogues expose every loadout and keep signature weapons exclusive', () => {
   // 奶蛙, 胆子肥嘟嘟 and 开心小猫: signature + 6 common weapons; 火柴人: 6 common.
-  assert.equal(PLAYABLE_LOADOUTS.length, 7 + 6 + 7 + 7 + 7 + 1);
+  assert.equal(PLAYABLE_LOADOUTS.length, 7 + 6 + 7 + 7 + 7 + 1 + 7 + 7 + 7);
   assert.equal(canEquip('stickman', 'takeout-box'), false);
   assert.equal(canEquip('dudu', 'takeout-box'), true);
   assert.equal(canEquip('naiwa', 'yellow-staff'), true);
@@ -77,7 +77,7 @@ test('catalogues expose every loadout and keep signature weapons exclusive', () 
     assert.throws(() => normalizeLoadout(removed));
   assert.equal(canEquip('happy-cat', 'happy-paws'), true);
   assert.equal(resolveLoadout({ characterId: 'happy-cat', weaponId: 'happy-paws' }).weapon.characterId, 'happy-cat');
-  for (const character of CHARACTER_CATALOG) if(character.id==='orange-tabby')assert.equal(character.skill,null);else assert.ok(SKILLS[character.skill], `${character.name} has a skill`);
+  for (const character of CHARACTER_CATALOG) assert.ok(character.skill === null || SKILLS[character.skill], `${character.name} has a valid skill choice`);
   assert.equal(resolveLoadout(dudu('sword')).skill.id, 'delivery');
 });
 

@@ -1,0 +1,23 @@
+[
+  {
+    "source": "actual-gameplay.mp4",
+    "start": 1.6,
+    "sourceDuration": 1.1,
+    "playbackSpeed": 0.25,
+    "label": "SAME EVENT / CR7 FLOOR RESPONSE / 0.25x"
+  },
+  {
+    "source": "actual-gameplay.mp4",
+    "start": 21.8,
+    "sourceDuration": 1.1,
+    "playbackSpeed": 0.25,
+    "label": "SAME EVENT / MEAN GIRL FLOOR RESPONSE / 0.25x"
+  },
+  {
+    "source": "actual-gameplay.mp4",
+    "start": 41.9,
+    "sourceDuration": 1.1,
+    "playbackSpeed": 0.25,
+    "label": "SAME EVENT / MAODIE FLOOR RESPONSE / 0.25x"
+  }
+]

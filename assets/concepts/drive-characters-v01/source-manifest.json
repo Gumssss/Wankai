@@ -1,0 +1,163 @@
+[
+  {
+    "name": "soccer-player",
+    "driveId": "1dTquXEIN_tUtGtrMVJ25E3Rv3cbVc8Ef",
+    "url": "https://drive.google.com/file/d/1dTquXEIN_tUtGtrMVJ25E3Rv3cbVc8Ef/view",
+    "archive": ".local/character-intake-2026-11-05/source/soccer-player.zip",
+    "sha256": "8b71b2c0ae0534ba2dc2433750b96bd0ab132cb87c3aaf9a4ee31e451395229f",
+    "entries": [
+      {
+        "path": "stylized_soccer_player_3d_model.obj",
+        "bytes": 1958457
+      },
+      {
+        "path": "stylized_soccer_player_3d_model.mtl",
+        "bytes": 357
+      },
+      {
+        "path": "stylized_soccer_player_3d_model_basecolor.jpg",
+        "bytes": 1853684
+      },
+      {
+        "path": "stylized_soccer_player_3d_model_normal.png",
+        "bytes": 3014861
+      },
+      {
+        "path": "stylized_soccer_player_3d_model_roughness.png",
+        "bytes": 4032345
+      },
+      {
+        "path": "stylized_soccer_player_3d_model_metallic.png",
+        "bytes": 5991514
+      }
+    ]
+  },
+  {
+    "name": "soccer-ball",
+    "driveId": "1CQNX1_y3rtTbGoZ8_JLVvDM2Zfa582QW",
+    "url": "https://drive.google.com/file/d/1CQNX1_y3rtTbGoZ8_JLVvDM2Zfa582QW/view",
+    "archive": ".local/character-intake-2026-11-05/source/soccer-ball.zip",
+    "sha256": "30da2221a911269330f0ed15703d52613b72159bd4526d183ecbf1b1186dd83f",
+    "entries": [
+      {
+        "path": "soccer_ball_3d_model.obj",
+        "bytes": 699702
+      },
+      {
+        "path": "soccer_ball_3d_model.mtl",
+        "bytes": 313
+      },
+      {
+        "path": "soccer_ball_3d_model_basecolor.jpg",
+        "bytes": 3023239
+      },
+      {
+        "path": "soccer_ball_3d_model_normal.png",
+        "bytes": 5159345
+      },
+      {
+        "path": "soccer_ball_3d_model_roughness.png",
+        "bytes": 4897116
+      },
+      {
+        "path": "soccer_ball_3d_model_metallic.png",
+        "bytes": 5097443
+      }
+    ]
+  },
+  {
+    "name": "maodie",
+    "driveId": "1rfP2N__ojJTp7QH10Q03eYFTtRq0RG8K",
+    "url": "https://drive.google.com/file/d/1rfP2N__ojJTp7QH10Q03eYFTtRq0RG8K/view",
+    "archive": ".local/character-intake-2026-11-05/source/maodie.zip",
+    "sha256": "374ff208756eaa8a0302df8808b6619792294861433042a53f1c589cb72f8dbb",
+    "entries": [
+      {
+        "path": "Maodie_optimized/Catpaw_Optimized.glb",
+        "bytes": 8911776
+      },
+      {
+        "path": "Maodie_optimized/Maodie_Attack_Optimized.glb",
+        "bytes": 9640256
+      },
+      {
+        "path": "Maodie_optimized/Maodie_Hit_Optimized.glb",
+        "bytes": 9849640
+      },
+      {
+        "path": "Maodie_optimized/Maodie_Idle_Optimized.glb",
+        "bytes": 10031776
+      },
+      {
+        "path": "Maodie_optimized/Maodie_Optimized.blend",
+        "bytes": 72034326
+      }
+    ]
+  },
+  {
+    "name": "crowned-heart",
+    "driveId": "1voe5U6XQvQSoqosgZPiQHCmJJZ3iwKth",
+    "url": "https://drive.google.com/file/d/1voe5U6XQvQSoqosgZPiQHCmJJZ3iwKth/view",
+    "archive": ".local/character-intake-2026-11-05/source/crowned-heart.zip",
+    "sha256": "f0c14011dd589f059e17bbfd7e2779640e07d56e9ded47b7d1791e1daa0aca6b",
+    "entries": [
+      {
+        "path": "crowned_heart_3d_model.obj",
+        "bytes": 197011571
+      },
+      {
+        "path": "crowned_heart_3d_model.mtl",
+        "bytes": 321
+      },
+      {
+        "path": "crowned_heart_3d_model_basecolor.jpg",
+        "bytes": 2193784
+      },
+      {
+        "path": "crowned_heart_3d_model_normal.png",
+        "bytes": 4618270
+      },
+      {
+        "path": "crowned_heart_3d_model_roughness.png",
+        "bytes": 2759745
+      },
+      {
+        "path": "crowned_heart_3d_model_metallic.png",
+        "bytes": 2935120
+      }
+    ]
+  },
+  {
+    "name": "meangirl",
+    "driveId": "17x9ku_b5rGw58EtDEh4bG82cOMDew2p-",
+    "url": "https://drive.google.com/file/d/17x9ku_b5rGw58EtDEh4bG82cOMDew2p-/view",
+    "archive": ".local/character-intake-2026-11-05/source/meangirl.zip",
+    "sha256": "45c5c921bd04967c42b3447f97de1104a6f1027918a5c88193352386cee27743",
+    "entries": [
+      {
+        "path": "stylized_cartoon_character_3d_model.obj",
+        "bytes": 197691252
+      },
+      {
+        "path": "stylized_cartoon_character_3d_model.mtl",
+        "bytes": 373
+      },
+      {
+        "path": "stylized_cartoon_character_3d_model_basecolor.jpg",
+        "bytes": 2097146
+      },
+      {
+        "path": "stylized_cartoon_character_3d_model_normal.png",
+        "bytes": 3525244
+      },
+      {
+        "path": "stylized_cartoon_character_3d_model_roughness.png",
+        "bytes": 4261776
+      },
+      {
+        "path": "stylized_cartoon_character_3d_model_metallic.png",
+        "bytes": 4733724
+      }
+    ]
+  }
+]

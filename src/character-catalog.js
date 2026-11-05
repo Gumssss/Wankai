@@ -8,6 +8,21 @@ import {BEAGLE_COMPACT_BOUNDS} from './character-attachments.js';
 const shape=(a,b,radius)=>Object.freeze({a:Object.freeze(a),b:Object.freeze(b),radius});
 const bounds=(min,max)=>Object.freeze({min:Object.freeze(min),max:Object.freeze(max)});
 export const CHARACTER_CATALOG=Object.freeze([
+  Object.freeze({ id: 'cr7', name: 'CR7', english: 'CR7', available: true, bodyFollowsView: true, skill: null,
+    description: '红绿球衣的球员，专属足球使用 W/S 挥动、A/D 转向与撑地移动。',
+    bodyFloor: .59, bodyRadius: .44,
+    bounds: bounds([-.45, 0, -.68], [.45, 1.85, .68]),
+    hurtShapes: Object.freeze([shape([0, -.13, 0], [0, .33, 0], .27), shape([.04, .82, 0], [.04, .86, 0], .38)]) }),
+  Object.freeze({ id: 'mean-girl', name: 'Mean Girl', english: 'MEAN GIRL', available: true, bodyFollowsView: true, skill: null,
+    description: '金发粉裙的 Mean Girl，使用皇冠爱心武器与现有挥动转向操作。',
+    bodyFloor: .59, bodyRadius: .50,
+    bounds: bounds([-.51, 0, -.68], [.51, 1.85, .68]),
+    hurtShapes: Object.freeze([shape([0, -.13, 0], [0, .30, 0], .29), shape([.05, .80, 0], [.05, .86, 0], .40)]) }),
+  Object.freeze({ id: 'maodie', name: 'Maodie', english: 'MAODIE', available: true, bodyFollowsView: true, skill: null,
+    description: '独立的 Maodie 角色，保留原有虎斑与表情，使用一只悬浮猫爪。',
+    bodyFloor: .59, bodyRadius: .49,
+    bounds: bounds([-.67, 0, -.49], [.67, 1.85, .49]),
+    hurtShapes: Object.freeze([shape([0, -.13, 0], [0, .32, 0], .36), shape([.10, .76, 0], [.10, .83, 0], .40)]) }),
   Object.freeze({id:'naiwa',name:'奶蛙',english:'NAI WA',available:true,bodyFollowsView:true,skill:'laugh',
     description:'梨形的黄色奶蛙，扎着马步。按 F 仰天大笑，让对手体力不断流失。',
     bodyFloor:.59,bodyRadius:.66,

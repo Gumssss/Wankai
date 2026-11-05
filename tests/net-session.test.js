@@ -43,12 +43,37 @@ test('handshake connects matching builds and assigns host red, guest blue', () =
   assert.equal(hostSession.mode, 'online');
 });
 
+test('the Drive character loadouts synchronize and both players can control them online', () => {
+  const choices = [
+    { characterId: 'cr7', weaponId: 'soccer-ball' },
+    { characterId: 'mean-girl', weaponId: 'crowned-heart' },
+    { characterId: 'maodie', weaponId: 'maodie-paw' },
+  ];
+  for (let i = 0; i < choices.length; i++) {
+    const game = pair();
+    ready(game, choices[i], choices[(i + 1) % choices.length]);
+    assert.equal(game.host.start(), true);
+    game.net.flush();
+    game.tick(2.6);
+    game.hostSession.keyDown('KeyW');
+    game.guestSession.keyDown('KeyS');
+    game.guestSession.keyDown('KeyD');
+    game.tick(.6);
+    assert.deepEqual(game.guestSession.loadouts, game.hostSession.loadouts);
+    for (const p of game.hostSession.world.players) {
+      assert.ok(Math.abs(p.wt) > .1);
+      assert.equal(p.skill, null);
+    }
+    assert.equal(game.guestSession.world.players[1].characterId, choices[(i + 1) % choices.length].characterId);
+  }
+});
+
 test('a version mismatch is refused with a reason, and the host keeps waiting', () => {
   const versions = pair({ guestVersion: '0.9' });
   assert.equal(versions.guest.phase, 'closed');
   assert.match(versions.guest.message, /版本不一致/);
   assert.equal(versions.host.phase, 'waiting', 'the host keeps its room open');
-  assert.equal(PROTOCOL, 4);
+  assert.equal(PROTOCOL, 5);
 });
 
 test('the handshake carries both Steam names, cleaned for display', () => {

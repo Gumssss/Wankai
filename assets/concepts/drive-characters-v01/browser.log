@@ -1,0 +1,55 @@
+### Result
+{"passed":true,"characters":["cr7","mean-girl","maodie"],"checks":["9 portraits","signature selection","common equipment","actual GLBs","W+D","F disabled","100 HP","pause and menu return","mobile bounds"],"errors":[]}
+### Ran Playwright code
+```js
+await (async page => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.getByText('点击任意处开始', { exact: true }).waitFor({ state: 'visible' });
+  await page.locator('#viewport canvas').click({ position: { x: 100, y: 100 } });
+  const menu = () => page.getByRole('button', { name: /AI 对战/ }).click();
+  const pick = name => page.getByRole('button', { name: '选择' + name, exact: true }).click();
+  const results = [];
+  for (const [id, name, weapon] of [['cr7','CR7','足球'],['mean-girl','Mean Girl','皇冠爱心'],['maodie','Maodie','Maodie 猫爪']]) {
+    await menu();
+    if (await page.locator('.picker-characters button').count() !== 9) throw Error('Roster count');
+    await pick(name); await pick(weapon);
+    if (await page.locator('.skill-card').count()) throw Error('Unexpected F skill');
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: 'output/playwright/drive-characters-v01/' + id + '-picker.png' });
+    await page.getByRole('button', { name: /开始对战/ }).click();
+    await page.waitForFunction(() => window.__arena.session.state === 'playing');
+    await page.keyboard.down('w'); await page.keyboard.down('d');
+    await page.waitForTimeout(700);
+    let player = await page.evaluate(() => window.__arena.snapshot().players[0]);
+    if (player.characterId !== id || player.maxHealth !== 100 || Math.abs(player.wt) < .1 || Math.abs(player.wp) < .1) throw Error('Combined controls ' + id);
+    await page.keyboard.up('w'); await page.keyboard.up('d');
+    await page.keyboard.press('f');
+    player = await page.evaluate(() => window.__arena.snapshot().players[0]);
+    if (player.skillActive || player.skill) throw Error('F should have no ability ' + id);
+    if (await page.locator('.skill-widget').count()) throw Error('F UI should be absent ' + id);
+    await page.screenshot({ path: 'output/playwright/drive-characters-v01/' + id + '-game.png' });
+    await page.keyboard.press('Escape');
+    if ((await page.evaluate(() => window.__arena.session.state)) !== 'paused') throw Error('Pause');
+    await page.evaluate(() => window.__arena.session.goHome());
+    results.push(id);
+  }
+  await menu(); await pick('Maodie'); await pick('短剑');
+  if (await page.locator('.skill-card').count()) throw Error('Common weapon F');
+  await page.setViewportSize({width:700,height:900});
+  await page.getByRole('button', {name:'选择Maodie',exact:true}).scrollIntoViewIfNeeded();
+  if (!await page.getByRole('button', {name:/开始对战/}).isVisible()) throw Error('Mobile start missing');
+  if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) throw Error('Horizontal overflow');
+  await page.screenshot({path:'output/playwright/drive-characters-v01/mobile-picker.png'});
+  await page.setViewportSize({width:1280,height:900});
+  await page.evaluate(() => window.__arena.session.goHome());
+  if (errors.length) throw Error(errors.join('; '));
+  return {passed:true,characters:results,checks:['9 portraits','signature selection','common equipment','actual GLBs','W+D','F disabled','100 HP','pause and menu return','mobile bounds'],errors};
+})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:5195/
+- Page Title: 木昆竞技场
+- Console: 0 errors, 2 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-11-05T18-23-25-027Z.log#L3

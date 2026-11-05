@@ -7,7 +7,9 @@ import {preloadAnimalModels,animalModelsReady} from './restored-animals.js';
 // once before the arena first renders (preloadCharacterModels), so building
 // a character stays synchronous; under Node (tests) they are read from disk
 // on first use instead.
-export const CHARACTER_MODELS = Object.freeze(['naiwa', 'naiwa-laugh', 'dudu', 'happy-cat']);
+export const CHARACTER_MODELS = Object.freeze(['naiwa', 'naiwa-laugh', 'dudu', 'happy-cat', 'cr7', 'mean-girl', 'maodie']);
+export const IMPORTED_WEAPON_MODELS = Object.freeze(['soccer-ball', 'crowned-heart', 'maodie-paw']);
+const MODEL_IDS = [...CHARACTER_MODELS, ...IMPORTED_WEAPON_MODELS];
 const assets = new Map();
 let loading = null;
 
@@ -36,6 +38,7 @@ export function parseCharacterGlb(buffer) {
   geometry.setAttribute('position', accessor(primitive.attributes.POSITION));
   geometry.setAttribute('normal', accessor(primitive.attributes.NORMAL));
   geometry.setAttribute('uv', accessor(primitive.attributes.TEXCOORD_0));
+  if (primitive.attributes.COLOR_0 !== undefined) geometry.setAttribute('color', accessor(primitive.attributes.COLOR_0));
   geometry.setIndex(accessor(primitive.indices));
   geometry.computeBoundingBox();
   geometry.computeBoundingSphere();
@@ -85,10 +88,10 @@ async function load(id) {
 
 // Fetch and decode every character model once; resolves when all are ready.
 export function preloadCharacterModels() {
-  loading ??= Promise.all([...CHARACTER_MODELS.filter(id => !assets.has(id)).map(load),preloadAnimalModels()]).catch(error => { loading = null; throw error; });
+  loading ??= Promise.all([...MODEL_IDS.filter(id => !assets.has(id)).map(load),preloadAnimalModels()]).catch(error => { loading = null; throw error; });
   return loading;
 }
-export const characterModelsReady = () => CHARACTER_MODELS.every(id => assets.has(id))&&animalModelsReady();
+export const characterModelsReady = () => MODEL_IDS.every(id => assets.has(id))&&animalModelsReady();
 
 // Synchronous, from disk, when running under Node without a DOM (tests, tools).
 function loadFromDisk(id) {

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {ArenaPhysics,CONFIG,bodyFollowsView,fighterHeading,hurtSegments,weaponSegments,makePlayer} from '../src/physics.js';
+import {ArenaPhysics,CONFIG,bodyFollowsView,fighterHeading,hurtSegments,weaponSegments,makePlayer,staffFrame} from '../src/physics.js';
 import {PLAYABLE_LOADOUTS} from '../src/loadouts.js';
 import {sandbox,sparring} from './sandbox.js';
 
@@ -38,14 +38,22 @@ test('every fighter faces its view, whatever weapon it holds',()=>{
  }
 });
 
-test('a weapon starts and floats in the same place and orientation on every character',()=>{
+test('floating weapons share orientation and local contacts after fitting character attachments',()=>{
  for(const weaponId of new Set(PLAYABLE_LOADOUTS.map(l=>l.weaponId))){
   const holders=PLAYABLE_LOADOUTS.filter(l=>l.weaponId===weaponId&&l.characterId!=='beagle').map(l=>makePlayer(1,l));
   const [first,...others]=holders;
   for(const p of others){
    for(const key of ['theta','phi','wt','wp','grounded'])assert.equal(p[key],first[key],`${weaponId} ${p.characterId} ${key}`);
    assert.deepEqual(p.p,first.p,`${weaponId} ${p.characterId} starts at the same pivot`);
-   assert.deepEqual(weaponSegments(p),weaponSegments(first),`${weaponId} ${p.characterId} weapon pose`);
+   const origin = staffFrame(p, 0).point, reference = staffFrame(first, 0).point;
+   const segments = weaponSegments(p), expected = weaponSegments(first);
+   assert.equal(segments.length, expected.length);
+   for (let i = 0; i < segments.length; i++) {
+    assert.equal(segments[i].radius, expected[i].radius);
+    for (const end of ['a', 'b']) for (const axis of ['x', 'y', 'z'])
+     assert.ok(Math.abs((segments[i][end][axis] - origin[axis]) - (expected[i][end][axis] - reference[axis])) < 1e-9,
+      `${weaponId} ${p.characterId} local ${end}.${axis}`);
+   }
   }
  }
 });

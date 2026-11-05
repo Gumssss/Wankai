@@ -17,7 +17,7 @@ const tick=(w,input,seconds)=>{for(let i=0;i<Math.round(seconds/CONFIG.step);i++
 const point=q=>new Vector3(q.x,q.y,q.z);
 
 test('both accepted animals extend the current roster without replacing happy cat',()=>{
- assert.equal(PLAYABLE_LOADOUTS.length,35);
+ assert.equal(PLAYABLE_LOADOUTS.filter(p=>!['cr7','mean-girl','maodie'].includes(p.characterId)).length,35);
  assert.ok(canEquip('happy-cat','happy-paws'));
  for(const w of ['sword','polearm','hammer','axe','mace','pan','long-ears'])assert.ok(canEquip('beagle',w));
  for(const c of ['naiwa','dudu','stickman','happy-cat','orange-tabby'])assert.equal(canEquip(c,'long-ears'),false);

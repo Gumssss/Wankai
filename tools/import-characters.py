@@ -318,7 +318,7 @@ def jpeg(image, quality=88, size=1024):
     return buffer.getvalue()
 
 
-def write_glb(path, positions, normals, uvs, indices, images, roughness, extras):
+def write_glb(path, positions, normals, uvs, indices, images, roughness, extras, colors=None):
     """A single textured mesh. images: {'base': bytes, 'normal': bytes|None}."""
     chunks, views, accessors = [], [], []
 
@@ -345,6 +345,8 @@ def write_glb(path, positions, normals, uvs, indices, images, roughness, extras)
         'NORMAL': accessor(normals.astype(np.float32), 'VEC3', 5126, 34962),
         'TEXCOORD_0': accessor(uvs.astype(np.float32), 'VEC2', 5126, 34962),
     }
+    if colors is not None:
+        attributes['COLOR_0'] = accessor(colors.astype(np.float32), 'VEC3', 5126, 34962)
     index_type = np.uint16 if len(positions) < 65536 else np.uint32
     primitive = {'attributes': attributes, 'material': 0,
                  'indices': accessor(indices.astype(index_type), 'SCALAR', 5123 if index_type == np.uint16 else 5125, 34963)}
@@ -353,7 +355,9 @@ def write_glb(path, positions, normals, uvs, indices, images, roughness, extras)
         if images.get(name):
             gltf_images.append({'bufferView': view(images[name]), 'mimeType': 'image/jpeg', 'name': name})
             textures.append({'source': len(gltf_images) - 1, 'sampler': 0})
-    pbr = {'baseColorTexture': {'index': 0}, 'metallicFactor': 0.0, 'roughnessFactor': roughness}
+    pbr = {'metallicFactor': 0.0, 'roughnessFactor': roughness}
+    if images.get('base'):
+        pbr['baseColorTexture'] = {'index': 0}
     material = {'name': 'toy', 'pbrMetallicRoughness': pbr}
     if images.get('normal'):
         material['normalTexture'] = {'index': 1}

@@ -1,5 +1,14 @@
 // color: the weapon's dominant colour, used for its swing trail and UI accents.
 export const WEAPON_CATALOG = Object.freeze([
+  { id: 'soccer-ball', name: '足球', english: 'SOCCER BALL', role: '足球 · 圆面撞击', available: true, characterId: 'cr7', color: 0xe8e5da,
+    description: 'CR7 的原版足球，随 W/S 挥动、A/D 转向，碰撞与撑地使用同一个球面。',
+    strength: '圆面接触', weakness: '距离较短', reach: '短', response: '快' },
+  { id: 'crowned-heart', name: '皇冠爱心', english: 'CROWNED HEART', role: '爱心 · 拍击', available: true, characterId: 'mean-girl', color: 0xe92e87,
+    description: 'Mean Girl 的皇冠爱心，保留原有粉金造型并使用普通武器操作。',
+    strength: '宽面拍击', weakness: '需要调整朝向', reach: '短', response: '中' },
+  { id: 'maodie-paw', name: 'Maodie 猫爪', english: 'MAODIE PAW', role: '猫爪 · 拍击', available: true, characterId: 'maodie', color: 0xe1ac68,
+    description: 'Maodie 的原版单只猫爪，W/S 挥击和撑地，A/D 横向转动。',
+    strength: '宽面格挡', weakness: '短，需要贴近', reach: '短', response: '中' },
   { id:'long-ears',name:'长耳',english:'LONG EARS',role:'双耳 · 挥击撑地',available:true,characterId:'beagle',color:0xc6803d,
     description:'头部连接的柔软长耳，W/S 并列挥动、A/D 转向；F 旋耳悬停。',strength:'成对攻击与撑地',weakness:'只以外段为实体，悬停消耗体力',reach:'长',response:'稳' },
   { id:'cat-paws',name:'猫爪',english:'GIANT PAWS',role:'双爪 · 拍击撑地',available:true,characterId:'orange-tabby',color:0xffb454,

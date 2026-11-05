@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><title>Drive characters · actual game</title></head>
+<body>
+  <div id="root"></div>
+  <button id="record" style="position:fixed;bottom:8px;left:8px;z-index:5000;padding:10px">Record normal controls</button>
+  <script type="module">
+    const entries = [['CR7', 'cr7', 'soccer-ball'], ['MEAN GIRL', 'mean-girl', 'crowned-heart'], ['MAODIE', 'maodie', 'maodie-paw']];
+    const characters = entries.map(([name, characterId, weaponId]) => [name, { characterId, weaponId }]);
+    window.characterReviewPacket = {
+      characters,
+      matrixDuration: 2,
+      description: 'Supplied Drive characters with existing floating-weapon controls and no F skills',
+      fixtures: '/docs/previews/drive-characters-v01/contact-fixtures.json',
+      samples: characters.flatMap(([name, loadout]) => [
+        { title: `${name} / common sword + W/D / 1x`, loadout: { ...loadout, weaponId: 'sword' }, keys: ['W', 'D'], duration: 1.5 },
+        { title: `${name} / F has no ability / 1x`, loadout, keys: ['F'], duration: .8 },
+      ]),
+    };
+    await import('../restored-animals-v01/review.mjs');
+  </script>
+</body>
+</html>

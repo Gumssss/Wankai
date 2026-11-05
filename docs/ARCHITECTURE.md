@@ -1,5 +1,7 @@
 # Restored animals — 2 November 2026
 
+5 November 2026 adds three independent imported characters and signature weapons. The roster has nine characters and 56 loadouts. CR7, Mean Girl and Maodie use the current floating-weapon controller with fitted attachment offsets and no F skill. Their bodies are rigid imported models. The shared loader now supports both UV textures and linear vertex colours. Network protocol is **5**. [Source, model and runtime handoff](characters/drive-packet-2026-11-05.md).
+
 See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB characters, paired anatomical contacts, Beagle resource skill, character-specific health, preview/portrait behavior and protocol-4 pose state. Earlier statements below about every weapon floating, every body following the view and all models being procedural apply to the original four-character implementation; Beagle long ears and orange-cat paws use the documented anatomical exceptions. Existing fighters retain their current behavior.
 
 # 架构与约定
@@ -9,7 +11,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
 - 世界 Y 向上，地面 y = 0；比赛场地半径 19.35（`ARENA_PROFILE.radius × MATCH_ARENA_SCALE`），围边高 2.52。
 - 每个角色有一个**身体枢轴** `p`，位于地面上方 `bodyFloor`（0.59）。模型根节点放在枢轴上，`rotation.y = -fighterHeading(p)`，脸朝本地 +X。
 - `fighterHeading`：所有角色都返回 `bodyYaw`（以有限角速度追随鼠标视角 `faceYaw`）。
-- 武器姿态由 `theta`（竖直挥动角，0 = 朝上，π/2 = 朝前水平）和 `phi`（水平方位角）决定，与角色无关：同一件武器在任何角色身旁的位置和朝向都相同。`weaponPointFrame(player, local)` 把武器局部点转换到世界，并给出雅可比，接触冲量同时作用于角度和身体。
+- 浮空武器姿态由 `theta`（竖直挥动角，0 = 朝上，π/2 = 朝前水平）和 `phi`（水平方位角）决定。`weaponStats(player)` 也提供适配身体大小的偏移量，供渲染和碰撞共用。`weaponPointFrame(player, local)` 把武器局部点转换到世界，并给出雅可比，接触冲量同时作用于角度和身体。
 
 ## 外观 = 碰撞
 
@@ -18,7 +20,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
 - 漂浮武器沿 +Y 建模、握柄末端在原点、+X 为 W 挥动的前缘，长度等于 `WEAPONS[type].length`，造型骨架就是碰撞胶囊（`physics.js`）。
 - 专属武器也是普通的漂浮武器：外卖盒（胆子肥嘟嘟）和开心猫爪（开心小猫，一只带肉垫的大猫爪，腕部 + 掌面 + 脚趾三个胶囊）。开心小猫也可使用通用武器。
 - 角色身体保持在 `CHARACTERS[id].bounds` 内，受击形状 `hurtShapes` 的中心都在可见身体内；`models.test.js` 校验这两点。
-- 奶蛙、胆子肥嘟嘟、开心小猫用有符号距离场雕塑（`models/sculpt.js`）：基本形体平滑并集、按区域与「涂色」上色，再用 marching cubes 生成带顶点色的网格（按角色缓存，每个实例克隆）。五官等细节用 `surface()` 沿射线找到皮肤表面后贴放。奶蛙大笑时整块身体按高度平滑弯折（`bendable`），不会出现接缝。
+- `models/character-assets.js` 缓存导入网格与纹理，`character-parts.js` 为每个实例克隆网格并创建独立材质。CR7、Mean Girl 使用原始 UV 基色纹理，Maodie 与其猫爪保留线性顶点色。奶蛙使用导入模型并通过 `bendable` 和姿态模型混合表现大笑。
 - 火柴人用不受光照的平涂材质（`kit.flat`）加粗描边，模仿《氰化欢乐秀》的 2D 画风。
 
 修改造型时先改碰撞数据，再让模型跟随；`npm test` 会检查二者是否对齐。
@@ -31,7 +33,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
 
 ## 技能（`skills.js`、`physics.js`）
 
-- 每个角色一个 F 技能。`skillTap` 只被一个物理步消费；`updateSkill` 在每步开头处理冷却与持续效果（大笑抽体力、Happy Happy 回血），在采样扫掠之前完成瞬移，避免瞬移被当成一次横扫命中。
+- 角色可有一个 F 技能，`skill: null` 的配置忽略 F。`skillTap` 只被一个物理步消费；`updateSkill` 在每步开头处理冷却与持续效果（大笑抽体力、Happy Happy 回血），在采样扫掠之前完成瞬移，避免瞬移被当成一次横扫命中。
 - 外卖投掷生成 `world.projectiles`，按抛物线飞行，命中对手受击形状造成伤害，落地 / 撞墙 / 撞障碍物时产生 `splat` 事件。
 - 技能触发产生 `{ type: 'skill', skill, player, point, to? }` 事件，供音效、特效和联机转发使用。
 
@@ -52,7 +54,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
   - 邀请好友：建 FriendsOnly 大厅并 `overlay.activateInviteDialog`。接受邀请时 Steam 触发 `GameLobbyJoinRequested`，游戏未运行时 Steam 以 `+connect_lobby <id>` 启动；两种情况都转给窗口，打开联机面板加入。
 - 消息：每条一个 JSON 对象（≤ 64 KB），发往对方 Steam ID。不带事件的快照和不带技能点击的输入用 UnreliableNoDelay（超过 1150 字节自动改为可靠）；握手、准备、竞技场、开局、再战、ping、离开、带事件的快照和带 `skillTap` 的输入用 Reliable。链路每 2 秒发一个不转给页面的 `keepalive`，15 秒收不到对方任何包、对方离开大厅或 P2P 连接失败都报告 `disconnected`。主进程在玩家处于大厅时以 4 ms 间隔读包，Steam 回调由 steamworks.js 每 33 ms 处理。
 - 页面状态（`net:status`）：`connecting`、`searching`、`joining`、`waiting { mode }`、`connected { role, peer }`、`disconnected { message }`、`error { message }`。`online.js` 在 `connected` 时创建 `NetSession`（房主为 host），关窗或取消时离开大厅。
-- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 4）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
+- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 5）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
 - 主机（红方，id 0）运行物理；加入者（蓝方，id 1）只发送输入（变化即发 + 30 Hz 心跳），接收 60 Hz 快照（含技能冷却与投掷物），以约 50 ms 延迟插值显示；位移超过 1.5 的帧（瞬移）直接跳转。所有事件随快照转发用于音效、特效和伤害数字。
 - 竞技场由房主选择，通过 `arena` 消息和 `start` 消息同步给加入者。
 - 对局中 Esc 只打开本地菜单，不暂停；任一方离开或断线，另一方收到提示并回到主菜单。

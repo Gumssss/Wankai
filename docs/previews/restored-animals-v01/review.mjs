@@ -11,6 +11,9 @@ const session=new GameSession({randomOpponent:false,makeAi:()=>({think:()=>oppon
 createRoot(document.getElementById('root')).render(React.createElement(App,{session}));
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const dog={characterId:'beagle',weaponId:'long-ears'},cat={characterId:'orange-tabby',weaponId:'cat-paws'},target={characterId:'stickman',weaponId:'polearm'};
+// Later character packets can reuse this exact actual-game recorder while
+// retaining the original restored-animal chapters when no packet is supplied.
+const packet = window.characterReviewPacket;
 const keyMap={W:'KeyW',S:'KeyS',A:'KeyA',D:'KeyD',F:'KeyF'};
 let chapter=null,current=null,chapterWall=0,live=true;
 const report={format:'actual current App, scripted ordinary inputs, independent fixtures',chapters:[],errors:[]};
@@ -50,13 +53,14 @@ export async function run(){
  report.assets=animalAssetStatus();if(Object.values(report.assets).some(v=>v!=='ready'))throw Error('Actual animal model unavailable');
  const matrix=[['W'],['S'],['A'],['D'],['W','A'],['W','D'],['S','A'],['S','D']];
  const chapters=[];
- for(const [name,loadout]of [['BEAGLE',dog],['ORANGE CAT',cat]]){
-  for(const input of matrix)chapters.push({title:`${name} / ${input.join(' + ')} / 1x`,loadout,keys:input,duration:2.5});
+ for(const [name,loadout]of packet?.characters??[['BEAGLE',dog],['ORANGE CAT',cat]]){
+  for(const input of matrix)chapters.push({title:`${name} / ${input.join(' + ')} / 1x`,loadout,keys:input,duration:packet?.matrixDuration??2.5});
   chapters.push({title:`${name} / W → release → S / 1x`,loadout,keys:['W'],duration:4,release:true});
  }
- chapters.push({title:'BEAGLE / F rotor + D / expiry and landing / 1x',loadout:dog,keys:['F','D'],duration:8,rotor:true});
- for(const fixture of await fetch('./contact-fixtures.json').then(r=>r.json()))chapters.push({...fixture,title:`${fixture.loadout.characterId.toUpperCase()} / physical hit, block, clash / 1x`,keys:[fixture.input.theta>0?'W':'S'],duration:3.2});
- for(const weaponId of ['sword','polearm','hammer','axe','mace','pan'])chapters.push({title:`BEAGLE / natural ears + ${weaponId} / 1x`,loadout:{characterId:'beagle',weaponId},keys:['W','D'],duration:1.2});
+ if(!packet)chapters.push({title:'BEAGLE / F rotor + D / expiry and landing / 1x',loadout:dog,keys:['F','D'],duration:8,rotor:true});
+ for(const fixture of await fetch(packet?.fixtures??'./contact-fixtures.json').then(r=>r.json()))chapters.push({...fixture,title:`${fixture.loadout.characterId.toUpperCase()} / physical hit, block, clash / 1x`,keys:[fixture.input.theta>0?'W':'S'],duration:3.2});
+ if(packet)chapters.push(...packet.samples);
+ else for(const weaponId of ['sword','polearm','hammer','axe','mace','pan'])chapters.push({title:`BEAGLE / natural ears + ${weaponId} / 1x`,loadout:{characterId:'beagle',weaponId},keys:['W','D'],duration:1.2});
  // Copy immediately after the actual renderer finishes, before WebGL clears
  // its default drawing buffer at the end of the animation frame.
  const renderer=session.renderer,render=renderer.render;
@@ -83,7 +87,7 @@ export async function run(){
  const done=new Promise(r=>recorder.onstop=r);recorder.stop();await done;renderer.render=render;stream.getTracks().forEach(t=>t.stop());
  const blob=new Blob(chunks,{type:mimeType}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='restored-animals-actual-gameplay.webm';
  await fetch('http://127.0.0.1:8789/video',{method:'POST',body:blob}).then(r=>{if(!r.ok)throw Error('Capture save failed');});
- report.recordedDuration=offset;report.models='accepted Tripo Beagle v05 / Cat prepared-v02 with 1.3x paws';report.size=blob.size;
+ report.recordedDuration=offset;report.models=packet?.description??'accepted Tripo Beagle v05 / Cat prepared-v02 with 1.3x paws';report.size=blob.size;
  await fetch('http://127.0.0.1:8789/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(report)});
  window.animalReview.report=report;window.animalReview.done=true;return report;
 }

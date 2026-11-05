@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createKit, geometry as G, PALETTE as C } from './toy-kit.js';
+import { importedMesh } from './character-parts.js';
 
 // Floating weapons are authored along +Y with the butt at the origin and the
 // leading (W-swing) side on +X, in the same local space as their contact
@@ -195,7 +196,13 @@ function catPaw(kit, root, id) {
   }
 }
 
-const BUILDERS = { 'yellow-staff': yellowStaff, 'takeout-box': takeoutBox, 'happy-paws': catPaw, sword, polearm, hammer, axe, mace, pan };
+const BUILDERS = {
+  'yellow-staff': yellowStaff, 'takeout-box': takeoutBox, 'happy-paws': catPaw,
+  'soccer-ball': (kit, root) => importedMesh(kit, root, 'soccer-ball'),
+  'crowned-heart': (kit, root) => importedMesh(kit, root, 'crowned-heart'),
+  'maodie-paw': (kit, root) => importedMesh(kit, root, 'maodie-paw'),
+  sword, polearm, hammer, axe, mace, pan,
+};
 export const FLOATING_WEAPONS = Object.freeze(Object.keys(BUILDERS));
 
 export function buildWeapon(type, id = 0) {

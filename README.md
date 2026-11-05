@@ -1,6 +1,6 @@
 # 木昆竞技场
 
-一款用武器「撑地走路」的 3D 物理对战小游戏：角色没有走路键，只能挥动武器、触地借力来移动和攻击，角色可有 F 技能。React + react-three-fiber + Electron；现有角色与竞技场保留当前版本的建模方式；比格犬和橘猫恢复原先经 Tripo/Blender 制作的 GLB、骨架与接触数据。其余角色：奶蛙、胆子肥嘟嘟、开心小猫按项目根目录的参考图用有符号距离场雕塑（`src/models/sculpt.js`），火柴人按动画画风做成平涂描边。
+一款用武器「撑地走路」的 3D 物理对战小游戏：角色没有走路键，只能挥动武器、触地借力来移动和攻击，角色可有 F 技能。React + react-three-fiber + Electron。角色采用导入的 GLB，火柴人使用平涂描边模型；比格犬与橘猫保留原有骨架和成对接触控制。5 November 2026 新增 Drive 提供的 CR7、Mean Girl、Maodie，当前共 9 个角色、56 种有效配置。[新角色来源、操作与验证](docs/characters/drive-packet-2026-11-05.md)。
 
 ## 运行
 
@@ -100,12 +100,15 @@ npm run dist:mac   # release/ 下生成 arm64 与 x64 的 .dmg 和 .zip
 
 | 角色 | 武器 | 技能（F） |
 | --- | --- | --- |
-| 奶蛙 | 奶木昆（专属）+ 通用武器 | **大笑**：仰天大笑 4 秒，对手体力持续流失且无法恢复。冷却 35 秒 |
+| 奶蛙 | 奶木昆（专属）+ 通用武器 | **大笑**：0.5 秒内清空对手体力，再压制恢复 2 秒。冷却 35 秒 |
 | 火柴人 | 通用武器 | **绕后**：烟雾中瞬移到对手身后并转身面对对手。冷却 28 秒 |
 | 胆子肥嘟嘟 | 美团外卖盒（专属，无柄）+ 通用武器 | **外卖投掷**：向面前扔出一整个大外卖箱，命中 14 伤害并击退。冷却 22 秒 |
-| 开心小猫 | 开心猫爪（专属）+ 通用武器 | **Happy Happy**：蹦跳 1.6 秒，共恢复 22 生命。冷却 40 秒 |
+| 开心小猫 | 开心猫爪（专属）+ 通用武器 | **Happy Happy**：蹦跳 1.6 秒，共恢复 10 生命。冷却 40 秒 |
 | 比格犬 | 长耳（专属）+ 通用武器 | 长耳限定 **旋耳悬停**：至少 40 体力，最多 5 秒，每秒消耗 16；通用武器使用正常短耳外观 |
 | 橘猫 | 成对猫爪（专属，保留 1.3× 尺寸） | 无额外 F 技能；W/S 挥爪撑地，A/D 连同身体转向 |
+| CR7 | 足球（专属）+ 通用武器 | 现有 W/S 挥动、A/D 转向；暂不配置 F 技能 |
+| Mean Girl | 皇冠爱心（专属）+ 通用武器 | 现有 W/S 挥动、A/D 转向；暂不配置 F 技能 |
+| Maodie | Maodie 猫爪（专属）+ 通用武器 | 独立新角色，使用一只原版猫爪；暂不配置 F 技能 |
 
 通用近战武器：短剑、长柄刀（偃月刀）、铁战锤、战斧、狼牙棒、平底锅。挥动残影使用武器自身的颜色。
 
@@ -154,4 +157,4 @@ docs/ARCHITECTURE.md    架构与约定
 
 ## 2 November 2026 — Beagle / orange-cat restoration
 
-The current roster includes both accepted animals again, alongside all four existing characters: 35 valid loadouts. Original Tripo exports and paired attachment frames are reused. [Current implementation, motion evidence and verification](docs/RESTORED_ANIMALS.md). This local restoration does not merge the earlier combat trial or change the other fighters’ resource/motor rules. Network protocol 4 adds compact Beagle ear pose data; both peers need this build.
+The two-animal restoration is recorded in [RESTORED_ANIMALS.md](docs/RESTORED_ANIMALS.md). The current roster also includes CR7, Mean Girl and Maodie, with 56 valid loadouts. Protocol 5 covers the expanded catalogue and retains compact Beagle ear pose data. Both peers need this build. [Current character handoff and evidence](docs/characters/drive-packet-2026-11-05.md).

@@ -69,6 +69,19 @@ const weapon = ({ colliders, ...stats }) => Object.freeze({ ...stats, radius: co
 // from the body pivot) to the tip, +X is the leading side of a W swing. The
 // models in models/weapons.js are built on exactly these capsules.
 export const WEAPONS = Object.freeze({
+  'soccer-ball': weapon({ length: .92, offset: 1.45, inertia: 3.2, motorAcceleration: 32, brakeAcceleration: 40, maxAngularSpeed: 5.4,
+    colliders: [capsule([0, .46, 0], [0, .46, 0], .455)] }),
+  'crowned-heart': weapon({ length: 1.05, offset: 1.45, inertia: 4.2, motorAcceleration: 25, brakeAcceleration: 31, maxAngularSpeed: 4.5,
+    // The heart lies to +Z, the thin crown to -Z. Preserve that asymmetry.
+    colliders: [capsule([0, .35, .03], [0, .35, .29], .14), capsule([0, .21, .14], [0, .30, .14], .10),
+      capsule([0, .45, .07], [0, .46, .33], .12), capsule([0, .05, .14], [0, .12, .14], .03),
+      capsule([0, .55, .13], [0, .72, .13], .085), capsule([0, .78, -.43], [0, .86, -.26], .035),
+      capsule([0, .87, -.38], [0, .92, -.30], .035), capsule([0, .93, -.12], [0, 1.015, -.12], .035),
+      capsule([0, .86, -.16], [0, .85, .08], .035)] }),
+  'maodie-paw': weapon({ length: 1.10, offset: 1.45, inertia: 4.2, motorAcceleration: 25, brakeAcceleration: 31, maxAngularSpeed: 4.5,
+    colliders: [capsule([0, .14, -.12], [0, .14, .12], .13), capsule([0, .32, -.18], [0, .32, .18], .19),
+      capsule([0, .58, -.29], [0, .58, .29], .20), capsule([0, .85, -.30], [0, .85, .30], .12),
+      capsule([0, .98, -.14], [0, 1.05, -.14], .035), capsule([0, .98, .14], [0, 1.05, .14], .035)] }),
   'long-ears':BEAGLE,
   'cat-paws':CAT.weapon,
   'yellow-staff': weapon({ length: 1.8, offset: 1.25, inertia: 3.5, motorAcceleration: 28, brakeAcceleration: 36, maxAngularSpeed: 5,
@@ -107,10 +120,15 @@ export const WEAPONS = Object.freeze({
 
 export const characterStats=player=>CHARACTERS[player.characterId] || CHARACTERS.stickman;
 const beagleCommon=Object.fromEntries(['sword','polearm','hammer','axe','mace','pan'].map(id=>[id,Object.freeze({...WEAPONS[id],offset:BEAGLE_COMMON_OFFSETS[id]??Math.max(1.6,WEAPONS[id].offset)})]));
+// The imported 1.85 m bodies need the inner weapon surface above their heads
+// during an overhead stroke. Rendering and contacts both use this fitted frame.
+const driveCommon = Object.fromEntries(['sword', 'polearm', 'hammer', 'axe', 'mace', 'pan']
+  .map(id => [id, Object.freeze({ ...WEAPONS[id], offset: Math.max(1.45, WEAPONS[id].offset) })]));
 export const isEarLoadout=p=>p.characterId==='beagle'&&p.weapon==='long-ears';
 export const isPawLoadout=p=>p.characterId==='orange-tabby'&&p.weapon==='cat-paws';
 export const isAnatomical=p=>isEarLoadout(p)||isPawLoadout(p);
-export const weaponStats=p=>(p.characterId==='beagle'&&beagleCommon[p.weapon])||WEAPONS[p.weapon]||WEAPONS.polearm;
+export const weaponStats=p=>(p.characterId==='beagle'&&beagleCommon[p.weapon])
+  || (['cr7', 'mean-girl', 'maodie'].includes(p.characterId) && driveCommon[p.weapon]) || WEAPONS[p.weapon] || WEAPONS.polearm;
 
 export const v3 = (x = 0, y = 0, z = 0) => ({ x, y, z });
 const add = (a, b) => v3(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -123,7 +141,7 @@ const unit = (a, fallback = v3(1, 0, 0)) => length(a) > 1e-8 ? mul(a, 1 / length
 const invMass = 1 / CONFIG.mass;
 
 // A bare weapon id picks its natural character; tests and tools use the shorthand.
-const NATURAL_CHARACTER = {'long-ears':'beagle','cat-paws':'orange-tabby', 'yellow-staff': 'naiwa', 'takeout-box': 'dudu', 'happy-paws': 'happy-cat' };
+const NATURAL_CHARACTER = {'soccer-ball': 'cr7', 'crowned-heart': 'mean-girl', 'maodie-paw': 'maodie', 'long-ears':'beagle','cat-paws':'orange-tabby', 'yellow-staff': 'naiwa', 'takeout-box': 'dudu', 'happy-paws': 'happy-cat' };
 const asLoadout = value => typeof value === 'string'
   ? { characterId: NATURAL_CHARACTER[value] || 'stickman', weaponId: value } : value;
 

@@ -9,6 +9,9 @@ import { makePlayer, v3 } from '../physics.js';
 // menus, HUD and the 3D scene always agree. Rendered once per character,
 // player colour and crop, then cached as data URLs.
 const PORTRAIT_LOADOUT = {
+  cr7: { characterId: 'cr7', weaponId: 'soccer-ball' },
+  'mean-girl': { characterId: 'mean-girl', weaponId: 'crowned-heart' },
+  maodie: { characterId: 'maodie', weaponId: 'maodie-paw' },
   beagle:{characterId:'beagle',weaponId:'sword'},
   'orange-tabby':{characterId:'orange-tabby',weaponId:'cat-paws'},
   naiwa: { characterId: 'naiwa', weaponId: 'yellow-staff' },
@@ -24,7 +27,7 @@ const CROPS = {
   full: { width: 208, height: 260, from: [4.2, 0.9, 2.6], margin: 1.08 },
 };
 // The imported characters carry their heads higher: lift the bust aim.
-const BUST_HEIGHT = { naiwa: 0.84, dudu: 0.84, 'happy-cat': 0.98, beagle:.62,'orange-tabby':.46 };
+const BUST_HEIGHT = { cr7: .86, 'mean-girl': .85, maodie: .83, naiwa: 0.84, dudu: 0.84, 'happy-cat': 0.98, beagle:.62,'orange-tabby':.46 };
 const FOV = 26;
 
 // Distance along `direction` from the box centre at which every corner of

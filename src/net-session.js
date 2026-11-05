@@ -10,7 +10,7 @@ import { isArenaSkin } from './arena-skins.js';
 // The transport may drop or reorder plain snapshots and inputs (Steam sends
 // them unreliably); control messages, snapshots with events and skill taps
 // must arrive.
-export const PROTOCOL = 4;
+export const PROTOCOL = 5;
 const SNAPSHOT_INTERVAL = 1 / 60;
 const INPUT_HEARTBEAT = 1 / 30;
 const INTERPOLATION_DELAY = 0.05;

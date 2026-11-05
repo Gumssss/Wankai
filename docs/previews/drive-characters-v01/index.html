@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New character models · Wankai</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f0df; color: #30372e; font: 15px system-ui; }
+    main { position: relative; height: 100vh; }
+    canvas { display: block; width: 100%; height: 100%; }
+    header { position: absolute; top: 28px; left: 32px; right: 32px; }
+    h1 { font-size: 24px; margin: 0 0 10px; }
+    p { margin: 0 0 16px; }
+    nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    button { background: #fff9ec; color: #30372e; border: 1px solid #c8c3b1; border-radius: 8px; padding: 10px 16px; cursor: pointer; font: inherit; }
+    button[aria-pressed="true"] { background: #30372e; color: #fff9ec; }
+    footer { position: absolute; bottom: 28px; left: 32px; right: 32px; padding: 16px; background: #fff9ecdd; border-radius: 12px; }
+    #status { margin-top: 10px; }
+  </style>
+</head>
+<body><main>
+  <canvas id="preview" aria-label="Rotatable imported character and weapon models"></canvas>
+  <header><h1>NEW CHARACTER PACKET</h1><p>Prepared from the supplied Drive models · drag to rotate · wheel to zoom</p>
+    <nav id="choices" aria-label="Character previews"></nav><p id="status" role="status">Loading models…</p>
+  </header>
+  <footer id="caption">Model inspection</footer>
+</main><script type="module" src="./preview.mjs"></script></body>
+</html>

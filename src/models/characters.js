@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createKit, geometry as G, PALETTE as C } from './toy-kit.js';
-import { SIDES, clamp, skillBlend } from './character-parts.js';
+import { SIDES, clamp, skillBlend, importedMesh } from './character-parts.js';
+import { CHARACTER_MODELS } from './character-assets.js';
 import { naiwa } from './characters/naiwa.js';
 import { dudu } from './characters/dudu.js';
 import { happyCat } from './characters/happy-cat.js';
@@ -94,6 +95,11 @@ export function buildCharacter(selection, id = 0) {
   if (loadout.characterId === 'naiwa') built = naiwa(kit);
   else if (loadout.characterId === 'dudu') built = dudu(kit);
   else if (loadout.characterId === 'happy-cat') built = happyCat(kit);
+  else if (CHARACTER_MODELS.includes(loadout.characterId)) {
+    const body = new THREE.Group();
+    importedMesh(kit, body, loadout.characterId);
+    built = { body, pose() {} };
+  }
   else built = stickman(kit, id);
   host.add(built.body);
   return { root, kit, face: built.face,

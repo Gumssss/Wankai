@@ -1,6 +1,6 @@
 import {createServer} from 'node:http';
 import {writeFile,mkdir} from 'node:fs/promises';
-const dest=new URL('../assets/concepts/restored-animals-v01/',import.meta.url);
+const dest=new URL(process.argv[2]??'../assets/concepts/restored-animals-v01/',import.meta.url);
 await mkdir(dest,{recursive:true});
 createServer(async(req,res)=>{
  res.setHeader('Access-Control-Allow-Origin','http://127.0.0.1:5195');res.setHeader('Access-Control-Allow-Headers','Content-Type');res.setHeader('Access-Control-Allow-Methods','POST, OPTIONS');

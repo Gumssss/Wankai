@@ -1,9 +1,12 @@
 from pathlib import Path
-import json,subprocess
+import json,subprocess,sys
 from PIL import Image,ImageDraw,ImageFont
-root=Path(__file__).resolve().parents[1];out=root/'assets/concepts/restored-animals-v01';report=json.loads((out/'capture-report.json').read_text());source=out/('actual-gameplay.webm' if (out/'actual-gameplay.webm').exists() else 'actual-gameplay.mp4')
-chapters=report['chapters'];cat=next(c for c in chapters if c['title']=='ORANGE CAT / S / 1x');rotor=next(c for c in chapters if 'expiry and landing' in c['title']);contact=next(c for c in chapters if c['title'].startswith('BEAGLE / physical'))
-clips=[(cat['offset']+.7,'SAME EVENT / CAT FLOOR SUPPORT / 0.25x'),(rotor['offset']+4.9,'SAME EVENT / ROTOR EXPIRY / 0.25x'),(contact['offset']+.15,'SAME EVENT / WEAPON CONTACT / 0.25x')]
+root=Path(__file__).resolve().parents[1];out=root/(sys.argv[1] if len(sys.argv)>1 else 'assets/concepts/restored-animals-v01');report=json.loads((out/'capture-report.json').read_text());source=out/('actual-gameplay.mp4' if (out/'actual-gameplay.mp4').exists() else 'actual-gameplay.webm')
+if len(sys.argv)>2:
+    clips=[(entry['start'],entry['label']) for entry in json.loads((out/sys.argv[2]).read_text())]
+else:
+    chapters=report['chapters'];cat=next(c for c in chapters if c['title']=='ORANGE CAT / S / 1x');rotor=next(c for c in chapters if 'expiry and landing' in c['title']);contact=next(c for c in chapters if c['title'].startswith('BEAGLE / physical'))
+    clips=[(cat['offset']+.7,'SAME EVENT / CAT FLOOR SUPPORT / 0.25x'),(rotor['offset']+4.9,'SAME EVENT / ROTOR EXPIRY / 0.25x'),(contact['offset']+.15,'SAME EVENT / WEAPON CONTACT / 0.25x')]
 parts=['[0:v]split=4[main][c0][c1][c2]','[main]setpts=PTS-STARTPTS,fps=30,format=yuv420p[m]']
 font='/System/Library/Fonts/Supplemental/Arial.ttf'
 inputs=[]

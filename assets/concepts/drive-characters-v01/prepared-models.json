@@ -1,0 +1,134 @@
+[
+  {
+    "id": "cr7",
+    "source": ".local/character-intake-2026-11-05/unpacked/soccer-player/stylized_soccer_player_3d_model.obj",
+    "sourceTriangles": 18978,
+    "triangles": 18978,
+    "vertices": 12247,
+    "bytes": 2360916,
+    "bounds": [
+      [
+        -0.44452500343322754,
+        0.0,
+        -0.6735514998435974
+      ],
+      [
+        0.44452500343322754,
+        1.850000023841858,
+        0.6735514998435974
+      ]
+    ],
+    "vertexColors": false,
+    "sha256": "1b36358dee9f6259e4103795d85a6d2a16645faeff696941d21e94321b45bd06"
+  },
+  {
+    "id": "mean-girl",
+    "source": ".local/character-intake-2026-11-05/unpacked/meangirl/stylized_cartoon_character_3d_model.obj",
+    "sourceTriangles": 1964634,
+    "triangles": 23998,
+    "vertices": 17083,
+    "bytes": 2789280,
+    "bounds": [
+      [
+        -0.4993916451931,
+        0.0002882160770241171,
+        -0.6698136925697327
+      ],
+      [
+        0.4999680817127228,
+        1.8497117757797241,
+        0.6695830821990967
+      ]
+    ],
+    "vertexColors": false,
+    "sha256": "d276a0cb9758301301ddc0ee9ad0e9d0ced87d8174bcd55742026866bfae9a86"
+  },
+  {
+    "id": "soccer-ball",
+    "source": ".local/character-intake-2026-11-05/unpacked/soccer-ball/soccer_ball_3d_model.obj",
+    "sourceTriangles": 6739,
+    "triangles": 6739,
+    "vertices": 5504,
+    "bytes": 3241272,
+    "bounds": [
+      [
+        -0.4593826234340668,
+        0.0,
+        -0.46087583899497986
+      ],
+      [
+        0.4593826234340668,
+        0.9200000166893005,
+        0.46087583899497986
+      ]
+    ],
+    "vertexColors": false,
+    "sha256": "1d2a6636bee70f4fc8403d73cb066353f7236bbfa1a31b4e00ffe643218fe638"
+  },
+  {
+    "id": "crowned-heart",
+    "source": ".local/character-intake-2026-11-05/unpacked/crowned-heart/crowned_heart_3d_model.obj",
+    "sourceTriangles": 1970114,
+    "triangles": 23998,
+    "vertices": 17636,
+    "bytes": 2903624,
+    "bounds": [
+      [
+        -0.2154897153377533,
+        3.2863274100236595e-05,
+        -0.52741539478302
+      ],
+      [
+        0.2154897153377533,
+        1.0499670505523682,
+        0.5274811387062073
+      ]
+    ],
+    "vertexColors": false,
+    "sha256": "5cdd2e55b033da95e47a8f533a9eff19a94b4ecaf2e377bc14e29efb8ac2b72b"
+  },
+  {
+    "id": "maodie",
+    "source": ".local/character-intake-2026-11-05/unpacked/maodie/Maodie_optimized/Maodie_Idle_Optimized.glb",
+    "sourceTriangles": 358292,
+    "triangles": 23986,
+    "vertices": 11956,
+    "bytes": 671448,
+    "bounds": [
+      [
+        -0.658035397529602,
+        0.00031665345886722207,
+        -0.4855206608772278
+      ],
+      [
+        0.6589698195457458,
+        1.8497153520584106,
+        0.48601099848747253
+      ]
+    ],
+    "vertexColors": true,
+    "sha256": "8d42479697adf6a53c058ed6043bb65dd6c606106239041ce19fd4e066293026"
+  },
+  {
+    "id": "maodie-paw",
+    "source": ".local/character-intake-2026-11-05/unpacked/maodie/Maodie_optimized/Catpaw_Optimized.glb",
+    "sourceTriangles": 278444,
+    "triangles": 24000,
+    "vertices": 12002,
+    "bytes": 673564,
+    "bounds": [
+      [
+        -0.24319016933441162,
+        0.0002169649233110249,
+        -0.5298676490783691
+      ],
+      [
+        0.2430487424135208,
+        1.099717140197754,
+        0.5298676490783691
+      ]
+    ],
+    "vertexColors": true,
+    "sha256": "4247f964cad256cdeabdc237ae6c9ee0e889fd466267b5db77e1f7a536acc9e6"
+  }
+]

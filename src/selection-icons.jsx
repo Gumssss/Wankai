@@ -2,6 +2,9 @@ import { CHARACTERS } from './character-catalog.js';
 import { characterPortrait } from './models/portraits.js';
 
 const icons = {
+  'soccer-ball': '<circle cx="24" cy="27" r="20" fill="#faf8ed" stroke="#30372e" stroke-width="2"/><path d="m24 17 10 7-4 12H18l-4-12Z M7 14l8 1 2-9M41 14l-8 1-2-9M9 41l6-6 1 12M39 41l-6-6-1 12" fill="#30372e" stroke="#30372e" stroke-width="2"/>',
+  'crowned-heart': '<path d="M24 48 7 32C-2 21 13 12 24 25c11-13 26-4 17 7Z" fill="#ed2e87" stroke="#30372e" stroke-width="2"/><path d="m12 19-3-13 10 6 5-10 5 10 10-6-3 13Z" fill="#e7b547" stroke="#30372e" stroke-width="2"/>',
+  'maodie-paw': '<g fill="#edca8c" stroke="#30372e" stroke-width="1.5"><ellipse cx="24" cy="34" rx="17" ry="15"/><ellipse cx="9" cy="21" rx="6" ry="8"/><ellipse cx="19" cy="13" rx="6" ry="9"/><ellipse cx="30" cy="13" rx="6" ry="9"/><ellipse cx="40" cy="21" rx="6" ry="8"/></g><g fill="#d88960"><ellipse cx="24" cy="34" rx="10" ry="8"/><ellipse cx="9" cy="21" rx="3" ry="4"/><ellipse cx="19" cy="13" rx="3" ry="4"/><ellipse cx="30" cy="13" rx="3" ry="4"/><ellipse cx="40" cy="21" rx="3" ry="4"/></g>',
   'long-ears':'<path d="M15 9Q2 6 6 43Q10 51 15 43V9ZM33 9Q46 6 42 43Q38 51 33 43V9Z" fill="#d69b51" stroke="#30372e" stroke-width="2"/>',
   'cat-paws':'<g fill="#fff1dc" stroke="#30372e" stroke-width="1.5"><ellipse cx="14" cy="31" rx="12" ry="17"/><ellipse cx="35" cy="31" rx="12" ry="17"/></g><g fill="#f29aa6"><circle cx="14" cy="33" r="6"/><circle cx="35" cy="33" r="6"/></g>',
   'yellow-staff': '<path d="M11 45 36 9" stroke="#d7a838" stroke-width="10" stroke-linecap="round"/><path d="M11 45 36 9" stroke="#f6cf45" stroke-width="7" stroke-linecap="round"/><path d="m16 38 4 3M29 19l4 3" stroke="#e2ad2b" stroke-width="3"/>',

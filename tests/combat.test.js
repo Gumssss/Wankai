@@ -20,19 +20,19 @@ function advance(world, seconds, input = {}, dt = CONFIG.step) {
   for (let step = 0; step < Math.round(seconds / dt); step++) world.step([input], dt);
 }
 
-function contact(weapon, turnShare, speed = 8, heading = 0, attackInput = 0) {
+function contact(weapon, turnShare, speed = 8, heading = 0, attackInput = 0, { pointY = .6, separation = .24 } = {}) {
   const world = new ArenaPhysics();
   sparring(world,weapon,'polearm');
   const [attacker, target] = world.players;
   Object.assign(attacker, { p: v3(0, 10, 0), theta: Math.PI / 2, phi: heading, polarInput: attackInput });
-  const frame = staffFrame(attacker, 0.6);
+  const frame = staffFrame(attacker, pointY);
   const radius = Math.hypot(frame.r.x, frame.r.z);
   const vertical = Math.sqrt(1 - turnShare), horizontal = Math.sqrt(turnShare);
   attacker.wt = speed * vertical / radius;
   attacker.wp = speed * horizontal / radius;
   // Put the target's head in the incoming path at the same contact distance.
-  target.p = v3(frame.point.x - Math.sin(heading) * 0.24 * horizontal,
-    frame.point.y - 0.76 - 0.24 * vertical, frame.point.z + Math.cos(heading) * 0.24 * horizontal);
+  target.p = v3(frame.point.x - Math.sin(heading) * separation * horizontal,
+    frame.point.y - 0.76 - separation * vertical, frame.point.z + Math.cos(heading) * separation * horizontal);
   world.solveAttack(attacker, target, CONFIG.step);
   return world;
 }
@@ -41,7 +41,7 @@ test('coasting turning hits deal half the equivalent vertical damage for every f
   // This fixture places a target beside a single floating shaft. The takeout
   // box and the cat paw are broad across the turning direction, so a sideways
   // strike meets them first at a different radius.
-  for (const weapon of Object.keys(WEAPONS).filter(id => !['takeout-box','happy-paws','long-ears','cat-paws'].includes(id))) for (const heading of [0, 0.7, Math.PI]) {
+  for (const weapon of Object.keys(WEAPONS).filter(id => !['takeout-box','happy-paws','long-ears','cat-paws','soccer-ball','crowned-heart','maodie-paw'].includes(id))) for (const heading of [0, 0.7, Math.PI]) {
     const vertical = contact(weapon, 0, 8, heading).lastHit;
     const turning = contact(weapon, 1, 8, heading).lastHit;
     near(vertical.speed, 8); near(turning.speed, 8);
@@ -50,6 +50,18 @@ test('coasting turning hits deal half the equivalent vertical damage for every f
     near(turning.turnShare, 1);
     assert.equal(contact(weapon, 1, 8, heading, 1).lastHit.damage, turning.damage,
       'pressing a vertical key without vertical motion cannot disguise a turning hit');
+  }
+});
+
+test('broad imported weapons scale turning damage using their actual contact speed', () => {
+  for (const [weapon, contactY] of [['soccer-ball', .46], ['crowned-heart', .35], ['maodie-paw', .58]]) for (const heading of [0, .7, Math.PI]) {
+    const vertical = contact(weapon, 0, 8, heading, 0, { pointY: contactY, separation: .35 }).lastHit;
+    const turning = contact(weapon, 1, 8, heading, 0, { pointY: contactY, separation: .70 }).lastHit;
+    assert.ok(vertical && turning, `${weapon} contacts the target in both directions`);
+    near(vertical.turnShare, 0);
+    near(turning.turnShare, 1);
+    assert.equal(vertical.damage, damageForImpact(vertical.speed, 0));
+    assert.equal(turning.damage, Math.round(damageForImpact(turning.speed, 0) * .5));
   }
 });
 

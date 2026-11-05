@@ -1,0 +1,65 @@
+[
+  {
+    "loadout": {
+      "characterId": "cr7",
+      "weaponId": "soccer-ball"
+    },
+    "target": {
+      "characterId": "stickman",
+      "weaponId": "polearm"
+    },
+    "distance": 2.2,
+    "input": {
+      "theta": 1
+    },
+    "otherInput": {
+      "theta": 0
+    },
+    "counts": {
+      "hit": 3,
+      "clash": 3
+    }
+  },
+  {
+    "loadout": {
+      "characterId": "mean-girl",
+      "weaponId": "crowned-heart"
+    },
+    "target": {
+      "characterId": "stickman",
+      "weaponId": "polearm"
+    },
+    "distance": 2.2,
+    "input": {
+      "theta": 1
+    },
+    "otherInput": {
+      "theta": 0
+    },
+    "counts": {
+      "hit": 2,
+      "clash": 1
+    }
+  },
+  {
+    "loadout": {
+      "characterId": "maodie",
+      "weaponId": "maodie-paw"
+    },
+    "target": {
+      "characterId": "stickman",
+      "weaponId": "polearm"
+    },
+    "distance": 2.2,
+    "input": {
+      "theta": 1
+    },
+    "otherInput": {
+      "theta": 0
+    },
+    "counts": {
+      "hit": 2,
+      "clash": 1
+    }
+  }
+]

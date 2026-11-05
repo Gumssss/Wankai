@@ -11,7 +11,7 @@ export const SIDES = [-1, 1];
 export function importedMesh(kit, parent, id, extra = {}) {
   const model = characterModel(id);
   const material = kit.material(0xffffff, { map: model.map, normalMap: model.normalMap, roughness: model.roughness, metalness: 0,
-    sheen: 0, clearcoat: 0, ...extra });
+    vertexColors: model.geometry.hasAttribute('color'), sheen: 0, clearcoat: 0, ...extra });
   const part = kit.part(parent, model.geometry.clone(), material, { outline: 0 });
   part.name = id;
   return part;
