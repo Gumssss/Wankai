@@ -127,7 +127,7 @@ test('F starts the character skill on exactly one physics step, then the cooldow
 test('skills: laugh drains the opponent, Happy Happy heals, twist lands behind, takeout flies and hits', () => {
   const world = new ArenaPhysics();
   world.reset({ characterId: 'naiwa', weaponId: 'yellow-staff' }, basic('sword'), { arenaScale: MATCH_ARENA_SCALE });
-  for (let i = 0; i < 180 * 4.2; i++) world.step([{ skillTap: i === 0 }, { theta: 0, phi: 0 }]);
+  for (let i = 0; i < 180 * (SKILLS.laugh.duration + 0.1); i++) world.step([{ skillTap: i === 0 }, { theta: 0, phi: 0 }]);
   assert.ok(world.players[1].stamina < 60, 'the laugh drained the opponent');
   assert.equal(world.players[0].skillActive, false, 'the laugh ends');
 
@@ -292,4 +292,32 @@ test('online matches never pause; Esc only opens the local menu', () => {
   assert.ok(session.world.time > time, 'the round keeps running');
   session.resume();
   assert.equal(session.menuOpen, false);
+});
+
+
+test('laugh empties full stamina within 0.5s, holds it for 2s, then permits recovery', () => {
+  for (const caster of [0, 1]) {
+    const world = new ArenaPhysics();
+    const loadouts = [basic('sword'), basic('sword')];
+    loadouts[caster] = { characterId: 'naiwa', weaponId: 'yellow-staff' };
+    world.reset(...loadouts, { arenaScale: MATCH_ARENA_SCALE });
+    const target = world.players[1 - caster];
+    for (let i = 0; i < 450; i++) {
+      const inputs = [{}, {}]; inputs[caster] = { skillTap: i === 0 };
+      world.step(inputs);
+      if (i >= 89) assert.equal(target.stamina, 0, `empty at step ${i}, caster ${caster}`);
+    }
+    for (let i = 0; i < 180; i++) world.step([{}, {}]);
+    assert.ok(target.stamina > 0, 'normal recovery resumes after suppression');
+  }
+});
+
+test('Happy Happy restores exactly 10 health and never exceeds maximum health', () => {
+  for (const initial of [50, 96]) {
+    const world = new ArenaPhysics();
+    world.reset({ characterId: 'happy-cat', weaponId: 'happy-paws' }, basic('sword'), { arenaScale: MATCH_ARENA_SCALE });
+    world.players[0].health = initial;
+    for (let i = 0; i < 360; i++) world.step([{ skillTap: i === 0 }, {}]);
+    assert.ok(Math.abs(world.players[0].health - Math.min(100, initial + 10)) < 1e-8);
+  }
 });

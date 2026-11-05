@@ -33,3 +33,9 @@ To reproduce the actual-game capture, start Vite on 127.0.0.1:5195, run `node to
 Current verification and source hashes are recorded in [verification.json](../assets/concepts/restored-animals-v01/verification.json). Asset hashes are checked against `ca12b8e`. Real exported ear skinning/paw vertices are compared against contact frames through extremes; instance disposal, complete input combinations, paid rotor, pause/reset, body facing, camera fitting, host/guest replication, packet size and AI are covered by tests. Browser evidence verifies the current picker and actual models. No new visual redesign or final human balance acceptance is claimed.
 
 Obsolete untracked tests that had reappeared from the old game were moved intact to `.local/restoration-2026-11-02/legacy-tests/`; tracked current tests remain and are updated where their old four-character/floating-only assumptions no longer apply. Other unrelated local source/assets and icon variants are preserved. Only the explicitly restored files and new integration files belong to this change.
+
+## GitHub update — 5 November 2026
+
+Merged `origin/feat/online-ai-arena` at `8d1ab77` into this local restoration branch. The incoming setup simplification, expanded PF font, renamed 外卖盒, stronger 奶蛙 laugh and 10-HP 开心小猫 heal are integrated with both restored animals. The setup skill card combines the incoming layout with the Beagle long-ear requirement and stamina label. The pre-update restoration is saved at local checkpoint `fde9161`, also named `backup/restored-animals-before-update-2026-11-05`.
+
+The combined version passes all 169 tests and the production build. Browser checks cover the six-character picker, updated skill cards, orange-cat controls, ordinary-weapon hover gating, Beagle F+D hover, pause and all three original animal GLBs. Validation logs are stored locally under `.local/update-2026-11-05/`.

@@ -7,7 +7,7 @@ export const WEAPON_CATALOG = Object.freeze([
   { id: 'yellow-staff', name: '奶木昆', english: 'YELLOW STAFF', role: '圆棍 · 撑地', available: true, characterId: 'naiwa', color: 0xf6cf45,
     description: '奶蛙的同色软胶圆棍。中等长度，挥击、撑地与格挡兼顾。',
     strength: '均衡顺手', weakness: '伤害中规中矩', reach: '中', response: '稳' },
-  { id: 'takeout-box', name: '美团外卖盒', english: 'TAKEOUT BOX', role: '盒子 · 重拍', available: true, characterId: 'dudu', color: 0xf5c518,
+  { id: 'takeout-box', name: '外卖盒', english: 'TAKEOUT BOX', role: '盒子 · 重拍', available: true, characterId: 'dudu', color: 0xf5c518,
     description: '胆子肥嘟嘟的专属保温外卖箱，直接整个抡起来拍，盒面宽大，拍中很疼。',
     strength: '盒面宽，容易命中和格挡', weakness: '短，需要贴近', reach: '短', response: '中' },
   { id: 'happy-paws', name: '开心猫爪', english: 'HAPPY PAW', role: '肉垫 · 拍击', available: true, characterId: 'happy-cat', color: 0xf29aa6,

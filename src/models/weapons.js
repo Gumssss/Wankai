@@ -142,10 +142,16 @@ function boxDecal() {
   c.fillStyle = '#30372e';
   c.beginPath(); c.arc(112, 104, 6, 0, Math.PI * 2); c.arc(144, 104, 6, 0, Math.PI * 2); c.fill();
   c.fillStyle = '#7c2f15'; c.beginPath(); c.ellipse(128, 124, 10, 8, 0, 0, Math.PI * 2); c.fill();
-  c.fillStyle = '#30372e'; c.font = 'bold 54px "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillStyle = '#30372e'; c.font = '54px "PF Hutu", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillText('外卖', 128, 212);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
+  // Canvas text needs repainting once the webfont finishes loading.
+  document.fonts.load('54px "PF Hutu"', '外卖').then(() => {
+    c.fillStyle = '#f5c518'; c.fillRect(0, 175, 256, 81);
+    c.fillStyle = '#30372e'; c.fillText('外卖', 128, 212);
+    texture.needsUpdate = true;
+  }).catch(() => {});
   return texture;
 }
 
