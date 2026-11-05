@@ -16,12 +16,12 @@ import { arenaPreview, loadArenaPreviews } from './models/arena-previews.js';
 // top and your fighter's card and the start button at the bottom. Online the
 // arena is the host's to pick (the guest sees it change as it happens). The
 // AI's fighter is drawn when play starts.
-function SkillCard({ characterId }) {
+function SkillCard({ characterId,weaponId }) {
   const skill = SKILLS[CHARACTERS[characterId]?.skill];
-  if (!skill) return null;
+  if (!skill||(characterId==='beagle'&&weaponId!=='long-ears')) return null;
   return <div className="skill-card">
     <SkillIcon id={skill.id} />
-    <div><b><kbd>F</kbd>{skill.name}<small>冷却 {skill.cooldown}s</small></b><p>{skill.description}</p></div>
+    <div><b><kbd>F</kbd>{skill.name}<small>{skill.id==='rotor'?'40 体力 · 16/秒':`冷却 ${skill.cooldown}s`}</small></b><p>{skill.description}</p></div>
   </div>;
 }
 
@@ -146,7 +146,7 @@ export function MatchSetup({ game, session, net, mode, leaving = false, close, s
         <span className="panel-tag">你{online && mine.ready ? ' · ✓ 已准备' : ''}</span>
         <h2>{characterName(mine.characterId)}</h2>
         <p>{mine.weaponId ? weaponName(mine.weaponId) : '选择一件武器'}</p>
-        <SkillCard characterId={mine.characterId} />
+        <SkillCard characterId={mine.characterId} weaponId={mine.weaponId} />
       </div>
       <footer className="setup-footer">
         {error ? <p className="setup-error" role="alert">{error}</p> : <span className="setup-hint" aria-live="polite">{hint}</span>}

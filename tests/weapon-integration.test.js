@@ -9,7 +9,7 @@ const selection=weaponId=>({characterId:WEAPON_CATALOG.find(w=>w.id===weaponId).
 
 
 test('every floating weapon visual tracks its physical axis continuously through overhead and support', () => {
-  for (const weapon of Object.keys(WEAPONS)) for (const phi of [-Math.PI, 0, 0.73, 3.8]) {
+  for (const weapon of Object.keys(WEAPONS).filter(w=>!['long-ears','cat-paws'].includes(w))) for (const phi of [-Math.PI, 0, 0.73, 3.8]) {
     const world = new ArenaPhysics();
     sandbox(world,selection(weapon));
     const p = world.players[0]; p.phi = phi;

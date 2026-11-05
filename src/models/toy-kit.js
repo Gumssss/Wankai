@@ -89,9 +89,10 @@ export function createKit() {
 export function disposeObject(root) {
   const geometries = new Set(), mats = new Set();
   root.traverse(object => {
+    if(object.isSkinnedMesh)object.skeleton?.dispose();
     if (object.geometry) geometries.add(object.geometry);
     for (const mat of Array.isArray(object.material) ? object.material : [object.material]) if (mat && mat !== OUTLINE) mats.add(mat);
   });
-  for (const geo of geometries) geo.dispose();
+  for (const geo of geometries) if(!geo.userData.shared)geo.dispose();
   for (const mat of mats) { for (const value of Object.values(mat)) if (value?.isTexture && !value.userData.shared) value.dispose(); mat.dispose(); }
 }

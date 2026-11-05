@@ -7,7 +7,7 @@ import { createAi, AI_DIFFICULTIES } from './ai-opponent.js';
 import { SKILLS } from './skills.js';
 
 // Floating words for skills, shown above the fighter like damage numbers.
-const SKILL_WORDS = { laugh: '哈哈哈哈!', twist: '绕后!', delivery: '你的胆子真的肥嘟嘟的!', happy: 'Happy Happy!' };
+const SKILL_WORDS = {rotor:'旋耳悬停', laugh: '哈哈哈哈!', twist: '绕后!', delivery: '你的胆子真的肥嘟嘟的!', happy: 'Happy Happy!' };
 
 // One local fighter per machine. The opponent is the AI or, online, the other
 // player. Online, the host simulates (authority) and the guest only displays
@@ -88,6 +88,7 @@ export class GameSession {
       pressed: [...this.keys],
       // Healing is continuous; the HUD shows whole points.
       health: this.world.players.map(player => Math.ceil(player.health)),
+      maxHealth:this.world.players.map(player=>player.maxHealth),
       stamina: this.world.players.map(player => player.stamina),
       skills: this.world.players.map(player => ({ id: player.skill, active: player.skillActive,
         time: Math.ceil(player.skillTime * 10) / 10, cooldown: Math.ceil(player.skillCooldown * 10) / 10 })),

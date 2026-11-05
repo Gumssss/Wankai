@@ -10,15 +10,16 @@ import { isArenaSkin } from './arena-skins.js';
 // The transport may drop or reorder plain snapshots and inputs (Steam sends
 // them unreliably); control messages, snapshots with events and skill taps
 // must arrive.
-export const PROTOCOL = 3;
+export const PROTOCOL = 4;
 const SNAPSHOT_INTERVAL = 1 / 60;
 const INPUT_HEARTBEAT = 1 / 30;
 const INTERPOLATION_DELAY = 0.05;
 const PING_INTERVAL = 1;
 const PLAYER_FIELDS = ['theta', 'phi', 'bodyYaw', 'hitFlash', 'staffGrounded', 'contactSpeed',
   'health', 'stamina', 'skillActive', 'skillTime', 'skillCooldown', 'wt', 'wp'];
+const ANIMAL_FIELDS=['earSpread','earSpreadRate','earLag','earLagRate'];
 const ANGLES = new Set(['phi', 'bodyYaw']);
-const LERPED = new Set(['theta', 'phi', 'bodyYaw', 'hitFlash', 'contactSpeed', 'stamina', 'skillTime', 'skillCooldown']);
+const LERPED = new Set(['theta', 'phi', 'bodyYaw', 'hitFlash', 'contactSpeed', 'stamina', 'skillTime', 'skillCooldown','earSpread','earLag']);
 // A teleport would otherwise be shown as a slide across the arena.
 const SNAP_DISTANCE = 1.5;
 
@@ -255,6 +256,10 @@ export class NetSession {
       players: world.players.map(p => {
         const out = { p: { ...p.p }, v: { ...p.v } };
         for (const field of PLAYER_FIELDS) out[field] = p[field];
+        // Only the rigged Beagle needs extra pose data. Compact/quantized
+        // visual angles preserve the unreliable packet budget; the host's
+        // simulation and contacts retain their full precision.
+        if(p.characterId==='beagle'&&p.weapon==='long-ears')out.ears=ANIMAL_FIELDS.map(f=>Math.round((p[f]||0)*1e5)/1e5);
         return out;
       }),
       projectiles: world.projectiles.map(({ id, owner, p, v, spin, radius }) => ({ id, owner, p: { ...p }, v: { ...v }, spin, radius })),
@@ -303,6 +308,10 @@ export class NetSession {
         else if (ANGLES.has(field)) player[field] = lerpAngle(from[field], to[field], k);
         else player[field] = from[field] + (to[field] - from[field]) * k;
       }
+      ANIMAL_FIELDS.forEach((field,index)=>{
+        const x=from.ears?.[index]??0,y=to.ears?.[index]??0;
+        player[field]=LERPED.has(field)?x+(y-x)*k:y;
+      });
     });
     // Projectiles: interpolate the ones present in both snapshots.
     if (Array.isArray(b.projectiles)) world.projectiles = b.projectiles.map(shot => {

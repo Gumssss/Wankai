@@ -1,6 +1,6 @@
 import { PerspectiveCamera, Vector3, MathUtils } from 'three';
 import { CHARACTERS } from './character-catalog.js';
-import { CONFIG, clamp, staffFrame, weaponStats, fighterHeading } from './physics.js';
+import { CONFIG, clamp, staffFrame, weaponStats, fighterHeading,isAnatomical,visualWeaponSegments } from './physics.js';
 
 // Third-person follow camera for the local fighter: a close, tilted rear view
 // that the mouse orbits freely. The look direction also steers the body.
@@ -153,6 +153,10 @@ function fitFighter(rig, player, dt, firstFrame) {
   const points = [];
   for (const x of [-0.5, 0.5]) for (const y of [-0.6, 1.65]) for (const z of [-0.5, 0.5]) {
     points.push({ x: player.p.x + x, y: player.p.y + y, z: player.p.z + z });
+  }
+  if(isAnatomical(player))for(const shape of visualWeaponSegments(player))for(const end of [shape.a,shape.b]){
+    const r=shape.radius+(player.weapon==='cat-paws'?.182:0);
+    for(const x of [-r,r])for(const y of [-r,r])for(const z of [-r,r])points.push({x:end.x+x,y:end.y+y,z:end.z+z});
   }
   for (const p of points) {
     const point = rig.framePoint.set(p.x, p.y, p.z)

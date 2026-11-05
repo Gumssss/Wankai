@@ -194,6 +194,7 @@ export const FLOATING_WEAPONS = Object.freeze(Object.keys(BUILDERS));
 
 export function buildWeapon(type, id = 0) {
   const builder = BUILDERS[type];
+  if (type==='long-ears'||type==='cat-paws') return {root:new THREE.Group(),kit:createKit(),flash(){}};
   if (!builder) throw new Error(`No floating weapon model: ${type}`);
   const kit = createKit(), root = new THREE.Group();
   root.name = `${type}-${id}`;

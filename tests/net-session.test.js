@@ -48,7 +48,7 @@ test('a version mismatch is refused with a reason, and the host keeps waiting', 
   assert.equal(versions.guest.phase, 'closed');
   assert.match(versions.guest.message, /版本不一致/);
   assert.equal(versions.host.phase, 'waiting', 'the host keeps its room open');
-  assert.equal(PROTOCOL, 3);
+  assert.equal(PROTOCOL, 4);
 });
 
 test('the handshake carries both Steam names, cleaned for display', () => {
@@ -239,4 +239,16 @@ test('a peer that drops mid-match closes the session with a reason', () => {
   assert.match(game.guest.message, /超时/);
   game.guest.send({ type: 'input', theta: 1, phi: 0 });
   assert.equal(game.net.queues[0].length, 0, 'a closed session sends nothing');
+});
+
+test('restored animal choices and rotor pose remain synchronized through the real host/guest protocol',()=>{
+ const game=pair();ready(game,{characterId:'beagle',weaponId:'long-ears'},{characterId:'orange-tabby',weaponId:'cat-paws'});
+ assert.ok(game.host.start());game.net.flush();game.tick(2.6);
+ game.hostSession.keyDown('KeyF');game.guestSession.keyDown('KeyS');game.tick(1.2);
+ const host=game.hostSession.world.players,guest=game.guestSession.world.players;
+ assert.equal(guest[0].maxHealth,80);assert.equal(guest[1].maxHealth,150);assert.equal(guest[0].skillActive,true);
+ assert.ok(guest[0].earSpread>.2);assert.ok(Math.abs(host[0].earSpread-guest[0].earSpread)<.3);
+ assert.ok(guest[0].stamina<200&&guest[1].stamina<200);
+ assert.equal(game.guestSession.loadouts[1].characterId,'orange-tabby');
+ game.tick(5);assert.equal(guest[0].skillActive,false);assert.ok(guest[0].earSpread<.01);
 });

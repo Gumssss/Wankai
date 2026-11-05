@@ -1,0 +1,44 @@
+[
+  {
+    "loadout": {
+      "characterId": "beagle",
+      "weaponId": "long-ears"
+    },
+    "target": {
+      "characterId": "stickman",
+      "weaponId": "polearm"
+    },
+    "distance": 1.6,
+    "input": {
+      "theta": -1
+    },
+    "otherInput": {
+      "theta": 0
+    },
+    "counts": {
+      "hit": 1,
+      "clash": 1
+    }
+  },
+  {
+    "loadout": {
+      "characterId": "orange-tabby",
+      "weaponId": "cat-paws"
+    },
+    "target": {
+      "characterId": "stickman",
+      "weaponId": "polearm"
+    },
+    "distance": 2.2,
+    "input": {
+      "theta": 1
+    },
+    "otherInput": {
+      "theta": 1
+    },
+    "counts": {
+      "hit": 1,
+      "clash": 1
+    }
+  }
+]

@@ -1,6 +1,10 @@
 // Contact data is in the fighter frame: the pivot sits bodyFloor above the
 // floor and the face looks along +X. bounds frame the visible model (the
 // imported ones measured, in their rest and skill poses) for the cameras.
+import {BEAGLE} from './beagle-profile.js';
+import {CAT} from './orange-tabby-profile.js';
+import {BEAGLE_COMPACT_BOUNDS} from './character-attachments.js';
+
 const shape=(a,b,radius)=>Object.freeze({a:Object.freeze(a),b:Object.freeze(b),radius});
 const bounds=(min,max)=>Object.freeze({min:Object.freeze(min),max:Object.freeze(max)});
 export const CHARACTER_CATALOG=Object.freeze([
@@ -26,6 +30,15 @@ export const CHARACTER_CATALOG=Object.freeze([
     bodyFloor:.59,bodyRadius:.42,
     bounds:bounds([-.36,0,-.88],[.36,1.9,.66]),
     hurtShapes:Object.freeze([shape([0,-.24,0],[0,.56,0],.33),shape([.02,.99,0],[.02,.99,0],.31)])}),
+  Object.freeze({id:'beagle',name:'比格犬',english:'BEAGLE',available:true,bodyFollowsView:true,skill:'rotor',maxHealth:80,
+    description:'回归的比格犬：长耳挥击与撑地，F 旋耳低空悬停；也能使用通用武器。',
+    bodyFloor:BEAGLE.bodyFloor,bodyRadius:BEAGLE.bodyRadius,bounds:BEAGLE_COMPACT_BOUNDS,
+    hurtShapes:Object.freeze([shape([0,-.32,0],[0,-.07,0],.27),shape([-.02,.57,0],[.08,.57,0],.55),...[-1,1].map(side=>shape([.16,-.13,side*.30],[.16,-.13,side*.30],.15))]),
+    weaponIds:Object.freeze(['long-ears','sword','polearm','hammer','axe','mace','pan'])}),
+  Object.freeze({id:'orange-tabby',name:'橘猫',english:'ORANGE TABBY',available:true,bodyFollowsView:false,skill:null,maxHealth:150,
+    description:'原版橘猫和成对巨爪：W/S 挥爪撑地，A/D 同时转向；保留 1.3× 猫爪与低空休息悬浮。',
+    bodyFloor:CAT.bodyFloor,bodyRadius:CAT.bodyRadius,bounds:CAT.bounds,hurtShapes:CAT.hurtShapes,
+    weaponIds:Object.freeze(['cat-paws'])}),
 ]);
 export const CHARACTERS=Object.freeze(Object.fromEntries(CHARACTER_CATALOG.map(c=>[c.id,c])));
 export const characterName=id=>CHARACTERS[id]?.name??'角色';

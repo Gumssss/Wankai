@@ -1,0 +1,1016 @@
+
+> wanba-arena@0.1.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: the AI only produces inputs a player could press
+ok 1 - the AI only produces inputs a player could press
+  ---
+  duration_ms: 508.076792
+  type: 'test'
+  ...
+# Subtest: the AI closes in around props and lands hits with every loadout
+ok 2 - the AI closes in around props and lands hits with every loadout
+  ---
+  duration_ms: 27976.712125
+  type: 'test'
+  ...
+# Subtest: the same seed replays the same match; another seed plays differently
+ok 3 - the same seed replays the same match; another seed plays differently
+  ---
+  duration_ms: 354.21125
+  type: 'test'
+  ...
+# Subtest: a tired AI rests until its stamina has refilled
+ok 4 - a tired AI rests until its stamina has refilled
+  ---
+  duration_ms: 33.32625
+  type: 'test'
+  ...
+# Subtest: harder levels react faster and aim truer; two AIs can fight a full round
+ok 5 - harder levels react faster and aim truer; two AIs can fight a full round
+  ---
+  duration_ms: 632.026
+  type: 'test'
+  ...
+# Subtest: the layout is point-symmetric, inside the rim, and leaves both start positions open
+ok 6 - the layout is point-symmetric, inside the rim, and leaves both start positions open
+  ---
+  duration_ms: 0.731667
+  type: 'test'
+  ...
+# Subtest: contact normals point out of pillars and walls with the right depth
+ok 7 - contact normals point out of pillars and walls with the right depth
+  ---
+  duration_ms: 0.164083
+  type: 'test'
+  ...
+# Subtest: bodies slide around props instead of passing through them
+ok 8 - bodies slide around props instead of passing through them
+  ---
+  duration_ms: 190.853209
+  type: 'test'
+  ...
+# Subtest: a weapon swung into a pillar is stopped by it, and levers the fighter away
+ok 9 - a weapon swung into a pillar is stopped by it, and levers the fighter away
+  ---
+  duration_ms: 165.307709
+  type: 'test'
+  ...
+# Subtest: every loadout stays finite, inside the rim and outside props under random play
+ok 10 - every loadout stays finite, inside the rim and outside props under random play
+  ---
+  duration_ms: 15186.519291
+  type: 'test'
+  ...
+# Subtest: a weapon coming down onto a wall or pillar rests on its top instead of wedging inside
+ok 11 - a weapon coming down onto a wall or pillar rests on its top instead of wedging inside
+  ---
+  duration_ms: 146.171709
+  type: 'test'
+  ...
+# Subtest: arena skins are frozen data with unique ids, names and swatches
+ok 12 - arena skins are frozen data with unique ids, names and swatches
+  ---
+  duration_ms: 1.19875
+  type: 'test'
+  ...
+# Subtest: revolved bands light treads from above and risers from the arena side
+ok 13 - revolved bands light treads from above and risers from the arena side
+  ---
+  duration_ms: 0.73825
+  type: 'test'
+  ...
+# Subtest: scenery randomness is deterministic and noise stays in range
+ok 14 - scenery randomness is deterministic and noise stays in range
+  ---
+  duration_ms: 2.021958
+  type: 'test'
+  ...
+# Subtest: scenery layout never accepts overlapping footprints or keep-out zones
+ok 15 - scenery layout never accepts overlapping footprints or keep-out zones
+  ---
+  duration_ms: 22.327167
+  type: 'test'
+  ...
+# Subtest: ground sampling brackets the terrain under a footprint and stones are unit sized
+ok 16 - ground sampling brackets the terrain under a footprint and stones are unit sized
+  ---
+  duration_ms: 2.73825
+  type: 'test'
+  ...
+# Subtest: horizon noise wraps seamlessly round the circle
+ok 17 - horizon noise wraps seamlessly round the circle
+  ---
+  duration_ms: 0.659
+  type: 'test'
+  ...
+# Subtest: mountain ranges rise from a buried, fully hazed foot to their ridgeline
+ok 18 - mountain ranges rise from a buried, fully hazed foot to their ridgeline
+  ---
+  duration_ms: 16.642
+  type: 'test'
+  ...
+# Subtest: mist rings fade out at their top and never write depth
+ok 19 - mist rings fade out at their top and never write depth
+  ---
+  duration_ms: 1.079667
+  type: 'test'
+  ...
+# Subtest: canopy groves are one coloured mesh, darker underneath than on top
+ok 20 - canopy groves are one coloured mesh, darker underneath than on top
+  ---
+  duration_ms: 3.240334
+  type: 'test'
+  ...
+# Subtest: painted ranges are one unlit mesh rising from a buried foot to each ridgeline
+ok 21 - painted ranges are one unlit mesh rising from a buried foot to each ridgeline
+  ---
+  duration_ms: 1.552667
+  type: 'test'
+  ...
+# Subtest: feathered mist is one transparent mesh, clear where each ring thins out
+ok 22 - feathered mist is one transparent mesh, clear where each ring thins out
+  ---
+  duration_ms: 0.792084
+  type: 'test'
+  ...
+# Subtest: the painted sky follows the camera and stays untone-mapped
+ok 23 - the painted sky follows the camera and stays untone-mapped
+  ---
+  duration_ms: 0.444125
+  type: 'test'
+  ...
+# Subtest: see-through patches a material to share the cut-out uniforms, colour pass only
+ok 24 - see-through patches a material to share the cut-out uniforms, colour pass only
+  ---
+  duration_ms: 1.086125
+  type: 'test'
+  ...
+# Subtest: see-through opens only while a fighter is hidden, ramping over about 0.15 s
+ok 25 - see-through opens only while a fighter is hidden, ramping over about 0.15 s
+  ---
+  duration_ms: 1.726792
+  type: 'test'
+  ...
+# Subtest: the courtyard boundary is a toy-block wall of many shapes, outside the ring and in budget
+ok 26 - the courtyard boundary is a toy-block wall of many shapes, outside the ring and in budget
+  ---
+  duration_ms: 138.724916
+  type: 'test'
+  ...
+# Subtest: GameAudio is inert but fully callable without an AudioContext (Node)
+ok 27 - GameAudio is inert but fully callable without an AudioContext (Node)
+  ---
+  duration_ms: 1.17525
+  type: 'test'
+  ...
+# Subtest: voice and music override slots are named as documented
+ok 28 - voice and music override slots are named as documented
+  ---
+  duration_ms: 0.105292
+  type: 'test'
+  ...
+# Subtest: arena themes play their file, else the battle music, and hold the current music while decoding
+ok 29 - arena themes play their file, else the battle music, and hold the current music while decoding
+  ---
+  duration_ms: 0.202542
+  type: 'test'
+  ...
+# Subtest: every shipped music file is credited, and every credit has a file
+ok 30 - every shipped music file is credited, and every credit has a file
+  ---
+  duration_ms: 0.48325
+  type: 'test'
+  ...
+# Subtest: the body turns toward the view yaw at a bounded rate along the shortest arc
+ok 31 - the body turns toward the view yaw at a bounded rate along the shortest arc
+  ---
+  duration_ms: 14.8505
+  type: 'test'
+  ...
+# Subtest: looking around never steers the weapon, and A/D never turns the body
+ok 32 - looking around never steers the weapon, and A/D never turns the body
+  ---
+  duration_ms: 16.285333
+  type: 'test'
+  ...
+# Subtest: every fighter faces its view, whatever weapon it holds
+ok 33 - every fighter faces its view, whatever weapon it holds
+  ---
+  duration_ms: 0.291584
+  type: 'test'
+  ...
+# Subtest: a weapon starts and floats in the same place and orientation on every character
+ok 34 - a weapon starts and floats in the same place and orientation on every character
+  ---
+  duration_ms: 1.241166
+  type: 'test'
+  ...
+# Subtest: hurt capsules rotate with the body while weapon capsules ignore it
+ok 35 - hurt capsules rotate with the body while weapon capsules ignore it
+  ---
+  duration_ms: 0.228459
+  type: 'test'
+  ...
+# Subtest: a body turning during a tick is still swept for contact
+ok 36 - a body turning during a tick is still swept for contact
+  ---
+  duration_ms: 109.390584
+  type: 'test'
+  ...
+# Subtest: coasting turning hits deal half the equivalent vertical damage for every floating weapon and heading
+ok 37 - coasting turning hits deal half the equivalent vertical damage for every floating weapon and heading
+  ---
+  duration_ms: 5.567875
+  type: 'test'
+  ...
+# Subtest: mixed hits blend the incoming motion and sideways turning cannot weaken an unrelated vertical contact
+ok 38 - mixed hits blend the incoming motion and sideways turning cannot weaken an unrelated vertical contact
+  ---
+  duration_ms: 0.241791
+  type: 'test'
+  ...
+# Subtest: body-driven impacts retain their damage and slow touches still cause no damage
+ok 39 - body-driven impacts retain their damage and slow touches still cause no damage
+  ---
+  duration_ms: 0.517125
+  type: 'test'
+  ...
+# Subtest: swing stamina lasts a long while, turning is cheaper, and simultaneous inputs add costs
+ok 40 - swing stamina lasts a long while, turning is cheaper, and simultaneous inputs add costs
+  ---
+  duration_ms: 683.018208
+  type: 'test'
+  ...
+# Subtest: stamina recovery observes the release delay, clamps at full, and is independent of step size
+ok 41 - stamina recovery observes the release delay, clamps at full, and is independent of step size
+  ---
+  duration_ms: 70.250792
+  type: 'test'
+  ...
+# Subtest: exhaustion weakens floating-weapon acceleration and turning while preserving coasting and reverse braking
+ok 42 - exhaustion weakens floating-weapon acceleration and turning while preserving coasting and reverse braking
+  ---
+  duration_ms: 104.360959
+  type: 'test'
+  ...
+# Subtest: an exhausted fighter can still move through ground support with every weapon
+ok 43 - an exhausted fighter can still move through ground support with every weapon
+  ---
+  duration_ms: 287.743375
+  type: 'test'
+  ...
+# Subtest: cancelling weapon keys costs nothing, and each fighter spends stamina independently
+ok 44 - cancelling weapon keys costs nothing, and each fighter spends stamina independently
+  ---
+  duration_ms: 19.9165
+  type: 'test'
+  ...
+# Subtest: countdown, pause, hit pause and result freeze stamina; rematches restore it
+ok 45 - countdown, pause, hit pause and result freeze stamina; rematches restore it
+  ---
+  duration_ms: 1.8875
+  type: 'test'
+  ...
+# Subtest: a strong weapon clash sends each fighter backward along their own facing while preserving lateral and vertical motion
+ok 46 - a strong weapon clash sends each fighter backward along their own facing while preserving lateral and vertical motion
+  ---
+  duration_ms: 0.922625
+  type: 'test'
+  ...
+# Subtest: resting and gentle weapon contact do not trigger repeated backward steps
+ok 47 - resting and gentle weapon contact do not trigger repeated backward steps
+  ---
+  duration_ms: 0.876084
+  type: 'test'
+  ...
+# Subtest: one sustained clash gives one recoil and another needs separation plus cooldown
+ok 48 - one sustained clash gives one recoil and another needs separation plus cooldown
+  ---
+  duration_ms: 0.234166
+  type: 'test'
+  ...
+# Subtest: clash recoil does not erase a fighter's already faster backward momentum
+ok 49 - clash recoil does not erase a fighter's already faster backward momentum
+  ---
+  duration_ms: 0.117292
+  type: 'test'
+  ...
+# Subtest: backward recoil remains inside the arena boundary with finite motion
+ok 50 - backward recoil remains inside the arena boundary with finite motion
+  ---
+  duration_ms: 12.503625
+  type: 'test'
+  ...
+# Subtest: rematching clears the clash cooldown and rearms recoil for the new round
+ok 51 - rematching clears the clash cooldown and rearms recoil for the new round
+  ---
+  duration_ms: 0.146666
+  type: 'test'
+  ...
+# Subtest: the shortened polearm cannot hit a head beyond its visible tip
+ok 52 - the shortened polearm cannot hit a head beyond its visible tip
+  ---
+  duration_ms: 1.240375
+  type: 'test'
+  ...
+# Subtest: the half-speed trial limits both axes while retaining responsive starts and reverse braking
+ok 53 - the half-speed trial limits both axes while retaining responsive starts and reverse braking
+  ---
+  duration_ms: 57.168
+  type: 'test'
+  ...
+# Subtest: a weapon crossing between two separated 180 Hz poses registers and deflects both fighters
+ok 54 - a weapon crossing between two separated 180 Hz poses registers and deflects both fighters
+  ---
+  duration_ms: 1.391333
+  type: 'test'
+  ...
+# Subtest: a nearby swept weapon miss stays a miss without a forgiving collision margin
+ok 55 - a nearby swept weapon miss stays a miss without a forgiving collision margin
+  ---
+  duration_ms: 1.40875
+  type: 'test'
+  ...
+# Subtest: a blade passing a body between separated poses still records one hit
+ok 56 - a blade passing a body between separated poses still records one hit
+  ---
+  duration_ms: 1.285459
+  type: 'test'
+  ...
+# Subtest: heading wrap does not sweep a weapon the long way around into an opponent behind it
+ok 57 - heading wrap does not sweep a weapon the long way around into an opponent behind it
+  ---
+  duration_ms: 0.369042
+  type: 'test'
+  ...
+# Subtest: measured sword guard and curved polearm tip can hit beyond their old thin shaft proxies
+ok 58 - measured sword guard and curved polearm tip can hit beyond their old thin shaft proxies
+  ---
+  duration_ms: 0.241541
+  type: 'test'
+  ...
+# Subtest: solid guard and curved-tip features also block beyond the old shaft-only contact
+ok 59 - solid guard and curved-tip features also block beyond the old shaft-only contact
+  ---
+  duration_ms: 0.204709
+  type: 'test'
+  ...
+# Subtest: all three weapons can still support movement through the lower-speed swing in either direction
+ok 60 - all three weapons can still support movement through the lower-speed swing in either direction
+  ---
+  duration_ms: 526.379333
+  type: 'test'
+  ...
+# Subtest: fast turns, mouse orbit, jumps and knockback keep the fighter inside the follow view
+ok 61 - fast turns, mouse orbit, jumps and knockback keep the fighter inside the follow view
+  ---
+  duration_ms: 64.718375
+  type: 'test'
+  ...
+# Subtest: the follow view sits close behind at a raised angle, while weapon turning leaves camera azimuth alone
+ok 62 - the follow view sits close behind at a raised angle, while weapon turning leaves camera azimuth alone
+  ---
+  duration_ms: 0.340709
+  type: 'test'
+  ...
+# Subtest: mouse look is gentle, turns the way the mouse moves, scales with sensitivity, ignores spikes, and resets on rematch
+ok 63 - mouse look is gentle, turns the way the mouse moves, scales with sensitivity, ignores spikes, and resets on rematch
+  ---
+  duration_ms: 1.373084
+  type: 'test'
+  ...
+# Subtest: a narrow resize makes room immediately and the camera eases back after the pane widens
+ok 64 - a narrow resize makes room immediately and the camera eases back after the pane widens
+  ---
+  duration_ms: 0.562042
+  type: 'test'
+  ...
+# Subtest: the rear view shows the far arena rim at the start in narrow and wide windows
+ok 65 - the rear view shows the far arena rim at the start in narrow and wide windows
+  ---
+  duration_ms: 0.352958
+  type: 'test'
+  ...
+# Subtest: the session advances fixed-step physics, pauses, and resumes
+ok 66 - the session advances fixed-step physics, pauses, and resumes
+  ---
+  duration_ms: 47.46
+  type: 'test'
+  ...
+# Subtest: only AI and online matches start, and rematches reset transient state
+ok 67 - only AI and online matches start, and rematches reset transient state
+  ---
+  duration_ms: 3.934375
+  type: 'test'
+  ...
+# Subtest: loadouts commit atomically for both fighters and survive rematch and return home
+ok 68 - loadouts commit atomically for both fighters and survive rematch and return home
+  ---
+  duration_ms: 0.434125
+  type: 'test'
+  ...
+# Subtest: catalogues expose every loadout and keep signature weapons exclusive
+ok 69 - catalogues expose every loadout and keep signature weapons exclusive
+  ---
+  duration_ms: 0.382042
+  type: 'test'
+  ...
+# Subtest: every pairing starts with separated weapons and clear of the props
+ok 70 - every pairing starts with separated weapons and clear of the props
+  ---
+  duration_ms: 78.481875
+  type: 'test'
+  ...
+# Subtest: WASD drives only the local fighter; opposite keys cancel; old keys are ignored
+ok 71 - WASD drives only the local fighter; opposite keys cancel; old keys are ignored
+  ---
+  duration_ms: 0.848584
+  type: 'test'
+  ...
+# Subtest: F starts the character skill on exactly one physics step, then the cooldown blocks it
+ok 72 - F starts the character skill on exactly one physics step, then the cooldown blocks it
+  ---
+  duration_ms: 13.343125
+  type: 'test'
+  ...
+# Subtest: skills: laugh drains the opponent, Happy Happy heals, twist lands behind, takeout flies and hits
+ok 73 - skills: laugh drains the opponent, Happy Happy heals, twist lands behind, takeout flies and hits
+  ---
+  duration_ms: 80.135791
+  type: 'test'
+  ...
+# Subtest: matches use the enlarged arena with its props, and the rim still holds
+ok 74 - matches use the enlarged arena with its props, and the rim still holds
+  ---
+  duration_ms: 1.207709
+  type: 'test'
+  ...
+# Subtest: W always swings toward the view, even with the weapon turned behind; the choice holds for the whole press
+ok 75 - W always swings toward the view, even with the weapon turned behind; the choice holds for the whole press
+  ---
+  duration_ms: 1.167375
+  type: 'test'
+  ...
+# Subtest: the camera yaw drives the local body; looking never steers the weapon
+ok 76 - the camera yaw drives the local body; looking never steers the weapon
+  ---
+  duration_ms: 17.370125
+  type: 'test'
+  ...
+# Subtest: the AI opponent is drawn at random every AI round, the player keeps their pick
+ok 77 - the AI opponent is drawn at random every AI round, the player keeps their pick
+  ---
+  duration_ms: 0.664292
+  type: 'test'
+  ...
+# Subtest: skills have long cooldowns and the thrown takeout box is big
+ok 78 - skills have long cooldowns and the thrown takeout box is big
+  ---
+  duration_ms: 0.132125
+  type: 'test'
+  ...
+# Subtest: the arena skin is a session choice that only accepts known skins
+ok 79 - the arena skin is a session choice that only accepts known skins
+  ---
+  duration_ms: 0.11025
+  type: 'test'
+  ...
+# Subtest: the AI drives the opponent during play only, at the chosen difficulty
+ok 80 - the AI drives the opponent during play only, at the chosen difficulty
+  ---
+  duration_ms: 78.854125
+  type: 'test'
+  ...
+# Subtest: the winner can move after victory while the defeated fighter stays frozen
+ok 81 - the winner can move after victory while the defeated fighter stays frozen
+  ---
+  duration_ms: 9.896583
+  type: 'test'
+  ...
+# Subtest: a defeated local player cannot press keys, and a draw freezes both fighters
+ok 82 - a defeated local player cannot press keys, and a draw freezes both fighters
+  ---
+  duration_ms: 0.294375
+  type: 'test'
+  ...
+# Subtest: online matches never pause; Esc only opens the local menu
+ok 83 - online matches never pause; Esc only opens the local menu
+  ---
+  duration_ms: 3.77175
+  type: 'test'
+  ...
+# Subtest: the local mode is chosen by flag or env and only for host / join
+ok 84 - the local mode is chosen by flag or env and only for host / join
+  ---
+  duration_ms: 0.524708
+  type: 'test'
+  ...
+# Subtest: the local service reports itself like a connected Steam client
+ok 85 - the local service reports itself like a connected Steam client
+  ---
+  duration_ms: 0.567583
+  type: 'test'
+  ...
+# Subtest: a joiner that starts first keeps trying, then both sides pair and exchange messages
+ok 86 - a joiner that starts first keeps trying, then both sides pair and exchange messages
+  ---
+  duration_ms: 1046.10675
+  type: 'test'
+  ...
+# Subtest: a second joiner is turned away while the room is full
+ok 87 - a second joiner is turned away while the room is full
+  ---
+  duration_ms: 13.909958
+  type: 'test'
+  ...
+# Subtest: cancelling a join stops the retries
+ok 88 - cancelling a join stops the retries
+  ---
+  duration_ms: 0.947791
+  type: 'test'
+  ...
+# Subtest: every body stays inside its catalogued silhouette, feet on the floor
+ok 89 - every body stays inside its catalogued silhouette, feet on the floor
+  ---
+  duration_ms: 37.558375
+  type: 'test'
+  ...
+# Subtest: every hurt shape centre sits inside the visible body, so what is hit is what you see
+ok 90 - every hurt shape centre sits inside the visible body, so what is hit is what you see
+  ---
+  duration_ms: 7.574708
+  type: 'test'
+  ...
+# Subtest: 奶蛙 rocks its head back and forth while laughing and eases back to rest
+ok 91 - 奶蛙 rocks its head back and forth while laughing and eases back to rest
+  ---
+  duration_ms: 233.651541
+  type: 'test'
+  ...
+# Subtest: 开心小猫 stands as tall as the other imported fighters and keeps its feet on the floor
+ok 92 - 开心小猫 stands as tall as the other imported fighters and keeps its feet on the floor
+  ---
+  duration_ms: 26.849291
+  type: 'test'
+  ...
+# Subtest: floating weapons run from the butt at the origin to their full contact length
+ok 93 - floating weapons run from the butt at the origin to their full contact length
+  ---
+  duration_ms: 34.382375
+  type: 'test'
+  ...
+# Subtest: each fighter owns its materials, and the hit flash fades back to the base colours
+ok 94 - each fighter owns its materials, and the hit flash fades back to the base colours
+  ---
+  duration_ms: 3.596667
+  type: 'test'
+  ...
+# Subtest: imported fighters own their materials too, and flash through emission
+ok 95 - imported fighters own their materials too, and flash through emission
+  ---
+  duration_ms: 2.589916
+  type: 'test'
+  ...
+# Subtest: 奶蛙 swaps to the laughing model while laughing and back afterwards, fading through both
+ok 96 - 奶蛙 swaps to the laughing model while laughing and back afterwards, fading through both
+  ---
+  duration_ms: 143.688584
+  type: 'test'
+  ...
+# Subtest: imported models fit the game budget
+ok 97 - imported models fit the game budget
+  ---
+  duration_ms: 0.5325
+  type: 'test'
+  ...
+# Subtest: handshake connects matching builds and assigns host red, guest blue
+ok 98 - handshake connects matching builds and assigns host red, guest blue
+  ---
+  duration_ms: 1.686917
+  type: 'test'
+  ...
+# Subtest: a version mismatch is refused with a reason, and the host keeps waiting
+ok 99 - a version mismatch is refused with a reason, and the host keeps waiting
+  ---
+  duration_ms: 0.455375
+  type: 'test'
+  ...
+# Subtest: the handshake carries both Steam names, cleaned for display
+ok 100 - the handshake carries both Steam names, cleaned for display
+  ---
+  duration_ms: 0.22325
+  type: 'test'
+  ...
+# Subtest: loadouts and ready flags sync; only the host starts, and only when both are ready
+ok 101 - loadouts and ready flags sync; only the host starts, and only when both are ready
+  ---
+  duration_ms: 0.74575
+  type: 'test'
+  ...
+# Subtest: the guest steers its fighter through the host, and sees the host world
+ok 102 - the guest steers its fighter through the host, and sees the host world
+  ---
+  duration_ms: 81.761959
+  type: 'test'
+  ...
+# Subtest: a guest skill tap is never lost, even if a newer input arrives first
+ok 103 - a guest skill tap is never lost, even if a newer input arrives first
+  ---
+  duration_ms: 16.882875
+  type: 'test'
+  ...
+# Subtest: remote input is bounded before it reaches the simulation
+ok 104 - remote input is bounded before it reaches the simulation
+  ---
+  duration_ms: 0.196333
+  type: 'test'
+  ...
+# Subtest: the host picks the arena; the guest follows it, also at the start of a round
+ok 105 - the host picks the arena; the guest follows it, also at the start of a round
+  ---
+  duration_ms: 0.348416
+  type: 'test'
+  ...
+# Subtest: thrown takeouts and skill cooldowns replicate; a teleport is shown as a jump, not a slide
+ok 106 - thrown takeouts and skill cooldowns replicate; a teleport is shown as a jump, not a slide
+  ---
+  duration_ms: 53.61375
+  type: 'test'
+  ...
+# Subtest: hits replay on the guest, rematch needs both players, and leaving closes both ends
+ok 107 - hits replay on the guest, rematch needs both players, and leaving closes both ends
+  ---
+  duration_ms: 7.296792
+  type: 'test'
+  ...
+# Subtest: reordered or lost snapshots never step the guest back, and their events still play
+ok 108 - reordered or lost snapshots never step the guest back, and their events still play
+  ---
+  duration_ms: 18.766958
+  type: 'test'
+  ...
+# Subtest: a plain snapshot fits in one unreliable Steam packet
+ok 109 - a plain snapshot fits in one unreliable Steam packet
+  ---
+  duration_ms: 13.995667
+  type: 'test'
+  ...
+# Subtest: a peer that drops mid-match closes the session with a reason
+ok 110 - a peer that drops mid-match closes the session with a reason
+  ---
+  duration_ms: 1.247333
+  type: 'test'
+  ...
+# Subtest: restored animal choices and rotor pose remain synchronized through the real host/guest protocol
+ok 111 - restored animal choices and rotor pose remain synchronized through the real host/guest protocol
+  ---
+  duration_ms: 1753.363833
+  type: 'test'
+  ...
+# Subtest: the dev-only local link never ships, on any platform
+ok 112 - the dev-only local link never ships, on any platform
+  ---
+  duration_ms: 0.668583
+  type: 'test'
+  ...
+# Subtest: steamworks.js native files are unpacked from the asar
+ok 113 - steamworks.js native files are unpacked from the asar
+  ---
+  duration_ms: 1.63475
+  type: 'test'
+  ...
+# Subtest: the icons exist and the .ico carries every size from 16 to 256 px
+ok 114 - the icons exist and the .ico carries every size from 16 to 256 px
+  ---
+  duration_ms: 0.864167
+  type: 'test'
+  ...
+# Subtest: 静止角色不会自主漂移或掉血
+ok 115 - 静止角色不会自主漂移或掉血
+  ---
+  duration_ms: 178.476791
+  type: 'test'
+  ...
+# Subtest: 棍子在整个角度范围始终保持固定长度
+ok 116 - 棍子在整个角度范围始终保持固定长度
+  ---
+  duration_ms: 0.908375
+  type: 'test'
+  ...
+# Subtest: 悬空棍子转过头顶和身体各方向都保留间隙
+ok 117 - 悬空棍子转过头顶和身体各方向都保留间隙
+  ---
+  duration_ms: 0.199666
+  type: 'test'
+  ...
+# Subtest: 身体与悬空棍子之间的空隙不会造成伤害或击退
+ok 118 - 身体与悬空棍子之间的空隙不会造成伤害或击退
+  ---
+  duration_ms: 0.3985
+  type: 'test'
+  ...
+# Subtest: 另一根棍子穿过悬空间隙不会触发格挡
+ok 119 - 另一根棍子穿过悬空间隙不会触发格挡
+  ---
+  duration_ms: 0.199459
+  type: 'test'
+  ...
+# Subtest: 悬空棍子的内端接触对手也能正常命中
+ok 120 - 悬空棍子的内端接触对手也能正常命中
+  ---
+  duration_ms: 0.2975
+  type: 'test'
+  ...
+# Subtest: 空中挥棍不会无接触推动主体
+ok 121 - 空中挥棍不会无接触推动主体
+  ---
+  duration_ms: 24.682208
+  type: 'test'
+  ...
+# Subtest: 松键保留惯性，阻尼持续减速
+ok 122 - 松键保留惯性，阻尼持续减速
+  ---
+  duration_ms: 10.352708
+  type: 'test'
+  ...
+# Subtest: 反向输入先刹车，然后反转
+ok 123 - 反向输入先刹车，然后反转
+  ---
+  duration_ms: 9.404083
+  type: 'test'
+  ...
+# Subtest: 双方从头顶可向前或向后挥，越过地面方向继续旋转
+ok 124 - 双方从头顶可向前或向后挥，越过地面方向继续旋转
+  ---
+  duration_ms: 135.321958
+  type: 'test'
+  ...
+# Subtest: 松手保留角速度，反向按键先刹车再反转
+ok 125 - 松手保留角速度，反向按键先刹车再反转
+  ---
+  duration_ms: 12.997625
+  type: 'test'
+  ...
+# Subtest: 自由摆动会越过 180 度、回摆并通过阻尼耗能
+ok 126 - 自由摆动会越过 180 度、回摆并通过阻尼耗能
+  ---
+  duration_ms: 228.671875
+  type: 'test'
+  ...
+# Subtest: 从头顶同时挥动和水平转向，两种输入都生效
+ok 127 - 从头顶同时挥动和水平转向，两种输入都生效
+  ---
+  duration_ms: 15.255459
+  type: 'test'
+  ...
+# Subtest: 向前或向后持续挥动都能撑地并越过向下姿态
+ok 128 - 向前或向后持续挥动都能撑地并越过向下姿态
+  ---
+  duration_ms: 25.546666
+  type: 'test'
+  ...
+# Subtest: 达到转速上限后不会持续获得加速度加成
+ok 129 - 达到转速上限后不会持续获得加速度加成
+  ---
+  duration_ms: 67.015125
+  type: 'test'
+  ...
+# Subtest: 撑地能抬起主体，并朝棍端落点移动
+ok 130 - 撑地能抬起主体，并朝棍端落点移动
+  ---
+  duration_ms: 23.57525
+  type: 'test'
+  ...
+# Subtest: 改变方位角会改变撑地的移动方向
+ok 131 - 改变方位角会改变撑地的移动方向
+  ---
+  duration_ms: 18.183583
+  type: 'test'
+  ...
+# Subtest: 轻触不伤血，速度与有效加速度增加伤害且有上限
+ok 132 - 轻触不伤血，速度与有效加速度增加伤害且有上限
+  ---
+  duration_ms: 0.242791
+  type: 'test'
+  ...
+# Subtest: 一次实际挥击扣血、产生反馈事件并击退对手
+ok 133 - 一次实际挥击扣血、产生反馈事件并击退对手
+  ---
+  duration_ms: 20.2575
+  type: 'test'
+  ...
+# Subtest: 持续贴住身体不会每帧重复伤害
+ok 134 - 持续贴住身体不会每帧重复伤害
+  ---
+  duration_ms: 22.000583
+  type: 'test'
+  ...
+# Subtest: 归零判胜、败者冻结、重开完整复位
+ok 135 - 归零判胜、败者冻结、重开完整复位
+  ---
+  duration_ms: 8.148083
+  type: 'test'
+  ...
+# Subtest: 武器交叉接触会改变双方转速
+ok 136 - 武器交叉接触会改变双方转速
+  ---
+  duration_ms: 0.289958
+  type: 'test'
+  ...
+# Subtest: 碰撞最近点计算支持相交、平行和退化线段
+ok 137 - 碰撞最近点计算支持相交、平行和退化线段
+  ---
+  duration_ms: 0.084167
+  type: 'test'
+  ...
+# Subtest: sword shortens reach and responds faster to the same swing input without adding locomotion
+ok 138 - sword shortens reach and responds faster to the same swing input without adding locomotion
+  ---
+  duration_ms: 2.040625
+  type: 'test'
+  ...
+# Subtest: sword cannot make a body contact that the longer polearm can reach
+ok 139 - sword cannot make a body contact that the longer polearm can reach
+  ---
+  duration_ms: 0.245583
+  type: 'test'
+  ...
+# Subtest: each fighter starts facing the opponent; weapon pitch and azimuth leave the body heading alone
+ok 140 - each fighter starts facing the opponent; weapon pitch and azimuth leave the body heading alone
+  ---
+  duration_ms: 0.082375
+  type: 'test'
+  ...
+# Subtest: both accepted animals extend the current roster without replacing happy cat
+ok 141 - both accepted animals extend the current roster without replacing happy cat
+  ---
+  duration_ms: 0.728667
+  type: 'test'
+  ...
+# Subtest: restored health, paw size and distal ear solids are retained
+ok 142 - restored health, paw size and distal ear solids are retained
+  ---
+  duration_ms: 1.020208
+  type: 'test'
+  ...
+# Subtest: real Beagle skinning follows each anchored contact frame through strokes and rotor spread
+ok 143 - real Beagle skinning follows each anchored contact frame through strokes and rotor spread
+  ---
+  duration_ms: 26.526833
+  type: 'test'
+  ...
+# Subtest: actual scaled Cat paw vertices match contacts through all pitch/yaw extremes
+ok 144 - actual scaled Cat paw vertices match contacts through all pitch/yaw extremes
+  ---
+  duration_ms: 7.288417
+  type: 'test'
+  ...
+# Subtest: instances own bones/materials, and disposing a preview cannot destroy another instance
+ok 145 - instances own bones/materials, and disposing a preview cannot destroy another instance
+  ---
+  duration_ms: 2.129584
+  type: 'test'
+  ...
+# Subtest: complete normal input matrix, release and reversal remain finite and physical
+ok 146 - complete normal input matrix, release and reversal remain finite and physical
+  ---
+  duration_ms: 1330.950833
+  type: 'test'
+  ...
+# Subtest: rotor spends stamina, does not retrigger/regen, expires, retracts and lands
+ok 147 - rotor spends stamina, does not retrigger/regen, expires, retracts and lands
+  ---
+  duration_ms: 560.637042
+  type: 'test'
+  ...
+# Subtest: anatomical steering turns body and attachments together while common weapons retain mouse-facing bodies
+ok 148 - anatomical steering turns body and attachments together while common weapons retain mouse-facing bodies
+  ---
+  duration_ms: 52.51525
+  type: 'test'
+  ...
+# Subtest: follow cameras fit both complete appendages, including cosmetic inner ears
+ok 149 - follow cameras fit both complete appendages, including cosmetic inner ears
+  ---
+  duration_ms: 4.074416
+  type: 'test'
+  ...
+# Subtest: session reset and pause preserve restored loadouts and clear skill state
+ok 150 - session reset and pause preserve restored loadouts and clear skill state
+  ---
+  duration_ms: 164.568166
+  type: 'test'
+  ...
+# Subtest: restored paired motors fatigue together and share one ordinary resource budget
+ok 151 - restored paired motors fatigue together and share one ordinary resource budget
+  ---
+  duration_ms: 19.351959
+  type: 'test'
+  ...
+# Subtest: per-frame traffic goes unreliable; control, events and skill taps stay reliable
+ok 152 - per-frame traffic goes unreliable; control, events and skill taps stay reliable
+  ---
+  duration_ms: 0.415875
+  type: 'test'
+  ...
+# Subtest: without Steam the link reports why instead of crashing, and retries later
+ok 153 - without Steam the link reports why instead of crashing, and retries later
+  ---
+  duration_ms: 0.415209
+  type: 'test'
+  ...
+# Subtest: quick match: the first player opens a tagged public lobby, the second joins it
+ok 154 - quick match: the first player opens a tagged public lobby, the second joins it
+  ---
+  duration_ms: 6.065584
+  type: 'test'
+  ...
+# Subtest: quick match ignores other games, other versions and invite lobbies on the shared test AppID
+ok 155 - quick match ignores other games, other versions and invite lobbies on the shared test AppID
+  ---
+  duration_ms: 1.34925
+  type: 'test'
+  ...
+# Subtest: two players who searched at once end up in the older lobby
+ok 156 - two players who searched at once end up in the older lobby
+  ---
+  duration_ms: 7.444791
+  type: 'test'
+  ...
+# Subtest: invite: a friends-only lobby opens the Steam invite dialog; the friend joins by its id
+ok 157 - invite: a friends-only lobby opens the Steam invite dialog; the friend joins by its id
+  ---
+  duration_ms: 2.32
+  type: 'test'
+  ...
+# Subtest: a guest that leaves frees the host lobby; a host that leaves ends the guest link
+ok 158 - a guest that leaves frees the host lobby; a host that leaves ends the guest link
+  ---
+  duration_ms: 3.504875
+  type: 'test'
+  ...
+# Subtest: a silent peer times out; the link keeps itself alive while traffic flows
+ok 159 - a silent peer times out; the link keeps itself alive while traffic flows
+  ---
+  duration_ms: 1.738292
+  type: 'test'
+  ...
+# Subtest: cancelling a search leaves no lobby behind; closing the window leaves the lobby
+ok 160 - cancelling a search leaves no lobby behind; closing the window leaves the lobby
+  ---
+  duration_ms: 8.999208
+  type: 'test'
+  ...
+# Subtest: every floating weapon visual tracks its physical axis continuously through overhead and support
+ok 161 - every floating weapon visual tracks its physical axis continuously through overhead and support
+  ---
+  duration_ms: 4.890875
+  type: 'test'
+  ...
+# Subtest: the same swing input has the same angular direction on either side of straight down
+ok 162 - the same swing input has the same angular direction on either side of straight down
+  ---
+  duration_ms: 114.753375
+  type: 'test'
+  ...
+# Subtest: off-axis contact positions and velocities agree with the rendered rotation
+ok 163 - off-axis contact positions and velocities agree with the rendered rotation
+  ---
+  duration_ms: 0.420083
+  type: 'test'
+  ...
+# Subtest: the broad iron head hits beyond the shaft and has stronger strikes; cloth and side gaps miss
+ok 164 - the broad iron head hits beyond the shaft and has stronger strikes; cloth and side gaps miss
+  ---
+  duration_ms: 1.044042
+  type: 'test'
+  ...
+# Subtest: outer head contacts can block a weapon and support the fighter before the shaft reaches the floor
+ok 165 - outer head contacts can block a weapon and support the fighter before the shaft reaches the floor
+  ---
+  duration_ms: 0.367042
+  type: 'test'
+  ...
+# Subtest: hammer is slower to start and reverse than the sword without producing movement in midair
+ok 166 - hammer is slower to start and reverse than the sword without producing movement in midair
+  ---
+  duration_ms: 3.783208
+  type: 'test'
+  ...
+# Subtest: all loadouts remain finite and within the arena under sustained mixed input
+ok 167 - all loadouts remain finite and within the arena under sustained mixed input
+  ---
+  duration_ms: 32784.83825
+  type: 'test'
+  ...
+1..167
+# tests 167
+# suites 0
+# pass 167
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 33188.235791

@@ -9,6 +9,8 @@ import { makePlayer, v3 } from '../physics.js';
 // menus, HUD and the 3D scene always agree. Rendered once per character,
 // player colour and crop, then cached as data URLs.
 const PORTRAIT_LOADOUT = {
+  beagle:{characterId:'beagle',weaponId:'sword'},
+  'orange-tabby':{characterId:'orange-tabby',weaponId:'cat-paws'},
   naiwa: { characterId: 'naiwa', weaponId: 'yellow-staff' },
   stickman: { characterId: 'stickman', weaponId: 'sword' },
   dudu: { characterId: 'dudu', weaponId: 'takeout-box' },
@@ -22,7 +24,7 @@ const CROPS = {
   full: { width: 208, height: 260, from: [4.2, 0.9, 2.6], margin: 1.08 },
 };
 // The imported characters carry their heads higher: lift the bust aim.
-const BUST_HEIGHT = { naiwa: 0.84, dudu: 0.84, 'happy-cat': 0.98 };
+const BUST_HEIGHT = { naiwa: 0.84, dudu: 0.84, 'happy-cat': 0.98, beagle:.62,'orange-tabby':.46 };
 const FOV = 26;
 
 // Distance along `direction` from the box centre at which every corner of
@@ -70,9 +72,11 @@ export function characterPortrait(characterId, playerId = 0, crop = 'bust') {
   const player = makePlayer(playerId, loadout);
   player.p = v3(0, 0, 0);
   player.phi = player.bodyYaw = 0;
-  player.theta = 0.55;
+  player.theta = characterId==='orange-tabby'?Math.PI/2:0.55;
   const character = buildCharacter(loadout, playerId);
   character.pose(player, 0.3);
+  // A character portrait shows the seated cat, not its separately chosen weapons.
+  if(characterId==='orange-tabby')for(const side of ['L','R'])character.instance?.controls[side].removeFromParent();
   scene.add(character.root);
   const aspect = settings.width / settings.height, camera = new THREE.PerspectiveCamera(FOV, aspect, 0.1, 50);
   const direction = new THREE.Vector3(...settings.from).normalize();

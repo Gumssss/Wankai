@@ -41,7 +41,7 @@ test('coasting turning hits deal half the equivalent vertical damage for every f
   // This fixture places a target beside a single floating shaft. The takeout
   // box and the cat paw are broad across the turning direction, so a sideways
   // strike meets them first at a different radius.
-  for (const weapon of Object.keys(WEAPONS).filter(id => id !== 'takeout-box' && id !== 'happy-paws')) for (const heading of [0, 0.7, Math.PI]) {
+  for (const weapon of Object.keys(WEAPONS).filter(id => !['takeout-box','happy-paws','long-ears','cat-paws'].includes(id))) for (const heading of [0, 0.7, Math.PI]) {
     const vertical = contact(weapon, 0, 8, heading).lastHit;
     const turning = contact(weapon, 1, 8, heading).lastHit;
     near(vertical.speed, 8); near(turning.speed, 8);
@@ -88,7 +88,7 @@ test('body-driven impacts retain their damage and slow touches still cause no da
 test('swing stamina lasts a long while, turning is cheaper, and simultaneous inputs add costs', () => {
   const { max, swingDrain, turnDrain } = STAMINA;
   assert.ok(max / swingDrain > 15, 'a full bar lasts over 15 s of swinging');
-  for (const weapon of Object.keys(WEAPONS)) {
+  for (const weapon of Object.keys(WEAPONS).filter(w=>!['long-ears','cat-paws'].includes(w))) {
     for (const [input, afterOneSecond] of [[{ theta: 1 }, max - swingDrain], [{ phi: -1 }, max - turnDrain], [{ theta: -1, phi: 1 }, max - swingDrain - turnDrain]]) {
       const world = solo(weapon);
       advance(world, 1, input);
@@ -122,7 +122,7 @@ test('stamina recovery observes the release delay, clamps at full, and is indepe
 });
 
 test('exhaustion weakens floating-weapon acceleration and turning while preserving coasting and reverse braking', () => {
-  for (const weapon of Object.keys(WEAPONS)) {
+  for (const weapon of Object.keys(WEAPONS).filter(w=>!['long-ears','cat-paws'].includes(w))) {
     const fresh = solo(weapon), tired = solo(weapon, 0);
     for (const world of [fresh, tired]) world.step([{ theta: 1, phi: 1 }]);
     near(tired.players[0].wt / fresh.players[0].wt, 0.4);

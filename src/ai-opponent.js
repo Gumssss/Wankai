@@ -56,7 +56,7 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
     const useful = skill.id === 'laugh' ? distance < reach * 1.8 && target.stamina > 70
       : skill.id === 'twist' ? distance > reach * 2.4 || now - memory.progressAt > 2
       : skill.id === 'delivery' ? distance > 3 && distance < 11 && Math.abs(wrap(fighterHeading(self) - bearing)) < 0.12
-      : skill.id === 'happy' ? self.health < 70 : false;
+      : skill.id === 'happy' ? self.health < 70 : skill.id==='rotor'?self.stamina>=80&&distance<reach*2:false;
     return useful && roll() < settings.skillChance;
   }
 

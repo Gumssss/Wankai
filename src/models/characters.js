@@ -4,6 +4,7 @@ import { SIDES, clamp, skillBlend } from './character-parts.js';
 import { naiwa } from './characters/naiwa.js';
 import { dudu } from './characters/dudu.js';
 import { happyCat } from './characters/happy-cat.js';
+import {buildAnimal} from './restored-animals.js';
 import { resolveLoadout } from '../loadouts.js';
 export { preloadCharacterModels, characterModelsReady } from './character-assets.js';
 
@@ -84,6 +85,7 @@ function stickman(kit, id) {
 
 export function buildCharacter(selection, id = 0) {
   const loadout = resolveLoadout(selection);
+  if (['beagle','orange-tabby'].includes(loadout.characterId)) return buildAnimal(loadout,id);
   const kit = createKit(), root = new THREE.Group(), host = new THREE.Group();
   host.position.y = -loadout.character.bodyFloor;
   root.add(host);

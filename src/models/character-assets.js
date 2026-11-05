@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {preloadAnimalModels,animalModelsReady} from './restored-animals.js';
 
 // The imported character models (tools/import-characters.py writes them to
 // public/models/characters/). Each GLB holds one textured mesh already in the
@@ -84,10 +85,10 @@ async function load(id) {
 
 // Fetch and decode every character model once; resolves when all are ready.
 export function preloadCharacterModels() {
-  loading ??= Promise.all(CHARACTER_MODELS.filter(id => !assets.has(id)).map(load)).catch(error => { loading = null; throw error; });
+  loading ??= Promise.all([...CHARACTER_MODELS.filter(id => !assets.has(id)).map(load),preloadAnimalModels()]).catch(error => { loading = null; throw error; });
   return loading;
 }
-export const characterModelsReady = () => CHARACTER_MODELS.every(id => assets.has(id));
+export const characterModelsReady = () => CHARACTER_MODELS.every(id => assets.has(id))&&animalModelsReady();
 
 // Synchronous, from disk, when running under Node without a DOM (tests, tools).
 function loadFromDisk(id) {

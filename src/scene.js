@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CONFIG, MATCH_ARENA_SCALE, weaponStats, staffFrame, fighterHeading, clamp, makePlayer, v3 } from './physics.js';
+import { CONFIG, MATCH_ARENA_SCALE, weaponStats, staffFrame, fighterHeading, clamp, makePlayer, v3,isAnatomical,weaponSegments } from './physics.js';
 import { CHARACTERS } from './character-catalog.js';
 import { setWeaponRotation } from './weapon-visuals.js';
 import { createFreeCameraRig, updateFreeCamera, updateVictoryCamera, updateShowcaseCamera, resetFreeCamera, orbitFreeCamera,
@@ -123,7 +123,7 @@ export class ArenaView {
     const cue = () => this.flatMesh(new THREE.RingGeometry(0.12, 0.155, 24), new THREE.MeshBasicMaterial({ color: 0xf5efd6, transparent: true, opacity: 0.75, depthWrite: false }));
     const contact = cue();
     contact.visible = false;
-    return { character, weapon, staff, marker, contact, trails: [this.makeTrail(weaponType)], weaponType };
+    return { character, weapon, staff, marker, contact, trails: Array.from({length:isAnatomical(makePlayer(id,loadout))?2:1},()=>this.makeTrail(weaponType)), weaponType };
   }
 
   resize(width, height) {
@@ -153,14 +153,16 @@ export class ArenaView {
     const { id, characterId, weaponId } = selection, character = CHARACTERS[characterId];
     if (!character) return;
     const full = weaponId ? resolveLoadout({ characterId, weaponId }) : null;
-    const loadout = full ?? { characterId, weaponId: character.weaponIds?.[0] ?? 'sword' };
+    const loadout = full ?? { characterId, weaponId:characterId==='beagle'?'sword':character.weaponIds?.[0]??'sword' };
     const root = new THREE.Group(), player = makePlayer(id, loadout);
     player.p = v3(0, character.bodyFloor, 0);
     player.phi = player.bodyYaw = 0;
-    player.theta = 0.82;
+    player.theta = characterId==='orange-tabby'?Math.PI/2:0.82;
+    if(characterId==='orange-tabby')player.p.y+=.35;
     const body = buildCharacter(loadout, id);
     body.root.position.set(player.p.x, player.p.y, player.p.z);
     root.add(body.root);
+    body.pose(player,this.time);
     if (full) {
       const holder = new THREE.Group();
       holder.position.copy(vec(staffFrame(player, 0).point));
@@ -236,11 +238,12 @@ export class ArenaView {
       model.marker.material.opacity = clamp(0.5 - (p.p.y - CONFIG.bodyFloor) * 0.09, 0.16, 0.5);
       const frame = staffFrame(p);
       model.contact.visible = !hidden && p.staffGrounded;
-      model.contact.position.set(frame.point.x, 0.023, frame.point.z);
+      const ground=isAnatomical(p)?weaponSegments(p).flatMap(s=>[s.a,s.b].map(q=>({...q,y:q.y-s.radius}))).sort((a,b)=>a.y-b.y)[0]:frame.point;
+      model.contact.position.set(ground.x, 0.023, ground.z);
       const strength = clamp((p.contactSpeed - 3) / 9, 0, 1);
-      for (const trail of model.trails) {
+      for (const [trailIndex,trail] of model.trails.entries()) {
         if (recordTrail) {
-          const near = staffFrame(p, weaponStats(p).length * 0.55).point, tip = staffFrame(p).point;
+          const near = staffFrame(p, weaponStats(p).length * 0.55,trailIndex?'R':'L').point, tip = staffFrame(p,weaponStats(p).length,trailIndex?'R':'L').point;
           trail.history.unshift([vec(near), vec(tip)]);
           if (trail.history.length > TRAIL_LENGTH) trail.history.pop();
         }

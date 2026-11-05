@@ -1,3 +1,7 @@
+# Restored animals — 2 November 2026
+
+See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB characters, paired anatomical contacts, Beagle resource skill, character-specific health, preview/portrait behavior and protocol-4 pose state. Earlier statements below about every weapon floating, every body following the view and all models being procedural apply to the original four-character implementation; Beagle long ears and orange-cat paws use the documented anatomical exceptions. Existing fighters retain their current behavior.
+
 # 架构与约定
 
 ## 坐标与角色框架
@@ -48,7 +52,7 @@
   - 邀请好友：建 FriendsOnly 大厅并 `overlay.activateInviteDialog`。接受邀请时 Steam 触发 `GameLobbyJoinRequested`，游戏未运行时 Steam 以 `+connect_lobby <id>` 启动；两种情况都转给窗口，打开联机面板加入。
 - 消息：每条一个 JSON 对象（≤ 64 KB），发往对方 Steam ID。不带事件的快照和不带技能点击的输入用 UnreliableNoDelay（超过 1150 字节自动改为可靠）；握手、准备、竞技场、开局、再战、ping、离开、带事件的快照和带 `skillTap` 的输入用 Reliable。链路每 2 秒发一个不转给页面的 `keepalive`，15 秒收不到对方任何包、对方离开大厅或 P2P 连接失败都报告 `disconnected`。主进程在玩家处于大厅时以 4 ms 间隔读包，Steam 回调由 steamworks.js 每 33 ms 处理。
 - 页面状态（`net:status`）：`connecting`、`searching`、`joining`、`waiting { mode }`、`connected { role, peer }`、`disconnected { message }`、`error { message }`。`online.js` 在 `connected` 时创建 `NetSession`（房主为 host），关窗或取消时离开大厅。
-- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 3）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
+- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 4）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
 - 主机（红方，id 0）运行物理；加入者（蓝方，id 1）只发送输入（变化即发 + 30 Hz 心跳），接收 60 Hz 快照（含技能冷却与投掷物），以约 50 ms 延迟插值显示；位移超过 1.5 的帧（瞬移）直接跳转。所有事件随快照转发用于音效、特效和伤害数字。
 - 竞技场由房主选择，通过 `arena` 消息和 `start` 消息同步给加入者。
 - 对局中 Esc 只打开本地菜单，不暂停；任一方离开或断线，另一方收到提示并回到主菜单。

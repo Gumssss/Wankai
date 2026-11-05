@@ -25,7 +25,7 @@ export const loadoutName=p=>`${characterName(p.characterId)} · ${weaponName(p.w
 // Every weapon, exclusive or common, floats beside the body under the same controller.
 export function resolveLoadout(value){
   const loadout=normalizeLoadout(value);
-  return {...loadout,character:CHARACTERS[loadout.characterId],weapon:weapons.get(loadout.weaponId),skill:skillFor(loadout.characterId)};
+  return {...loadout,character:CHARACTERS[loadout.characterId],weapon:weapons.get(loadout.weaponId),skill:loadout.characterId==='beagle'&&loadout.weaponId!=='long-ears'?null:skillFor(loadout.characterId)};
 }
 export const weaponsFor=characterId=>WEAPON_CATALOG.filter(w=>canEquip(characterId,w.id));
 export const PLAYABLE_LOADOUTS=Object.freeze(Object.values(CHARACTERS).filter(c=>c.available)

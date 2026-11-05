@@ -3,7 +3,7 @@ import { ArenaCanvas, LOOK_STATES, requestLook } from './ArenaCanvas.jsx';
 import { CONTROL_KEYS, GameSession } from './game-session.js';
 import { MatchSetup } from './MatchSetup.jsx';
 import { loadoutName } from './loadouts.js';
-import { CHARACTER_CATALOG, characterName } from './character-catalog.js';
+import { CHARACTER_CATALOG, CHARACTERS, characterName } from './character-catalog.js';
 import { CharacterPortrait, SkillIcon } from './selection-icons.jsx';
 import { STAMINA } from './physics.js';
 import { SKILLS } from './skills.js';
@@ -46,14 +46,15 @@ const clock = seconds => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:$
 function FighterCard({ id, tag, health, stamina, loadout, skill, side }) {
   const staminaState = stamina <= 1e-8 ? 'empty' : stamina < STAMINA.lowThreshold ? 'low' : 'ready';
   const staminaLabel = staminaState === 'empty' ? '力竭' : staminaState === 'low' ? '体力低' : '体力';
+  const maxHealth=CHARACTERS[loadout.characterId]?.maxHealth??100;
   const info = SKILLS[skill?.id];
   return <div className={`fighter-card ${side} player-${id}`}>
     <div className="fighter-avatar"><CharacterPortrait id={loadout.characterId} playerId={id} critical={health < 15} /></div>
     <div className="fighter-body">
       <div className="fighter-name"><span className="fighter-tag">{tag}</span><b>{characterName(loadout.characterId)}</b><strong>{health}</strong></div>
-      <div className="health-track" role="progressbar" aria-label={`${tag} 生命`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={health}>
-        <div className="health-ghost" style={{ transform: `scaleX(${health / 100})` }} />
-        <div className="health-fill" style={{ transform: `scaleX(${health / 100})` }} />
+      <div className="health-track" role="progressbar" aria-label={`${tag} 生命`} aria-valuemin={0} aria-valuemax={maxHealth} aria-valuenow={health}>
+        <div className="health-ghost" style={{ transform: `scaleX(${health / maxHealth})` }} />
+        <div className="health-fill" style={{ transform: `scaleX(${health / maxHealth})` }} />
       </div>
       <div className={`stamina-row stamina-${staminaState}`}>
         <span>{staminaLabel}</span>
@@ -73,7 +74,7 @@ function SkillWidget({ skill, pressed }) {
   const info = SKILLS[skill?.id];
   if (!info) return null;
   const state = skill.active ? 'active' : skill.cooldown > 0 ? 'cooling' : 'ready';
-  const progress = skill.active ? skill.time / info.duration : 1 - skill.cooldown / info.cooldown;
+  const progress = skill.active ? skill.time / info.duration : (info.cooldown?1 - skill.cooldown / info.cooldown:1);
   return <div className={`skill-widget ${state}${pressed ? ' pressed' : ''}`} style={{ '--progress': progress }} aria-label={`技能 ${info.name}`}>
     <div className="skill-ring"><SkillIcon id={info.id} />{state === 'cooling' && <b>{Math.ceil(skill.cooldown)}</b>}</div>
     <div className="skill-text">
@@ -141,11 +142,11 @@ function HelpContent({ close }) {
     <h2>武器才是主角</h2>
     <div className="guide-steps">
       <article><span>01</span><div><h3>撑地才走得动</h3><p>角色没有走路键。按住 W 让武器朝正面翻滚撑地，身体就会向前移动；S 朝背面翻滚，向后移动。A / D 转动武器的水平方向，也就决定了前进的方向。</p></div></article>
-      <article><span>02</span><div><h3>鼠标看哪，身体就朝哪</h3><p>点击画面锁定鼠标，左右移动鼠标转动视角，角色的身体和脸会转向视角方向。开心小猫的身体随猫爪转动。灵敏度和上下反转可在设置中调整。</p></div></article>
+      <article><span>02</span><div><h3>鼠标看哪，身体就朝哪</h3><p>点击画面锁定鼠标，左右移动鼠标转动视角，角色的身体和脸会转向视角方向。比格犬装备长耳时、橘猫装备巨爪时，身体随武器一起转向；两者仍可用鼠标独立看向其他方向。灵敏度和上下反转可在设置中调整。</p></div></article>
       <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>同样速度下，纯横转命中只有竖挥一半的伤害。武器之间可以格挡。场上的障碍会挡住身体，也能用武器撑着借力。</p></div></article>
-      <article><span>04</span><div><h3>F 发动角色技能</h3><p>{CHARACTER_CATALOG.map(c => `${c.name}：${SKILLS[c.skill].name}`).join('；')}。技能发动后进入冷却，右下角显示剩余时间。</p></div></article>
+      <article><span>04</span><div><h3>F 发动角色技能</h3><p>{CHARACTER_CATALOG.map(c => `${c.name}：${SKILLS[c.skill]?.name??'无额外技能'}`).join('；')}。比格犬仅在装备长耳时可旋耳，消耗体力并在 5 秒内结束；其他角色技能使用原有冷却，橘猫无额外 F 技能。</p></div></article>
     </div>
-    <div className="guide-note"><b>100 生命 · 200 体力 · 先归零者输</b><span>挥动和转动消耗体力，停手半秒后恢复；体力低时动作变慢。AI 对战中 AI 的角色与武器每局随机。联机通过 Steam：快速匹配或邀请好友，需要 Steam 在运行并已登录。</span></div>
+    <div className="guide-note"><b>比格犬 80 / 橘猫 150 / 其他 100 生命 · 200 体力</b><span>挥动和转动消耗体力，停手半秒后恢复；体力低时动作变慢。AI 对战中 AI 的角色与武器每局随机。联机通过 Steam：快速匹配或邀请好友，需要 Steam 在运行并已登录。</span></div>
     <button className="primary-button" onClick={close}>明白了，抡起来 <span>→</span></button>
   </>;
 }

@@ -1,0 +1,23 @@
+[
+  {
+    "source": "actual-gameplay.mp4",
+    "start": 27.439400000035764,
+    "sourceDuration": 1.1,
+    "playbackSpeed": 0.25,
+    "label": "SAME EVENT / CAT FLOOR SUPPORT / 0.25x"
+  },
+  {
+    "source": "actual-gameplay.mp4",
+    "start": 53.30240000009537,
+    "sourceDuration": 1.1,
+    "playbackSpeed": 0.25,
+    "label": "SAME EVENT / ROTOR EXPIRY / 0.25x"
+  },
+  {
+    "source": "actual-gameplay.mp4",
+    "start": 56.57950000011921,
+    "sourceDuration": 1.1,
+    "playbackSpeed": 0.25,
+    "label": "SAME EVENT / WEAPON CONTACT / 0.25x"
+  }
+]

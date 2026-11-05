@@ -65,7 +65,7 @@ test('loadouts commit atomically for both fighters and survive rematch and retur
 
 test('catalogues expose every loadout and keep signature weapons exclusive', () => {
   // 奶蛙, 胆子肥嘟嘟 and 开心小猫: signature + 6 common weapons; 火柴人: 6 common.
-  assert.equal(PLAYABLE_LOADOUTS.length, 7 + 6 + 7 + 7);
+  assert.equal(PLAYABLE_LOADOUTS.length, 7 + 6 + 7 + 7 + 7 + 1);
   assert.equal(canEquip('stickman', 'takeout-box'), false);
   assert.equal(canEquip('dudu', 'takeout-box'), true);
   assert.equal(canEquip('naiwa', 'yellow-staff'), true);
@@ -73,11 +73,11 @@ test('catalogues expose every loadout and keep signature weapons exclusive', () 
   assert.equal(canEquip('happy-cat', 'sword'), true);
   assert.equal(canEquip('naiwa', 'happy-paws'), false);
   for (const c of ['stickman', 'dudu', 'naiwa', 'happy-cat']) for (const w of ['sword', 'polearm', 'hammer', 'axe', 'mace', 'pan']) assert.equal(canEquip(c, w), true);
-  for (const removed of [{ characterId: 'beagle', weaponId: 'long-ears' }, { characterId: 'yellow-blob', weaponId: 'yellow-staff' }])
+  for (const removed of [{ characterId: 'yellow-blob', weaponId: 'yellow-staff' }])
     assert.throws(() => normalizeLoadout(removed));
   assert.equal(canEquip('happy-cat', 'happy-paws'), true);
   assert.equal(resolveLoadout({ characterId: 'happy-cat', weaponId: 'happy-paws' }).weapon.characterId, 'happy-cat');
-  for (const character of CHARACTER_CATALOG) assert.ok(SKILLS[character.skill], `${character.name} has a skill`);
+  for (const character of CHARACTER_CATALOG) if(character.id==='orange-tabby')assert.equal(character.skill,null);else assert.ok(SKILLS[character.skill], `${character.name} has a skill`);
   assert.equal(resolveLoadout(dudu('sword')).skill.id, 'delivery');
 });
 
@@ -215,7 +215,7 @@ test('the AI opponent is drawn at random every AI round, the player keeps their 
 });
 
 test('skills have long cooldowns and the thrown takeout box is big', () => {
-  for (const skill of Object.values(SKILLS)) assert.ok(skill.cooldown >= 20, `${skill.name} cooldown ${skill.cooldown}`);
+  for (const skill of Object.values(SKILLS).filter(s=>s.id!=='rotor')) assert.ok(skill.cooldown >= 20, `${skill.name} cooldown ${skill.cooldown}`);
   assert.ok(SKILLS.delivery.radius >= 0.5);
 });
 

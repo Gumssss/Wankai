@@ -1,6 +1,6 @@
 # 木昆竞技场
 
-一款用武器「撑地走路」的 3D 物理对战小游戏：角色没有走路键，只能挥动武器、触地借力来移动和攻击，每个角色还有一个 F 技能。React + react-three-fiber + Electron；所有角色、武器和竞技场都在代码里用 Three.js 程序化建模：奶蛙、胆子肥嘟嘟、开心小猫按项目根目录的参考图用有符号距离场雕塑（`src/models/sculpt.js`），火柴人按动画画风做成平涂描边。
+一款用武器「撑地走路」的 3D 物理对战小游戏：角色没有走路键，只能挥动武器、触地借力来移动和攻击，角色可有 F 技能。React + react-three-fiber + Electron；现有角色与竞技场保留当前版本的建模方式；比格犬和橘猫恢复原先经 Tripo/Blender 制作的 GLB、骨架与接触数据。其余角色：奶蛙、胆子肥嘟嘟、开心小猫按项目根目录的参考图用有符号距离场雕塑（`src/models/sculpt.js`），火柴人按动画画风做成平涂描边。
 
 ## 运行
 
@@ -104,6 +104,8 @@ npm run dist:mac   # release/ 下生成 arm64 与 x64 的 .dmg 和 .zip
 | 火柴人 | 通用武器 | **绕后**：烟雾中瞬移到对手身后并转身面对对手。冷却 28 秒 |
 | 胆子肥嘟嘟 | 美团外卖盒（专属，无柄）+ 通用武器 | **外卖投掷**：向面前扔出一整个大外卖箱，命中 14 伤害并击退。冷却 22 秒 |
 | 开心小猫 | 开心猫爪（专属）+ 通用武器 | **Happy Happy**：蹦跳 1.6 秒，共恢复 22 生命。冷却 40 秒 |
+| 比格犬 | 长耳（专属）+ 通用武器 | 长耳限定 **旋耳悬停**：至少 40 体力，最多 5 秒，每秒消耗 16；通用武器使用正常短耳外观 |
+| 橘猫 | 成对猫爪（专属，保留 1.3× 尺寸） | 无额外 F 技能；W/S 挥爪撑地，A/D 连同身体转向 |
 
 通用近战武器：短剑、长柄刀（偃月刀）、铁战锤、战斧、狼牙棒、平底锅。挥动残影使用武器自身的颜色。
 
@@ -113,7 +115,7 @@ npm run dist:mac   # release/ 下生成 arm64 与 x64 的 .dmg 和 .zip
 
 ## 规则要点
 
-- 100 生命，先归零者负。竖挥命中按碰撞速度与发力计伤；纯横转命中伤害减半。
+- 比格犬 80、橘猫 150、其他角色 100 生命，先归零者负。竖挥命中按碰撞速度与发力计伤；纯横转命中伤害减半。
 - 200 体力：挥动 12/秒，转动 5/秒，停手 0.5 秒后每秒恢复 60；体力低时动作变慢。
 - 武器之间可以格挡，有力相撞双方沿各自武器朝向反方向后退。
 - 场上 4 根柱子和 4 段矮墙挡住身体，也能被武器击打、借力撑开；挡住视线时自动变淡。
@@ -149,3 +151,7 @@ docs/ARCHITECTURE.md    架构与约定
 ## 版权说明
 
 奶蛙、胆子肥嘟嘟、开心小猫来自网络梗与商业形象，火柴人仿照《氰化欢乐秀》的画风；本项目仅作非商业原型。字体「PF频凡胡涂体」的授权见 `assets/fonts/`。
+
+## 2 November 2026 — Beagle / orange-cat restoration
+
+The current roster includes both accepted animals again, alongside all four existing characters: 35 valid loadouts. Original Tripo exports and paired attachment frames are reused. [Current implementation, motion evidence and verification](docs/RESTORED_ANIMALS.md). This local restoration does not merge the earlier combat trial or change the other fighters’ resource/motor rules. Network protocol 4 adds compact Beagle ear pose data; both peers need this build.

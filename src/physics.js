@@ -2,7 +2,12 @@
 // Contact impulses use the staff Jacobian: rotation and translation respond
 // together. No locomotion force is added by the input controller.
 import {CHARACTERS} from './character-catalog.js';
-import {normalizeLoadout} from './loadouts.js';
+import {BEAGLE} from './beagle-profile.js';
+import {CAT} from './orange-tabby-profile.js';
+import {BEAGLE_COMMON_OFFSETS} from './character-attachments.js';
+import {BEAGLE_SKILL,beaglePointFrame,updateBeagleSkill,applyBeagleHover} from './beagle-skill.js';
+import {ROTOR_RESOURCE,staminaPower as animalPower} from './animal-settings.js';
+import {normalizeLoadout,resolveLoadout} from './loadouts.js';
 import { obstacleContact } from './arena-obstacles.js';
 import { SKILLS, skillFor } from './skills.js';
 import { ARENA_PROFILE, arenaPlacement } from './arena-profile.js';
@@ -64,6 +69,8 @@ const weapon = ({ colliders, ...stats }) => Object.freeze({ ...stats, radius: co
 // from the body pivot) to the tip, +X is the leading side of a W swing. The
 // models in models/weapons.js are built on exactly these capsules.
 export const WEAPONS = Object.freeze({
+  'long-ears':BEAGLE,
+  'cat-paws':CAT.weapon,
   'yellow-staff': weapon({ length: 1.8, offset: 1.25, inertia: 3.5, motorAcceleration: 28, brakeAcceleration: 36, maxAngularSpeed: 5,
     colliders: [capsule([0, .115, 0], [0, 1.685, 0], .115)] }),
   'takeout-box': weapon({ length: 0.85, offset: 1.5, inertia: 4.4, motorAcceleration: 24, brakeAcceleration: 30, maxAngularSpeed: 4.4,
@@ -99,7 +106,11 @@ export const WEAPONS = Object.freeze({
 });
 
 export const characterStats=player=>CHARACTERS[player.characterId] || CHARACTERS.stickman;
-export const weaponStats=player=>WEAPONS[player.weapon] || WEAPONS.polearm;
+const beagleCommon=Object.fromEntries(['sword','polearm','hammer','axe','mace','pan'].map(id=>[id,Object.freeze({...WEAPONS[id],offset:BEAGLE_COMMON_OFFSETS[id]??Math.max(1.6,WEAPONS[id].offset)})]));
+export const isEarLoadout=p=>p.characterId==='beagle'&&p.weapon==='long-ears';
+export const isPawLoadout=p=>p.characterId==='orange-tabby'&&p.weapon==='cat-paws';
+export const isAnatomical=p=>isEarLoadout(p)||isPawLoadout(p);
+export const weaponStats=p=>(p.characterId==='beagle'&&beagleCommon[p.weapon])||WEAPONS[p.weapon]||WEAPONS.polearm;
 
 export const v3 = (x = 0, y = 0, z = 0) => ({ x, y, z });
 const add = (a, b) => v3(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -112,7 +123,7 @@ const unit = (a, fallback = v3(1, 0, 0)) => length(a) > 1e-8 ? mul(a, 1 / length
 const invMass = 1 / CONFIG.mass;
 
 // A bare weapon id picks its natural character; tests and tools use the shorthand.
-const NATURAL_CHARACTER = { 'yellow-staff': 'naiwa', 'takeout-box': 'dudu', 'happy-paws': 'happy-cat' };
+const NATURAL_CHARACTER = {'long-ears':'beagle','cat-paws':'orange-tabby', 'yellow-staff': 'naiwa', 'takeout-box': 'dudu', 'happy-paws': 'happy-cat' };
 const asLoadout = value => typeof value === 'string'
   ? { characterId: NATURAL_CHARACTER[value] || 'stickman', weaponId: value } : value;
 
@@ -123,11 +134,11 @@ export function makePlayer(id, selection = 'polearm') {
     id,
     characterId,
     weapon,
-    p: v3(id === 0 ? -2.2 : 2.2, CONFIG.bodyFloor, 0),
+    p: v3(id === 0 ? -2.2 : 2.2, CHARACTERS[characterId].bodyFloor+(weapon==='cat-paws'?CAT.hoverHeight:0), 0),
     v: v3(),
     // The long polearm starts raised so two fighters can face each other
     // without their weapons overlapping before either player acts.
-    theta: weapon === 'sword' ? Math.PI / 2 : 0.4,
+    theta: WEAPONS[weapon]?.initialTheta??(weapon === 'sword' ? Math.PI / 2 : 0.4),
     polarInput: 0,
     phi,
     // Body/face yaw, steered toward the player's view.
@@ -135,10 +146,13 @@ export function makePlayer(id, selection = 'polearm') {
     wt: 0,
     wp: 0,
     // F skill: skillTime counts down the active effect, skillCooldown the wait.
-    skill: skillFor(characterId)?.id ?? null, skillActive: false, skillTime: 0, skillCooldown: 0,
+    skill:resolveLoadout({characterId,weaponId:weapon}).skill?.id??null, skillActive: false, skillTime: 0, skillCooldown: 0,
     driveT: 0,
     driveP: 0,
-    health: CONFIG.maxHealth,
+    maxHealth:CHARACTERS[characterId].maxHealth??CONFIG.maxHealth,
+    health:CHARACTERS[characterId].maxHealth??CONFIG.maxHealth,
+    bodyPitch:0,bodyRate:0,earSpread:0,earSpreadRate:0,earLag:0,earLagRate:0,
+    skillRemaining:0,skillRequested:false,skillWasHeld:false,skillStepTime:0,skillBusy:false,
     stamina: STAMINA.max,
     staminaRestTime: 0,
     grounded: true,
@@ -149,7 +163,7 @@ export function makePlayer(id, selection = 'polearm') {
   };
 }
 
-export const bodyFollowsView = player => !!characterStats(player).bodyFollowsView;
+export const bodyFollowsView = player => !isAnatomical(player)&&!!characterStats(player).bodyFollowsView;
 export const fighterHeading = player => bodyFollowsView(player) ? player.bodyYaw : player.phi;
 
 // Step the body toward the view yaw along the shortest arc.
@@ -172,13 +186,23 @@ function recoilFromClash(player, speed) {
 
 // distance is measured along the solid staff, from its floating inner end.
 // The invisible constraint still transmits contact impulses to the body pivot.
-export function staffFrame(player, distance = weaponStats(player).length) {
+export function staffFrame(player, distance = weaponStats(player).length,side='L') {
+  if(isEarLoadout(player))return weaponPointFrame(player,v3(0,distance,0),BEAGLE.anchors[side]);
+  if(isPawLoadout(player))return weaponPointFrame(player,v3(-.9,distance*.65,side==='L'?-1.8:1.8));
   return weaponPointFrame(player, v3(0, distance, 0));
 }
 
 // The broad hammer head needs off-axis contacts. These derivatives use the
 // same yaw × pitch rotation as the visible model, including at either pole.
-export function weaponPointFrame(player, local) {
+export function weaponPointFrame(player, local,anchor) {
+  if(isEarLoadout(player))return beaglePointFrame(player,local,anchor??[0,(BEAGLE.anchors.L[1]+BEAGLE.anchors.R[1])/2,0]);
+  if(isPawLoadout(player)){
+    const st=Math.sin(player.theta),ct=Math.cos(player.theta),sp=Math.sin(player.phi),cp=Math.cos(player.phi);
+    const x=local.x*ct+local.y*st,z=local.z;
+    const r=v3(x*cp-z*sp,-CAT.bodyFloor-local.x*st+local.y*ct,x*sp+z*cp);
+    const dx=-local.x*st+local.y*ct,jt=v3(dx*cp,-local.x*ct-local.y*st,dx*sp),jp=v3(-r.z,0,r.x);
+    return {r,jt,jp,point:add(player.p,r),velocity:add(player.v,add(mul(jt,player.wt),mul(jp,player.wp)))};
+  }
   const y = weaponStats(player).offset + local.y;
   const st = Math.sin(player.theta), ct = Math.cos(player.theta);
   const sp = Math.sin(player.phi), cp = Math.cos(player.phi);
@@ -194,18 +218,21 @@ export function weaponPointFrame(player, local) {
   };
 }
 
-export function weaponSegments(player) {
+function transformedWeaponSegments(player,visual=false) {
   const weapon = weaponStats(player);
-  const colliders = weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
+  const colliders = (visual?weapon.visualColliders:null)||weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
   return colliders.map(collider => {
     const localA = v3(...collider.a), localB = v3(...collider.b);
     return { ...collider, localA, localB,
-      a: weaponPointFrame(player, localA).point, b: weaponPointFrame(player, localB).point };
+      a: weaponPointFrame(player, localA,collider.anchor).point, b: weaponPointFrame(player, localB,collider.anchor).point };
   });
 }
 
+export const weaponSegments=p=>transformedWeaponSegments(p);
+export const visualWeaponSegments=p=>transformedWeaponSegments(p,true);
+
 const segmentFrame = (player, segment, fraction) => weaponPointFrame(player,
-  add(segment.localA, mul(sub(segment.localB, segment.localA), fraction)));
+  add(segment.localA, mul(sub(segment.localB, segment.localA), fraction)),segment.anchor);
 
 export function bodyRadius(player) { return characterStats(player).bodyRadius; }
 
@@ -225,8 +252,8 @@ export function hurtSegments(player) {
 function surfacePoints(player) {
   if (!weaponStats(player).colliders) return [{ local: v3(0, weaponStats(player).length, 0), radius: weaponStats(player).radius }];
   return weaponSegments(player).flatMap(segment => [
-    { local: segment.localA, radius: segment.radius },
-    { local: segment.localB, radius: segment.radius },
+    { local: segment.localA, radius: segment.radius,anchor:segment.anchor },
+    { local: segment.localB, radius: segment.radius,anchor:segment.anchor },
   ]);
 }
 
@@ -240,13 +267,13 @@ function obstaclePoints(player) {
     const a = v3(...collider.a), b = v3(...collider.b), span = length(sub(b, a));
     const count = Math.max(1, Math.ceil(span / 0.2));
     return Array.from({ length: count + 1 }, (_, index) =>
-      ({ local: add(a, mul(sub(b, a), index / count)), radius: collider.radius }));
+      ({ local: add(a, mul(sub(b, a), index / count)), radius: collider.radius,anchor:collider.anchor }));
   });
 }
 
 function phiInertia(p) {
   const weapon = weaponStats(p);
-  return weapon.inertia * Math.max(0.15, Math.sin(p.theta) ** 2);
+  return weapon.inertia * Math.max(0.15, Math.sin(p.theta) ** 2)+(weapon.yawAnchorInertia||0);
 }
 
 function effectiveMass(p, frame, n) {
@@ -263,8 +290,9 @@ export const staminaPower = stamina => STAMINA.minPower + (1 - STAMINA.minPower)
   clamp(stamina / STAMINA.lowThreshold, 0, 1);
 
 function updateStamina(p, turnInput, dt) {
-  const cost = Math.abs(p.polarInput) * STAMINA.swingDrain + Math.abs(turnInput) * STAMINA.turnDrain;
-  if (cost > 0) {
+  const active=isEarLoadout(p)?p.skillStepTime||0:0;
+  const cost=(Math.abs(p.polarInput)*STAMINA.swingDrain+Math.abs(turnInput)*STAMINA.turnDrain)*(1-active/dt)+active/dt*ROTOR_RESOURCE.drain;
+  if (cost > 0 || p.skillBusy) {
     p.stamina = Math.max(0, p.stamina - cost * dt);
     p.staminaRestTime = 0;
   } else {
@@ -345,9 +373,10 @@ function contactMotion(player, start) {
   }
   const theta = player.theta - start.theta, phi = headingDelta(player.phi, start.phi);
   const body = headingDelta(player.bodyYaw, start.bodyYaw);
+  const earSpread=(player.earSpread||0)-(start.earSpread||0),earLag=(player.earLag||0)-(start.earLag||0);
   const bodyReach = Math.max(...characterStats(player).hurtShapes.flatMap(shape => [shape.a, shape.b].map(point => Math.hypot(...point) + shape.radius)));
-  return { theta, phi, body, radius,
-    travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi)) + bodyReach * Math.abs(body) };
+  return { theta, phi, body,earSpread,earLag, radius,
+    travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi)+Math.abs(earSpread)+Math.abs(earLag)) + bodyReach * Math.abs(body) };
 }
 
 // Inspect intermediate rigid poses, including curved rotation and heading wrap.
@@ -364,7 +393,7 @@ function contactAlongMotion(a, b, previous, detect) {
     (Math.min(motionA.radius, motionB.radius) * CONFIG.contactTravelFraction)), 1, CONFIG.maxContactSubsteps);
   const at = (player, start, motion, t) => ({ ...player,
     p: add(start.p, mul(sub(player.p, start.p), t)),
-    theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t, bodyYaw: start.bodyYaw + motion.body * t });
+    theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t, bodyYaw: start.bodyYaw + motion.body * t,earSpread:(start.earSpread||0)+motion.earSpread*t,earLag:(start.earLag||0)+motion.earLag*t });
   const inspect = t => {
     const poseA = at(a, startA, motionA, t), poseB = at(b, startB, motionB, t);
     const contact = detect(poseA, poseB);
@@ -436,32 +465,57 @@ export class ArenaPhysics {
     this.events.length = 0;
     this.time += dt;
     // Skills first: a teleport must not be swept as motion through the target.
+    const animalBefore=this.players.map(p=>({earSpread:p.earSpread,earLag:p.earLag}));
     for (const p of this.players) if (!finished || p.id === this.winner) this.updateSkill(p, !finished && inputs[p.id]?.skillTap, dt);
-    const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, bodyYaw: p.bodyYaw }));
+    const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, bodyYaw: p.bodyYaw,...animalBefore[p.id] }));
     for (const p of this.players) {
       if (finished && p.id !== this.winner) continue;
       const weapon = weaponStats(p);
       const input = inputs[p.id] || { theta: 0, phi: 0 };
       this.setPolarInput(p.id, input.theta || 0);
-      turnBody(p, input.faceYaw, dt);
+      if(bodyFollowsView(p))turnBody(p, input.faceYaw, dt);
+      if(isEarLoadout(p)&&(p.skillActive||p.earSpread>.001))p.polarInput=0;
       const turnInput = clamp(input.phi || 0, -1, 1);
       updateStamina(p, turnInput, dt);
-      const power = staminaPower(p.stamina);
+      const power = isAnatomical(p)?animalPower(p.stamina):staminaPower(p.stamina);
       // Yaw keeps its existing reversal strength; pitch uses the stronger brake.
       const motorP = motorAcceleration(p.wp, turnInput, weapon, power, dt, weapon.motorAcceleration);
       const previousT = p.wt, previousP = p.wp;
       const damp = Math.exp(-CONFIG.damping * dt);
-      drivePolarAngle(p, dt, power);
-      p.wp = clamp((p.wp + motorP * dt) * damp, -weapon.maxAngularSpeed, weapon.maxAngularSpeed);
+      if(isEarLoadout(p)){
+        if(p.skillActive||p.earSpread>.001){
+          const error=Math.atan2(Math.sin(-Math.PI/2-p.theta),Math.cos(-Math.PI/2-p.theta));
+          const target=clamp(error*8,-weapon.maxAngularSpeed*power,weapon.maxAngularSpeed*power);
+          p.wt+=clamp(target-p.wt,-BEAGLE_SKILL.pitchAcceleration*power*dt,BEAGLE_SKILL.pitchAcceleration*power*dt);
+        }else drivePolarAngle(p,dt,power);
+        if(p.skillActive){
+          const target=(turnInput||Math.sign(p.wp)||1)*BEAGLE_SKILL.spinSpeed*power;
+          const a=weapon.motorAcceleration*(target*p.wp<0?1:power);
+          p.wp+=clamp(target-p.wp,-a*dt,a*dt);
+        }else{
+          const assist=(p.polarInput||turnInput)?clamp((turnInput*BEAGLE_SKILL.normalTurnSpeed*power-p.wp)*BEAGLE_SKILL.steeringGain,-1,1):0;
+          p.wp=clamp((p.wp+motorAcceleration(p.wp,assist,weapon,power,dt,weapon.motorAcceleration)*dt)*damp,-weapon.maxAngularSpeed,weapon.maxAngularSpeed);
+        }
+      }else{
+        drivePolarAngle(p,dt,power);
+        const assist=isPawLoadout(p)?((p.polarInput||turnInput)?clamp((turnInput*CAT.normalTurnSpeed*power-p.wp)*CAT.steeringGain,-1,1):0):turnInput;
+        const yawMotor=isPawLoadout(p)?motorAcceleration(p.wp,assist,weapon,power,dt,weapon.motorAcceleration):motorP;
+        p.wp=clamp((p.wp+yawMotor*dt)*damp,-weapon.maxAngularSpeed,weapon.maxAngularSpeed);
+      }
       p.theta += p.wt * dt;
       // Net angular acceleration before contact, including damping/speed limits.
       // Holding an already-max-speed motor does not award an acceleration bonus.
       const smooth = 1 - Math.exp(-dt / 0.09);
       p.driveT += ((p.wt - previousT) / dt - p.driveT) * smooth;
       p.driveP += ((p.wp - previousP) / dt - p.driveP) * smooth;
+      if(isEarLoadout(p))applyBeagleHover(p,dt,CONFIG.gravity);
+      if(isPawLoadout(p))p.v.y+=clamp(CONFIG.gravity+CAT.hoverGain*(CAT.bodyFloor+CAT.hoverHeight-p.p.y)-CAT.hoverDamping*p.v.y,0,CONFIG.gravity+12)*dt;
       p.v.y -= CONFIG.gravity * dt;
-      p.v.x *= Math.exp(-0.15 * dt);
-      p.v.z *= Math.exp(-0.15 * dt);
+      const hovering=isPawLoadout(p)||(isEarLoadout(p)&&p.skillActive&&p.earSpread>Math.PI/2*.65);
+      const support=hovering?clamp(1-Math.max(0,p.p.y-characterStats(p).bodyFloor-.35)/.75,0,1):0;
+      const drag=.15+(1.5-.15)*support;
+      p.v.x *= Math.exp(-drag * dt);
+      p.v.z *= Math.exp(-drag * dt);
       // Azimuth retains free rotation and inertia independently of the up/down target.
       p.phi = (p.phi + p.wp * dt) % (Math.PI * 2);
       p.p = add(p.p, mul(p.v, dt));
@@ -511,6 +565,12 @@ export class ArenaPhysics {
   // Count down the active effect and the cooldown, start the character's skill
   // on a tap, and apply its continuous effect (laugh drain, heal) for this step.
   updateSkill(p, tap, dt) {
+    if(isEarLoadout(p)){
+      const before=p.skillActive;p.skillRequested=!!tap;
+      updateBeagleSkill(p,false,dt);p.skillTime=p.skillRemaining;p.skillCooldown=0;
+      if(!before&&p.skillActive)this.events.push({type:'skill',skill:'rotor',player:p.id,characterId:p.characterId,point:{...p.p}});
+      return;
+    }
     const skill = SKILLS[p.skill];
     if (!skill) return;
     p.skillCooldown = Math.max(0, p.skillCooldown - dt);
@@ -524,7 +584,7 @@ export class ArenaPhysics {
         other.staminaRestTime = 0;
       }
     }
-    if (skill.id === 'happy') p.health = Math.min(CONFIG.maxHealth, p.health + skill.heal / skill.duration * share);
+    if (skill.id === 'happy') p.health = Math.min(p.maxHealth, p.health + skill.heal / skill.duration * share);
     if (p.skillTime <= 0) { p.skillActive = false; p.skillTime = 0; }
   }
 
@@ -621,8 +681,8 @@ export class ArenaPhysics {
     for (const point of surfacePoints(p)) this.solveWeaponGroundPoint(p, point, dt);
   }
 
-  solveWeaponGroundPoint(p, { local, radius }, dt) {
-    let f = weaponPointFrame(p, local);
+  solveWeaponGroundPoint(p, { local, radius,anchor }, dt) {
+    let f = weaponPointFrame(p, local,anchor);
     const penetration = radius - (f.point.y - ARENA_PROFILE.floorHeight);
     if (penetration < -0.008) return;
     p.staffGrounded = true;
@@ -630,7 +690,7 @@ export class ArenaPhysics {
     const bias = Math.max(0, penetration - 0.002) * 0.2 / dt;
     const j = Math.max(0, (bias - f.velocity.y) / effectiveMass(p, f, n));
     impulse(p, f, mul(n, j));
-    f = weaponPointFrame(p, local);
+    f = weaponPointFrame(p, local,anchor);
     const tangent = v3(f.velocity.x, 0, f.velocity.z);
     const speed = length(tangent);
     if (speed > 1e-6 && j > 0) {
@@ -656,8 +716,8 @@ export class ArenaPhysics {
     this.solveBodyWall(p);
     // The prepared podium is a low boundary. Its height scales uniformly with
     // the full building; seating and upper arches remain decorative.
-    for (const { local, radius } of surfacePoints(p)) {
-      const f = weaponPointFrame(p, local);
+    for (const { local, radius,anchor } of surfacePoints(p)) {
+      const f = weaponPointFrame(p, local,anchor);
       const r = Math.hypot(f.point.x, f.point.z);
       if (f.point.y >= this.arenaRimHeight || r <= this.arenaRadius - radius) continue;
       const n = v3(-f.point.x / r, 0, -f.point.z / r);
@@ -697,9 +757,9 @@ export class ArenaPhysics {
     const reach = weaponStats(p).offset + weaponStats(p).length + 2.5;
     const near = this.obstacles.filter(o => Math.hypot(o.x - p.p.x, o.z - p.p.z) < reach + o.extent);
     if (!near.length) return;
-    for (const { local, radius } of obstaclePoints(p)) {
+    for (const { local, radius,anchor } of obstaclePoints(p)) {
       for (const obstacle of near) {
-        let f = weaponPointFrame(p, local);
+        let f = weaponPointFrame(p, local,anchor);
         const below = obstacle.height - (f.point.y - radius);
         if (below <= 0) continue;
         const contact = obstacleContact(obstacle, f.point.x, f.point.z, radius);
@@ -714,7 +774,7 @@ export class ArenaPhysics {
         impulse(p, f, mul(n, j));
         if (!top || j <= 0) continue;
         p.staffGrounded = true;
-        f = weaponPointFrame(p, local);
+        f = weaponPointFrame(p, local,anchor);
         const tangent = v3(f.velocity.x, 0, f.velocity.z), speed = length(tangent);
         if (speed > 1e-6) {
           const t = mul(tangent, -1 / speed);

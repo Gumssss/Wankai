@@ -2,6 +2,8 @@
 // Physics applies the effects (physics.js); the scene and audio react to the
 // 'skill' events it emits.
 export const SKILLS = Object.freeze({
+  rotor:Object.freeze({id:'rotor',name:'旋耳悬停',cooldown:0,duration:5,activationMinimum:40,drain:16,
+    description:'长耳专用：至少 40 体力，最多旋转悬停 5 秒，每秒消耗 16；A/D 可反向，耗尽或到时落地。'}),
   laugh: Object.freeze({ id: 'laugh', name: '大笑', cooldown: 35, duration: 4,
     // Extra stamina the opponent loses per second while the laugh lasts.
     drain: 38,
@@ -18,4 +20,4 @@ export const SKILLS = Object.freeze({
     description: '开心地蹦跳 1.6 秒，共恢复 22 点生命。' }),
 });
 
-export const skillFor = characterId => SKILLS[{ naiwa: 'laugh', stickman: 'twist', dudu: 'delivery', 'happy-cat': 'happy' }[characterId]] ?? null;
+export const skillFor = characterId => SKILLS[{ naiwa: 'laugh', stickman: 'twist', dudu: 'delivery', 'happy-cat': 'happy', beagle:'rotor' }[characterId]] ?? null;

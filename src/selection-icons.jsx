@@ -2,6 +2,8 @@ import { CHARACTERS } from './character-catalog.js';
 import { characterPortrait } from './models/portraits.js';
 
 const icons = {
+  'long-ears':'<path d="M15 9Q2 6 6 43Q10 51 15 43V9ZM33 9Q46 6 42 43Q38 51 33 43V9Z" fill="#d69b51" stroke="#30372e" stroke-width="2"/>',
+  'cat-paws':'<g fill="#fff1dc" stroke="#30372e" stroke-width="1.5"><ellipse cx="14" cy="31" rx="12" ry="17"/><ellipse cx="35" cy="31" rx="12" ry="17"/></g><g fill="#f29aa6"><circle cx="14" cy="33" r="6"/><circle cx="35" cy="33" r="6"/></g>',
   'yellow-staff': '<path d="M11 45 36 9" stroke="#d7a838" stroke-width="10" stroke-linecap="round"/><path d="M11 45 36 9" stroke="#f6cf45" stroke-width="7" stroke-linecap="round"/><path d="m16 38 4 3M29 19l4 3" stroke="#e2ad2b" stroke-width="3"/>',
   // Drawn upright, then leaned like the other weapons: blade, guard, grip, pommel.
   sword: '<g transform="rotate(38 24 27)" stroke="#30372e" stroke-width="1.5" stroke-linejoin="round"><path d="M24 3 28 9v25h-8V9Z" fill="#dfe5e6"/><path d="M24 10v21" stroke="#9aa5a7"/><rect x="14" y="34" width="20" height="5" rx="2.5" fill="#c4684f"/><rect x="21.5" y="39" width="5" height="9" rx="1.5" fill="#a4733f"/><circle cx="24" cy="50.5" r="3" fill="#e9c46a"/></g>',
@@ -14,7 +16,7 @@ const icons = {
   pan: '<path d="M10 50 22 30" stroke="#a4733f" stroke-width="6" stroke-linecap="round"/><path d="m22 30 4-6" stroke="#3a3f42" stroke-width="4"/><circle cx="32" cy="15" r="13" fill="#3a3f42" stroke="#30372e" stroke-width="1.5"/><circle cx="32" cy="15" r="9.5" fill="#24282a"/><path d="M26 10q3-3 7-2" stroke="#7d8588" stroke-width="2" fill="none" stroke-linecap="round"/>',
 };
 
-const SKILL_GLYPHS = { laugh: '😆', twist: '🌀', delivery: '🥡', happy: '💖' };
+const SKILL_GLYPHS = { rotor:'🌀', laugh: '😆', twist: '🌀', delivery: '🥡', happy: '💖' };
 export function SkillIcon({ id }) {
   return <span className={`skill-icon skill-${id}`} aria-hidden="true">{SKILL_GLYPHS[id] ?? '★'}</span>;
 }
