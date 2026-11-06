@@ -3,7 +3,7 @@
   "branch": "feat/drive-characters",
   "base": "787b077",
   "local": true,
-  "githubPushed": false,
+  "githubPushed": true,
   "characters": 9,
   "validLoadouts": 56,
   "tests": {
@@ -145,5 +145,11 @@
     "tools/import-characters.py": "83f3a0f8d390372c9ffefb49aaaa8184a3ac3b27559ff21bc4023a8ab9c352c7",
     "tools/import-drive-characters.py": "efd8518b86ab0073757e65fc63e0f2a92817a99e82ea6b6b6e4be07bc0e6507e",
     "tools/restored-animals-receiver.mjs": "4ebee653d3d4ea1d9472aa366b2d08e76f94d6ea20f39a2a9708d5976e3c7d84"
+  },
+  "delivery": {
+    "date": "2026-11-06",
+    "branch": "feat/drive-characters",
+    "implementationCommit": "43e7f8e0790894728a6946441873097b60023365",
+    "url": "https://github.com/Gumssss/Wankai/tree/feat/drive-characters"
   }
 }

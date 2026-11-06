@@ -1,6 +1,6 @@
 # Drive characters — 5 November 2026
 
-Implemented locally on `feat/drive-characters`, based on integration commit `787b077`. The user confirmed CR7 + soccer ball, Mean Girl + crowned heart, and a separate Maodie + cat paw. They selected existing weapon controls and no F skills. The original-model viewer was then requested and delivered. The original folder is [on Google Drive](https://drive.google.com/drive/folders/12CSIoKJHwHGyixSoFyqPES7oU29eX09k).
+Implemented on `feat/drive-characters`, based on integration commit `787b077`. Published to [the GitHub feature branch](https://github.com/Gumssss/Wankai/tree/feat/drive-characters) on 6 November 2026, with gameplay checkpoint `43e7f8e`. The user confirmed CR7 + soccer ball, Mean Girl + crowned heart, and a separate Maodie + cat paw. They selected existing weapon controls and no F skills. The original-model viewer was then requested and delivered. The original folder is [on Google Drive](https://drive.google.com/drive/folders/12CSIoKJHwHGyixSoFyqPES7oU29eX09k).
 
 ## Source and model records
 
@@ -40,4 +40,4 @@ The original viewer reads the untouched supplied OBJ/GLB files and original mate
 
 At a 700-pixel browser width, the inherited two-column preparation layout crowds the model preview. The start button and scrolling remain reachable. The desktop game and original viewer are the reviewed appearance targets for this packet.
 
-This is a local implementation. Human matchup balance and packaged releases remain future review work. The original screenshots, motion source, replay cuts, model manifest and verification logs are stored with the evidence packet.
+This source checkpoint is published on the feature branch. Human matchup balance and packaged releases remain future review work. The original screenshots, motion source, replay cuts, model manifest and verification logs are stored with the evidence packet.
