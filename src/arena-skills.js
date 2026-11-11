@@ -7,6 +7,8 @@ import {CHARACTERS} from './character-catalog.js';
 
 export const SOCCER_RADIUS = 0.46;
 export const modernSkill=p=>p.skill==='ricochet'||p.skill==='perfume';
+// CR7 commits to the kick once accepted; only perfume startup is interruptible.
+export const interruptibleWindup=p=>p.skill==='perfume'&&p.abilityPhase==='windup';
 export const protectedPlayer=p=>p.skill==='ricochet'&&p.abilityPhase==='active';
 export const stowed=p=>p.skill==='ricochet'&&['active','recovery'].includes(p.abilityPhase);
 export function clearBleeding(p){p.bleedStacks=0;p.bleedTick=0;p.bleedOwner=null;}
@@ -24,14 +26,14 @@ export function stepBleeding(world,p,dt){
  if(p.health<=0)clearBleeding(p);
 }
 export function cancelAbility(world,p){
- p.abilityPhase='idle';p.skillActive=false;p.skillTime=0;p.abilityTime=0;p.perfumeHitTargets=0;p.perfumeStep=0;
+ p.abilityPhase='idle';p.skillActive=false;p.skillTime=0;p.abilityTime=0;p.launchPending=false;p.perfumeHitTargets=0;p.perfumeStep=0;
  world.projectiles=world.projectiles.filter(s=>s.type!=='soccer'||s.owner!==p.id);
 }
 export function abilityHit(world,target,damage,owner,source,point){
  if(protectedPlayer(target)||target.health<=0)return false;
  target.health=Math.max(world.endless?1:0,target.health-damage);target.hitFlash=1;
  world.lastHit={damage,speed:0,acceleration:0,turnShare:0,attacker:owner,source};
- if(modernSkill(target)&&target.abilityPhase==='windup')cancelAbility(world,target);
+ if(interruptibleWindup(target))cancelAbility(world,target);
  world.events.push({type:'hit',source,weapon:source,attacker:owner,target:target.id,damage,point:{...point},normal:{x:0,y:1,z:0},speed:0,acceleration:0,turnShare:0,strength:source==='bleed'?0:.25});
  return true;
 }
@@ -42,10 +44,13 @@ export function updateAbility(world,p,tap,dt){
  if(tap&&p.skillCooldown===0&&p.abilityPhase==='idle'&&p.stamina>=s.cost&&(p.skill!=='ricochet'||p.grounded||p.staffGrounded)){
   p.stamina-=s.cost;p.staminaRestTime=0;p.skillCooldown=s.cooldown;p.abilityPhase='windup';p.abilityTime=s.windup;p.skillTime=s.windup+s.duration+s.recovery;p.skillActive=true;p.abilityHealth=p.health;p.sprayYaw=p.bodyYaw;p.perfumeHitTargets=0;
   world.events.push({type:'skill',skill:p.skill,player:p.id,characterId:p.characterId,point:{...p.p}});
+  // Resolve the instant kick before this step's incoming collision damage.
+  // Protection is granted only when safe projectile placement succeeds.
+  if(p.skill==='ricochet'&&s.windup===0){p.launchPending=true;finishAbilityTick(world,p);return;}
  }
  if(!p.skillActive)return;
  p.staminaRestTime=0;p.skillTime=Math.max(0,p.skillTime-dt);p.abilityTime-=dt;
- if(p.abilityPhase==='windup'&&p.health<p.abilityHealth){cancelAbility(world,p);return;}
+ if(interruptibleWindup(p)&&p.health<p.abilityHealth){cancelAbility(world,p);return;}
  if(p.abilityPhase==='active'&&p.skill==='perfume'){
   const delta=Math.atan2(Math.sin(p.bodyYaw-p.sprayYaw),Math.cos(p.bodyYaw-p.sprayYaw));p.sprayYaw+=Math.max(-Math.PI/2*dt,Math.min(Math.PI/2*dt,delta));
  }
@@ -58,7 +63,7 @@ export function updateAbility(world,p,tap,dt){
 }
 export function finishAbilityTick(world,p){
  if(!p.launchPending)return;p.launchPending=false;
- if(p.abilityPhase!=='windup'||p.health<p.abilityHealth||p.health<=0||world.winner!==null){if(p.abilityPhase==='windup')cancelAbility(world,p);return;}
+ if(p.abilityPhase!=='windup'||(interruptibleWindup(p)&&p.health<p.abilityHealth)||p.health<=0||world.winner!==null){if(p.abilityPhase==='windup')cancelAbility(world,p);return;}
  const skill=SKILLS[p.skill],scale=fighterScale(p);
  const radius=SOCCER_RADIUS*(skill.sizeMultiplier??1)*scale;
  const launch=p.skill==='ricochet'?soccerSpawn(world,p,radius):null;

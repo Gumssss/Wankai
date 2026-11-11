@@ -1,4 +1,4 @@
-import {modernSkill,protectedPlayer,stowed,updateAbility,finishAbilityTick,stepSoccer,applyPerfume,cancelAbility,stepBleeding,clearBleeding} from './arena-skills.js';
+import {modernSkill,interruptibleWindup,protectedPlayer,stowed,updateAbility,finishAbilityTick,stepSoccer,applyPerfume,cancelAbility,stepBleeding,clearBleeding} from './arena-skills.js';
 // Upright bodies + two angular degrees of freedom per staff.
 // Contact impulses use the staff Jacobian: rotation and translation respond
 // together. CR7's temporary active F phase is the explicit WASD exception.
@@ -779,7 +779,7 @@ export class ArenaPhysics {
       const travel = unit(v3(shot.v.x, 0, shot.v.z));
       if(hit&&protectedPlayer(target)){this.projectiles.splice(i,1);continue;}
       if (hit) {
-        if(modernSkill(target)&&target.abilityPhase==='windup')cancelAbility(this,target);
+        if(interruptibleWindup(target))cancelAbility(this,target);
         const damage = shot.damage ?? skill.damage;
         target.health = Math.max(this.endless ? 1 : 0, target.health - damage);
         target.hitFlash = 1;
@@ -1117,7 +1117,7 @@ export class ArenaPhysics {
     // A rejected/slow assisted contact must not consume a later genuine strike.
     contact.separated = 0;
     contact.hitLatched = true;
-    if(modernSkill(target)&&target.abilityPhase==='windup')cancelAbility(this,target);
+    if(interruptibleWindup(target))cancelAbility(this,target);
     const healthBefore=target.health;
     target.health = Math.max(this.endless ? 1 : 0, target.health - damage);
     target.hitFlash = 1;

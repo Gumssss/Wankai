@@ -73,7 +73,7 @@ test('a version mismatch is refused with a reason, and the host keeps waiting', 
   assert.equal(versions.guest.phase, 'closed');
   assert.match(versions.guest.message, /版本不一致/);
   assert.equal(versions.host.phase, 'waiting', 'the host keeps its room open');
-  assert.equal(PROTOCOL, 13);
+  assert.equal(PROTOCOL, 15);
 });
 
 test('the handshake carries both Steam names, cleaned for display', () => {
@@ -354,4 +354,24 @@ test('both peers respect the two-second opening skill lock and early taps are di
  for(const session of [game.hostSession,game.guestSession]){session.keyUp('KeyF');session.keyDown('KeyF');}
  game.tick(.2);for(const p of game.hostSession.world.players)assert(p.skillCooldown>0);
  game.tick(.1);for(const p of game.guestSession.world.players)assert(p.skillCooldown>0);
+});
+
+
+test('CR7 instant activation blocks same-step damage and replicates one ball for either peer',()=>{
+ for(const owner of [0,1]){
+  const g=pair(),cr7={characterId:'cr7',weaponId:'soccer-ball'},dudu={characterId:'dudu',weaponId:'takeout-box'};
+  ready(g,...(owner===0?[cr7,dudu]:[dudu,cr7]));g.host.start();g.net.flush();g.tick(5);
+  const w=g.hostSession.world,p=w.players[owner];
+  for(const q of w.players){q.p.x=q.id?8:-8;q.grounded=true;}
+  const controlling=owner===0?g.hostSession:g.guestSession;
+  controlling.keyDown('KeyF');
+  // Deliver guest input before the next host physics step, as in a real accepted activation.
+  if(owner===1){g.guest.replicaTick(1/60);g.net.flush();}
+  w.projectiles.push({id:99,owner:1-owner,p:{...p.p,x:p.p.x-.3},v:{x:18,y:0,z:0},radius:.55,damage:8,life:2,spin:0});
+  g.tick(.15);
+  assert.equal(p.abilityPhase,'active');assert.equal(p.health,100);
+  assert.equal(g.guestSession.world.players[owner].health,100);
+  assert.equal(g.guestSession.world.players[owner].abilityPhase,'active');
+  for(const world of [w,g.guestSession.world])assert.equal(world.projectiles.filter(s=>s.type==='soccer'&&s.owner===owner).length,1);
+ }
 });

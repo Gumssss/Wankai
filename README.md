@@ -106,7 +106,7 @@ npm run dist:mac   # release/ 下生成 arm64 与 x64 的 .dmg 和 .zip
 | 开心小猫 | 开心猫爪（专属）+ 通用武器 | **Happy Happy**：蹦跳 1.6 秒，共恢复 10 生命。冷却 40 秒 |
 | 比格犬 | 长耳（专属）+ 通用武器 | 长耳限定 **旋耳悬停**：自动旋转，WASD 随视角移动。至少 40 体力发动，每秒消耗 16，最多 5 秒，从发动起冷却 30 秒 |
 | 橘猫 | 成对猫爪（专属，常态 1×） | **巨爪**：双爪变为常态的 1.3×，持续 8 秒，冷却 30 秒。W/S 挥爪撑地，A/D 连同身体转向 |
-| CR7 | 足球（专属）+ 通用武器 | F 踢出 54 速度、2× 大小的反弹球，基础命中伤害 8；3 秒无敌并 WASD 移动，结束松开重按恢复武器。40 体力 / 30 秒冷却 |
+| CR7 | 足球（专属）+ 通用武器 | F 立即踢出 75.6 速度（原速 4.2×）、2× 大小的反弹球，基础命中伤害 8；3 秒无敌并 WASD 移动，结束松开重按恢复武器。40 体力 / 30 秒冷却 |
 | Mean Girl | 皇冠爱心（专属）+ 通用武器 | F 身前扇形喷香水 2.5 秒。每次发动命中增加一层流血，每层每 2 秒损失 1 点生命，直到本局结束；同次喷雾不重复叠层。35 体力 / 40 秒冷却 |
 | Maodie | Maodie 猫爪（专属）+ 通用武器 | F 吸血：8 秒内恢复实际武器伤害的 200%，冷却 40 秒 |
 
@@ -161,7 +161,7 @@ docs/ARCHITECTURE.md    架构与约定
 
 ## 2 November 2026 — Beagle / orange-cat restoration
 
-The two-animal restoration is recorded in [RESTORED_ANIMALS.md](docs/RESTORED_ANIMALS.md). The current roster also includes CR7, Mean Girl and Maodie, with 56 valid loadouts. Protocol 13 adds a two-second opening skill lock for all characters. Protocol 12 added stacking perfume bleed, faster/larger CR7 skill shots, body-only hit assistance and coordinated impact feedback. Protocol 11 added Mean Girl's persistent perfume bleed. Protocol 10 added Beagle Rotor's camera-relative WASD controls and 30-second cooldown. Protocol 9 added Maodie's lifesteal healing events. Protocol 8 added Orange Tabby's Big Paws skill. Protocol 7 added shared round growth. Protocol 6 added CR7 and Mean Girl phase and input state and typed ricochet projectiles. Both peers need this build. [Current character handoff and evidence](docs/characters/drive-packet-2026-11-05.md).
+The two-animal restoration is recorded in [RESTORED_ANIMALS.md](docs/RESTORED_ANIMALS.md). The current roster also includes CR7, Mean Girl and Maodie, with 56 valid loadouts. Protocol 15 makes CR7 launch and become invulnerable immediately on accepted activation. Protocol 13 added a two-second opening skill lock for all characters. Protocol 12 added stacking perfume bleed, faster/larger CR7 skill shots, body-only hit assistance and coordinated impact feedback. Protocol 11 added Mean Girl's persistent perfume bleed. Protocol 10 added Beagle Rotor's camera-relative WASD controls and 30-second cooldown. Protocol 9 added Maodie's lifesteal healing events. Protocol 8 added Orange Tabby's Big Paws skill. Protocol 7 added shared round growth. Protocol 6 added CR7 and Mean Girl phase and input state and typed ricochet projectiles. Both peers need this build. [Current character handoff and evidence](docs/characters/drive-packet-2026-11-05.md).
 
 8 November 2026: [CR7 / Mean Girl implementation and runtime evidence](docs/characters/CR7_MEANGIRL_IMPLEMENTED.md). Both skills are locally playable; the original CR7 mesh now has independent leg rigs and clips.
 

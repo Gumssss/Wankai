@@ -20,7 +20,7 @@ test('soccer survives body contact and wall reflection; immunity covers skill da
  for(let i=0;i<10;i++){w.time+=CONFIG.step;stepSoccer(w,b,CONFIG.step);}assert.equal(q.health,92);assert(b.v.x<0);assert.equal(abilityHit(w,p,50,1,'perfume',p.p),false);assert.equal(p.health,100);
  b.p.x=w.arenaRadius-.47;b.v.x=18;stepSoccer(w,b,.02);assert(b.v.x<0);assert(b.p.x<=w.arenaRadius-.46);
 });
-test('windup damage cancels without granting immunity or refund',()=>{const w=setup(),p=w.players[0];updateAbility(w,p,true,CONFIG.step);abilityHit(w,p,2,1,'perfume',p.p);finishAbilityTick(w,p);assert.equal(p.abilityPhase,'idle');assert.equal(p.stamina,160);assert.equal(w.projectiles.length,0);});
+test('perfume windup damage cancels without granting immunity or refund',()=>{const w=setup('mean-girl'),p=w.players[0];updateAbility(w,p,true,CONFIG.step);abilityHit(w,p,2,1,'perfume',p.p);finishAbilityTick(w,p);assert.equal(p.abilityPhase,'idle');assert.equal(p.stamina,165);assert.equal(w.projectiles.length,0);});
 
 test('restoring the ball cannot score an automatic weapon hit before fresh input',()=>{
  const w=setup();w.players[1].p.x=2.8;w.players[0].p.x=0;launch(w);
@@ -45,12 +45,11 @@ test('CR7 direct controls normalize diagonals, cancel opposites, rotate with cam
  }
 });
 
-test('activation rejection, last-tick windup interruption and result cleanup do not grant protection',()=>{
+test('activation rejection, pre-activation knockout and result cleanup do not grant protection',()=>{
  const w=setup(),p=w.players[0];p.stamina=39;updateAbility(w,p,true,CONFIG.step);assert.equal(p.abilityPhase,'idle');assert.equal(p.stamina,39);
  p.stamina=200;p.grounded=p.staffGrounded=false;updateAbility(w,p,true,CONFIG.step);assert.equal(p.abilityPhase,'idle');
- p.grounded=true;updateAbility(w,p,true,CONFIG.step);p.abilityTime=CONFIG.step;updateAbility(w,p,false,CONFIG.step);assert(p.launchPending);
- abilityHit(w,p,1,1,'perfume',p.p);finishAbilityTick(w,p);assert.equal(w.projectiles.length,0);assert(!protectedPlayer(p));
- p.skillCooldown=0;launch(w);w.winner=1;updateAbility(w,p,false,CONFIG.step);assert.equal(w.projectiles.length,0);assert(!protectedPlayer(p));
+ p.grounded=true;abilityHit(w,p,100,1,'soccer',p.p);updateAbility(w,p,true,CONFIG.step);finishAbilityTick(w,p);assert.equal(w.projectiles.length,0);assert(!protectedPlayer(p));
+ p.health=100;p.skillCooldown=0;launch(w);w.winner=1;updateAbility(w,p,false,CONFIG.step);assert.equal(w.projectiles.length,0);assert(!protectedPlayer(p));
 });
 
 test('soccer uses finite-height hurt capsules and does not hit a player above its path',()=>{
