@@ -20,7 +20,7 @@ test('soccer survives body contact and wall reflection; immunity covers skill da
  for(let i=0;i<10;i++){w.time+=CONFIG.step;stepSoccer(w,b,CONFIG.step);}assert.equal(q.health,92);assert(b.v.x<0);assert.equal(abilityHit(w,p,50,1,'perfume',p.p),false);assert.equal(p.health,100);
  b.p.x=w.arenaRadius-.47;b.v.x=18;stepSoccer(w,b,.02);assert(b.v.x<0);assert(b.p.x<=w.arenaRadius-.46);
 });
-test('perfume windup damage cancels without granting immunity or refund',()=>{const w=setup('mean-girl'),p=w.players[0];updateAbility(w,p,true,CONFIG.step);abilityHit(w,p,2,1,'perfume',p.p);finishAbilityTick(w,p);assert.equal(p.abilityPhase,'idle');assert.equal(p.stamina,165);assert.equal(w.projectiles.length,0);});
+test('perfume activates instantly and survives damage without granting immunity',()=>{const w=setup('mean-girl'),p=w.players[0];updateAbility(w,p,true,CONFIG.step);assert.equal(p.abilityPhase,'active');abilityHit(w,p,2,1,'soccer',p.p);finishAbilityTick(w,p);assert.equal(p.abilityPhase,'active');assert.equal(p.health,98);assert.equal(p.stamina,165);assert.equal(p.skillCooldown,40);assert.equal(w.projectiles.length,0);});
 
 test('restoring the ball cannot score an automatic weapon hit before fresh input',()=>{
  const w=setup();w.players[1].p.x=2.8;w.players[0].p.x=0;launch(w);

@@ -73,7 +73,7 @@ test('a version mismatch is refused with a reason, and the host keeps waiting', 
   assert.equal(versions.guest.phase, 'closed');
   assert.match(versions.guest.message, /版本不一致/);
   assert.equal(versions.host.phase, 'waiting', 'the host keeps its room open');
-  assert.equal(PROTOCOL, 15);
+  assert.equal(PROTOCOL, 16);
 });
 
 test('the handshake carries both Steam names, cleaned for display', () => {

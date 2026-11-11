@@ -6,7 +6,7 @@ export const skillOpeningLock = roundTime => Math.max(0, SKILL_OPENING_LOCK - (r
 // 'skill' events it emits.
 export const SKILLS = Object.freeze({
   ricochet: Object.freeze({id:'ricochet',name:'反弹足球',cooldown:30,cost:40,windup:0,duration:3,recovery:.3,speed:75.6,sizeMultiplier:2,damage:8,description:'按F立即无敌并踢出双倍大的高速反弹球，基础伤害8；3秒无敌并用WASD移动，结束松开重按恢复武器。'}),
-  perfume: Object.freeze({id:'perfume',name:'喷香水',cooldown:40,cost:35,windup:.35,duration:2.5,recovery:.25,bleedInterval:2,description:'喷香水2.5秒，每次发动命中可叠加1层流血至本局结束，每层每2秒损失1点生命；同次喷雾只加1层。'}),
+  perfume: Object.freeze({id:'perfume',name:'喷香水',cooldown:40,cost:35,windup:0,duration:2.5,recovery:.25,bleedInterval:2,description:'按F立即喷香水2.5秒，每次发动命中可叠加1层流血至本局结束，每层每2秒损失1点生命；同次喷雾只加1层。'}),
   rotor: Object.freeze({ id: 'rotor', name: '旋耳悬停', cooldown: 30, duration: 5, activationMinimum: 40, drain: 16,
     description: '长耳自动旋转悬停，按 WASD 随视角移动。最多持续 5 秒，体力耗尽或到时落地。' }),
   laugh: Object.freeze({ id: 'laugh', name: '大笑', cooldown: 35, duration: 2.5,

@@ -44,9 +44,13 @@ export function updateAbility(world,p,tap,dt){
  if(tap&&p.skillCooldown===0&&p.abilityPhase==='idle'&&p.stamina>=s.cost&&(p.skill!=='ricochet'||p.grounded||p.staffGrounded)){
   p.stamina-=s.cost;p.staminaRestTime=0;p.skillCooldown=s.cooldown;p.abilityPhase='windup';p.abilityTime=s.windup;p.skillTime=s.windup+s.duration+s.recovery;p.skillActive=true;p.abilityHealth=p.health;p.sprayYaw=p.bodyYaw;p.perfumeHitTargets=0;
   world.events.push({type:'skill',skill:p.skill,player:p.id,characterId:p.characterId,point:{...p.p}});
-  // Resolve the instant kick before this step's incoming collision damage.
-  // Protection is granted only when safe projectile placement succeeds.
-  if(p.skill==='ricochet'&&s.windup===0){p.launchPending=true;finishAbilityTick(world,p);return;}
+  // Commit instant abilities before this step's incoming collision damage.
+  // Only CR7 grants protection, after safe projectile placement succeeds.
+  if(s.windup===0){
+   p.launchPending=true;finishAbilityTick(world,p);
+   if(p.skill==='perfume'&&p.abilityPhase==='active')p.perfumeStep=Math.min(dt,p.abilityTime);
+   return;
+  }
  }
  if(!p.skillActive)return;
  p.staminaRestTime=0;p.skillTime=Math.max(0,p.skillTime-dt);p.abilityTime-=dt;

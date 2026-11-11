@@ -34,10 +34,22 @@ test('dead players and finished rounds cannot activate instant protection',()=>{
  }
 });
 
-test('Mean Girl retains her interruptible startup',()=>{
- const {w,p}=setup('mean-girl');p.abilityTime=CONFIG.step;w.updateSkill(p,false,CONFIG.step);
- abilityHit(w,p,8,0,'soccer',p.p);finishAbilityTick(w,p);
- assert.equal(p.abilityPhase,'idle');assert.equal(w.projectiles.length,0);assert(!protectedPlayer(p));
+for(const [source,attack] of Object.entries(attacks))test(`instant perfume survives nonlethal ${source} damage`,()=>{
+ const f=setup('mean-girl'),{w,p}=f;
+ assert.equal(p.abilityPhase,'active');attack(f);finishAbilityTick(w,p);
+ assert(p.health<100);assert(p.health>0);assert.equal(p.abilityPhase,'active');assert(p.skillActive);assert(!protectedPlayer(p));
+ assert.equal(p.stamina,165);assert.equal(p.skillCooldown,40);
+ assert.equal(w.events.filter(e=>e.type==='skill-release'&&e.player===p.id).length,1);
+});
+
+test('perfume marks on the activation step despite simultaneous incoming damage',()=>{
+ const {w,a,p}=setup('mean-girl',false);
+ Object.assign(p,{p:v3(0,.59,0),bodyYaw:0});a.p=v3(2,.59,0);a.v=v3();
+ w.projectiles.push({id:99,owner:0,p:{...p.p,x:p.p.x-.3},v:v3(18,0,0),radius:.55,damage:8,life:2,spin:0});
+ w.step([{},{skillTap:true}]);
+ assert(p.health<100);assert(p.health>0);assert.equal(p.abilityPhase,'active');assert.equal(a.bleedStacks,1);
+ assert.equal(w.events.filter(e=>e.type==='skill-release'&&e.player===p.id).length,1);
+ w.step([{},{}]);assert.equal(a.bleedStacks,1);
 });
 
 
