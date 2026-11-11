@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyPerfume, stepBleeding } from '../src/arena-skills.js';
+import { applyPerfume, stepBleeding, updateAbility, finishAbilityTick } from '../src/arena-skills.js';
 import { NetSession } from '../src/net-session.js';
 import { ArenaPhysics, bodyFloor, CONFIG, hurtSegments, v3 } from '../src/physics.js';
 import { SKILLS } from '../src/skills.js';
@@ -33,13 +33,13 @@ function setup({ defender = STICKMAN, endless = false, scale = 1 } = {}) {
 }
 
 const bleedEvents = events => events.filter(event => event.type === 'hit' && event.source === 'bleed');
-const bleedState = player => [player.bleedActive, player.bleedTick, player.bleedOwner];
+const bleedState = player => [player.bleedStacks, player.bleedTick, player.bleedOwner];
 
 test('the first bleed tick waits two seconds and bleeding continues after perfume ends', () => {
   const { world, caster, target } = setup();
   assert.equal(INTERVAL, 2);
   expose(world);
-  assert.equal(target.bleedActive, true);
+  assert.equal(target.bleedStacks, 1);
   assert.equal(target.bleedOwner, caster.id);
   assert.equal(target.health, 100);
   target.p.x = -6;
@@ -50,7 +50,7 @@ test('the first bleed tick waits two seconds and bleeding continues after perfum
   stepBleeding(world, target, CONFIG.step);
   assert.equal(target.health, 99);
   stepBleeding(world, target, INTERVAL * 4);
-  assert.equal(target.bleedActive, true);
+  assert.equal(target.bleedStacks, 1);
   assert.equal(target.health, 95);
   assert.deepEqual(bleedEvents(world.events).map(event => [event.attacker, event.target, event.damage]),
     Array.from({ length: 5 }, () => [caster.id, target.id, 1]));
@@ -73,7 +73,7 @@ test('repeat exposure does not stack damage or reset an existing tick', () => {
 test('fighter growth does not increase the one-HP bleed tick', () => {
   const { world, target } = setup({ scale: 3 });
   expose(world);
-  assert.equal(target.bleedActive, true);
+  assert.equal(target.bleedStacks, 1);
   stepBleeding(world, target, INTERVAL);
   assert.equal(target.health, 99);
   assert.deepEqual(bleedEvents(world.events).map(event => event.damage), [1]);
@@ -83,7 +83,7 @@ test('CR7 immunity prevents application and skips due ticks without shifting the
   const { world, target } = setup({ defender: CR7 });
   target.abilityPhase = 'active';
   expose(world);
-  assert.deepEqual(bleedState(target), [false, 0, null]);
+  assert.deepEqual(bleedState(target), [0, 0, null]);
 
   target.abilityPhase = 'idle';
   expose(world);
@@ -91,7 +91,7 @@ test('CR7 immunity prevents application and skips due ticks without shifting the
   target.abilityPhase = 'active';
   stepBleeding(world, target, INTERVAL * 0.5);
   assert.equal(target.health, 100);
-  assert.equal(target.bleedActive, true);
+  assert.equal(target.bleedStacks, 1);
   assert.deepEqual(bleedEvents(world.events), []);
 
   target.abilityPhase = 'idle';
@@ -117,12 +117,12 @@ test('bleed respects the health floor and a lethal tick clears the round’s ble
   world.step([{}, {}]);
   assert.equal(target.health, 0);
   assert.equal(world.winner, caster.id);
-  assert.ok(world.players.every(p => !p.bleedActive && p.bleedTick === 0 && p.bleedOwner === null));
+  assert.ok(world.players.every(p => !p.bleedStacks && p.bleedTick === 0 && p.bleedOwner === null));
   assert.deepEqual(bleedEvents(world.events).map(event => event.damage), [0.25]);
   expose(world);
   stepBleeding(world, target, INTERVAL);
   assert.equal(target.health, 0);
-  assert.deepEqual(bleedState(target), [false, 0, null]);
+  assert.deepEqual(bleedState(target), [0, 0, null]);
 });
 
 test('a knockout of the caster also clears bleeding from the surviving opponent', () => {
@@ -132,7 +132,7 @@ test('a knockout of the caster also clears bleeding from the surviving opponent'
   world.step([{}, {}]);
   assert.equal(world.winner, target.id);
   assert.equal(target.health, 100);
-  assert.deepEqual(bleedState(target), [false, 0, null]);
+  assert.deepEqual(bleedState(target), [0, 0, null]);
 });
 
 function tickSession(session, seconds) {
@@ -158,14 +158,14 @@ test('offline pause freezes the bleed clock and rematch and home clear it', () =
   assert.equal(target.health, 99);
 
   session.startRound('ai');
-  assert.deepEqual(bleedState(session.world.players[1]), [false, 0, null]);
+  assert.deepEqual(bleedState(session.world.players[1]), [0, 0, null]);
   tickSession(session, 2.6);
   placeForPerfume(session.world.players);
   expose(session.world);
-  assert.equal(session.world.players[1].bleedActive, true);
+  assert.equal(session.world.players[1].bleedStacks, 1);
   session.goHome();
   assert.equal(session.state, 'lobby');
-  assert.deepEqual(bleedState(session.world.players[1]), [false, 0, null]);
+  assert.deepEqual(bleedState(session.world.players[1]), [0, 0, null]);
 });
 
 test('the guest sees the host’s bleed status, HP and one tick event, then disconnect clears both sides', () => {
@@ -207,8 +207,8 @@ test('the guest sees the host’s bleed status, HP and one tick event, then disc
   tickBoth(SKILLS.perfume.windup + 0.15);
   const [caster, target] = hostSession.world.players;
   const replica = guestSession.world.players[1];
-  assert.equal(target.bleedActive, true);
-  assert.equal(replica.bleedActive, true);
+  assert.equal(target.bleedStacks, 1);
+  assert.equal(replica.bleedStacks, 1);
   assert.equal(replica.health, 100);
 
   tickBoth(INTERVAL + 0.05);
@@ -219,7 +219,28 @@ test('the guest sees the host’s bleed status, HP and one tick event, then disc
   host.closed();
   guest.closed();
   tickBoth(0.15);
-  assert.deepEqual(bleedState(target), [false, 0, null]);
-  assert.deepEqual(bleedState(replica), [false, 0, null]);
+  assert.deepEqual(bleedState(target), [0, 0, null]);
+  assert.deepEqual(bleedState(replica), [0, 0, null]);
   assert.equal(bleedEvents(received).length, 1);
+});
+
+
+test('separate perfume activations add permanent stacks without resetting the tick cadence', () => {
+  const {world,caster,target}=setup();
+  const cast=()=>{
+    caster.skillCooldown=0;caster.abilityPhase='idle';caster.skillActive=false;caster.stamina=200;
+    updateAbility(world,caster,true,CONFIG.step);
+    assert.equal(caster.skillCooldown,40);
+    assert.equal(caster.stamina,165);
+    for(let i=0;i<90&&caster.abilityPhase==='windup';i++){updateAbility(world,caster,false,CONFIG.step);finishAbilityTick(world,caster);}
+    assert.equal(caster.abilityPhase,'active');expose(world);
+  };
+  cast();stepBleeding(world,target,1.5);
+  target.p.x=-5;expose(world);placeForPerfume(world.players);expose(world);
+  assert.equal(target.bleedStacks,1);assert.equal(target.bleedTick,1.5);
+  cast();assert.equal(target.bleedStacks,2);assert.equal(target.bleedTick,1.5);assert.equal(target.health,100);
+  stepBleeding(world,target,.5);assert.equal(target.health,98);
+  cast();assert.equal(target.bleedStacks,3);stepBleeding(world,target,2);assert.equal(target.health,95);
+  assert.deepEqual(world.events.filter(e=>e.type==='bleed-stack').map(e=>e.stacks),[1,2,3]);
+  assert.deepEqual(bleedEvents(world.events).map(e=>e.damage),[2,3]);
 });

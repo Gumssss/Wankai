@@ -1,6 +1,6 @@
 # Restored animals — 2 November 2026
 
-5 November 2026 adds three independent imported characters and signature weapons. The roster has nine characters and 56 loadouts. CR7 and Mean Girl now have F skills; their ordinary weapon controls retain the fitted attachment offsets. CR7 has a dedicated skinned loader with independent skeletons and rotation-only leg clips. Mean Girl and Maodie retain their static body meshes; Maodie now has the lifesteal F skill. The shared loader now supports both UV textures and linear vertex colours. Network protocol is **11**. [Source, model and runtime handoff](characters/drive-packet-2026-11-05.md).
+5 November 2026 adds three independent imported characters and signature weapons. The roster has nine characters and 56 loadouts. CR7 and Mean Girl now have F skills; their ordinary weapon controls retain the fitted attachment offsets. CR7 has a dedicated skinned loader with independent skeletons and rotation-only leg clips. Mean Girl and Maodie retain their static body meshes; Maodie now has the lifesteal F skill. The shared loader now supports both UV textures and linear vertex colours. Network protocol is **13**. [Source, model and runtime handoff](characters/drive-packet-2026-11-05.md).
 
 See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB characters, paired anatomical contacts, Beagle resource skill, character-specific health, preview/portrait behavior and protocol-4 pose state. Earlier statements below about every weapon floating, every body following the view and all models being procedural apply to the original four-character implementation; Beagle long ears and orange-cat paws use the documented anatomical exceptions. Existing fighters retain their current behavior.
 
@@ -55,7 +55,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
   - 邀请好友：建 FriendsOnly 大厅并 `overlay.activateInviteDialog`。接受邀请时 Steam 触发 `GameLobbyJoinRequested`，游戏未运行时 Steam 以 `+connect_lobby <id>` 启动；两种情况都转给窗口，打开联机面板加入。
 - 消息：每条一个 JSON 对象（≤ 64 KB），发往对方 Steam ID。不带事件的快照和不带技能点击的输入用 UnreliableNoDelay（超过 1150 字节自动改为可靠）；握手、准备、竞技场、开局、再战、ping、离开、带事件的快照和带 `skillTap` 的输入用 Reliable。链路每 2 秒发一个不转给页面的 `keepalive`，15 秒收不到对方任何包、对方离开大厅或 P2P 连接失败都报告 `disconnected`。主进程在玩家处于大厅时以 4 ms 间隔读包，Steam 回调由 steamworks.js 每 33 ms 处理。
 - 页面状态（`net:status`）：`connecting`、`searching`、`joining`、`waiting { mode }`、`connected { role, peer }`、`disconnected { message }`、`error { message }`。`online.js` 在 `connected` 时创建 `NetSession`（房主为 host），关窗或取消时离开大厅。
-- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 11）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
+- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 12）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
 - 主机（红方，id 0）运行物理；加入者（蓝方，id 1）只发送输入（变化即发 + 30 Hz 心跳），接收 60 Hz 快照（含技能冷却与投掷物），以约 50 ms 延迟插值显示；位移超过 1.5 的帧（瞬移）直接跳转。所有事件随快照转发用于音效、特效和伤害数字。
 - 竞技场由房主选择，通过 `arena` 消息和 `start` 消息同步给加入者。
 - 对局中 Esc 只打开本地菜单，不暂停；任一方离开或断线，另一方收到提示并回到主菜单。
@@ -71,7 +71,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
 
 `arena-skills.js` owns windup / active / recovery, skill damage, soccer sweeps and perfume exposure. The 180 Hz host remains authoritative. Windup completion is deferred until after damage so a last-tick hit interrupts release. Perfume tests the existing hurt capsules against a finite 70-degree sector (3.4 m, nozzle height +/- .55 m), then checks analytic obstacle occlusion. Soccer sweeps a sphere against hurt capsules, the circular arena and expanded obstacle shapes; it retains velocity magnitude on reflection. Expanded box corners are conservative.
 
-An accepted perfume hit starts bleeding for the rest of the round. The effect persists after the target leaves the spray and after the skill ends. Further perfume hits leave the original damage schedule intact. The host applies 1 HP of damage every 2 seconds and emits `hit` events with `source: 'bleed'` for actual HP loss. Bleed ticks bypass hitstop. Protocol 11 replicates `bleedActive` for the health bar status. Knockout, round end, exit, rematch and disconnect clear the effect.
+Each accepted perfume activation can add one bleeding stack per opponent, tracked with a host-only target mask. `bleedStacks` persists for the rest of the round; the host applies one HP per stack every two seconds, capped to actual HP loss. New stacks preserve the original tick cadence. Invulnerability skips due damage without later catch-up. Protocol 12 replicates the discrete stack count and `bleed-stack` events; ticks remain `hit` events with `source: 'bleed'` and bypass hitstop. Knockout, round end, exit, rematch and disconnect clear the effect. AI may recast against a bleeding opponent.
 
 CR7's active phase removes ordinary weapon contact shapes, permits camera-relative normalized WASD movement at 2.2 m/s, and rejects HP damage / attack knockback while preserving gravity and body separation. Expiry removes the ball and immunity together. Recovery accepts key release; a press during recovery does not arm a restored weapon. A separate attack gate prevents passive weapon contact from scoring before fresh input.
 
@@ -97,3 +97,30 @@ Implementation verification is limited to static syntax/import/diff inspection a
 Maodie uses `lifesteal` with an 8-second active window, a 40-second cooldown from activation, and `healRatio: 2`. Only accepted melee HP loss in `solveAttack` grants healing; compute the target health delta after the health floor, then cap restoration at the living attacker’s maximum HP. No damage multiplier or stamina cost is added. Knockout, exit and rematch clear the effect; offline pause freezes it. Protocol 9 forwards `heal {player, amount, point, source}` events for presentation while HP remains host-owned. Healing creates no hitstop or damage readout.
 
 The Beagle's long ears target 2.5 rad/s for ordinary A/D steering. Rotor requires at least 40 stamina and drains 16 per second for up to 5 seconds. Its 30-second cooldown starts at activation. The motor spins in a fixed positive direction with a full-stamina target of 4.25 rad/s. Protocol 10 uses the existing raw WASD mask and camera yaw for Beagle's normalized horizontal movement at 2.2 m/s during Rotor. The host simulates movement and cooldown and replicates the existing skill state fields to guests.
+
+
+## Beginner hit assistance and impact feedback — 11 November 2026
+
+Body-hit assistance expands world-space melee radii by 1.15 for the pan and 1.5 for every other weapon. Physical floor, prop, weapon-clash and body-contact response continue using the original radii. Assisted-only contacts receive no penetration force; an accepted hit retains the existing damage knockback. Physical candidates have priority, and geometric guard/obstacle checks reject assistance through an obstruction. Zero-damage assisted overlaps do not consume a future strike; an accepted-hit latch prevents an assisted hit followed by physical contact from damaging twice.
+
+CR7 uses skill speed 54, size multiplier 2, and base damage 8. The shared model radius remains 0.46; skill radius is 0.92 times fighter growth. At full growth the projectile diameter is 5.52 and damage 10. Rolling speed follows linear velocity/radius; legal launch placement checks the rim and props, with cost/cooldown refunded if no safe placement exists. Duration, movement, immunity and repeat-hit protection retain their previous rules.
+
+Impact feedback is presentation-only, driven by accepted host events. Cartoon bursts, weapon-family accents, bounded character recoil/squash, health flashes and direct-hit number pops share a heavy-hit threshold of 22. Bleed numbers remain smaller and quiet. Lifesteal heal events include `sourcePoint` for a cosmetic transfer toward the recipient. Direct-hit audio gains 3 dB before the existing SFX volume and limiter. Reduced-motion mode suppresses recoil and camera kicks. Effect resources and labels are bounded; pause freezes animation and disconnect/reset clears it.
+
+Protocol 12 deduplicates event-bearing snapshot sequences while preserving unseen late event packets and rejecting previous-round packets. Damage and stack counters are never simulated by guests.
+
+
+### Hit-feedback readability pass
+
+Bursts now have a dark ink outline. Perspective-aware sizing keeps their base radius at least 2.5% of viewport height for ordinary hits and 4% for heavy hits, capped at 6% before the brief pop. Clashes use blue-grey/white sparks lasting 0.12 seconds. Heavy rings are reserved for heavy damage. Direct damage numbers merge by target within 0.45 seconds; bleed numbers stay separate, with at most three damage labels per target. A merged total does not promote light hits into heavy-hit feedback.
+
+Every positive HP-damage event, including bleed, now creates a local victim camera shake. Strength grows with the square root of damage/30 (capped at 30): duration 0.12–0.28 seconds, angular coefficient 0.2–2.4 degrees, translation coefficient 0.015–0.18 × fighter scale. A short decaying oscillation replaces the barely visible single-direction kick. Each victim has an independent envelope, so an outgoing hit cannot erase an incoming shake. Clashes and blocked/zero-damage hits do not shake. Reduced motion disables all camera shake; pause freezes the envelope and reset clears it. Finishing hits retain the incoming shake over the KO presentation.
+
+A decisive round result starts a 0.6-second local finishing presentation: KO stamp, 0.14-second visual pose hold, a smooth pose catch-up and an 8% FOV push-in before the existing victory presentation/result sound. Authoritative winner, physics and network snapshots are not delayed. Each peer starts its own presentation when it accepts the winner. Draws skip the KO beat. Reset/home/disconnect clear it. Focused session/FX/network checks pass; the real renderer also checked camera restoration, reduced motion, and no mutation of simulation players.
+
+
+### Combat lettering, bleed status and opening skill lock
+
+Combat numbers and callouts use the bundled PF Hutu display face, tilted lettering and heavier contrasting ink outlines. Bleeding fighters have a persistent red droplet badge with 3–6 trickling droplets depending on stack count; the host's existing bleedStacks field controls it. Pause freezes motion; reduced motion keeps static droplets. KO, cleared stacks, leaving and reset remove the status art.
+
+All nine skills are blocked by the host's input-to-physics path until two seconds of round simulation have elapsed after countdown. Rejected early taps consume no stamina/cooldown and are discarded. Movement and ordinary weapon attacks remain available. The HUD shows the opening-lock countdown, and rematches reset it. Protocol 13 requires matching builds for this rule change. Focused checks cover all skills, offline pause/reset, and host/guest input.

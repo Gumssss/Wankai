@@ -73,7 +73,7 @@ test('a version mismatch is refused with a reason, and the host keeps waiting', 
   assert.equal(versions.guest.phase, 'closed');
   assert.match(versions.guest.message, /版本不一致/);
   assert.equal(versions.host.phase, 'waiting', 'the host keeps its room open');
-  assert.equal(PROTOCOL, 11);
+  assert.equal(PROTOCOL, 13);
 });
 
 test('the handshake carries both Steam names, cleaned for display', () => {
@@ -126,7 +126,7 @@ test('a guest skill tap is never lost, even if a newer input arrives first', () 
   ready(game, { characterId: 'naiwa', weaponId: 'yellow-staff' }, { characterId: 'happy-cat', weaponId: 'happy-paws' });
   game.host.start();
   game.net.flush();
-  game.tick(2.6);
+  game.tick(4.6);
   game.host.receive({ type: 'input', theta: 0, phi: 0, skillTap: true });
   game.host.receive({ type: 'input', theta: 0, phi: 0 });
   assert.equal(game.hostSession.remoteInput.skillTap, true);
@@ -161,7 +161,7 @@ test('thrown takeouts and skill cooldowns replicate; a teleport is shown as a ju
   ready(game, { characterId: 'dudu', weaponId: 'takeout-box' }, { characterId: 'stickman', weaponId: 'sword' });
   game.host.start();
   game.net.flush();
-  game.tick(2.6);
+  game.tick(4.6);
   game.hostSession.keyDown('KeyF');
   game.tick(0.15);
   assert.equal(game.guestSession.world.projectiles.length, 1, 'the guest sees the takeout in flight');
@@ -241,7 +241,7 @@ test('a plain snapshot fits in one unreliable Steam packet', () => {
   ready(game, { characterId: 'dudu', weaponId: 'takeout-box' }, { characterId: 'stickman', weaponId: 'sword' });
   game.host.start();
   game.net.flush();
-  game.tick(2.6);
+  game.tick(4.6);
   game.hostSession.keyDown('KeyF');
   let largest = 0;
   const send = game.host.transport.send;
@@ -268,7 +268,7 @@ test('a peer that drops mid-match closes the session with a reason', () => {
 
 test('restored animal choices and rotor pose remain synchronized through the real host/guest protocol',()=>{
  const game=pair();ready(game,{characterId:'beagle',weaponId:'long-ears'},{characterId:'orange-tabby',weaponId:'cat-paws'});
- assert.ok(game.host.start());game.net.flush();game.tick(2.6);
+ assert.ok(game.host.start());game.net.flush();game.tick(4.6);
  game.hostSession.keyDown('KeyF');game.guestSession.keyDown('KeyS');game.tick(1.2);
  const host=game.hostSession.world.players,guest=game.guestSession.world.players;
  assert.equal(guest[0].maxHealth,100);assert.equal(guest[1].maxHealth,100);assert.equal(guest[0].skillActive,true);
@@ -279,7 +279,7 @@ test('restored animal choices and rotor pose remain synchronized through the rea
 });
 
 test('CR7 ability, input mask, stow and release gate replicate to guest',()=>{
- const g=pair();ready(g,{characterId:'cr7',weaponId:'soccer-ball'},{characterId:'mean-girl',weaponId:'crowned-heart'});g.host.start();g.net.flush();g.tick(3);
+ const g=pair();ready(g,{characterId:'cr7',weaponId:'soccer-ball'},{characterId:'mean-girl',weaponId:'crowned-heart'});g.host.start();g.net.flush();g.tick(5);
  g.hostSession.world.players[0].grounded=true;g.hostSession.keyDown('KeyF');g.hostSession.keyDown('KeyW');g.tick(.7);
  assert.equal(g.hostSession.world.players[0].abilityPhase,'active');assert.equal(g.guestSession.world.players[0].abilityPhase,'active');assert.equal(g.guestSession.world.projectiles[0].type,'soccer');
  g.tick(3.3);assert.equal(g.guestSession.world.players[0].releaseGate,true);g.hostSession.keyUp('KeyW');g.tick(.2);assert.equal(g.guestSession.world.players[0].releaseGate,false);
@@ -287,11 +287,71 @@ test('CR7 ability, input mask, stow and release gate replicate to guest',()=>{
 
 test('either peer can activate both skills, including mirror matches',()=>{
  for(const characters of [['mean-girl','cr7'],['cr7','cr7'],['mean-girl','mean-girl']]){
-  const g=pair(),choices=characters.map(characterId=>({characterId,weaponId:characterId==='cr7'?'soccer-ball':'crowned-heart'}));ready(g,...choices);g.host.start();g.net.flush();g.tick(3);
+  const g=pair(),choices=characters.map(characterId=>({characterId,weaponId:characterId==='cr7'?'soccer-ball':'crowned-heart'}));ready(g,...choices);g.host.start();g.net.flush();g.tick(5);
   for(const p of g.hostSession.world.players){p.grounded=true;p.p.x=p.id?8:-8;}
   g.hostSession.keyDown('KeyF');g.guestSession.keyDown('KeyF');g.guestSession.keyDown('KeyD');g.tick(.8);
   for(let id=0;id<2;id++){assert.equal(g.hostSession.world.players[id].abilityPhase,'active');assert.equal(g.guestSession.world.players[id].abilityPhase,'active');}
   assert.equal(g.guestSession.world.projectiles.filter(s=>s.type==='soccer').length,characters.filter(c=>c==='cr7').length);
   g.tick(3.5);assert.equal(g.guestSession.world.projectiles.length,0);assert(g.guestSession.world.players.every(p=>p.abilityPhase==='idle'));
  }
+});
+
+test('presentation packets wait for the render clock, replay late unique events once, and clear at rematch',()=>{
+ const game=pair();ready(game);game.host.start();game.net.flush();game.tick(2.6);
+ game.host.afterTick(1/60,[]);
+ const template=game.net.queues[1].find(m=>m.type==='snap');assert.ok(template);
+ game.net.queues[1].length=0;
+ const received=[];game.guestSession.impact=e=>received.push(e);
+ const latest=game.guest.lastSeq;
+ const cue=stacks=>({type:'bleed-stack',source:'perfume',attacker:0,target:1,stacks,point:{x:1,y:1,z:0}});
+ const message={...template,seq:latest+2,events:[cue(2)],players:template.players.map((p,i)=>({...p,bleedStacks:i?2:0}))};
+ game.guest.receive(message);game.guest.receive(message);
+ game.guest.replicaTick(.02);assert.equal(received.length,0,'future event waits for interpolated presentation time');
+ assert.equal(game.guestSession.world.players[1].bleedStacks,0,'stack status waits for the same endpoint as its cue');
+ game.guest.replicaTick(.031);assert.deepEqual(received,[cue(2)]);assert.equal(game.guestSession.world.players[1].bleedStacks,2);
+ const late={...message,seq:latest+1,events:[cue(1)]};game.guest.receive(late);game.guest.receive(late);game.guest.replicaTick(0);
+ assert.deepEqual(received,[cue(2),cue(1)]);assert.equal(game.guestSession.world.players[1].bleedStacks,2,'late event cannot roll status back');
+ const oldSeq=message.seq;game.guest.on_start({loadouts:game.guestSession.loadouts,snapshotFloor:oldSeq});
+ game.guest.receive(message);assert.equal(game.guest.inbox.length,0);assert.equal(game.guest.eventSequences.size,0);
+ assert.deepEqual(game.guestSession.world.players.map(p=>p.bleedStacks),[0,0]);
+});
+
+test('discrete health and round outcomes reach their endpoint with cues while movement interpolates',()=>{
+ const game=pair();ready(game);game.host.start();game.net.flush();game.tick(2.6);
+ game.host.afterTick(1/60,[]);const template=game.net.queues[1].find(m=>m.type==='snap');assert.ok(template);
+ game.net.queues[1].length=0;
+ const before={...template,state:'playing',winner:null,players:template.players.map(p=>({...p,health:100,bleedStacks:0}))};
+ const after={...before,state:'result',winner:0,players:before.players.map((p,i)=>({...p,health:i?0:100,bleedStacks:i?2:0,p:{...p.p,x:p.p.x+1}}))};
+ game.guest.applySnapshot(before,after,.5);
+ assert.equal(game.guestSession.world.players[1].health,100);
+ assert.equal(game.guestSession.world.players[1].bleedStacks,0);
+ assert.equal(game.guestSession.world.winner,null);assert.equal(game.guestSession.state,'playing');
+ assert.equal(game.guestSession.world.players[1].p.x,before.players[1].p.x+.5);
+ game.guest.applySnapshot(before,after,1);
+ assert.equal(game.guestSession.world.players[1].health,0);
+ assert.equal(game.guestSession.world.players[1].bleedStacks,2);
+ assert.equal(game.guestSession.world.winner,0);assert.equal(game.guestSession.state,'result');
+ assert.equal(game.guestSession.world.players[1].p.x,after.players[1].p.x);
+});
+
+test('presentation dedup and pending event queues are bounded',()=>{
+ const game=pair();ready(game);game.host.start();game.net.flush();
+ game.host.afterTick(1/60,[]);const template=game.net.queues[1].find(m=>m.type==='snap');assert.ok(template);
+ const start=game.guest.lastSeq;
+ for(let i=1;i<=4200;i++)game.guest.on_snap({...template,seq:start+i,events:[{type:'growth'}]});
+ assert.equal(game.guest.eventSequences.size,4096);assert.equal(game.guest.inbox.length,120);
+ const pending=game.guest.inbox.length;game.guest.on_snap({...template,seq:start+1,events:[{type:'growth'}]});assert.equal(game.guest.inbox.length,pending);
+ game.guest.closed();assert.equal(game.guest.inbox.length,0);assert.equal(game.guest.eventSequences.size,0);
+});
+
+test('both peers respect the two-second opening skill lock and early taps are discarded',()=>{
+ const game=pair();ready(game,{characterId:'maodie',weaponId:'maodie-paw'},{characterId:'mean-girl',weaponId:'crowned-heart'});
+ game.host.start();game.net.flush();game.tick(2.6);
+ assert.equal(game.hostSession.state,'playing');assert(game.hostSession.world.roundTime<2);
+ game.hostSession.keyDown('KeyF');game.guestSession.keyDown('KeyF');game.tick(.1);
+ for(const p of game.hostSession.world.players)assert.equal(p.skillCooldown,0);
+ game.tick(2.1);for(const p of game.hostSession.world.players)assert.equal(p.skillCooldown,0);
+ for(const session of [game.hostSession,game.guestSession]){session.keyUp('KeyF');session.keyDown('KeyF');}
+ game.tick(.2);for(const p of game.hostSession.world.players)assert(p.skillCooldown>0);
+ game.tick(.1);for(const p of game.guestSession.world.players)assert(p.skillCooldown>0);
 });

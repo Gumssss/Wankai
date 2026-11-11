@@ -131,7 +131,7 @@ function weaponVoice(ctx, out, t, id, s, a, b) {
 
 /** Plush body taking the blow + a sub-bass punch on big hits. */
 function bodyThud(ctx, out, t, s, a) {
-  osc(ctx, out, t, { freq: 140 * vary(50), freqEnd: 58, peak: 0.38 * a, attack: 0.002, decay: 0.15 });
+  osc(ctx, out, t, { freq: 125 * vary(50), freqEnd: 52, peak: 0.40 * a, attack: 0.002, decay: 0.17 });
   noise(ctx, out, t, { type: 'lowpass', freq: 500 + 900 * s, q: 0.5, peak: 0.26 * a, decay: 0.07 });
   if (s > 0.55) {
     const k = (s - 0.55) / 0.45;
@@ -148,7 +148,7 @@ export function hitSound(ctx, out, t, event) {
   }
   if (event.source === 'soccer') {
     ballPop(ctx, out, t, s, a * 1.25);
-    bodyThud(ctx, out, t + 0.012, s, a * 0.48);
+    bodyThud(ctx, out, t + 0.012, s, a * 0.65);
     return;
   }
   if (event.source === 'delivery') {

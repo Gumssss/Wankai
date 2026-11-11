@@ -6,6 +6,7 @@ import { createDeathPortraits } from './death-portrait.js';
 import { loadoutKey } from './loadouts.js';
 import { cameraYaw } from './free-camera.js';
 import { fighterScale } from './match-growth.js';
+import { damagePopScale } from './impact-feedback.js';
 import { preloadCharacterModels, characterModelsReady } from './models/character-assets.js';
 
 // The imported character models start downloading as soon as the game loads;
@@ -45,6 +46,7 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
   useEffect(() => { scene.fog = view.fog; return () => { scene.fog = null; }; }, [scene, view]);
   useEffect(() => { view.sensitivity = sensitivity; view.invertY = invertY; }, [view, sensitivity, invertY]);
   const revision = useRef(session.visualRevision);
+  const wasDisconnected = useRef(false);
   const point = useMemo(() => new Vector3(), []);
   const headingForward = useMemo(() => new Vector3(), []);
   const headingRight = useMemo(() => new Vector3(), []);
@@ -97,21 +99,30 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
   useFrame((_, delta) => {
     const impacts = session.tick(delta);
     const world = session.world;
+    const disconnected = session.mode === 'online' && session.net?.phase === 'closed';
+    if (disconnected && !wasDisconnected.current) {
+      view.clearEffects();
+      session.effects = [];
+      session.healthFlashes.fill(0);
+      session.finishTime=0;
+      session.publish();
+    }
+    wasDisconnected.current = disconnected;
     deathPortraits.current?.update(world.players, world.winner, session.state, Math.min(delta, 0.06));
-    const mode = session.state === 'lobby' ? (session.setupPreview ? 'setup' : 'lobby') : session.state === 'result' && world.winner >= 0 ? 'victory' : 'match';
+    const mode = session.state === 'lobby' ? (session.setupPreview ? 'setup' : 'lobby') : session.state === 'result' && world.winner >= 0 && !session.finishTime ? 'victory' : 'match';
     if (revision.current !== session.visualRevision) {
       view.clearEffects();
       view.resetCamera();
       revision.current = session.visualRevision;
     }
     for (const event of impacts) {
-      view.impact(event, world.players[event.player]);
+      view.impact(event, world.players[event.player], world.players);
       // After teleporting behind the opponent, turn the view to face them.
       if (event.type === 'skill' && event.skill === 'twist' && event.player === session.localPlayerId && event.to) view.faceTowards(event.to.face);
     }
-    const effectDelta = session.state === 'paused' ? 0 : Math.min(delta, 0.06);
-    view.update(world.players, effectDelta, { active: session.state === 'playing' || session.state === 'result', cameraDt: Math.min(delta, 0.06),
-      view: mode, localPlayerId: session.localPlayerId, winner: world.winner, projectiles: world.projectiles || [], preview: session.setupPreview });
+    const effectDelta = session.state === 'paused' || disconnected ? 0 : Math.min(delta, 0.06);
+    view.update(world.players, effectDelta, { active: !disconnected && (session.state === 'playing' || session.state === 'result'), cameraDt: Math.min(delta, 0.06),
+      view: mode, localPlayerId: session.localPlayerId, winner: world.winner, projectiles: world.projectiles || [], preview: session.setupPreview, finishTime: session.finishTime });
     session.localFaceYaw = mode === 'match' ? cameraYaw(view.followCamera) : null;
     // Hand the cursor back for menus, results and pause.
     if ((!LOOK_STATES.has(session.state) || session.menuOpen) && document.pointerLockElement === gl.domElement) document.exitPointerLock();
@@ -141,7 +152,8 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
       else point.set(effect.point.x, effect.point.y + 0.5 + rise, effect.point.z);
       const screen = view.project(point, activeCamera, viewport);
       element.style.visibility = screen.visible ? 'visible' : 'hidden';
-      element.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-50%)`;
+      const pop = effect.kind === 'direct' && !view.reducedMotion ? damagePopScale(effect.maxLife - effect.life) : 1;
+      element.style.transform = `translate(${screen.x}px,${screen.y}px) translate(-50%,-50%) scale(${pop})`;
       element.style.opacity = String(Math.min(1, effect.life * 3));
     }
   }, 1);

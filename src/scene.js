@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import { MATCH_ARENA_SCALE, bodyFloor, weaponStats, staffFrame, fighterHeading, clamp, makePlayer, v3, isAnatomical, weaponSegments } from './physics.js';
+import { FEEDBACK, classifyImpact, recoilEnvelope, kickEnvelope, damageCameraKick } from './impact-feedback.js';
+import { ImpactFx } from './impact-fx.js';
+import { MATCH_ARENA_SCALE, bodyFloor, weaponStats, staffFrame, fighterHeading, clamp, makePlayer, v3, isAnatomical, weaponSegments, bodyHitSegments } from './physics.js';
 import { stowed, protectedPlayer, perfumeFrame, SOCCER_RADIUS } from './arena-skills.js';
 import { fighterScale } from './match-growth.js';
 import { CHARACTERS } from './character-catalog.js';
@@ -90,8 +92,15 @@ export class ArenaView {
     this.flightPivot = new THREE.Vector3(0, 1, 0);
     this.focus = new THREE.Vector3();
     this.particles = [];
+    this.particlePool = [];
+    this.particleGeometry = { puff: new THREE.SphereGeometry(1, 10, 8), heart: new THREE.OctahedronGeometry(1, 0), box: new THREE.BoxGeometry(1, 1.5, 1) };
+    this.contactOverlay = new THREE.Group(); this.contactOverlay.visible = false; this.effectsRoot.add(this.contactOverlay);
     this.rings = [];
     this.bags = new Map();
+    this.ballTrails = new Map();
+    this.impactFx = new ImpactFx(this.effectsRoot);
+    this.perfumeEmission = [0, 0];
+    this.cameraKicks = [null, null];
     this.laughPulse = [0, 0];
     this.trailTime = 0;
     this.time = viewClock;
@@ -129,7 +138,12 @@ export class ArenaView {
   makeFighter(id) {
     const loadout = this.loadouts[id], weaponType = loadout.weaponId;
     const character = buildCharacter(loadout, id);
-    this.actors.add(character.root);
+    // A separate foot-pivot presentation wrapper never changes collision transforms.
+    const presentation = new THREE.Group(), reactionPivot = new THREE.Group();
+    const floor = bodyFloor(makePlayer(id, loadout));
+    reactionPivot.position.y = -floor;
+    character.root.position.y = floor;
+    reactionPivot.add(character.root); presentation.add(reactionPivot); this.actors.add(presentation);
     const weapon = buildWeapon(weaponType, id), staff = new THREE.Group();
     staff.add(weapon.root);
     this.actors.add(staff);
@@ -142,7 +156,7 @@ export class ArenaView {
     const cap=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.12,12),new THREE.MeshStandardMaterial({color:0xe7c777}));cap.position.y=.7;perfume.add(cap);
     const nozzle=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.1,8),cap.material);nozzle.rotation.z=-Math.PI/2;nozzle.position.set(.06,.7,0);perfume.add(nozzle);
     this.actors.add(perfume);
-    return { aura,perfume,character, weapon, staff, marker, contact, trails: Array.from({length:isAnatomical(makePlayer(id,loadout))?2:1},()=>this.makeTrail(weaponType)), weaponType };
+    return { presentation, reactionPivot, reaction: null, aura,perfume,character, weapon, staff, marker, contact, trails: Array.from({length:isAnatomical(makePlayer(id,loadout))?2:1},()=>this.makeTrail(weaponType)), weaponType };
   }
 
   resize(width, height) {
@@ -224,7 +238,29 @@ export class ArenaView {
   }
 
   // view: 'lobby' | 'setup' | 'match' | 'victory'. winner: the fighter the victory camera frames.
-  update(players, dt, { active = false, cameraDt = dt, view = 'lobby', localPlayerId = 0, winner = null, projectiles = [], preview = null } = {}) {
+  update(players, dt, { active = false, cameraDt = dt, view = 'lobby', localPlayerId = 0, winner = null, projectiles = [], preview = null, finishTime = 0 } = {}) {
+    const feedbackDt=dt;
+    if (finishTime > 0 && !this.finishPresentation) {
+      this.finishPresentation = { players: players.map(p=>({...p,p:{...p.p},v:{...p.v}})), camera:this.followCamera.camera.clone() };
+      const burst=this.impactFx.active.findLast(e=>e.kind==='burst' && e.life > FEEDBACK.BURST_LIFE*.6);
+      if (burst) { burst.size*=1.3; burst.screenMinimum=.05; burst.life=burst.maxLife=.45; }
+    }
+    if (!finishTime && this.finishPresentation) {
+      this.followCamera.camera.fov=this.finishPresentation.camera.fov;
+      this.followCamera.camera.updateProjectionMatrix();
+      this.finishPresentation=null;
+    }
+    const finishAge=FEEDBACK.FINISH_LIFE-finishTime;
+    if (finishTime > 0 && !this.reducedMotion) {
+      const blend=clamp((finishAge-FEEDBACK.FINISH_HOLD)/(FEEDBACK.FINISH_LIFE-FEEDBACK.FINISH_HOLD),0,1);
+      players=players.map((p,i)=>{
+        const from=this.finishPresentation.players[i], shown={...p};
+        shown.p=vec(from.p).lerp(vec(p.p),blend);
+        for (const key of ['theta','phi','bodyYaw']) shown[key]=from[key]+Math.atan2(Math.sin(p[key]-from[key]),Math.cos(p[key]-from[key]))*blend;
+        return shown;
+      });
+      if (finishAge < FEEDBACK.FINISH_HOLD) dt=0;
+    }
     const setup = view === 'setup';
     this.showPreview(setup ? preview : null);
     // Flying back to the title shot, the fighters there would fill the lens
@@ -248,11 +284,25 @@ export class ArenaView {
     for (const p of players) {
       const model = this.players[p.id];
       const scale = fighterScale(p);
-      model.character.root.position.copy(vec(p.p));
-      model.character.root.rotation.y = -fighterHeading(p);
+      model.presentation.position.copy(vec(p.p));
+      model.presentation.rotation.y = -fighterHeading(p);
       model.character.pose(p, this.time);
       // Attached ears and paws already inherit this scale from the body root.
-      model.character.root.scale.setScalar(scale);
+      model.presentation.scale.setScalar(scale);
+      model.reactionPivot.quaternion.identity();
+      model.reactionPivot.scale.setScalar(1);
+      if (model.reaction) {
+        model.reaction.age += dt;
+        if (model.reaction.age >= FEEDBACK.RECOIL_LIFE) model.reaction = null;
+        else if (!this.reducedMotion) {
+          const amount = recoilEnvelope(model.reaction.age), y = 1 - FEEDBACK.SQUASH * Math.max(0, amount);
+          model.reactionPivot.quaternion.setFromAxisAngle(model.reaction.axis, model.reaction.angle * amount);
+          model.reactionPivot.scale.set(1 / Math.sqrt(y), y, 1 / Math.sqrt(y));
+          // Brief, bounded victim vibration; presentation only, never the hitbox.
+          const jitter=.018*scale*Math.sin(model.reaction.age*30*Math.PI*2)*Math.max(0,1-model.reaction.age/.1);
+          model.presentation.position.x+=jitter;
+        }
+      }
       model.staff.visible = !hidden && !stowed(p);
       const lifesteal = view === 'match' && p.skill === 'lifesteal' && p.skillActive && p.health > 0;
       model.aura.visible = !hidden && (protectedPlayer(p) || lifesteal);
@@ -269,7 +319,10 @@ export class ArenaView {
         const sprayYaw = p.sprayYaw || 0;
         model.perfume.rotation.y = -sprayYaw;
         model.perfume.scale.setScalar(scale);
-        if (p.abilityPhase === 'active' && dt > 0) {
+        if (p.abilityPhase === 'active' && dt > 0) this.perfumeEmission[p.id] += dt * FEEDBACK.PERFUME_RATE;
+        else if (p.abilityPhase !== 'active') this.perfumeEmission[p.id] = 0;
+        while (this.perfumeEmission[p.id] >= 1 && dt > 0) {
+          this.perfumeEmission[p.id]--;
           const yaw = sprayYaw + (Math.random() - 0.5) * 70 * Math.PI / 180;
           const velocity = new THREE.Vector3(Math.cos(yaw) * reach, (Math.random() * 2 - 1) * halfHeight, Math.sin(yaw) * reach)
             .multiplyScalar(1 / PERFUME_PARTICLE_TRAVEL);
@@ -321,7 +374,8 @@ export class ArenaView {
           { size: 0.11 * scale, life: 1.1, float: true, shape: 'heart' });
       }
     }
-    this.updateBags(projectiles);
+    this.updateContactOverlay(players);
+    this.updateBags(projectiles, dt);
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.life -= dt;
@@ -358,6 +412,32 @@ export class ArenaView {
     }
     this.updateFlight(view, cameraDt);
     const camera = this.activeCamera(view);
+    for (let id=0;id<this.cameraKicks.length;id++) {
+      const kick=this.cameraKicks[id];
+      if (!kick) continue;
+      kick.age+=feedbackDt;
+      if (kick.age>=kick.duration) this.cameraKicks[id]=null;
+    }
+    if (finishTime > 0 && !this.reducedMotion) {
+      const held=this.finishPresentation.camera;
+      camera.position.copy(held.position);camera.quaternion.copy(held.quaternion);
+      camera.fov=held.fov*(1-.08*Math.sin(Math.PI*finishAge/FEEDBACK.FINISH_LIFE));
+      camera.updateProjectionMatrix();
+    }
+    const kick=this.cameraKicks[localPlayerId];
+    if (kick && !this.reducedMotion && view === 'match') {
+      const envelope=kickEnvelope(kick.age,kick.duration), phase=kick.age/kick.duration*Math.PI*4;
+      const horizontal=Math.cos(phase)*envelope*kick.direction;
+      const vertical=Math.sin(phase+.6)*envelope;
+      camera.rotateZ(kick.angle*horizontal);
+      camera.rotateX(kick.angle*.4*vertical);
+      const offset=kick.translation*fighterScale(local);
+      camera.translateX(offset*horizontal);
+      camera.translateY(offset*.55*vertical);
+    }
+    camera.updateMatrixWorld();
+    this.impactFx.update(dt, camera, players, this.reducedMotion);
+    this.impactFx.updateBleeding(players,dt,camera,view === 'match',this.reducedMotion);
     // Both fighters, so occluding walls and props open up for either; off on the title orbit.
     const fighters = view === 'match' || view === 'victory' ? players.map(p => p.p) : null;
     this.arenaBuild.update(dt || cameraDt, camera, view === 'match' ? this.focus : null, fighters);
@@ -399,7 +479,7 @@ export class ArenaView {
     camera.updateMatrixWorld();
   }
 
-  updateBags(projectiles) {
+  updateBags(projectiles, dt = 0) {
     const seen = new Set();
     for (const shot of projectiles) {
       seen.add(shot.id);
@@ -409,6 +489,27 @@ export class ArenaView {
         this.effectsRoot.add(bag);
         this.bags.set(shot.id, bag);
       }
+      if (shot.type === 'soccer') {
+        let trail = this.ballTrails.get(shot.id);
+        if (!trail) {
+          const geometry = new THREE.BufferGeometry();
+          geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(FEEDBACK.TRAIL_POINTS * 3), 3));
+          const mesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0xffed9e, transparent: true, opacity: 0.6, depthWrite: false }));
+          mesh.frustumCulled = false; this.effectsRoot.add(mesh);
+          trail = { mesh, history: [], bounces: shot.bounce }; this.ballTrails.set(shot.id, trail);
+        }
+        if (trail.bounces !== shot.bounce) { trail.history.length = 0; trail.bounces = shot.bounce; }
+        if (dt > 0) {
+          if (trail.history[0]?.distanceTo(vec(shot.p)) > Math.max(4 * shot.radius, Math.hypot(shot.v.x, shot.v.y, shot.v.z) * 0.12)) trail.history.length = 0;
+          const sample = vec(shot.p); sample.recordedAt = this.time;
+          trail.history.unshift(sample);
+          trail.history = trail.history.filter(point => this.time - point.recordedAt <= 0.12).slice(0, FEEDBACK.TRAIL_POINTS);
+          const positions = trail.mesh.geometry.attributes.position;
+          trail.history.forEach((point, index) => point.toArray(positions.array, index * 3));
+          positions.needsUpdate = true; trail.mesh.geometry.setDrawRange(0, trail.history.length);
+        }
+        trail.mesh.visible = trail.history.length > 1 && !this.reducedMotion;
+      }
       bag.position.copy(vec(shot.p));
       bag.rotation.set(shot.spin * 0.7, Math.atan2(-shot.v.z, shot.v.x), shot.spin);
     }
@@ -416,7 +517,36 @@ export class ArenaView {
       this.effectsRoot.remove(bag);
       disposeObject(bag);
       this.bags.delete(id);
+      const trail = this.ballTrails.get(id);
+      if (trail) { this.removeEffect(trail.mesh); this.ballTrails.delete(id); }
     }
+  }
+
+  // Developer inspection only: cyan = physical collision, yellow = body-hit assistance.
+  setContactOverlay(enabled) { this.contactOverlay.visible = !!enabled; }
+  updateContactOverlay(players) {
+    if (!this.contactOverlay.visible) return;
+    let index = 0;
+    for (const p of players) for (const [assisted, segments] of [[false, weaponSegments(p)], [true, bodyHitSegments(p)]]) {
+      for (const segment of segments) {
+        let group = this.contactOverlay.children[index++];
+        if (!group) {
+          group = new THREE.Group();
+          const material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3, wireframe: true, depthWrite: false });
+          group.add(new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 8), material),
+            new THREE.Mesh(new THREE.SphereGeometry(1, 8, 6), material), new THREE.Mesh(new THREE.SphereGeometry(1, 8, 6), material));
+          this.contactOverlay.add(group);
+        }
+        group.visible = true;
+        const a = vec(segment.a), b = vec(segment.b), direction = b.clone().sub(a), length = direction.length();
+        const [shaft, start, end] = group.children;
+        shaft.material.color.setHex(assisted ? 0xffdf42 : 0x47e5ff);
+        shaft.position.copy(a).lerp(b, 0.5);shaft.scale.set(segment.radius, Math.max(length, 0.001), segment.radius);
+        shaft.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), length > 0 ? direction.normalize() : new THREE.Vector3(0, 1, 0));
+        start.position.copy(a);end.position.copy(b);start.scale.setScalar(segment.radius);end.scale.setScalar(segment.radius);
+      }
+    }
+    for (; index < this.contactOverlay.children.length; index++) this.contactOverlay.children[index].visible = false;
   }
 
   resetCamera() { resetFreeCamera(this.followCamera); }
@@ -428,14 +558,18 @@ export class ArenaView {
 
   removeEffect(mesh) {
     this.effectsRoot.remove(mesh);
+    if (mesh.userData.particle) { this.particlePool.push(mesh); return; }
     mesh.geometry.dispose();
     mesh.material.dispose();
   }
 
   addParticle(point, velocity, color, { size = 1, life = 0.5, float = false, grow = 0, shape = 'box', opacity = 1 } = {}) {
-    const geometry = shape === 'puff' ? new THREE.SphereGeometry(1, 10, 8)
-      : shape === 'heart' ? new THREE.OctahedronGeometry(1, 0) : new THREE.BoxGeometry(1, 1 + Math.random(), 1);
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: grow > 0 || opacity < 1, opacity, depthWrite: grow === 0 }));
+    if (this.particles.length >= FEEDBACK.MAX_PARTICLES) this.removeEffect(this.particles.shift().mesh);
+    const mesh = this.particlePool.pop() ?? new THREE.Mesh(this.particleGeometry.box, new THREE.MeshBasicMaterial());
+    mesh.userData.particle = true;
+    mesh.geometry = this.particleGeometry[shape] ?? this.particleGeometry.box;
+    mesh.material.color.setHex(color); mesh.material.transparent = true; mesh.material.opacity = opacity;
+    mesh.material.depthWrite = grow === 0;
     mesh.position.copy(vec(point));
     mesh.rotation.set(Math.random() * 3, Math.random() * 3, 0);
     mesh.scale.setScalar(size);
@@ -444,6 +578,7 @@ export class ArenaView {
   }
 
   addRing(point, color, { radius = 0.5, flat = true, life = 0.55, grow = 3, opacity = 0.6, facing = 0 } = {}) {
+    if (this.rings.length >= FEEDBACK.MAX_RINGS) this.removeEffect(this.rings.shift().mesh);
     const mesh = new THREE.Mesh(new THREE.RingGeometry(radius, radius * 1.22, 48),
       new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, side: THREE.DoubleSide }));
     if (flat) mesh.rotation.x = -Math.PI / 2;
@@ -453,39 +588,43 @@ export class ArenaView {
     this.rings.push({ mesh, life, maxLife: life, grow, opacity });
   }
 
-  impact(event, player) {
+  impact(event, player, players = []) {
     if (event.type === 'skill') return this.skillEffect(event, player ? fighterScale(player) : 1);
-    if (event.type === 'splat') {
-      for (let i = 0; i < 14; i++) this.addParticle(event.point, new THREE.Vector3((Math.random() - 0.5) * 4, Math.random() * 3 + 1, (Math.random() - 0.5) * 4),
-        i % 3 ? 0xf5c518 : 0xfbf8f0, { size: 0.08, life: 0.5 + Math.random() * 0.3 });
-      this.addRing({ ...event.point, y: 0.03 }, 0xf5c518, { radius: 0.3, grow: 2.5, life: 0.5 });
+    const feedback = classifyImpact(event), target = players[event.target];
+    const scale = target ? fighterScale(target) : 1;
+    if (event.type === 'hit' && !this.reducedMotion && (event.target === 0 || event.target === 1)) {
+      const kick=damageCameraKick(event.damage);
+      if (kick) this.cameraKicks[event.target]={...kick,age:0,direction:event.target===0?1:-1};
+    }
+    if (feedback.kind === 'heal') return this.impactFx.heal(event);
+    if (feedback.kind === 'stack') return this.impactFx.stack(event, scale);
+    if (!event.point) return;
+    if (feedback.kind === 'bleed') {
+      for (let i = 0; i < 3; i++) this.addParticle(event.point,
+        new THREE.Vector3((Math.random() - 0.5) * 0.8, Math.random() * 0.5, (Math.random() - 0.5) * 0.8),
+        0xc92e45, { size: 0.035 * Math.min(scale, 2), life: 0.35 });
       return;
     }
-    if (event.type !== 'hit' && event.type !== 'clash') return;
-    if (event.source === 'bleed') {
-      for (let i = 0; i < 5; i++) this.addParticle(event.point,
-        new THREE.Vector3((Math.random() - 0.5) * 1.2, Math.random() * 0.8, (Math.random() - 0.5) * 1.2),
-        0xc92e45, { size: 0.045, life: 0.4 + Math.random() * 0.2 });
-      return;
-    }
-    const isHit = event.type === 'hit';
-    this.shake = Math.max(this.shake, event.strength * (isHit ? 0.3 : 0.1));
-    const count = isHit ? Math.round(10 + event.strength * 14) : 9;
-    const accent = weaponColor(event.weapon ?? event.weapons?.[0]);
+    if (feedback.kind === 'direct') {
+      this.impactFx.hit(event, feedback, scale);
+      const model = this.players[event.target];
+      if (model && target && !this.reducedMotion) {
+        const normal = event.normal ?? { x: 1, y: 0, z: 0 };
+        const direction = new THREE.Vector3(normal.x, 0, normal.z);
+        if (direction.lengthSq() < 0.001) direction.set(1, 0, 0);
+        direction.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), fighterHeading(target));
+        model.reaction = { age: 0, axis: new THREE.Vector3(direction.z, 0, -direction.x),
+          angle: feedback.heavy ? FEEDBACK.HEAVY_RECOIL_ANGLE : FEEDBACK.RECOIL_ANGLE };
+      }
+    } else if (feedback.kind === 'clash' || feedback.kind === 'bounce') {
+      this.impactFx.clash(event, feedback.kind === 'bounce' ? 0.65 : 1);
+    } else if (event.type !== 'splat') return;
+    const count = feedback.kind === 'direct' ? (feedback.heavy ? 10 : 6) : 4;
     for (let i = 0; i < count; i++) {
-      const normal = event.normal || { x: 0, y: 0.5, z: 0 };
-      const velocity = new THREE.Vector3((Math.random() - 0.5) * 5 + normal.x * 2, Math.random() * 4 + 1, (Math.random() - 0.5) * 5 + normal.z * 2);
-      const color = i % 3 === 0 && isHit ? PLAYER_COLORS[event.target] : i % 2 === 0 ? 0xfff9de : accent;
-      this.addParticle(event.point, velocity, color, { size: 0.06, life: 0.3 + Math.random() * 0.35 });
+      const normal = event.normal ?? { x: 0, y: 0.5, z: 0 };
+      this.addParticle(event.point, new THREE.Vector3((Math.random() - 0.5) * 3 + normal.x * 2, Math.random() * 3 + 1, (Math.random() - 0.5) * 3 + normal.z * 2),
+        feedback.kind === 'clash' ? (i % 2 ? 0xdde8f2 : 0x7e93a8) : feedback.kind === 'bounce' ? 0xc5bdaa : i % 2 ? 0xfff9de : weaponColor(event.weapon ?? event.weapons?.[0]), { size: 0.05 * Math.min(scale, 2), life: 0.22 + Math.random() * 0.12 });
     }
-    // A wire burst at the contact and, for hits, a shockwave ring on the floor.
-    const burst = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 8),
-      new THREE.MeshBasicMaterial({ color: 0xfff8df, transparent: true, opacity: 0.8, wireframe: true, depthWrite: false }));
-    burst.position.copy(vec(event.point));
-    this.effectsRoot.add(burst);
-    this.rings.push({ mesh: burst, life: 0.3, maxLife: 0.3, grow: 3, opacity: 0.8 });
-    if (isHit) this.addRing({ x: event.point.x, y: 0.03, z: event.point.z }, PLAYER_COLORS[event.attacker] ?? 0xffffff,
-      { grow: 2.5 + event.strength * 3, life: 0.55 });
   }
 
   skillEffect(event, scale = 1) {
@@ -517,12 +656,28 @@ export class ArenaView {
     this.rings = [];
     this.updateBags([]);
     this.shake = 0;
+    this.cameraKicks = [null, null];
+    if (this.finishPresentation) {
+      this.followCamera.camera.fov=this.finishPresentation.camera.fov;
+      this.followCamera.camera.updateProjectionMatrix();
+    }
+    this.finishPresentation=null;
+    this.impactFx.clear();
+    this.perfumeEmission.fill(0);
+    for (const model of this.players) {
+      model.reaction = null;
+      model.reactionPivot.quaternion.identity(); model.reactionPivot.scale.setScalar(1);
+    }
     for (const p of this.players) for (const trail of p.trails) trail.history.length = 0;
   }
 
   dispose() {
     this.disposed = true;
     this.clearEffects();
+    this.impactFx.dispose();
+    for (const mesh of this.particlePool) mesh.material.dispose();
+    this.particlePool.length = 0;
+    for (const geometry of Object.values(this.particleGeometry)) geometry.dispose();
     this.showPreview(null, true);
     for (const root of [this.arena, this.actors, this.effectsRoot]) disposeObject(root);
   }

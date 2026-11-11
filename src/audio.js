@@ -2,6 +2,7 @@
 // Real clips in public/audio/sfx/, voices/ and music/ replace the synthesized
 // versions when present (see public/audio/README.md).
 // Safe to import and call in Node (no AudioContext): every method becomes a no-op.
+import { FEEDBACK, classifyImpact } from './impact-feedback.js';
 import { clamp01 } from './audio/core.js';
 import {
   hitSound, clashSound, splatSound, weaponContactSound, soccerBounceSound,
@@ -123,6 +124,9 @@ export class GameAudio {
     const ctx = this.context;
     // sfx/music buses -> master (on/off) -> limiter -> soft clip -> out
     this.sfxBus = ctx.createGain();
+    this.directHitBus = ctx.createGain();
+    this.directHitBus.gain.value = FEEDBACK.DIRECT_HIT_GAIN;
+    this.directHitBus.connect(this.sfxBus);
     this.musicBus = ctx.createGain();
     this.duck = ctx.createGain();
     this.master = ctx.createGain();
@@ -291,11 +295,11 @@ export class GameAudio {
     if (!IMPACT_TYPES.has(type)) return;
     const t = this.now();
     // Multiple physics events can reach the mixer in the same render frame.
-    const key = `${type}:${event.attacker ?? event.player ?? ''}:${event.surface ?? ''}`;
+    const key = `${type}:${event.attacker ?? event.player ?? ''}:${event.surface ?? ''}:${event.source ?? ''}`;
     if (t - (this.lastImpact.get(key) ?? -1) < 0.03) return;
     this.lastImpact.set(key, t);
     try {
-      if (type === 'hit') hitSound(this.context, this.sfxBus, t, event);
+      if (type === 'hit') hitSound(this.context, classifyImpact(event).kind === 'direct' ? this.directHitBus : this.sfxBus, t, event);
       else if (type === 'splat') splatSound(this.context, this.sfxBus, t, event);
       else if (type === 'weapon-contact') weaponContactSound(this.context, this.sfxBus, t, event);
       else if (type === 'soccer-bounce') soccerBounceSound(this.context, this.sfxBus, t, event);

@@ -42,7 +42,7 @@ test('Maodie heals twice the HP actually removed by an active melee hit', () => 
     }
     const expected = 2 * (initialHP - target.health);
     assert.equal(attacker.health, 10 + expected);
-    assert.deepEqual(heals(world), [{ type: 'heal', player: attacker.id, amount: expected, point: attacker.p, source: 'lifesteal' }]);
+    assert.deepEqual(heals(world), [{ type: 'heal', player: attacker.id, amount: expected, point: attacker.p, sourcePoint: hitEvent(world).point, source: 'lifesteal' }]);
   }
 });
 

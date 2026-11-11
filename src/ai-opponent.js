@@ -54,7 +54,7 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
     if (!skill || self.skillCooldown > 0 || self.skillActive || now < memory.skillCheckAt) return false;
     memory.skillCheckAt = now + Math.max(0.25, settings.reaction * 2);
     const bearing = Math.atan2(target.p.z - self.p.z, target.p.x - self.p.x);
-    const useful = skill.id==='perfume'?!target.bleedActive&&distance<4*fighterScale(self)&&self.stamina>=35:skill.id==='ricochet'?distance<9&&self.stamina>=40:skill.id === 'laugh' ? distance < reach * 1.8 && target.stamina > 70
+    const useful = skill.id==='perfume'?distance<4*fighterScale(self)&&self.stamina>=35:skill.id==='ricochet'?distance<9&&self.stamina>=40:skill.id === 'laugh' ? distance < reach * 1.8 && target.stamina > 70
       : skill.id === 'twist' ? distance > reach * 2.4 || now - memory.progressAt > 2
       : skill.id === 'delivery' ? distance > 3 && distance < 11 && Math.abs(wrap(fighterHeading(self) - bearing)) < 0.12
       : skill.id === 'happy' ? self.health < 70 : skill.id==='rotor'?self.stamina>=80&&distance<reach*2

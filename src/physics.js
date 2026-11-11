@@ -9,8 +9,8 @@ import {BEAGLE_COMMON_OFFSETS} from './character-attachments.js';
 import {BEAGLE_SKILL,beaglePointFrame,updateBeagleSkill,applyBeagleHover} from './beagle-skill.js';
 import {ROTOR_RESOURCE,staminaPower as animalPower} from './animal-settings.js';
 import {normalizeLoadout,resolveLoadout} from './loadouts.js';
-import { obstacleContact } from './arena-obstacles.js';
-import { SKILLS, skillFor } from './skills.js';
+import { obstacleContact, segmentIntersectsObstacle } from './arena-obstacles.js';
+import { SKILLS, skillFor, skillOpeningLock } from './skills.js';
 import { ARENA_PROFILE, arenaPlacement } from './arena-profile.js';
 import { GROWTH_START, GROWTH_END, growthAt, fighterScale, fighterDamageScale } from './match-growth.js';
 export const CONFIG = Object.freeze({
@@ -180,7 +180,7 @@ export function makePlayer(id, selection = 'polearm') {
     wp: 0,
     // F skill: skillTime counts down the active effect, skillCooldown the wait.
     skill:resolveLoadout({characterId,weaponId:weapon}).skill?.id??null, skillActive: false, skillTime: 0, skillCooldown: 0, abilityPhase:"idle",abilityTime:0,releaseGate:false,abilityAttackGate:false,launchPending:false,sprayYaw:0,
-    bleedActive:false,bleedTick:0,bleedOwner:null,
+    bleedStacks:0,bleedTick:0,bleedOwner:null,perfumeHitTargets:0,
     driveT: 0,
     driveP: 0,
     maxHealth:CHARACTERS[characterId].maxHealth??CONFIG.maxHealth,
@@ -265,6 +265,11 @@ function transformedWeaponSegments(player,visual=false) {
 
 export const weaponSegments=p=>stowed(p)?[]:transformedWeaponSegments(p);
 export const visualWeaponSegments=p=>transformedWeaponSegments(p,true);
+export const BODY_HIT_ASSIST = Object.freeze({ default: 1.5, pan: 1.15 });
+// Only damage queries use these volumes. Physical support, blocking and props
+// continue to consume weaponSegments with the original radii.
+export const bodyHitSegments = p => weaponSegments(p).map(segment => ({ ...segment,
+  physicalRadius: segment.radius, radius: segment.radius * (BODY_HIT_ASSIST[p.weapon] ?? BODY_HIT_ASSIST.default) }));
 
 const segmentFrame = (player, segment, fraction) => weaponPointFrame(player,
   add(segment.localA, mul(sub(segment.localB, segment.localA), fraction)),segment.anchor);
@@ -429,11 +434,11 @@ function contactMotion(player, start) {
 
 // Inspect intermediate rigid poses, including curved rotation and heading wrap.
 // Only contacts are sampled: motors, stamina, gravity and ground support still
-// advance once per fixed tick. No extra radius is added to any shape.
+// advance once per fixed tick. Each detector chooses physical or assisted radii.
 function contactAlongMotion(a, b, previous, detect) {
   if (!previous) {
-    const contact = detect(a, b);
-    return contact && { ...contact, poseA: a, poseB: b };
+    const contact = detect(a, b, 0);
+    return contact && { ...contact, poseA: a, poseB: b, fraction: 0 };
   }
   const startA = previous[a.id], startB = previous[b.id];
   const motionA = contactMotion(a, startA), motionB = contactMotion(b, startB);
@@ -447,8 +452,8 @@ function contactAlongMotion(a, b, previous, detect) {
     theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t, bodyYaw: start.bodyYaw + motion.body * t,earSpread:(start.earSpread||0)+motion.earSpread*t,earLag:(start.earLag||0)+motion.earLag*t });
   const inspect = t => {
     const poseA = at(a, startA, motionA, t), poseB = at(b, startB, motionB, t);
-    const contact = detect(poseA, poseB);
-    return contact && { ...contact, poseA, poseB };
+    const contact = detect(poseA, poseB, t);
+    return contact && { ...contact, poseA, poseB, fraction: t };
   };
   for (let index = 0; index <= samples; index++) {
     let contact = inspect(index / samples);
@@ -509,6 +514,7 @@ export class ArenaPhysics {
     this.projectiles = [];
     this.projectileId = 0;
     this.contacts = this.players.map(() => ({ separated: 1 }));
+    this.stepClashContact = null;
     this.lastClash = -1;
     this.clashArmed = true;
     this.clashSeparated = CLASH.separationDelay;
@@ -543,7 +549,7 @@ export class ArenaPhysics {
     // Skills first: a teleport must not be swept as motion through the target.
     const animalBefore=this.players.map(p=>({earSpread:p.earSpread,earLag:p.earLag,pawScale:catPawScale(p)}));
     const positionsBeforeSkills = this.players.map(p => p.p);
-    for (const p of this.players) if (!finished || p.id === this.winner) this.updateSkill(p, !finished && inputs[p.id]?.skillTap, dt);
+    for (const p of this.players) if (!finished || p.id === this.winner) this.updateSkill(p, !finished && skillOpeningLock(this.roundTime) < 1e-9 && inputs[p.id]?.skillTap, dt);
     for(const p of this.players)if(isPawLoadout(p)){
       const target=!finished&&p.health>0&&p.skillActive&&p.skill==='big-paws'?CAT_PAW_SKILL_SCALE:1;
       p.pawScale=catPawScale(p)+clamp(target-catPawScale(p),-(CAT_PAW_SKILL_SCALE-1)*dt/CAT_PAW_TRANSITION,(CAT_PAW_SKILL_SCALE-1)*dt/CAT_PAW_TRANSITION);
@@ -984,6 +990,7 @@ export class ArenaPhysics {
       }
       return contact;
     });
+    this.stepClashContact = best;
     if (!best) {
       this.clashSeparated += dt;
       if (this.clashSeparated >= CLASH.separationDelay) this.clashArmed = true;
@@ -1021,19 +1028,60 @@ export class ArenaPhysics {
 
   solveAttack(attacker, target, dt, previous) {
     if(stowed(attacker)||attacker.abilityAttackGate||protectedPlayer(target))return;
-    const best = contactAlongMotion(attacker, target, previous, (poseA, poseB) => {
-      let contact;
-      for (const segment of weaponSegments(poseA)) {
+    const contact = this.contacts[attacker.id];
+    const detectBody = (poseA, poseB, assist = false, valid = () => true) => {
+      let found;
+      for (const segment of assist ? bodyHitSegments(poseA) : weaponSegments(poseA)) {
         for (const body of hurtSegments(poseB)) {
           const c = closestSegments(segment.a, segment.b, body.a, body.b);
           const depth = body.radius + segment.radius - c.distance;
-          if (depth > 0 && (!contact || depth > contact.depth)) contact = { c, depth, segment };
+          const candidate = { c, depth, segment, body };
+          if (depth > 0 && (!found || depth > found.depth) && valid(candidate)) found = candidate;
         }
       }
-      return contact;
-    });
-    const contact = this.contacts[attacker.id];
-    if (!best) { contact.separated += dt; return; }
+      return found;
+    };
+    // A real contact retains its existing physical response and damage priority.
+    const physical = contactAlongMotion(attacker, target, previous, (a, b) => detectBody(a, b));
+    let overlap, assisted;
+    if (!physical) {
+      overlap = contactAlongMotion(attacker, target, previous, (a, b) => detectBody(a, b, true));
+      if (overlap && !contact.hitLatched) {
+        // A physical interception is meaningful even when its audible clash is
+        // below threshold or on cooldown. The swept time is shared by both queries.
+        const interception = this.preSolvePlayers ? this.stepClashContact : contactAlongMotion(attacker, target, previous, (a, b) => {
+          for (const sa of weaponSegments(a)) for (const sb of weaponSegments(b)) {
+            const c = closestSegments(sa.a, sa.b, sb.a, sb.b);
+            if (c.distance < sa.radius + sb.radius) return { c };
+          }
+          return null;
+        });
+        assisted = contactAlongMotion(attacker, target, previous, (a, b, fraction) => {
+          if (interception && interception.fraction <= fraction + 1e-8) return null;
+          return detectBody(a, b, true, candidate => {
+            const { c, segment, body } = candidate, towardBody = unit(sub(c.b, c.a));
+            const from = add(c.a, mul(towardBody, segment.physicalRadius));
+            const to = sub(c.b, mul(towardBody, body.radius));
+            if (this.obstacles.some(obstacle => segmentIntersectsObstacle(obstacle, from, to))) return false;
+            // Reject the forgiveness gap if a real defending weapon occupies it.
+            for (const guard of weaponSegments(b)) {
+              if (closestSegments(from, to, guard.a, guard.b).distance <= guard.radius) return false;
+            }
+            candidate.point = to;
+            return true;
+          });
+        });
+      }
+    }
+    const release = () => {
+      if (contact.hitLatched && overlap) contact.separated = 0;
+      else {
+        contact.separated += dt;
+        if (contact.separated > 0.045) contact.hitLatched = false;
+      }
+    };
+    const best = physical || assisted;
+    if (!best) { release(); return; }
     const { c, depth, segment, poseA } = best;
     const n = unit(sub(c.a, c.b));
     const f = segmentFrame(poseA, segment, c.s);
@@ -1057,13 +1105,18 @@ export class ArenaPhysics {
     const directionScale = 1 - (1 - CONFIG.turnDamageScale) * turnShare;
     const baseDamage = Math.round(damageForImpact(damageClosing, acceleration) * (segment.damageScale || 1) * directionScale);
     const damage = baseDamage * fighterDamageScale(poseA);
-    const fresh = contact.separated > 0.045 && this.time - attacker.lastAttackAt > 0.28;
+    const fresh = !contact.hitLatched && contact.separated > 0.045 && this.time - attacker.lastAttackAt > 0.28;
+    if (physical) {
+      contact.separated = 0;
+      const j = Math.max(0, (closing * 1.12 + Math.max(0, depth - 0.008) * 0.12 / dt) /
+        (effectiveMass(poseA, f, n) + invMass));
+      impulse(attacker, f, mul(n, j), poseA);
+      target.v = sub(target.v, mul(n, j * invMass));
+    }
+    if (!fresh || damage === 0) { if (!physical) release(); return; }
+    // A rejected/slow assisted contact must not consume a later genuine strike.
     contact.separated = 0;
-    const j = Math.max(0, (closing * 1.12 + Math.max(0, depth - 0.008) * 0.12 / dt) /
-      (effectiveMass(poseA, f, n) + invMass));
-    impulse(attacker, f, mul(n, j), poseA);
-    target.v = sub(target.v, mul(n, j * invMass));
-    if (!fresh || damage === 0) return;
+    contact.hitLatched = true;
     if(modernSkill(target)&&target.abilityPhase==='windup')cancelAbility(this,target);
     const healthBefore=target.health;
     target.health = Math.max(this.endless ? 1 : 0, target.health - damage);
@@ -1073,7 +1126,7 @@ export class ArenaPhysics {
     target.v = sub(target.v, mul(n, damage * 0.07));
     this.lastHit = { damage, speed: closing, acceleration, turnShare, attacker: attacker.id };
     this.events.push({
-      type: 'hit', source: 'weapon', weapon: attacker.weapon, point: c.a, normal: mul(n, -1), attacker: attacker.id,
+      type: 'hit', source: 'weapon', weapon: attacker.weapon, point: best.point ?? c.a, normal: mul(n, -1), attacker: attacker.id,
       target: target.id, damage, speed: closing, acceleration, turnShare,
       strength: clamp(damage / 30, 0.12, 1),
     });
@@ -1082,7 +1135,7 @@ export class ArenaPhysics {
       const amount=Math.min(attacker.maxHealth-attacker.health,actualDamage*SKILLS.lifesteal.healRatio);
       if(amount>0){
         attacker.health+=amount;
-        this.events.push({type:'heal',source:'lifesteal',player:attacker.id,amount,point:{...attacker.p}});
+        this.events.push({type:'heal',source:'lifesteal',player:attacker.id,amount,point:{...attacker.p},sourcePoint:{...c.a}});
       }
     }
   }

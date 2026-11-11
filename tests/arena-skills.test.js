@@ -12,12 +12,12 @@ test('CR7 pays once, stows, moves and requires a genuine release at expiry',()=>
 });
 test('perfume contact immediately marks the target without dealing direct damage',()=>{const w=setup('mean-girl'),p=w.players[0],q=w.players[1];p.p={x:0,y:.59,z:0};q.p={x:2,y:.59,z:0};p.bodyYaw=0;launch(w);const hp=q.health;
  updateAbility(w,p,false,CONFIG.step);applyPerfume(w,p,CONFIG.step);
- assert.equal(q.bleedActive,true);assert.equal(q.bleedOwner,p.id);assert.equal(q.health,hp);
+ assert.equal(q.bleedStacks,1);assert.equal(q.bleedOwner,p.id);assert.equal(q.health,hp);
  assert.ok(!w.events.some(event=>event.type==='hit'));
 });
-test('a solid wall blocks perfume from marking a target',()=>{const w=setup('mean-girl'),p=w.players[0],q=w.players[1];p.p={x:0,y:.59,z:0};q.p={x:2,y:.59,z:0};p.bodyYaw=0;w.obstacles=[{kind:'wall',x:1.5,z:0,angle:0,halfX:.1,halfZ:2,height:3}];launch(w);for(let i=0;i<450;i++){updateAbility(w,p,false,CONFIG.step);applyPerfume(w,p,CONFIG.step);}assert.equal(q.bleedActive,false);assert.equal(q.health,100);});
+test('a solid wall blocks perfume from marking a target',()=>{const w=setup('mean-girl'),p=w.players[0],q=w.players[1];p.p={x:0,y:.59,z:0};q.p={x:2,y:.59,z:0};p.bodyYaw=0;w.obstacles=[{kind:'wall',x:1.5,z:0,angle:0,halfX:.1,halfZ:2,height:3}];launch(w);for(let i=0;i<450;i++){updateAbility(w,p,false,CONFIG.step);applyPerfume(w,p,CONFIG.step);}assert.equal(q.bleedStacks,0);assert.equal(q.health,100);});
 test('soccer survives body contact and wall reflection; immunity covers skill damage',()=>{const w=setup();launch(w);const p=w.players[0],q=w.players[1],b=w.projectiles[0];q.p={x:1,y:.59,z:0};b.p={x:0,y:.46,z:0};b.v={x:18,y:0,z:0};
- for(let i=0;i<10;i++){w.time+=CONFIG.step;stepSoccer(w,b,CONFIG.step);}assert.equal(q.health,94);assert(b.v.x<0);assert.equal(abilityHit(w,p,50,1,'perfume',p.p),false);assert.equal(p.health,100);
+ for(let i=0;i<10;i++){w.time+=CONFIG.step;stepSoccer(w,b,CONFIG.step);}assert.equal(q.health,92);assert(b.v.x<0);assert.equal(abilityHit(w,p,50,1,'perfume',p.p),false);assert.equal(p.health,100);
  b.p.x=w.arenaRadius-.47;b.v.x=18;stepSoccer(w,b,.02);assert(b.v.x<0);assert(b.p.x<=w.arenaRadius-.46);
 });
 test('windup damage cancels without granting immunity or refund',()=>{const w=setup(),p=w.players[0];updateAbility(w,p,true,CONFIG.step);abilityHit(w,p,2,1,'perfume',p.p);finishAbilityTick(w,p);assert.equal(p.abilityPhase,'idle');assert.equal(p.stamina,160);assert.equal(w.projectiles.length,0);});
@@ -32,7 +32,7 @@ test('perfume misses fighters behind or above the spray',()=>{
  const w=setup('mean-girl'),p=w.players[0],q=w.players[1];p.p={x:0,y:.59,z:0};p.bodyYaw=0;launch(w);
  for(const point of [{x:-2,y:.59,z:0},{x:2,y:5,z:0}]){
   q.p=point;updateAbility(w,p,false,CONFIG.step);applyPerfume(w,p,CONFIG.step);
-  assert.equal(q.bleedActive,false);assert.equal(q.health,100);
+  assert.equal(q.bleedStacks,0);assert.equal(q.health,100);
  }
 });
 

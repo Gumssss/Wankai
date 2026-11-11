@@ -43,6 +43,33 @@ export function obstacleContact(obstacle, x, z, radius) {
   return { nx: nx * c - nz * s, nz: nx * s + nz * c, depth };
 }
 
+// Exact finite-height visibility test for combat assistance. Unlike the camera
+// sampler below, thin props must not fall between sample points.
+export function segmentIntersectsObstacle(obstacle, a, b) {
+  let enter = 0, leave = 1;
+  const slab = (start, delta, low, high) => {
+    if (Math.abs(delta) < 1e-12) return start >= low && start <= high;
+    let first = (low - start) / delta, last = (high - start) / delta;
+    if (first > last) [first, last] = [last, first];
+    enter = Math.max(enter, first); leave = Math.min(leave, last);
+    return enter <= leave;
+  };
+  if (!slab(a.y, b.y - a.y, 0, obstacle.height)) return false;
+  const x = a.x - obstacle.x, z = a.z - obstacle.z, dx = b.x - a.x, dz = b.z - a.z;
+  if (obstacle.kind === 'pillar') {
+    const aa = dx * dx + dz * dz, bb = x * dx + z * dz, cc = x * x + z * z - obstacle.radius ** 2;
+    if (aa < 1e-12) return cc <= 0;
+    const disc = bb * bb - aa * cc;
+    if (disc < 0) return false;
+    enter = Math.max(enter, (-bb - Math.sqrt(disc)) / aa);
+    leave = Math.min(leave, (-bb + Math.sqrt(disc)) / aa);
+    return enter <= leave;
+  }
+  const c = Math.cos(obstacle.angle), s = Math.sin(obstacle.angle);
+  return slab(x * c + z * s, dx * c + dz * s, -obstacle.halfX, obstacle.halfX) &&
+    slab(-x * s + z * c, -dx * s + dz * c, -obstacle.halfZ, obstacle.halfZ);
+}
+
 // True when the segment from a to b passes through the prop below its top.
 // The camera uses this to fade props that hide the local fighter.
 export function obstacleBlocksSegment(obstacle, a, b, margin = 0.2) {

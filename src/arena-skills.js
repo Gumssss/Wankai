@@ -3,27 +3,28 @@ import {obstacleContact} from './arena-obstacles.js';
 import {SKILLS} from './skills.js';
 import {ARENA_PROFILE} from './arena-profile.js';
 import {fighterScale, fighterDamageScale} from './match-growth.js';
+import {CHARACTERS} from './character-catalog.js';
 
 export const SOCCER_RADIUS = 0.46;
 export const modernSkill=p=>p.skill==='ricochet'||p.skill==='perfume';
 export const protectedPlayer=p=>p.skill==='ricochet'&&p.abilityPhase==='active';
 export const stowed=p=>p.skill==='ricochet'&&['active','recovery'].includes(p.abilityPhase);
-export function clearBleeding(p){p.bleedActive=false;p.bleedTick=0;p.bleedOwner=null;}
+export function clearBleeding(p){p.bleedStacks=0;p.bleedTick=0;p.bleedOwner=null;}
 export function stepBleeding(world,p,dt){
  if(p.health<=0||world.winner!==null){clearBleeding(p);return;}
- if(!p.bleedActive)return;
+ if(!(p.bleedStacks>0))return;
  p.bleedTick+=dt;
  const interval=SKILLS.perfume.bleedInterval;
  // Exposure never resets the tick clock or adds another stack.
  while(p.bleedTick>=interval-1e-9&&p.health>0){
   p.bleedTick=Math.max(0,p.bleedTick-interval);
-  const damage=Math.min(1,Math.max(0,p.health-(world.endless?1:0)));
+  const damage=Math.min(p.bleedStacks,Math.max(0,p.health-(world.endless?1:0)));
   if(damage>0)abilityHit(world,p,damage,p.bleedOwner,'bleed',p.p);
  }
  if(p.health<=0)clearBleeding(p);
 }
 export function cancelAbility(world,p){
- p.abilityPhase='idle';p.skillActive=false;p.skillTime=0;p.abilityTime=0;
+ p.abilityPhase='idle';p.skillActive=false;p.skillTime=0;p.abilityTime=0;p.perfumeHitTargets=0;p.perfumeStep=0;
  world.projectiles=world.projectiles.filter(s=>s.type!=='soccer'||s.owner!==p.id);
 }
 export function abilityHit(world,target,damage,owner,source,point){
@@ -39,7 +40,7 @@ export function updateAbility(world,p,tap,dt){
  const s=SKILLS[p.skill];p.skillCooldown=Math.max(0,p.skillCooldown-dt);
  if(p.health<=0||world.winner!==null){cancelAbility(world,p);return;}
  if(tap&&p.skillCooldown===0&&p.abilityPhase==='idle'&&p.stamina>=s.cost&&(p.skill!=='ricochet'||p.grounded||p.staffGrounded)){
-  p.stamina-=s.cost;p.staminaRestTime=0;p.skillCooldown=s.cooldown;p.abilityPhase='windup';p.abilityTime=s.windup;p.skillTime=s.windup+s.duration+s.recovery;p.skillActive=true;p.abilityHealth=p.health;p.sprayYaw=p.bodyYaw;
+  p.stamina-=s.cost;p.staminaRestTime=0;p.skillCooldown=s.cooldown;p.abilityPhase='windup';p.abilityTime=s.windup;p.skillTime=s.windup+s.duration+s.recovery;p.skillActive=true;p.abilityHealth=p.health;p.sprayYaw=p.bodyYaw;p.perfumeHitTargets=0;
   world.events.push({type:'skill',skill:p.skill,player:p.id,characterId:p.characterId,point:{...p.p}});
  }
  if(!p.skillActive)return;
@@ -58,16 +59,39 @@ export function updateAbility(world,p,tap,dt){
 export function finishAbilityTick(world,p){
  if(!p.launchPending)return;p.launchPending=false;
  if(p.abilityPhase!=='windup'||p.health<p.abilityHealth||p.health<=0||world.winner!==null){if(p.abilityPhase==='windup')cancelAbility(world,p);return;}
+ const skill=SKILLS[p.skill],scale=fighterScale(p);
+ const radius=SOCCER_RADIUS*(skill.sizeMultiplier??1)*scale;
+ const launch=p.skill==='ricochet'?soccerSpawn(world,p,radius):null;
+ if(p.skill==='ricochet'&&!launch){
+  // A huge ball may not fit beside a corner. No projectile is placed through
+  // a prop; return the reserved cost and cooldown so the player can reposition.
+  p.stamina+=skill.cost;p.skillCooldown=0;cancelAbility(world,p);return;
+ }
  p.abilityPhase='active';p.abilityTime=SKILLS[p.skill].duration;
  world.events.push({type:'skill-release',skill:p.skill,player:p.id,point:{...p.p}});
  if(p.skill==='ricochet'){
   p.wt=p.wp=p.driveT=p.driveP=0;p.releaseGate=true;p.abilityAttackGate=true;
-  const scale = fighterScale(p), c = Math.cos(p.bodyYaw), s = Math.sin(p.bodyYaw);
-  const radius = SOCCER_RADIUS * scale, offset = 1.1 * scale;
+  const c = Math.cos(p.bodyYaw), s = Math.sin(p.bodyYaw);
   world.projectiles.push({id:++world.projectileId,type:'soccer',owner:p.id,
-   p:{x:p.p.x+c*offset,y:ARENA_PROFILE.floorHeight+radius,z:p.p.z+s*offset},v:{x:c*18,y:0,z:s*18},
-   radius,damage:6*fighterDamageScale(p),life:3,spin:0,bounce:0,lastHit:-Infinity,touching:false});
+   p:launch,v:{x:c*skill.speed,y:0,z:s*skill.speed},
+   radius,damage:skill.damage*fighterDamageScale(p),life:skill.duration,spin:0,bounce:0,lastHit:-Infinity,touching:false});
  }
+}
+
+// Search in front first, then locally around the caster. All candidate centres
+// remain on the same unobstructed side of props; only the owner is ignored.
+export function soccerSpawn(world,p,radius){
+ const scale=fighterScale(p),gap=.1*scale,offset=(CHARACTERS[p.characterId]?.bodyRadius??.44)*scale+radius+gap;
+ const limit=world.arenaRadius-radius-.002;if(limit<=0)return null;
+ const ground=ARENA_PROFILE.floorHeight+.01,origin={x:p.p.x,y:ground,z:p.p.z};
+ const turns=[0];for(let i=1;i<=16;i++){turns.push(i*Math.PI/16);if(i<16)turns.push(-i*Math.PI/16);}
+ for(const turn of turns){
+  const yaw=p.bodyYaw+turn,x=p.p.x+Math.cos(yaw)*offset,z=p.p.z+Math.sin(yaw)*offset;
+  if(Math.hypot(x,z)>limit||world.obstacles.some(o=>obstacleContact(o,x,z,radius+.002)))continue;
+  if(occluded(origin,{x,y:ground,z},world.obstacles))continue;
+  return {x,y:ARENA_PROFILE.floorHeight+radius,z};
+ }
+ return null;
 }
 // Segment versus expanded circular collider. t is a fraction of this sweep.
 function circle(x,z,dx,dz,cx,cz,r,inside=false){
@@ -113,7 +137,7 @@ function sweepBody(point,dx,dz,body,radius){
  return {t,nx:nx/n,nz:nz/n};
 }
 export function stepSoccer(world,shot,dt,hurtSegments){
- shot.life-=dt;shot.spin+=18/shot.radius*dt;
+ shot.life-=dt;shot.spin+=Math.hypot(shot.v.x,shot.v.z)/shot.radius*dt;
  const owner=world.players[shot.owner];if(!owner||!protectedPlayer(owner)||shot.life<=0)return false;
  const target=world.players.find(p=>p.id!==shot.owner),bodies=target?hurtSegments(target):[];
  if(bodies.every(b=>{const d=sub3(shot.p,closestAxis(shot.p,b));return dot3(d,d)>(b.radius+shot.radius+.04)**2;}))shot.touching=false;
@@ -128,12 +152,12 @@ export function stepSoccer(world,shot,dt,hurtSegments){
   for(const body of bodies){const hit=sweepBody(shot.p,dx,dz,body,shot.radius);if(hit&&(!best||hit.t<best.t))best={...hit,target,body};}
   if(!best){shot.p.x+=dx;shot.p.z+=dz;break;}
   shot.p.x+=dx*best.t;shot.p.z+=dz*best.t;
-  if(best.target&&!shot.touching){if(world.time-shot.lastHit>=.6&&abilityHit(world,target,shot.damage??6,shot.owner,'soccer',shot.p))shot.lastHit=world.time;shot.touching=true;}
+  if(best.target&&!shot.touching){if(world.time-shot.lastHit>=.6&&abilityHit(world,target,shot.damage??SKILLS.ricochet.damage,shot.owner,'soccer',shot.p))shot.lastHit=world.time;shot.touching=true;}
   const dot=shot.v.x*best.nx+shot.v.z*best.nz;
   if(dot<0){
    shot.v.x-=2*dot*best.nx;shot.v.z-=2*dot*best.nz;shot.bounce++;
    if(best.surface&&-dot>=.35){
-    const strength = Math.min(1, -dot / 18);
+    const strength = Math.min(1, -dot / SKILLS.ricochet.speed);
     if(!bounceEvent||strength>bounceEvent.strength)bounceEvent={type:'soccer-bounce',surface:best.surface,player:shot.owner,weapon:'soccer-ball',
      point:{x:shot.p.x-best.nx*shot.radius,y:shot.p.y,z:shot.p.z-best.nz*shot.radius},strength,time:world.time};
    }
@@ -171,7 +195,10 @@ export function applyPerfume(world,p,dt,hurtSegments){
  p.perfumeStep=0;
  const frame=perfumeFrame(p);
  for(const q of world.players){if(q.id===p.id||q.health<=0||protectedPlayer(q))continue;
+ if((p.perfumeHitTargets||0)&(1<<q.id))continue;
  if(!hurtSegments(q).some(body=>{const point=perfumeContact(frame,body);return point&&!occluded(frame.origin,point,world.obstacles);}))continue;
- if(!q.bleedActive){q.bleedActive=true;q.bleedTick=0;q.bleedOwner=p.id;}
+ if(!(q.bleedStacks>0))q.bleedTick=0;
+ q.bleedStacks=(q.bleedStacks||0)+1;q.bleedOwner=p.id;p.perfumeHitTargets=(p.perfumeHitTargets||0)|(1<<q.id);
+ world.events.push({type:'bleed-stack',source:'perfume',attacker:p.id,target:q.id,stacks:q.bleedStacks,point:{...q.p}});
  }
 }

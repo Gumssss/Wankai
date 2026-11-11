@@ -5,7 +5,8 @@ import { ARENA_OBSTACLES } from './arena-obstacles.js';
 import { ARENA_SKINS, DEFAULT_ARENA_SKIN, isArenaSkin } from './arena-skins.js';
 import { createAi, AI_DIFFICULTIES } from './ai-opponent.js';
 import { fighterScale, growthAt } from './match-growth.js';
-import { SKILLS } from './skills.js';
+import { SKILLS, skillOpeningLock } from './skills.js';
+import { classifyImpact, FEEDBACK } from './impact-feedback.js';
 
 // Floating words for skills, shown above the fighter like damage numbers.
 const SKILL_WORDS = {'big-paws':'巨爪!',ricochet:'反弹足球!',perfume:'喷香水!',rotor:'旋耳悬停', lifesteal: '吸血!', laugh: '哈哈哈哈!', twist: '绕后!', delivery: '你的胆子真的肥嘟嘟的!', happy: 'Happy Happy!' };
@@ -76,6 +77,8 @@ export class GameSession {
     // Each skin's visible rim sets how high weapons meet it.
     const rimHeight = ARENA_SKINS.find(skin => skin.id === this.arenaSkin)?.rimHeight;
     this.world.reset(...this.loadouts, { arenaScale: MATCH_ARENA_SCALE, obstacles: ARENA_OBSTACLES, rimHeight, growthEnabled: true });
+    this.healthFlashes = this.world.players.map(() => 0);
+    this.finishTime = 0;
     this.sound.syncSkills?.([], { active: false });
   }
 
@@ -84,16 +87,18 @@ export class GameSession {
   makeSnapshot() {
     return {
       state: this.state,
+      finishTime: this.finishTime,
       mode: this.mode,
       localPlayerId: this.localPlayerId,
       loadouts: Object.freeze(this.loadouts.map(p => Object.freeze({ ...p }))),
       pressed: [...this.keys],
       // Healing is continuous; the HUD shows whole points.
       health: this.world.players.map(player => Math.ceil(player.health)),
-      bleeding: this.world.players.map(player => !!player.bleedActive),
+      bleedStacks: this.world.players.map(player => player.bleedStacks ?? 0),
+      healthFlashes: this.healthFlashes.map(time => time / 0.15),
       maxHealth:this.world.players.map(player=>player.maxHealth),
       stamina: this.world.players.map(player => player.stamina),
-      skills: this.world.players.map(player => ({ id: player.skill, phase:player.abilityPhase, phaseTime:Math.max(0,Math.ceil(player.abilityTime*10)/10), releaseGate:player.releaseGate, active: player.skillActive,
+      skills: this.world.players.map(player => ({ openingLock: ['countdown','playing','paused'].includes(this.state) ? skillOpeningLock(this.world.roundTime) : 0, id: player.skill, phase:player.abilityPhase, phaseTime:Math.max(0,Math.ceil(player.abilityTime*10)/10), releaseGate:player.releaseGate, active: player.skillActive,
         time: Math.ceil(player.skillTime * 10) / 10, cooldown: Math.ceil(player.skillCooldown * 10) / 10 })),
       seconds: Math.floor(this.world.roundTime ?? 0),
       growth: growthAt(this.world.roundTime ?? 0, this.world.growthEnabled),
@@ -286,10 +291,22 @@ export class GameSession {
     this.publish();
   }
 
+  pushEffect(effect) {
+    this.effects.push({ id: ++this.nextEffectId, ...effect });
+    if (this.effects.length > 12) this.effects.splice(0, this.effects.length - 12);
+  }
+
   impact(event) {
     if (event.type === 'growth') { this.sound.growth?.(); return; }
     if (event.type === 'skill') { this.skillCue(event); return; }
     if(event.type==='skill-release'){this.sound.skill?.({...event,skill:event.skill+'-release'});return;}
+    if (event.type === 'bleed-stack') {
+      const player = this.world.players[event.target], point = event.point ?? player?.p;
+      if (!(event.stacks > 0) || !point) return;
+      this.pushEffect({ point: { ...point }, text: `流血 ×${event.stacks}`, kind: 'bleed-stack', follow: event.target, life: 0.45, maxLife: 0.45 });
+      this.publish();
+      return;
+    }
     if (event.type === 'heal') {
       if (!Number.isFinite(event.amount) || event.amount <= 0) return;
       this.sound.heal?.(event);
@@ -298,23 +315,38 @@ export class GameSession {
       const point = event.point ?? player?.p;
       if (heal > 0 && point) {
         const scale = player ? fighterScale(player) : 1;
-        this.effects.push({ id: ++this.nextEffectId, point: { ...point, y: point.y + 1.1 * scale }, heal, life: 0.95, maxLife: 0.95 });
+        this.pushEffect({ point: { ...point, y: point.y + 1.1 * scale }, heal, life: 0.95, maxLife: 0.95 });
         this.publish();
       }
       return;
     }
     this.sound.impact({ ...event, arenaSkin: this.arenaSkin });
-    if (event.type !== 'hit') return;
+    if (event.type !== 'hit' || !(event.damage > 0)) return;
     const { source } = event;
-    if (source !== 'perfume' && source !== 'bleed') this.freeze = Math.max(this.freeze, 0.028 + event.strength * 0.055);
+    const feedback = classifyImpact(event);
+    if (feedback.kind === 'direct') {
+      this.freeze = Math.max(this.freeze, 0.028 + feedback.strength * 0.055);
+      if (this.world.players[event.target]) this.healthFlashes[event.target] = 0.15;
+    }
     const damage = Math.round(event.damage * 10) / 10;
-    this.effects.push({ id: ++this.nextEffectId, point: { ...event.point }, damage, life: 0.95, maxLife: 0.95 });
-    if (source === 'bleed') this.readout = { label: '流血', damage, detail: `每 ${SKILLS.perfume.bleedInterval} 秒损失 1 点生命` };
+    const window = feedback.kind === 'direct' ? FEEDBACK.NUMBER_MERGE_WINDOW : 0.1;
+    const existing = this.effects.find(effect => effect.damage != null && effect.target === event.target &&
+      effect.kind === feedback.kind && effect.mergeAge < window);
+    if (existing) {
+      existing.damage = Math.round((existing.damage + damage) * 10) / 10;
+      existing.life = existing.maxLife; existing.mergeAge = 0;
+      existing.point = { ...event.point }; existing.heavy ||= feedback.heavy;
+    } else {
+      const numbers = this.effects.filter(effect => effect.damage != null && effect.target === event.target);
+      if (numbers.length >= 3) this.effects = this.effects.filter(effect => effect.id !== numbers[0].id);
+      this.pushEffect({ point: { ...event.point }, target: event.target, mergeAge: 0, damage, kind: feedback.kind, heavy: feedback.heavy, life: 0.95, maxLife: 0.95 });
+    }
+    if (source === 'bleed') this.readout = { label: '流血', damage, detail: `每 ${SKILLS.perfume.bleedInterval} 秒结算 · 每层损失 1 点生命` };
     else if (source === 'perfume') this.readout = { label: '香水命中', damage, detail: '命中造成流血' };
     else if (source === 'soccer') this.readout = { label: '足球命中', damage, detail: '命中后继续反弹' };
     else if (source === 'delivery') this.readout = { label: '外卖送达', damage, detail: '投掷命中 · 击退' };
     else this.readout = {
-      label: event.damage >= 22 ? '漂亮的一击' : '有效命中',
+      label: event.damage >= FEEDBACK.HEAVY_DAMAGE ? '漂亮的一击' : '有效命中',
       damage,
       detail: `${event.speed.toFixed(1)} m/s · 发力加成 ${Math.round(30 * Math.min(event.acceleration / 48, 1))}%${event.turnShare > 0.01 ? ' · 横转伤害降低' : ''}`,
     };
@@ -328,7 +360,7 @@ export class GameSession {
     const at = event.to ?? event.point ?? player?.p;
     if (!at) return;
     const life = event.skill === 'laugh' ? SKILLS.laugh.duration : 1.6;
-    this.effects.push({ id: ++this.nextEffectId, point: { x: at.x, y: at.y + 1.2, z: at.z }, text: SKILL_WORDS[event.skill] ?? '',
+    this.pushEffect({ point: { x: at.x, y: at.y + 1.2, z: at.z }, text: SKILL_WORDS[event.skill] ?? '',
       kind: event.skill, follow: event.player, life, maxLife: life });
     this.publish();
   }
@@ -341,10 +373,17 @@ export class GameSession {
   }
 
   finishRound() {
+    if (this.state === 'result') return;
+    this.finishTime = this.world.winner >= 0 ? FEEDBACK.FINISH_LIFE : 0;
     this.state = 'result';
     this.sound.syncSkills?.([], { active: false });
     this.menuOpen = false;
     this.clearKeys();
+    if (!this.finishTime) this.playResultSound();
+    this.publish();
+  }
+
+  playResultSound() {
     const winner = this.world.winner;
     this.sound.result?.(winner === -1 || winner === null ? 'draw' : winner === this.localPlayerId ? 'win' : 'lose');
     this.publish();
@@ -401,12 +440,21 @@ export class GameSession {
     }
     if (!this.replica) this.net?.afterTick(dt, impacts);
     const effectDt = this.state === 'paused' ? 0 : dt;
+    if (this.finishTime > 0) {
+      this.finishTime = Math.max(0, this.finishTime - effectDt);
+      if (!this.finishTime) this.playResultSound();
+      this.publish();
+    }
+    if (this.healthFlashes.some(time => time > 0)) {
+      this.healthFlashes = this.healthFlashes.map(time => Math.max(0, time - effectDt));
+      this.publish();
+    }
     if (this.readoutTimer > 0) {
       this.readoutTimer -= effectDt;
       if (this.readoutTimer <= 0) { this.readout = null; this.publish(); }
     }
     if (this.effects.length) {
-      for (const effect of this.effects) effect.life -= effectDt;
+      for (const effect of this.effects) { effect.life -= effectDt; if (effect.mergeAge != null) effect.mergeAge += effectDt; }
       const before = this.effects.length;
       this.effects = this.effects.filter(effect => effect.life > 0);
       if (this.effects.length !== before) this.publish();

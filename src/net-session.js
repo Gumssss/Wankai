@@ -12,13 +12,15 @@ import { isArenaSkin } from './arena-skins.js';
 // The transport may drop or reorder plain snapshots and inputs (Steam sends
 // them unreliably); control messages, snapshots with events and skill taps
 // must arrive.
-export const PROTOCOL = 11;
+export const PROTOCOL = 13;
 const SNAPSHOT_INTERVAL = 1 / 60;
 const INPUT_HEARTBEAT = 1 / 30;
 const INTERPOLATION_DELAY = 0.05;
 const PING_INTERVAL = 1;
+const EVENT_SEQUENCE_WINDOW = 4096;
+const MAX_PRESENTATION_PACKETS = 120;
 const PLAYER_FIELDS = ['theta', 'phi', 'bodyYaw', 'hitFlash', 'staffGrounded', 'contactSpeed',
-  'health', 'stamina', 'skillActive', 'skillTime', 'skillCooldown', 'wt', 'wp', 'bleedActive'];
+  'health', 'stamina', 'skillActive', 'skillTime', 'skillCooldown', 'wt', 'wp', 'bleedStacks'];
 const ANIMAL_FIELDS=['earSpread','earSpreadRate','earLag','earLagRate'];
 const ANGLES = new Set(['phi', 'bodyYaw']);
 const LERPED = new Set(['theta', 'phi', 'bodyYaw', 'hitFlash', 'contactSpeed', 'stamina', 'skillTime', 'skillCooldown','earSpread','earLag']);
@@ -63,6 +65,7 @@ export class NetSession {
     this.lastSeq = 0;
     this.roundSnapshotFloor = 0;
     this.inbox = [];
+    this.eventSequences = new Set();
     this.inputTimer = 0;
     this.lastInput = '';
     session.mode = 'online';
@@ -122,6 +125,7 @@ export class NetSession {
     this.buffer = [];
     this.inbox = [];
     this.pendingEvents = [];
+    this.eventSequences.clear();
     this.publish();
   }
 
@@ -149,6 +153,7 @@ export class NetSession {
     const wasConnected = this.phase === 'connected';
     this.phase = 'closed';
     this.buffer.length=0;this.inbox.length=0;this.pendingEvents.length=0;
+    this.eventSequences.clear();
     for(const p of this.session.world.players)clearBleeding(p);
     for(const p of this.session.world.players)if(p.skill==='lifesteal'){p.skillActive=false;p.skillTime=0;}
     this.session.sound.syncSkills?.([], { active: false });
@@ -235,14 +240,18 @@ export class NetSession {
 
   on_snap(message) {
     if (this.role !== 'guest' || !Array.isArray(message.players)) return;
-    if (Number.isFinite(message.seq) && message.seq <= this.roundSnapshotFloor) return;
-    // Events always play; a snapshot older than one already shown (it was
-    // overtaken on the wire) would step the world back, so its state is dropped.
-    if (Array.isArray(message.events)) this.inbox.push(...message.events);
-    if (Number.isFinite(message.seq)) {
-      if (message.seq <= this.lastSeq) return;
-      this.lastSeq = message.seq;
+    if (!Number.isSafeInteger(message.seq) || message.seq <= this.roundSnapshotFloor) return;
+    const eventFloor=Math.max(this.roundSnapshotFloor,Math.max(this.lastSeq,message.seq)-EVENT_SEQUENCE_WINDOW);
+    for(const seq of this.eventSequences)if(seq<=eventFloor)this.eventSequences.delete(seq);
+    // A late, previously unseen packet can carry a valid cue even though its
+    // older world state must be dropped. Duplicates never replay those cues.
+    if(message.seq>eventFloor&&Array.isArray(message.events)&&message.events.length&&!this.eventSequences.has(message.seq)){
+      this.eventSequences.add(message.seq);
+      this.inbox.push({at:message.seq<=this.lastSeq?-Infinity:this.clock,events:message.events});
+      while(this.inbox.length>MAX_PRESENTATION_PACKETS)this.inbox.shift();
     }
+    if (message.seq <= this.lastSeq) return;
+    this.lastSeq = message.seq;
     this.buffer.push({ at: this.clock, snap: message });
     while (this.buffer.length > 30) this.buffer.shift();
   }
@@ -268,7 +277,9 @@ export class NetSession {
       time: world.time, roundTime: world.roundTime, winner: world.winner,
       players: world.players.map(p => {
         const out = { p: { ...p.p }, v: { ...p.v } };
-        for (const field of PLAYER_FIELDS) out[field] = p[field];
+        // Zero stacks are the wire default, keeping ordinary snapshots below
+        // Steam's unreliable-packet budget without quantizing authoritative HP.
+        for (const field of PLAYER_FIELDS) if(field!=='bleedStacks'||p[field]>0)out[field] = p[field];
         if(p.weapon==='cat-paws')out.pawScale=p.pawScale;
         if(p.skill==='ricochet'||p.skill==='perfume')out.ability=[p.abilityPhase,Math.round(p.abilityTime*1000)/1000,p.releaseGate?1:0,Math.round(p.sprayYaw*1000)/1000];
         // Only the rigged Beagle needs extra pose data. Compact/quantized
@@ -304,13 +315,22 @@ export class NetSession {
     const [a, b = a] = this.buffer;
     const t = b.at > a.at ? Math.max(0, Math.min(1, (renderAt - a.at) / (b.at - a.at))) : 1;
     this.applySnapshot(a.snap, b.snap, t);
-    const impacts = this.inbox.splice(0);
+    const impacts = [], waiting = [];
+    for(const packet of this.inbox){
+      if(packet.at<=renderAt+1e-9)impacts.push(...packet.events);
+      else waiting.push(packet);
+    }
+    this.inbox=waiting;
     for (const event of impacts) session.impact(event);
     return impacts;
   }
 
   applySnapshot(a, b, t) {
     const session = this.session, world = session.world;
+    // Discrete outcomes belong to the same presentation timestamp as their
+    // reliable cues. Interpolate movement toward b without revealing its HP,
+    // status or round result until that endpoint is reached.
+    const discrete = t >= 1 - 1e-9 ? b : a;
     const roundTime = finite(a.roundTime) + (finite(b.roundTime) - finite(a.roundTime)) * t;
     const growth = growthAt(roundTime);
     world.roundTime = roundTime;
@@ -319,6 +339,7 @@ export class NetSession {
       player.damageScale = growth.damageScale;
       const from = a.players[id], to = b.players[id];
       if (!from || !to) return;
+      const current = discrete.players[id];
       const jump = Math.hypot(to.p.x - from.p.x, to.p.z - from.p.z) > SNAP_DISTANCE;
       const k = jump ? 1 : t;
       player.p = { x: from.p.x + (to.p.x - from.p.x) * k, y: from.p.y + (to.p.y - from.p.y) * k, z: from.p.z + (to.p.z - from.p.z) * k };
@@ -326,11 +347,12 @@ export class NetSession {
       const fromPaw=finite(from.pawScale,1),toPaw=finite(to.pawScale,1);
       player.pawScale=fromPaw+(toPaw-fromPaw)*k;
       for (const field of PLAYER_FIELDS) {
-        if (!LERPED.has(field)) player[field] = to[field];
+        if(field==='bleedStacks')player[field]=current[field]??0;
+        else if (!LERPED.has(field)) player[field] = current[field];
         else if (ANGLES.has(field)) player[field] = lerpAngle(from[field], to[field], k);
         else player[field] = from[field] + (to[field] - from[field]) * k;
       }
-      if(to.ability){[player.abilityPhase,player.abilityTime,player.releaseGate,player.sprayYaw]=to.ability;player.releaseGate=!!player.releaseGate;}
+      if(current.ability){[player.abilityPhase,player.abilityTime,player.releaseGate,player.sprayYaw]=current.ability;player.releaseGate=!!player.releaseGate;}
       ANIMAL_FIELDS.forEach((field,index)=>{
         const x=from.ears?.[index]??0,y=to.ears?.[index]??0;
         player[field]=LERPED.has(field)?x+(y-x)*k:y;
@@ -344,14 +366,14 @@ export class NetSession {
     });
     world.time = b.time;
     const previousWinner = world.winner;
-    world.winner = b.winner;
-    if (b.countdownNumber !== session.countdownNumber && b.countdownNumber > 0 && b.state === 'countdown') session.sound.tick();
-    session.countdownNumber = b.countdownNumber;
-    session.countdown = b.countdown;
-    if (b.state !== session.state) {
-      if (b.state === 'playing' && session.state === 'countdown') session.sound.tick(true);
-      if (b.state === 'result' && previousWinner === null) session.finishRound();
-      else session.state = b.state;
+    world.winner = discrete.winner;
+    if (discrete.countdownNumber !== session.countdownNumber && discrete.countdownNumber > 0 && discrete.state === 'countdown') session.sound.tick();
+    session.countdownNumber = discrete.countdownNumber;
+    session.countdown = discrete.countdown;
+    if (discrete.state !== session.state) {
+      if (discrete.state === 'playing' && session.state === 'countdown') session.sound.tick(true);
+      if (discrete.state === 'result' && previousWinner === null) session.finishRound();
+      else session.state = discrete.state;
     }
     session.publish();
   }
