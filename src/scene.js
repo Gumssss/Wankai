@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import { CONFIG, MATCH_ARENA_SCALE, weaponStats, staffFrame, fighterHeading, clamp, makePlayer, v3,isAnatomical,weaponSegments } from './physics.js';
+import { MATCH_ARENA_SCALE, bodyFloor, weaponStats, staffFrame, fighterHeading, clamp, makePlayer, v3, isAnatomical, weaponSegments } from './physics.js';
+import { stowed, protectedPlayer, perfumeFrame, SOCCER_RADIUS } from './arena-skills.js';
+import { fighterScale } from './match-growth.js';
 import { CHARACTERS } from './character-catalog.js';
 import { setWeaponRotation } from './weapon-visuals.js';
 import { createFreeCameraRig, updateFreeCamera, updateVictoryCamera, updateShowcaseCamera, resetFreeCamera, orbitFreeCamera,
@@ -17,6 +19,10 @@ import { PALETTE, disposeObject } from './models/toy-kit.js';
 const PLAYER_COLORS = PALETTE.players;
 const vec = p => new THREE.Vector3(p.x, p.y, p.z);
 const TRAIL_LENGTH = 22;
+const FLOAT_DRAG = 1.2;
+const PERFUME_PARTICLE_LIFE = 1.1;
+// Distance travelled per unit of launch speed under the floating particle drag.
+const PERFUME_PARTICLE_TRAVEL = -Math.expm1(-FLOAT_DRAG * PERFUME_PARTICLE_LIFE) / FLOAT_DRAG;
 
 // The thrown takeout: the same delivery box as the weapon, scaled so it fills
 // the projectile's contact sphere, centred on its own middle.
@@ -25,6 +31,14 @@ function buildDeliveryBag(radius) {
   box.scale.setScalar(scale);
   box.position.y = -0.4 * scale;
   root.add(box);
+  return root;
+}
+
+function buildSoccerBall(radius) {
+  const root = new THREE.Group(), ball = buildWeapon('soccer-ball').root;
+  ball.position.sub(new THREE.Box3().setFromObject(ball).getCenter(new THREE.Vector3()));
+  root.add(ball);
+  root.scale.setScalar(radius / SOCCER_RADIUS);
   return root;
 }
 
@@ -123,7 +137,12 @@ export class ArenaView {
     const cue = () => this.flatMesh(new THREE.RingGeometry(0.12, 0.155, 24), new THREE.MeshBasicMaterial({ color: 0xf5efd6, transparent: true, opacity: 0.75, depthWrite: false }));
     const contact = cue();
     contact.visible = false;
-    return { character, weapon, staff, marker, contact, trails: Array.from({length:isAnatomical(makePlayer(id,loadout))?2:1},()=>this.makeTrail(weaponType)), weaponType };
+    const aura=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshBasicMaterial({color:0xffdc77,transparent:true,opacity:.18,depthWrite:false}));this.actors.add(aura);
+    const perfume=new THREE.Group();const bottle=new THREE.Mesh(new THREE.BoxGeometry(.26,.38,.24),new THREE.MeshStandardMaterial({color:0xf178ad,roughness:.3}));bottle.position.y=.45;perfume.add(bottle);
+    const cap=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.12,12),new THREE.MeshStandardMaterial({color:0xe7c777}));cap.position.y=.7;perfume.add(cap);
+    const nozzle=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.1,8),cap.material);nozzle.rotation.z=-Math.PI/2;nozzle.position.set(.06,.7,0);perfume.add(nozzle);
+    this.actors.add(perfume);
+    return { aura,perfume,character, weapon, staff, marker, contact, trails: Array.from({length:isAnatomical(makePlayer(id,loadout))?2:1},()=>this.makeTrail(weaponType)), weaponType };
   }
 
   resize(width, height) {
@@ -228,18 +247,47 @@ export class ArenaView {
     if (recordTrail) this.trailTime = 0;
     for (const p of players) {
       const model = this.players[p.id];
+      const scale = fighterScale(p);
       model.character.root.position.copy(vec(p.p));
       model.character.root.rotation.y = -fighterHeading(p);
       model.character.pose(p, this.time);
+      // Attached ears and paws already inherit this scale from the body root.
+      model.character.root.scale.setScalar(scale);
+      model.staff.visible = !hidden && !stowed(p);
+      const lifesteal = view === 'match' && p.skill === 'lifesteal' && p.skillActive && p.health > 0;
+      model.aura.visible = !hidden && (protectedPlayer(p) || lifesteal);
+      if (model.aura.visible) {
+        model.aura.material.color.setHex(lifesteal ? 0xe7484c : 0xffdc77);
+        model.aura.material.opacity = lifesteal ? 0.24 : 0.18;
+        model.aura.position.set(p.p.x, p.p.y + 0.45 * scale, p.p.z);
+        model.aura.scale.set(0.75 * scale, 1.2 * scale, 0.75 * scale);
+      }
+      model.perfume.visible = !hidden && p.skill === 'perfume' && p.skillActive;
+      if (model.perfume.visible) {
+        const { origin, reach, halfHeight } = perfumeFrame(p);
+        model.perfume.position.set(origin.x, p.p.y, origin.z);
+        const sprayYaw = p.sprayYaw || 0;
+        model.perfume.rotation.y = -sprayYaw;
+        model.perfume.scale.setScalar(scale);
+        if (p.abilityPhase === 'active' && dt > 0) {
+          const yaw = sprayYaw + (Math.random() - 0.5) * 70 * Math.PI / 180;
+          const velocity = new THREE.Vector3(Math.cos(yaw) * reach, (Math.random() * 2 - 1) * halfHeight, Math.sin(yaw) * reach)
+            .multiplyScalar(1 / PERFUME_PARTICLE_TRAVEL);
+          this.addParticle(origin, velocity, 0xf49dc5, { size: 0.12 * scale, life: PERFUME_PARTICLE_LIFE, float: true, grow: 0.2, shape: 'puff' });
+        }
+      }
       model.staff.position.copy(vec(staffFrame(p, 0).point));
+      model.staff.scale.setScalar(scale);
       setWeaponRotation(model.staff.quaternion, p.theta, p.phi, this.swordPitch);
       model.weapon.flash(p.hitFlash * 0.4);
       model.marker.position.set(p.p.x, 0.02, p.p.z);
-      model.marker.material.opacity = clamp(0.5 - (p.p.y - CONFIG.bodyFloor) * 0.09, 0.16, 0.5);
+      model.marker.scale.setScalar(scale);
+      model.marker.material.opacity = clamp(0.5 - (p.p.y - bodyFloor(p)) * 0.09, 0.16, 0.5);
       const frame = staffFrame(p);
       model.contact.visible = !hidden && p.staffGrounded;
       const ground=isAnatomical(p)?weaponSegments(p).flatMap(s=>[s.a,s.b].map(q=>({...q,y:q.y-s.radius}))).sort((a,b)=>a.y-b.y)[0]:frame.point;
       model.contact.position.set(ground.x, 0.023, ground.z);
+      model.contact.scale.setScalar(scale);
       const strength = clamp((p.contactSpeed - 3) / 9, 0, 1);
       for (const [trailIndex,trail] of model.trails.entries()) {
         if (recordTrail) {
@@ -247,7 +295,7 @@ export class ArenaView {
           trail.history.unshift([vec(near), vec(tip)]);
           if (trail.history.length > TRAIL_LENGTH) trail.history.pop();
         }
-        trail.mesh.visible = active && strength > 0 && trail.history.length > 1;
+        trail.mesh.visible = !stowed(p) && active && strength > 0 && trail.history.length > 1;
         for (let i = 0; i < TRAIL_LENGTH; i++) {
           const points = trail.history[Math.min(i, trail.history.length - 1)];
           if (points) { points[0].toArray(trail.positions, i * 6); points[1].toArray(trail.positions, i * 6 + 3); }
@@ -263,22 +311,22 @@ export class ArenaView {
         this.laughPulse[p.id] -= dt;
         if (this.laughPulse[p.id] <= 0) {
           this.laughPulse[p.id] = 0.32;
-          this.addRing({ x: p.p.x, y: p.p.y + 1.1, z: p.p.z }, 0xf6dc6a, { radius: 0.6, flat: false, life: 0.6, grow: 2.6, opacity: 0.55, facing: fighterHeading(p) });
+          this.addRing({ x: p.p.x, y: p.p.y + 1.1 * scale, z: p.p.z }, 0xf6dc6a, { radius: 0.6 * scale, flat: false, life: 0.6, grow: 2.6, opacity: 0.55, facing: fighterHeading(p) });
         }
       }
       if (p.skillActive && p.skill === 'happy' && dt > 0 && Math.random() < dt * 16) {
         const angle = Math.random() * Math.PI * 2;
-        this.addParticle({ x: p.p.x + Math.cos(angle) * 0.7, y: p.p.y + 0.2, z: p.p.z + Math.sin(angle) * 0.7 },
-          new THREE.Vector3(Math.cos(angle) * 0.4, 1.8 + Math.random(), Math.sin(angle) * 0.4), Math.random() < 0.5 ? 0xf28fa3 : 0x8fd27a,
-          { size: 0.11, life: 1.1, float: true, shape: 'heart' });
+        this.addParticle({ x: p.p.x + Math.cos(angle) * 0.7 * scale, y: p.p.y + 0.2 * scale, z: p.p.z + Math.sin(angle) * 0.7 * scale },
+          new THREE.Vector3(Math.cos(angle) * 0.4, 1.8 + Math.random(), Math.sin(angle) * 0.4).multiplyScalar(scale), Math.random() < 0.5 ? 0xf28fa3 : 0x8fd27a,
+          { size: 0.11 * scale, life: 1.1, float: true, shape: 'heart' });
       }
     }
-    this.updateBags(projectiles, dt);
+    this.updateBags(projectiles);
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.life -= dt;
       p.mesh.position.addScaledVector(p.velocity, dt);
-      if (p.float) p.velocity.multiplyScalar(Math.exp(-1.2 * dt));
+      if (p.float) p.velocity.multiplyScalar(Math.exp(-FLOAT_DRAG * dt));
       else p.velocity.y -= 9 * dt;
       const left = Math.max(0, p.life / p.maxLife);
       if (p.grow) { p.mesh.scale.setScalar(p.size * (1 + (1 - left) * p.grow)); p.mesh.material.opacity = left * 0.7; }
@@ -302,7 +350,7 @@ export class ArenaView {
       this.focus.copy(this.followCamera.focus);
     } else if (view === 'match' && local) {
       updateFreeCamera(this.followCamera, local, cameraDt, (Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake * 0.65);
-      this.focus.set(local.p.x, local.p.y + 0.6, local.p.z);
+      this.focus.set(local.p.x, local.p.y + 0.6 * fighterScale(local), local.p.z);
     } else if (setup) {
       this.updateSetupCamera(this.reducedMotion ? 0 : this.time);
     } else {
@@ -351,12 +399,16 @@ export class ArenaView {
     camera.updateMatrixWorld();
   }
 
-  updateBags(projectiles, dt) {
+  updateBags(projectiles) {
     const seen = new Set();
     for (const shot of projectiles) {
       seen.add(shot.id);
       let bag = this.bags.get(shot.id);
-      if (!bag) { bag = buildDeliveryBag(shot.radius ?? 0.55); this.effectsRoot.add(bag); this.bags.set(shot.id, bag); }
+      if (!bag) {
+        bag = shot.type === 'soccer' ? buildSoccerBall(shot.radius ?? SOCCER_RADIUS) : buildDeliveryBag(shot.radius ?? 0.55);
+        this.effectsRoot.add(bag);
+        this.bags.set(shot.id, bag);
+      }
       bag.position.copy(vec(shot.p));
       bag.rotation.set(shot.spin * 0.7, Math.atan2(-shot.v.z, shot.v.x), shot.spin);
     }
@@ -401,12 +453,19 @@ export class ArenaView {
     this.rings.push({ mesh, life, maxLife: life, grow, opacity });
   }
 
-  impact(event) {
-    if (event.type === 'skill') return this.skillEffect(event);
+  impact(event, player) {
+    if (event.type === 'skill') return this.skillEffect(event, player ? fighterScale(player) : 1);
     if (event.type === 'splat') {
       for (let i = 0; i < 14; i++) this.addParticle(event.point, new THREE.Vector3((Math.random() - 0.5) * 4, Math.random() * 3 + 1, (Math.random() - 0.5) * 4),
         i % 3 ? 0xf5c518 : 0xfbf8f0, { size: 0.08, life: 0.5 + Math.random() * 0.3 });
       this.addRing({ ...event.point, y: 0.03 }, 0xf5c518, { radius: 0.3, grow: 2.5, life: 0.5 });
+      return;
+    }
+    if (event.type !== 'hit' && event.type !== 'clash') return;
+    if (event.source === 'bleed') {
+      for (let i = 0; i < 5; i++) this.addParticle(event.point,
+        new THREE.Vector3((Math.random() - 0.5) * 1.2, Math.random() * 0.8, (Math.random() - 0.5) * 1.2),
+        0xc92e45, { size: 0.045, life: 0.4 + Math.random() * 0.2 });
       return;
     }
     const isHit = event.type === 'hit';
@@ -429,17 +488,17 @@ export class ArenaView {
       { grow: 2.5 + event.strength * 3, life: 0.55 });
   }
 
-  skillEffect(event) {
+  skillEffect(event, scale = 1) {
     const puff = point => {
       for (let i = 0; i < 16; i++) {
         const angle = Math.random() * Math.PI * 2;
-        this.addParticle({ x: point.x + Math.cos(angle) * 0.3, y: point.y - 0.2 + Math.random() * 1.2, z: point.z + Math.sin(angle) * 0.3 },
-          new THREE.Vector3(Math.cos(angle) * 1.6, 0.6 + Math.random(), Math.sin(angle) * 1.6), i % 4 ? 0xe9e4d8 : 0xb8b2a6,
-          { size: 0.22, life: 0.55 + Math.random() * 0.3, float: true, grow: 1.4, shape: 'puff', opacity: 0.7 });
+        this.addParticle({ x: point.x + Math.cos(angle) * 0.3 * scale, y: point.y + (-0.2 + Math.random() * 1.2) * scale, z: point.z + Math.sin(angle) * 0.3 * scale },
+          new THREE.Vector3(Math.cos(angle) * 1.6, 0.6 + Math.random(), Math.sin(angle) * 1.6).multiplyScalar(scale), i % 4 ? 0xe9e4d8 : 0xb8b2a6,
+          { size: 0.22 * scale, life: 0.55 + Math.random() * 0.3, float: true, grow: 1.4, shape: 'puff', opacity: 0.7 });
       }
     };
     if (event.skill === 'twist') { puff(event.point); if (event.to) puff(event.to); }
-    if (event.skill === 'happy') this.addRing({ x: event.point.x, y: 0.04, z: event.point.z }, 0x8fd27a, { radius: 0.7, grow: 2, life: 0.9 });
+    if (event.skill === 'happy') this.addRing({ x: event.point.x, y: 0.04, z: event.point.z }, 0x8fd27a, { radius: 0.7 * scale, grow: 2, life: 0.9 });
     if (event.skill === 'laugh') this.shake = Math.max(this.shake, 0.12);
   }
 
@@ -456,7 +515,7 @@ export class ArenaView {
     for (const p of [...this.particles, ...this.rings]) this.removeEffect(p.mesh);
     this.particles = [];
     this.rings = [];
-    this.updateBags([], 0);
+    this.updateBags([]);
     this.shake = 0;
     for (const p of this.players) for (const trail of p.trails) trail.history.length = 0;
   }

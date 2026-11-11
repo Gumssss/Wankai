@@ -1,0 +1,37 @@
+{
+  "parts": [
+    {
+      "file": "orange-tabby.mp4",
+      "start": 0,
+      "duration": 44.0
+    },
+    {
+      "file": "cr7.mp4",
+      "start": 44.0,
+      "duration": 44.0
+    },
+    {
+      "file": "mean-girl.mp4",
+      "start": 88.0,
+      "duration": 44.0
+    },
+    {
+      "file": "maodie.mp4",
+      "start": 132.0,
+      "duration": 44.0
+    },
+    {
+      "file": "reused-animals.mp4",
+      "start": 176.0,
+      "duration": 84.0
+    },
+    {
+      "file": "reused-drive.mp4",
+      "start": 260.0,
+      "duration": 92.366667
+    }
+  ],
+  "totalDuration": 352.366667,
+  "decode": "pass",
+  "sha256": "a2d6a55482a29c2e4a0602817821b91f00386fce9aa7d66854e02688e8e81e1b"
+}

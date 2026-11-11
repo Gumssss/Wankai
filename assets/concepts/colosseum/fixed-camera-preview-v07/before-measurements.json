@@ -1,0 +1,45 @@
+{
+  "environment": "ready",
+  "mode": "duel-fixed",
+  "choice": "current",
+  "position": [
+    30.88677987096443,
+    16,
+    13.237191373270472
+  ],
+  "target": [
+    0,
+    1.4,
+    0
+  ],
+  "fov": 55,
+  "downwardAngleDegrees": 23.483715993223914,
+  "radius": 19.35,
+  "visualScale": 3,
+  "fixed": true,
+  "frozen": true,
+  "worldTime": 4.555555555555541,
+  "characterRotationAnticlockwiseDegrees": 0,
+  "renderedPlayers": [
+    {
+      "id": 0,
+      "position": {
+        "x": -1.9313060671828803,
+        "y": 0.59,
+        "z": -0.07926686620253909
+      },
+      "heading": -0.022348943245114782
+    },
+    {
+      "id": 1,
+      "position": {
+        "x": 2.2,
+        "y": 0.94,
+        "z": 0
+      },
+      "heading": 3.141592653589793
+    }
+  ],
+  "cutaway": [],
+  "productCameraChanged": false
+}

@@ -1,0 +1,39 @@
+{
+  "fixture": "near rim / real cameras",
+  "state": "playing",
+  "mode": "solo",
+  "environment": "ready",
+  "radius": 19.35,
+  "rimHeight": 2.52,
+  "uniformScale": [
+    3,
+    3,
+    3
+  ],
+  "textureDecoded": true,
+  "textureSize": [
+    2048,
+    2048
+  ],
+  "wallGroups": 8,
+  "occludedByCamera": [
+    []
+  ],
+  "players": [
+    {
+      "character": "beagle",
+      "weapon": "long-ears",
+      "position": {
+        "x": 18.67,
+        "y": 0.59,
+        "z": 0
+      },
+      "grounded": true,
+      "staffGrounded": false,
+      "health": 100,
+      "stamina": 200
+    }
+  ],
+  "record": "complete",
+  "metrics": {}
+}

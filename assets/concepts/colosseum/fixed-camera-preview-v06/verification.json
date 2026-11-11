@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-21",
+  "status": "preview-only-awaiting-creator-review",
+  "previewUrl": "http://127.0.0.1:5173/docs/previews/colosseum/fixed-camera-preview-v06.html",
+  "productCoreSourceHashesVerifiedUnchanged": true,
+  "productCameraHeight": 24,
+  "proposedPosition": [30.88677987096443, 16, 13.237191373270472],
+  "alternativeHeight": 18,
+  "target": [0, 1.4, 0],
+  "fovDegrees": 55,
+  "horizontalPositionChanged": false,
+  "arenaRadius": 19.35,
+  "visualScale": 3,
+  "downwardAnglesDegrees": {"current": 33.9225, "proposed": 23.4837, "alternative": 26.2890},
+  "matchedPoseWorldTime": 4.59444444444443,
+  "matchedPoseImages": ["before-current-game.png", "proposed-lower-flatter.png", "alternative-milder.png"],
+  "automaticCutawayAtCapturedPoses": [],
+  "browser": {"name": "Chrome", "environment": "ready", "comparisonSwitches": "verified", "consoleErrors": []},
+  "independentReadOnlyReview": {
+    "aspects": [1.5, 1.8],
+    "floorBodyHurtEnvelopes": "All sampled frames fit, including tested +5-unit rises.",
+    "floorScreenHeightPercent": {"current": 61.69, "proposed": 55.66, "alternative": 58.15},
+    "limitations": [
+      "Lowering with unchanged horizontal placement also shortens eye-to-target distance.",
+      "Extreme weapon tips can reach viewport edges, particularly at the narrower sampled aspect.",
+      "Projection samples do not guarantee all poses or architectural occlusion."
+    ]
+  },
+  "tests": "No product tests changed or repeated for this isolated preview."
+}

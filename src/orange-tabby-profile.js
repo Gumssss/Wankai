@@ -58,20 +58,42 @@ const pawMeasurements={
  L:{center:[.947603702545166,.8910090625286102,-1.5062631368637085],size:[.9307253360748291,1.7614100575447083,1.7464559078216553]},
  R:{center:[.9480390548706055,.8918709754943848,1.5055665969848633],size:[.9308137893676758,1.7626919746398926,1.7446417808532715]},
 };
-export const CAT_PAW_SCALE=1.3;
-export const CAT_PAW_TRANSFORMS=Object.freeze(Object.fromEntries(Object.entries(pawMeasurements).map(([side,m])=>{
- const sign=side==='L'?-1:1,scale=CAT_PAW_SCALE;
+export const CAT_PAW_SCALE=1;
+export const CAT_PAW_SKILL_SCALE=1.3;
+export const CAT_PAW_TRANSITION=.2;
+export const CAT_PAW_ORIGINAL_COLLIDERS=originalColliders;
+const clampPawScale=scale=>Math.max(CAT_PAW_SCALE,Math.min(CAT_PAW_SKILL_SCALE,Number.isFinite(scale)?scale:CAT_PAW_SCALE));
+export const catPawScale=player=>clampPawScale(player?.pawScale);
+export function catPawTransforms(value=CAT_PAW_SCALE){
+ const scale=clampPawScale(value);
+ return Object.fromEntries(Object.entries(pawMeasurements).map(([side,m])=>{
+ const sign=side==='L'?-1:1;
  const lift=.02-(.35+m.center[1]-scale*m.size[1]/2);
  const outward=sign*(.5733+.08+scale*m.size[2]/2)-m.center[2];
- return [side,Object.freeze({scale,center:Object.freeze(m.center),size:Object.freeze(m.size),offset:Object.freeze([0,lift,outward])})];
-})));
+ return [side,{scale,center:m.center,size:m.size,offset:[0,lift,outward]}];
+ }));
+}
+export const CAT_PAW_TRANSFORMS=catPawTransforms();
 // Physical local frame is [-modelY,modelX,modelZ]. This is also used by trails.
-export function transformCatPawPoint(point,side){
- const {center:c,offset:d,scale}=CAT_PAW_TRANSFORMS[side],q=[-c[1],c[0],c[2]],delta=[-d[1],d[0],d[2]];
+function transformedPoint(point,{center:c,offset:d,scale}){
+ const q=[-c[1],c[0],c[2]],delta=[-d[1],d[0],d[2]];
  return point.map((v,i)=>q[i]+scale*(v-q[i])+delta[i]);
 }
-const colliders=Object.freeze(originalColliders.map(s=>freezeShape({...s,
- a:transformCatPawPoint(s.a,s.side),b:transformCatPawPoint(s.b,s.side),radius:s.radius*CAT_PAW_TRANSFORMS[s.side].scale})));
+export function transformCatPawPoint(point,side,value=CAT_PAW_SCALE){
+ return transformedPoint(point,catPawTransforms(value)[side]);
+}
+const makeColliders=scale=>{
+ const transforms=catPawTransforms(scale);
+ return Object.freeze(originalColliders.map(s=>freezeShape({...s,
+  a:transformedPoint(s.a,transforms[s.side]),b:transformedPoint(s.b,transforms[s.side]),radius:s.radius*scale})));
+};
+const colliders=makeColliders(CAT_PAW_SCALE),boostedColliders=makeColliders(CAT_PAW_SKILL_SCALE);
+export function catPawColliders(value=CAT_PAW_SCALE){
+ const scale=clampPawScale(value);
+ if(scale===CAT_PAW_SCALE)return colliders;
+ if(scale===CAT_PAW_SKILL_SCALE)return boostedColliders;
+ return makeColliders(scale);
+}
 const hurtShapes=Object.freeze([{"a":[-0.12,-0.29,0],"b":[-0.12,-0.05,0],"radius":0.3},{"a":[0.02,0.36,-0.05],"b":[0.02,0.46,0.05],"radius":0.48}].map(freezeShape));
 export const CAT=Object.freeze({
  model:'orange-tabby-prepared-v02.glb',bodyFloor:.59,bodyRadius:.58,

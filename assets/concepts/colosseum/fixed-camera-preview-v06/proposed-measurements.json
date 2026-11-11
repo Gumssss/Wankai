@@ -1,0 +1,24 @@
+{
+  "environment": "ready",
+  "mode": "duel-fixed",
+  "choice": "lower",
+  "position": [
+    30.88677987096443,
+    16,
+    13.237191373270472
+  ],
+  "target": [
+    0,
+    1.4,
+    0
+  ],
+  "fov": 55,
+  "downwardAngleDegrees": 23.483715993223914,
+  "radius": 19.35,
+  "visualScale": 3,
+  "fixed": true,
+  "frozen": true,
+  "worldTime": 4.59444444444443,
+  "cutaway": [],
+  "productCameraChanged": false
+}

@@ -5,6 +5,7 @@ import { ArenaView } from './scene.js';
 import { createDeathPortraits } from './death-portrait.js';
 import { loadoutKey } from './loadouts.js';
 import { cameraYaw } from './free-camera.js';
+import { fighterScale } from './match-growth.js';
 import { preloadCharacterModels, characterModelsReady } from './models/character-assets.js';
 
 // The imported character models start downloading as soon as the game loads;
@@ -56,6 +57,8 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
 
   useEffect(() => { view.resize(size.width, size.height); }, [view, size.width, size.height]);
 
+  useEffect(() => () => session.sound.syncSkills?.([], { active: false }), [session]);
+
   useEffect(() => {
     const onContextLost = event => { event.preventDefault(); session.contextLost(); };
     gl.domElement.addEventListener('webglcontextlost', onContextLost);
@@ -102,7 +105,7 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
       revision.current = session.visualRevision;
     }
     for (const event of impacts) {
-      view.impact(event);
+      view.impact(event, world.players[event.player]);
       // After teleporting behind the opponent, turn the view to face them.
       if (event.type === 'skill' && event.skill === 'twist' && event.player === session.localPlayerId && event.to) view.faceTowards(event.to.face);
     }
@@ -132,9 +135,9 @@ function ArenaScene({ session, loadouts, skin, sensitivity, invertY }) {
     for (const effect of session.effects) {
       const element = document.getElementById(`effect-${effect.id}`);
       if (!element) continue;
-      const followed = effect.follow != null ? world.players[effect.follow]?.p : null;
+      const followed = effect.follow != null ? world.players[effect.follow] : null;
       const rise = (effect.maxLife - effect.life) * (effect.text ? 0.35 : 1.4);
-      if (followed) point.set(followed.x, followed.y + 1.9 + rise, followed.z);
+      if (followed) point.set(followed.p.x, followed.p.y + (1.9 + rise) * fighterScale(followed), followed.p.z);
       else point.set(effect.point.x, effect.point.y + 0.5 + rise, effect.point.z);
       const screen = view.project(point, activeCamera, viewport);
       element.style.visibility = screen.visible ? 'visible' : 'hidden';

@@ -1,0 +1,58 @@
+{
+  "fixture": "beagle/cat split",
+  "state": "playing",
+  "mode": "duel",
+  "environment": "ready",
+  "radius": 19.35,
+  "rimHeight": 2.52,
+  "uniformScale": [
+    3,
+    3,
+    3
+  ],
+  "textureDecoded": true,
+  "textureSize": [
+    2048,
+    2048
+  ],
+  "wallGroups": 8,
+  "occludedByCamera": [
+    [],
+    []
+  ],
+  "players": [
+    {
+      "character": "beagle",
+      "weapon": "long-ears",
+      "position": {
+        "x": -0.2266250738010549,
+        "y": 0.59,
+        "z": -0.7717861131106074
+      },
+      "grounded": true,
+      "staffGrounded": true,
+      "health": 100,
+      "stamina": 200
+    },
+    {
+      "character": "orange-tabby",
+      "weapon": "cat-paws",
+      "position": {
+        "x": 2.2,
+        "y": 0.94,
+        "z": 0
+      },
+      "grounded": false,
+      "staffGrounded": false,
+      "health": 100,
+      "stamina": 200
+    }
+  ],
+  "record": "complete",
+  "metrics": {
+    "hits": 1,
+    "maxHeight": 3.192240279888308,
+    "minimumStamina": 88.26666666666506,
+    "source": "actual App/GameSession/ArenaView and solver; fixture reset, real input commands; no scripted travel"
+  }
+}

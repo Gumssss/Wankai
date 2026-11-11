@@ -1,7 +1,36 @@
 import {Group,Mesh,SphereGeometry,ConeGeometry,MeshStandardMaterial,Color} from 'three';
-import {CAT,CAT_PAW_TRANSFORMS} from './orange-tabby-profile.js';
+import { CAT, CAT_PAW_ORIGINAL_COLLIDERS, CAT_PAW_TRANSFORMS, catPawScale, catPawTransforms } from './orange-tabby-profile.js';
 
 const WHITE=new Color(0xffffff);
+const PAW_SIDES = ['L', 'R'];
+
+function applyPawTransforms(wrappers, transforms) {
+  for (const side of PAW_SIDES) {
+    const { center, offset, scale } = transforms[side];
+    const anchor = CAT.pawAnchors[side];
+    wrappers[side].position.set(...center.map((value, axis) => (1 - scale) * (value - anchor[axis]) + offset[axis]));
+    wrappers[side].scale.setScalar(scale);
+  }
+}
+
+function wrapPawControls(controls) {
+  const wrappers = {};
+  for (const side of PAW_SIDES) {
+    const control = controls[side], wrapper = new Group();
+    wrapper.name = `PawScale_${side}`;
+    for (const child of [...control.children]) wrapper.add(child);
+    control.add(wrapper);
+    wrappers[side] = wrapper;
+  }
+  applyPawTransforms(wrappers, CAT_PAW_TRANSFORMS);
+  return wrappers;
+}
+
+function posePaws(controls, wrappers, player) {
+  applyPawTransforms(wrappers, catPawTransforms(catPawScale(player)));
+  for (const side of PAW_SIDES) controls[side].rotation.set(0, 0, Math.PI / 2 - player.theta);
+}
+
 // This export is rigid. Clone the hierarchy and materials for each fighter;
 // geometry and the approved atlas can safely be shared until view disposal.
 export function instantiateOrangeTabby(source,id=0){
@@ -10,14 +39,7 @@ export function instantiateOrangeTabby(source,id=0){
  for(const [name,node] of Object.entries(controls))if(!node)throw Error('Orange tabby control missing: '+name);
  // An instance-local affine wrapper leaves the source GLB and shared geometry
  // untouched. It rotates with the original virtual joint, exactly like contacts.
- for(const side of ['L','R']){
-  const control=controls[side],{center,offset,scale}=CAT_PAW_TRANSFORMS[side],wrapper=new Group();
-  wrapper.name='PawScale_'+side;
-  wrapper.position.set(...center.map((v,i)=>(1-scale)*(v-CAT.pawAnchors[side][i])+offset[i]));
-  wrapper.scale.setScalar(scale);
-  for(const child of [...control.children])wrapper.add(child);
-  control.add(wrapper);
- }
+ const pawWrappers = wrapPawControls(controls);
  host.name='OrangeTabby_Character';host.position.y=-CAT.bodyFloor;host.add(model);
  model.traverse(object=>{
   if(!object.isMesh)return;
@@ -25,13 +47,13 @@ export function instantiateOrangeTabby(source,id=0){
   const own=original=>{if(!materials.has(original))materials.set(original,original.clone());return materials.get(original);};
   object.material=Array.isArray(object.material)?object.material.map(own):own(object.material);
  });
- return {host,model,controls,id,materials:[...materials.values()],colors:[...materials.values()].map(m=>m.color.clone())};
+ return {host,model,controls,pawWrappers,id,materials:[...materials.values()],colors:[...materials.values()].map(m=>m.color.clone())};
 }
 
 export function poseOrangeTabby(instance,player){
  // The enclosing arena root owns p and -heading. Never apply either again.
  instance.controls.root.position.set(0,0,0);instance.controls.root.rotation.set(0,0,0);
- for(const side of ['L','R'])instance.controls[side].rotation.set(0,0,Math.PI/2-player.theta);
+ posePaws(instance.controls, instance.pawWrappers, player);
  instance.materials.forEach((material,index)=>material.color.copy(instance.colors[index]).lerp(WHITE,(player.hitFlash||0)*.65));
 }
 
@@ -47,16 +69,20 @@ export function makeOrangeTabbyFallback(id=0){
   volume(body,[.51,1.18,side*.24],[.04,.095,.12],dark);volume(body,[.15,.10,side*.19],[.22,.10,.15],cream);
   const ear=new Mesh(new ConeGeometry(.18,.35,3),orange);ear.position.set(.02,1.58,side*.38);ear.rotation.x=side*.18;body.add(ear);
  }
- for(const [side,index] of [['L',0],['R',1]]){
-  const paw=new Group(),anchor=CAT.pawAnchors[side];paw.position.set(...anchor);host.add(paw);paws[side]=paw;
-  for(const shape of CAT.colliders.slice(index*24,index*24+24)){
-   const [x,y,z]=shape.a;volume(paw,[y,-x,z-anchor[2]],[shape.radius,shape.radius,shape.radius],cream);
-  }
+ for (const side of PAW_SIDES) {
+   const paw = new Group();
+   paw.position.set(...CAT.pawAnchors[side]);
+   host.add(paw);
+   paws[side] = paw;
  }
+ for (const { a: [x, y, z], radius, side } of CAT_PAW_ORIGINAL_COLLIDERS) {
+   volume(paws[side], [y, -x, z - CAT.pawAnchors[side][2]], [radius, radius, radius], cream);
+ }
+ const pawWrappers = wrapPawControls(paws);
  const materials=[orange,cream,dark,pink];
- return {root,body,paws,materials,colors:materials.map(m=>m.color.clone()),id};
+ return {root,body,paws,pawWrappers,materials,colors:materials.map(m=>m.color.clone()),id};
 }
 export function poseOrangeTabbyFallback(instance,player){
- for(const paw of Object.values(instance.paws))paw.rotation.z=Math.PI/2-player.theta;
+ posePaws(instance.paws, instance.pawWrappers, player);
  instance.materials.forEach((material,index)=>material.color.copy(instance.colors[index]).lerp(WHITE,(player.hitFlash||0)*.65));
 }

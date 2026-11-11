@@ -1,0 +1,133 @@
+{
+  "entries": [
+    {
+      "id": "runtime-skills",
+      "name": "实际物理技能检查"
+    }
+  ],
+  "duration": 84,
+  "fps": 30,
+  "chapters": [
+    {
+      "start": 0,
+      "end": 6,
+      "id": 0,
+      "label": "cr7 / 完整技能 / 真实物理 1x"
+    },
+    {
+      "start": 6,
+      "end": 10,
+      "id": 0,
+      "label": "cr7 / 同一事件 0.25x"
+    },
+    {
+      "start": 10,
+      "end": 14,
+      "id": 0,
+      "label": "cr7 / W / 真实物理 1x"
+    },
+    {
+      "start": 14,
+      "end": 18,
+      "id": 0,
+      "label": "cr7 / S / 真实物理 1x"
+    },
+    {
+      "start": 18,
+      "end": 22,
+      "id": 0,
+      "label": "cr7 / A / 真实物理 1x"
+    },
+    {
+      "start": 22,
+      "end": 26,
+      "id": 0,
+      "label": "cr7 / D / 真实物理 1x"
+    },
+    {
+      "start": 26,
+      "end": 30,
+      "id": 0,
+      "label": "cr7 / W+A / 真实物理 1x"
+    },
+    {
+      "start": 30,
+      "end": 34,
+      "id": 0,
+      "label": "cr7 / W+D / 真实物理 1x"
+    },
+    {
+      "start": 34,
+      "end": 38,
+      "id": 0,
+      "label": "cr7 / S+A / 真实物理 1x"
+    },
+    {
+      "start": 38,
+      "end": 42,
+      "id": 0,
+      "label": "cr7 / S+D / 真实物理 1x"
+    },
+    {
+      "start": 42,
+      "end": 48,
+      "id": 1,
+      "label": "mean-girl / 完整技能 / 真实物理 1x"
+    },
+    {
+      "start": 48,
+      "end": 52,
+      "id": 1,
+      "label": "mean-girl / 同一事件 0.25x"
+    },
+    {
+      "start": 52,
+      "end": 56,
+      "id": 1,
+      "label": "mean-girl / W / 真实物理 1x"
+    },
+    {
+      "start": 56,
+      "end": 60,
+      "id": 1,
+      "label": "mean-girl / S / 真实物理 1x"
+    },
+    {
+      "start": 60,
+      "end": 64,
+      "id": 1,
+      "label": "mean-girl / A / 真实物理 1x"
+    },
+    {
+      "start": 64,
+      "end": 68,
+      "id": 1,
+      "label": "mean-girl / D / 真实物理 1x"
+    },
+    {
+      "start": 68,
+      "end": 72,
+      "id": 1,
+      "label": "mean-girl / W+A / 真实物理 1x"
+    },
+    {
+      "start": 72,
+      "end": 76,
+      "id": 1,
+      "label": "mean-girl / W+D / 真实物理 1x"
+    },
+    {
+      "start": 76,
+      "end": 80,
+      "id": 1,
+      "label": "mean-girl / S+A / 真实物理 1x"
+    },
+    {
+      "start": 80,
+      "end": 84,
+      "id": 1,
+      "label": "mean-girl / S+D / 真实物理 1x"
+    }
+  ],
+  "note": "Shipping physics and ArenaView with CR7 skeletal clips; scripted input fixtures, not manual play"
+}

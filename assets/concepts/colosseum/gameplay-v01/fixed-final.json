@@ -1,0 +1,52 @@
+{
+  "fixture": "duel-fixed",
+  "state": "playing",
+  "mode": "duel-fixed",
+  "environment": "ready",
+  "radius": 6.45,
+  "rimHeight": 0.84,
+  "uniformScale": [
+    1,
+    1,
+    1
+  ],
+  "textureDecoded": true,
+  "textureSize": [
+    2048,
+    2048
+  ],
+  "wallGroups": 8,
+  "occludedByCamera": [
+    []
+  ],
+  "players": [
+    {
+      "character": "beagle",
+      "weapon": "long-ears",
+      "position": {
+        "x": 0.039323366941813494,
+        "y": 0.59,
+        "z": -0.9106738375276402
+      },
+      "grounded": true,
+      "staffGrounded": true,
+      "health": 100,
+      "stamina": 200
+    },
+    {
+      "character": "orange-tabby",
+      "weapon": "cat-paws",
+      "position": {
+        "x": 2.2,
+        "y": 0.94,
+        "z": 0
+      },
+      "grounded": false,
+      "staffGrounded": false,
+      "health": 100,
+      "stamina": 200
+    }
+  ],
+  "record": "complete",
+  "metrics": {}
+}

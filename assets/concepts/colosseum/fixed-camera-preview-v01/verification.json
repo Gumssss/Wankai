@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-21",
+  "status": "preview-only-awaiting-creator-review",
+  "previewUrl": "http://127.0.0.1:5173/docs/previews/colosseum/fixed-camera-preview-v01.html",
+  "mode": "duel-fixed",
+  "arenaRadius": 6.45,
+  "productFixedCameraChanged": false,
+  "cameraCount": 1,
+  "projection": "perspective",
+  "fovDegrees": 55,
+  "target": [0, 1.4, 0],
+  "proposedPosition": [0, 5.39, 16],
+  "diagonalPosition": [6, 5.39, 15],
+  "matchedPoseImages": [
+    "before-current-fixed.png",
+    "proposed-low-shared.png",
+    "alternative-diagonal.png"
+  ],
+  "foregroundOpenInMatchedImages": false,
+  "foregroundCutawayDefault": false,
+  "optionalCutawayImage": "optional-foreground-cutaway.png",
+  "browser": {
+    "name": "Chrome",
+    "environment": "ready",
+    "comparisonSwitches": "verified",
+    "freezeResume": "verified",
+    "livePlayerInput": "verified",
+    "fixedPositionDuringPlayback": [0, 5.39, 16],
+    "sampledSimulationTimes": [8.094444444444433, 13.072222222222988],
+    "consoleErrors": []
+  },
+  "independentReadOnlyReview": {
+    "previewIsolation": "no blocking issue found",
+    "desktopAspectsSampled": [1.5, 1.8],
+    "floorAndGroundedOr2_2RiseEnvelopes": "fit sampled frames",
+    "limitations": [
+      "Extreme +5-unit rises can exceed the static frame.",
+      "Framing samples do not guarantee visibility for every pose or occlusion.",
+      "Optional foreground cutaway exposes existing sector boundaries.",
+      "Measurement labels describe the intended fixed-duel flow; they are not a general diagnostic for other modes entered through the embedded App."
+    ]
+  }
+}

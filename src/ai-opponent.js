@@ -1,3 +1,4 @@
+import { fighterScale } from './match-growth.js';
 import { STAMINA, weaponStats, staffFrame, fighterHeading } from './physics.js';
 import { SKILLS } from './skills.js';
 
@@ -25,7 +26,7 @@ function detour(self, target, bearing, obstacles) {
   for (const obstacle of obstacles) {
     const dx = obstacle.x - self.p.x, dz = obstacle.z - self.p.z, distance = Math.hypot(dx, dz);
     if (distance > Math.hypot(target.p.x - self.p.x, target.p.z - self.p.z) || distance >= nearest) continue;
-    const clearance = obstacle.extent + 1.2;
+    const clearance = obstacle.extent + 1.2 * fighterScale(self);
     // Does the heading pass within clearance of the prop centre?
     const along = dx * Math.cos(bearing) + dz * Math.sin(bearing);
     const across = Math.abs(-dx * Math.sin(bearing) + dz * Math.cos(bearing));
@@ -53,10 +54,12 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
     if (!skill || self.skillCooldown > 0 || self.skillActive || now < memory.skillCheckAt) return false;
     memory.skillCheckAt = now + Math.max(0.25, settings.reaction * 2);
     const bearing = Math.atan2(target.p.z - self.p.z, target.p.x - self.p.x);
-    const useful = skill.id === 'laugh' ? distance < reach * 1.8 && target.stamina > 70
+    const useful = skill.id==='perfume'?!target.bleedActive&&distance<4*fighterScale(self)&&self.stamina>=35:skill.id==='ricochet'?distance<9&&self.stamina>=40:skill.id === 'laugh' ? distance < reach * 1.8 && target.stamina > 70
       : skill.id === 'twist' ? distance > reach * 2.4 || now - memory.progressAt > 2
       : skill.id === 'delivery' ? distance > 3 && distance < 11 && Math.abs(wrap(fighterHeading(self) - bearing)) < 0.12
-      : skill.id === 'happy' ? self.health < 70 : skill.id==='rotor'?self.stamina>=80&&distance<reach*2:false;
+      : skill.id === 'happy' ? self.health < 70 : skill.id==='rotor'?self.stamina>=80&&distance<reach*2
+      : skill.id === 'big-paws' ? distance < reach * 1.8 && self.stamina >= settings.reserve
+      : skill.id === 'lifesteal' ? self.health < self.maxHealth && distance < reach * 1.8 && self.stamina >= settings.reserve : false;
     return useful && roll() < settings.skillChance;
   }
 
@@ -69,7 +72,10 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
       const self = world.players[selfId], target = world.players[1 - selfId];
       if (!self || !target || self.health <= 0) return { theta: 0, phi: 0 };
       const input = this.move(world, self, target);
-      const reach = weaponStats(self).offset + weaponStats(self).length;
+      if(self.skill==='ricochet'&&self.abilityPhase==='active')return {theta:0,phi:0,heldMask:8,faceYaw:Math.atan2(target.p.z-self.p.z,target.p.x-self.p.x)};
+      if(self.skill==='rotor'&&self.skillActive)return {theta:0,phi:0,heldMask:1,faceYaw:Math.atan2(target.p.z-self.p.z,target.p.x-self.p.x)};
+      if(self.releaseGate)return {theta:0,phi:0,heldMask:0};
+      const reach = (weaponStats(self).offset + weaponStats(self).length) * fighterScale(self);
       if (wantsSkill(self, target, Math.hypot(target.p.x - self.p.x, target.p.z - self.p.z), reach, world.time)) input.skillTap = true;
       return input;
     },
@@ -79,14 +85,16 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
       // acts on what it last saw, which is what makes easier levels beatable.
       if (now - memory.perceivedAt >= settings.reaction) {
         memory.perceivedAt = now;
-        memory.seen = { p: { ...target.p }, v: { ...target.v }, tip: staffFrame(target).velocity, contactSpeed: target.contactSpeed };
+        memory.seen = { p: { ...target.p }, v: { ...target.v }, tip: staffFrame(target).velocity, contactSpeed: target.contactSpeed,
+          spray:target.skill==='perfume'&&target.abilityPhase==='active'?target.sprayYaw:null,
+          balls:(world.projectiles||[]).filter(s=>s.type==='soccer'&&s.owner!==self.id).map(s=>({p:{...s.p},v:{...s.v}})) };
         memory.aimError = (roll() * 2 - 1) * settings.aimError;
       }
       const seen = memory.seen;
       const lead = Math.min(0.4, settings.reaction + 0.1);
       const aimX = seen.p.x + seen.v.x * lead, aimZ = seen.p.z + seen.v.z * lead;
       const dx = aimX - self.p.x, dz = aimZ - self.p.z, distance = Math.hypot(dx, dz);
-      const weapon = weaponStats(self), reach = weapon.offset + weapon.length;
+      const weapon = weaponStats(self), reach = (weapon.offset + weapon.length) * fighterScale(self);
       const faceYaw = Math.atan2(target.p.z - self.p.z, target.p.x - self.p.x);
 
       // Stamina: stop swinging below the reserve and wait to refill.
@@ -95,6 +103,15 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
 
       let bearing = Math.atan2(dz, dx) + memory.aimError;
       if (distance > reach * 1.4) bearing = detour(self, { p: { x: aimX, z: aimZ } }, bearing, world.obstacles || []);
+      // React only to the last observed cone/ball, never future host inputs.
+      let evading=false;
+      if(seen.spray!==null&&distance<4.5*fighterScale(target)){
+        const away=Math.atan2(self.p.z-seen.p.z,self.p.x-seen.p.x),offset=wrap(away-seen.spray);
+        if(Math.abs(offset)<Math.PI*.32){bearing=seen.spray+(offset<0?-1:1)*Math.PI/2;evading=true;}
+      }
+      for(const ball of seen.balls){const bx=self.p.x-ball.p.x,bz=self.p.z-ball.p.z;
+        if(Math.hypot(bx,bz)<4&&bx*ball.v.x+bz*ball.v.z>0){const side=Math.sign(ball.v.x*bz-ball.v.z*bx)||1;bearing=Math.atan2(ball.v.z,ball.v.x)+side*Math.PI/2;evading=true;}
+      }
       // Progress is getting closer or dealing damage. A weapon wedged against a
       // prop or the rim cannot turn, so when stuck: cartwheel back out, then
       // approach from a side angle.
@@ -110,7 +127,7 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
       if (now < memory.detourUntil) bearing += memory.detourAngle;
       // Never cartwheel into the rim: bias the heading back toward the centre.
       const radius = Math.hypot(self.p.x, self.p.z), rim = world.arenaRadius || 19;
-      if (radius > rim - 3) {
+      if (radius > rim - 3 * fighterScale(self)) {
         const inward = Math.atan2(-self.p.z, -self.p.x);
         if (Math.cos(wrap(bearing - inward)) < 0.2) bearing = inward + Math.sign(wrap(bearing - inward)) * 1.2;
       }
@@ -132,7 +149,7 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
         return input;
       }
 
-      const close = distance < reach * 1.4;
+      const close = !evading&&distance < reach * 1.4;
       // Guard: an incoming fast swing gets a reversed swing to meet it.
       if (close && now >= memory.guardUntil && seen.contactSpeed > 7 && roll() < settings.guardChance * 0.05) memory.guardUntil = now + 0.25;
       if (now < memory.guardUntil) { input.theta = -drive; return input; }
@@ -142,11 +159,11 @@ export function createAi({ difficulty = 'normal', seed = 1 } = {}) {
       }
       if (now < memory.sweepUntil) { input.phi = memory.sweepSign; input.theta = 0; return input; }
 
-      const strike = distance < reach + 0.4;
+      const strike = !evading&&distance < reach + 0.4;
       if (!strike) {
         // Travel: hold W (or S) along an aligned heading to cartwheel closer.
         if (Math.abs(error) < 0.55) { input.theta = drive; memory.lastDrive = drive; }
-      } else if (distance < weapon.offset * 0.75) {
+      } else if (distance < weapon.offset * fighterScale(self) * 0.75) {
         // Inside the weapon's reach gap: step back out before striking.
         input.theta = -1;
         memory.lastDrive = -1;

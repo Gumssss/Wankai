@@ -1,0 +1,130 @@
+{
+  "entries": [
+    {
+      "id": "orange-tabby",
+      "name": "Stand Your Ground"
+    },
+    {
+      "id": "cr7",
+      "name": "Clean Strike"
+    },
+    {
+      "id": "mean-girl",
+      "name": "Personal Space"
+    },
+    {
+      "id": "maodie",
+      "name": "Not Today"
+    }
+  ],
+  "duration": 44,
+  "fps": 15,
+  "chapters": [
+    {
+      "start": 0,
+      "end": 4,
+      "label": "SUCCESS / complete action",
+      "mode": "success"
+    },
+    {
+      "start": 4,
+      "end": 8,
+      "label": "SAME EVENT / 0.25x",
+      "mode": "replay"
+    },
+    {
+      "start": 8,
+      "end": 12,
+      "label": "MISS / COUNTERPLAY",
+      "mode": "miss"
+    },
+    {
+      "start": 12,
+      "end": 16,
+      "label": "INTERRUPTION / DAMAGE",
+      "mode": "interrupt"
+    },
+    {
+      "start": 16,
+      "end": 20,
+      "label": "RELEASE / REVERSE / RETURN",
+      "mode": "reverse"
+    },
+    {
+      "start": 20,
+      "end": 24,
+      "label": "AIR / EXPIRY / LANDING",
+      "mode": "air"
+    },
+    {
+      "start": 24,
+      "end": 28,
+      "label": "COMMON WEAPON / COMPATIBILITY",
+      "mode": "common"
+    },
+    {
+      "start": 28,
+      "end": 30,
+      "label": "F + W / simultaneous",
+      "mode": "matrix",
+      "keys": "W"
+    },
+    {
+      "start": 30,
+      "end": 32,
+      "label": "F + S / simultaneous",
+      "mode": "matrix",
+      "keys": "S"
+    },
+    {
+      "start": 32,
+      "end": 34,
+      "label": "F + A / simultaneous",
+      "mode": "matrix",
+      "keys": "A"
+    },
+    {
+      "start": 34,
+      "end": 36,
+      "label": "F + D / simultaneous",
+      "mode": "matrix",
+      "keys": "D"
+    },
+    {
+      "start": 36,
+      "end": 38,
+      "label": "F + W+A / simultaneous",
+      "mode": "matrix",
+      "keys": "W+A"
+    },
+    {
+      "start": 38,
+      "end": 40,
+      "label": "F + W+D / simultaneous",
+      "mode": "matrix",
+      "keys": "W+D"
+    },
+    {
+      "start": 40,
+      "end": 42,
+      "label": "F + S+A / simultaneous",
+      "mode": "matrix",
+      "keys": "S+A"
+    },
+    {
+      "start": 42,
+      "end": 44,
+      "label": "F + S+D / simultaneous",
+      "mode": "matrix",
+      "keys": "S+D"
+    }
+  ],
+  "replay": {
+    "sourceStart": 0.5,
+    "sourceEnd": 1.5,
+    "outputStart": 4,
+    "outputEnd": 8,
+    "speed": 0.25
+  },
+  "type": "authored concept; all motion and feedback illustrative"
+}

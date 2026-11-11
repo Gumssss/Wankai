@@ -1,0 +1,23 @@
+{
+  "scope": "Local split-screen camera height refinement",
+  "settings": {
+    "pitch": 0.15,
+    "distance": 24,
+    "fov": 55,
+    "yawOffsetDegrees": 15
+  },
+  "heightAboveFighter": {
+    "previousClose": 4.800426978282239,
+    "rejectedRaised": 16.291032576443246,
+    "current": 4.786515179366382
+  },
+  "verification": {
+    "focusedTests": 34,
+    "failed": 0,
+    "build": "passed; existing chunk-size advisory",
+    "actualGame": "Chrome split beagle/ears vs cat/paws, named existing per-camera cutaways",
+    "screenshot": "implemented-farther-lower.png",
+    "occlusionRegression": "Reproduced low camera inside front-sided wall; seed camera-containing sector bounds before existing neighboring margin. Live foreground column no longer blocks P1."
+  },
+  "delivery": "Local only, no commit/push"
+}

@@ -1,0 +1,26 @@
+{
+  "environment": "ready",
+  "mode": "duel-fixed",
+  "radius": 6.45,
+  "visualScale": 1,
+  "splitScreenRadius": 19.35,
+  "rimHeight": 0.84,
+  "cameras": 1,
+  "fixed": true,
+  "choice": "current",
+  "position": [
+    0,
+    5.39,
+    16
+  ],
+  "target": [
+    0,
+    1.4,
+    0
+  ],
+  "fov": 55,
+  "projection": "perspective",
+  "openForeground": false,
+  "worldTime": 3.3388888888888784,
+  "cutaway": []
+}

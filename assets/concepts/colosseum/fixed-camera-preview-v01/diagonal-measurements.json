@@ -1,0 +1,23 @@
+{
+  "environment": "ready",
+  "mode": "duel-fixed",
+  "radius": 6.45,
+  "cameras": 1,
+  "fixed": true,
+  "choice": "diagonal",
+  "position": [
+    6,
+    5.39,
+    15
+  ],
+  "target": [
+    0,
+    1.4,
+    0
+  ],
+  "fov": 55,
+  "projection": "perspective",
+  "openForeground": false,
+  "worldTime": 7.894444444444418,
+  "cutaway": []
+}

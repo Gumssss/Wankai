@@ -43,7 +43,7 @@ function Modal({ children, onCancel, className = '', label }) {
 
 const clock = seconds => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
-function FighterCard({ id, tag, health, stamina, loadout, skill, side }) {
+function FighterCard({ id, tag, health, bleeding, stamina, loadout, skill, side }) {
   const staminaState = stamina <= 1e-8 ? 'empty' : stamina < STAMINA.lowThreshold ? 'low' : 'ready';
   const staminaLabel = staminaState === 'empty' ? '力竭' : staminaState === 'low' ? '体力低' : '体力';
   const maxHealth=CHARACTERS[loadout.characterId]?.maxHealth??100;
@@ -52,9 +52,12 @@ function FighterCard({ id, tag, health, stamina, loadout, skill, side }) {
     <div className="fighter-avatar"><CharacterPortrait id={loadout.characterId} playerId={id} critical={health < 15} /></div>
     <div className="fighter-body">
       <div className="fighter-name"><span className="fighter-tag">{tag}</span><b>{characterName(loadout.characterId)}</b><strong>{health}</strong></div>
-      <div className="health-track" role="progressbar" aria-label={`${tag} 生命`} aria-valuemin={0} aria-valuemax={maxHealth} aria-valuenow={health}>
-        <div className="health-ghost" style={{ transform: `scaleX(${health / maxHealth})` }} />
-        <div className="health-fill" style={{ transform: `scaleX(${health / maxHealth})` }} />
+      <div className="health-row">
+        <div className="health-track" role="progressbar" aria-label={`${tag} 生命`} aria-valuemin={0} aria-valuemax={maxHealth} aria-valuenow={health}>
+          <div className="health-ghost" style={{ transform: `scaleX(${health / maxHealth})` }} />
+          <div className="health-fill" style={{ transform: `scaleX(${health / maxHealth})` }} />
+        </div>
+        {bleeding && <span className="bleed-status">流血 · −1 / {SKILLS.perfume.bleedInterval}秒</span>}
       </div>
       <div className={`stamina-row stamina-${staminaState}`}>
         <span>{staminaLabel}</span>
@@ -74,12 +77,21 @@ function SkillWidget({ skill, pressed }) {
   const info = SKILLS[skill?.id];
   if (!info) return null;
   const state = skill.active ? 'active' : skill.cooldown > 0 ? 'cooling' : 'ready';
-  const progress = skill.active ? skill.time / info.duration : (info.cooldown?1 - skill.cooldown / info.cooldown:1);
+  const progress = skill.active ? Math.min(1,skill.time / info.duration) : (info.cooldown?1 - skill.cooldown / info.cooldown:1);
+  let status = '就绪 · 按 F 发动';
+  if (skill.id === 'ricochet' && skill.phase === 'active') status = `WASD 移动 · 无敌 ${skill.phaseTime.toFixed(1)}s`;
+  else if (skill.id === 'ricochet' && skill.phase === 'recovery') status = '收招 · 可受伤';
+  else if (skill.releaseGate) status = '松开 WASD 再按';
+  else if (skill.phase === 'windup') status = '准备释放 · 可打断';
+  else if (state === 'active') {
+    const label = skill.id === 'rotor' ? 'WASD 移动 · 旋耳' : '生效中';
+    status = `${label} ${(skill.phaseTime || skill.time).toFixed(1)}s`;
+  } else if (state === 'cooling') status = `冷却 ${skill.cooldown.toFixed(1)}s`;
   return <div className={`skill-widget ${state}${pressed ? ' pressed' : ''}`} style={{ '--progress': progress }} aria-label={`技能 ${info.name}`}>
     <div className="skill-ring"><SkillIcon id={info.id} />{state === 'cooling' && <b>{Math.ceil(skill.cooldown)}</b>}</div>
     <div className="skill-text">
       <span><kbd>F</kbd>{info.name}</span>
-      <small>{state === 'active' ? `生效中 ${skill.time.toFixed(1)}s` : state === 'cooling' ? `冷却 ${skill.cooldown.toFixed(1)}s` : '就绪 · 按 F 发动'}</small>
+      <small>{status}</small>
     </div>
   </div>;
 }
@@ -93,9 +105,11 @@ function HeadingGuide() {
 
 function Keys({ game }) {
   const pressed = code => game.pressed.includes(code) ? ' pressed' : '';
+  const skill = game.skills[game.localPlayerId];
+  const moving = (skill?.id === 'ricochet' && skill.phase === 'active') || (skill?.id === 'rotor' && skill.active);
   return <div className="key-hints" aria-label="操作提示">
-    <span><kbd className={pressed('KeyW')}>W</kbd><kbd className={pressed('KeyS')}>S</kbd>挥动</span>
-    <span><kbd className={pressed('KeyA')}>A</kbd><kbd className={pressed('KeyD')}>D</kbd>转动武器</span>
+    <span><kbd className={pressed('KeyW')}>W</kbd><kbd className={pressed('KeyS')}>S</kbd>{moving?'前后移动':'挥动'}</span>
+    <span><kbd className={pressed('KeyA')}>A</kbd><kbd className={pressed('KeyD')}>D</kbd>{moving?'左右移动':'转动武器'}</span>
     <span><kbd className="mouse">鼠标</kbd>视角</span>
     <span><kbd>Esc</kbd>菜单</span>
   </div>;
@@ -141,12 +155,12 @@ function HelpContent({ close }) {
     <span className="eyebrow">HOW TO PLAY</span>
     <h2>武器才是主角</h2>
     <div className="guide-steps">
-      <article><span>01</span><div><h3>撑地才走得动</h3><p>角色没有走路键。按住 W 让武器朝正面翻滚撑地，身体就会向前移动；S 朝背面翻滚，向后移动。A / D 转动武器的水平方向，也就决定了前进的方向。</p></div></article>
+      <article><span>01</span><div><h3>用武器撑地移动</h3><p>平时按住 W 让武器朝正面翻滚撑地，身体就会向前移动；S 朝背面翻滚，向后移动。A / D 转动武器的水平方向，也就决定了前进的方向。</p></div></article>
       <article><span>02</span><div><h3>鼠标看哪，身体就朝哪</h3><p>点击画面锁定鼠标，左右移动鼠标转动视角，角色的身体和脸会转向视角方向。比格犬装备长耳时、橘猫装备巨爪时，身体随武器一起转向；两者仍可用鼠标独立看向其他方向。灵敏度和上下反转可在设置中调整。</p></div></article>
       <article><span>03</span><div><h3>竖挥重击，横转轻打</h3><p>同样速度下，纯横转命中只有竖挥一半的伤害。武器之间可以格挡。场上的障碍会挡住身体，也能用武器撑着借力。</p></div></article>
-      <article><span>04</span><div><h3>F 发动角色技能</h3><p>{CHARACTER_CATALOG.map(c => `${c.name}：${SKILLS[c.skill]?.name??'无额外技能'}`).join('；')}。比格犬仅在装备长耳时可旋耳，消耗体力并在 5 秒内结束；其他角色技能使用原有冷却，橘猫无额外 F 技能。</p></div></article>
+      <article><span>04</span><div><h3>F 发动角色技能</h3><p>{CHARACTER_CATALOG.map(c => `${c.name}：${SKILLS[c.skill]?.name??'无额外技能'}`).join('；')}。比格犬装备长耳时可自动旋耳悬停，按 WASD 随视角移动，消耗体力，最多持续 {SKILLS.rotor.duration} 秒。从发动时开始冷却 {SKILLS.rotor.cooldown} 秒。橘猫双爪从原尺寸放大至 1.3 倍，持续 8 秒，冷却 30 秒。香水命中会造成流血，离开喷雾后仍每 {SKILLS.perfume.bleedInterval} 秒损失 1 点生命，直到本局结束。</p></div></article>
     </div>
-    <div className="guide-note"><b>比格犬 80 / 橘猫 150 / 其他 100 生命 · 200 体力</b><span>挥动和转动消耗体力，停手半秒后恢复；体力低时动作变慢。AI 对战中 AI 的角色与武器每局随机。联机通过 Steam：快速匹配或邀请好友，需要 Steam 在运行并已登录。</span></div>
+    <div className="guide-note"><b>所有角色 100 生命 · 200 体力</b><span>挥动和转动消耗体力，停手半秒后恢复；体力低时动作变慢。AI 对战中 AI 的角色与武器每局随机。联机通过 Steam：快速匹配或邀请好友，需要 Steam 在运行并已登录。</span></div>
     <button className="primary-button" onClick={close}>明白了，抡起来 <span>→</span></button>
   </>;
 }
@@ -390,7 +404,7 @@ function App({ session = defaultSession }) {
   return <>
     <div className={`arena-screen${active ? ' in-match' : ' lobby-screen'}`}>
       <main id="game-shell">
-        <div id="viewport"><CanvasBoundary onError={() => { session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}>
+        <div id="viewport"><CanvasBoundary onError={() => { session.sound.syncSkills?.([], { active: false }); session.error = '3D 场景无法载入，请检查 WebGL 2 和硬件加速。'; session.publish(); setReady(true); }}>
           <ArenaCanvas session={session} loadouts={game.loadouts} skin={game.arenaSkin}
             onReady={() => setReady(true)} sensitivity={settings.sensitivity} invertY={settings.invertY} />
         </CanvasBoundary></div>
@@ -401,13 +415,16 @@ function App({ session = defaultSession }) {
 
         {active && <>
           <section className="hud-top" aria-label="对战状态">
-            <FighterCard id={local} side="left" tag="你" health={game.health[local]} stamina={game.stamina[local]} loadout={game.loadouts[local]} skill={game.skills[local]} />
+            <FighterCard id={local} side="left" tag="你" health={game.health[local]} bleeding={game.bleeding[local]}
+              stamina={game.stamina[local]} loadout={game.loadouts[local]} skill={game.skills[local]} />
             <div className="hud-center">
               <div className="match-clock"><b>{clock(game.seconds)}</b>
-                <small>{online ? `联机${game.net?.ping != null ? ` · ${game.net.ping} ms` : ''}` : `AI · ${AI_DIFFICULTIES[game.aiDifficulty]?.label ?? ''}`}</small></div>
+                <small>{online ? `联机${game.net?.ping != null ? ` · ${game.net.ping} ms` : ''}` : `AI · ${AI_DIFFICULTIES[game.aiDifficulty]?.label ?? ''}`}</small>
+                {game.seconds >= 30 && <small className="growth-status">体型 ×{game.growth.scale.toFixed(2)} · 伤害 +{Math.round((game.growth.damageScale - 1) * 100)}%</small>}</div>
               <button className="menu-button" onClick={() => session.pause()} aria-label="打开菜单">Ⅱ</button>
             </div>
-            <FighterCard id={other} side="right" tag={online ? '对手' : 'AI'} health={game.health[other]} stamina={game.stamina[other]} loadout={game.loadouts[other]} skill={game.skills[other]} />
+            <FighterCard id={other} side="right" tag={online ? '对手' : 'AI'} health={game.health[other]} bleeding={game.bleeding[other]}
+              stamina={game.stamina[other]} loadout={game.loadouts[other]} skill={game.skills[other]} />
           </section>
           {game.state !== 'result' && <>
             <HeadingGuide />
@@ -416,9 +433,13 @@ function App({ session = defaultSession }) {
           </>}
           {!mouseLocked && LOOK_STATES.has(game.state) && !menuOpen && <div className="look-hint" aria-live="polite">点击画面锁定鼠标 · 移动鼠标转动视角</div>}
         </>}
-        <div id="effects" aria-hidden="true">{game.effects.map(effect => effect.text
-          ? <div key={effect.id} id={`effect-${effect.id}`} className={`skill-word kind-${effect.kind}`}>{effect.text}</div>
-          : <div key={effect.id} id={`effect-${effect.id}`} className="damage-number">{effect.damage >= 22 && <span className="impact-word">重击!</span>}−{effect.damage}</div>)}</div>
+        {game.seconds >= 30 && game.seconds < 33 && game.state === 'playing' && <div className="growth-announcement" role="status">越战越大！双方开始成长</div>}
+        <div id="effects" aria-hidden="true">{game.effects.map(effect => {
+          const id = `effect-${effect.id}`;
+          if (effect.text) return <div key={effect.id} id={id} className={`skill-word kind-${effect.kind}`}>{effect.text}</div>;
+          if (effect.heal != null) return <div key={effect.id} id={id} className="heal-number">+{effect.heal}</div>;
+          return <div key={effect.id} id={id} className="damage-number">{effect.damage >= 22 && <span className="impact-word">重击!</span>}−{effect.damage}</div>;
+        })}</div>
         <div key={game.countdownText} id="countdown" className={/^[1-9]$/.test(game.countdownText) ? 'pop' : ''} aria-live="polite">{game.countdownText}</div>
         <div className={`hit-readout${game.readout ? ' visible' : ''}`}><span>{game.readout?.label ?? '有效命中'}</span><strong>−{game.readout?.damage ?? 0}</strong><small>{game.readout?.detail ?? ''}</small></div>
 

@@ -3,7 +3,10 @@
 // versions when present (see public/audio/README.md).
 // Safe to import and call in Node (no AudioContext): every method becomes a no-op.
 import { clamp01 } from './audio/core.js';
-import { hitSound, clashSound, splatSound, SKILL_SFX, tickSound, uiSound, resultSound } from './audio/sfx.js';
+import {
+  hitSound, clashSound, splatSound, weaponContactSound, soccerBounceSound,
+  SKILL_SFX, startSkillLoop, growthSound, healSound, tickSound, uiSound, resultSound,
+} from './audio/sfx.js';
 import { speakSkill } from './audio/voice.js';
 import { MusicPlayer, BufferMusicPlayer, TRACKS } from './audio/music.js';
 
@@ -23,6 +26,14 @@ const CROSSFADE = 1;
 const LOOKAHEAD = 0.2;
 const TIMER_MS = 30;
 const MUSIC_LEVEL = 0.75; // procedural mix headroom relative to the user music volume
+const IMPACT_TYPES = new Set(['hit', 'clash', 'splat', 'weapon-contact', 'soccer-bounce']);
+
+function sustainedSkill(player) {
+  if (!player || player.health <= 0 || !player.skillActive) return null;
+  if (player.skill === 'rotor') return 'rotor';
+  if (player.skill === 'perfume' && player.abilityPhase === 'active') return 'perfume';
+  return null;
+}
 
 function baseUrl() {
   try { return import.meta.env?.BASE_URL ?? './'; } catch { return './'; }
@@ -68,6 +79,7 @@ export class GameAudio {
     this.fading = [];         // players fading out
     this.timer = null;
     this.activeVoices = new Map();
+    this.skillLoops = new Map();
     this.assets = null;
     this.lastImpact = new Map();
     if (options.context) {
@@ -83,6 +95,7 @@ export class GameAudio {
     const next = Boolean(value);
     if (next === this._enabled) return;
     this._enabled = next;
+    if (!next) this.stopSkillLoops(!this.ready());
     if (this.master) {
       const t = this.context.currentTime, param = this.master.gain;
       param.cancelScheduledValues(t);
@@ -127,7 +140,10 @@ export class GameAudio {
     this.sfxBus.connect(this.master);
     this.master.connect(limiter); limiter.connect(clip); clip.connect(ctx.destination);
     this.applyVolumes();
-    ctx.onstatechange = () => this.syncMusic();
+    ctx.onstatechange = () => {
+      if (!this.offline && ctx.state !== 'running') this.stopSkillLoops(true);
+      this.syncMusic();
+    };
   }
 
   ready() {
@@ -272,15 +288,17 @@ export class GameAudio {
   impact(event) {
     if (!event || !this.canPlay()) return;
     const type = event.type;
-    if (type !== 'hit' && type !== 'clash' && type !== 'splat') return;
+    if (!IMPACT_TYPES.has(type)) return;
     const t = this.now();
-    // Guard against bursts within one frame; keep the first of near-simultaneous events per attacker.
-    const key = `${type}:${event.attacker ?? ''}`;
+    // Multiple physics events can reach the mixer in the same render frame.
+    const key = `${type}:${event.attacker ?? event.player ?? ''}:${event.surface ?? ''}`;
     if (t - (this.lastImpact.get(key) ?? -1) < 0.03) return;
     this.lastImpact.set(key, t);
     try {
       if (type === 'hit') hitSound(this.context, this.sfxBus, t, event);
       else if (type === 'splat') splatSound(this.context, this.sfxBus, t, event);
+      else if (type === 'weapon-contact') weaponContactSound(this.context, this.sfxBus, t, event);
+      else if (type === 'soccer-bounce') soccerBounceSound(this.context, this.sfxBus, t, event);
       else clashSound(this.context, this.sfxBus, t, event, (rate, gain) => this.playClashBuffer(t, rate, gain));
     } catch { /* never let audio break the game loop */ }
   }
@@ -299,12 +317,58 @@ export class GameAudio {
 
   skill(event) {
     const skill = event?.skill;
-    if (!Object.hasOwn(VOICE_DELAY, skill ?? '') || !this.canPlay()) return;
+    if (!Object.hasOwn(SKILL_SFX, skill ?? '') || !this.canPlay()) return;
     const t = this.now();
     try {
       SKILL_SFX[skill](this.context, this.sfxBus, t);
-      this.voice(skill, t + VOICE_DELAY[skill]);
+      if (Object.hasOwn(VOICE_DELAY, skill)) this.voice(skill, t + VOICE_DELAY[skill]);
     } catch { /* optional */ }
+  }
+
+  heal(event) {
+    const amount = event?.amount;
+    if (!Number.isFinite(amount) || amount <= 0 || !this.canPlay()) return;
+    try { healSound(this.context, this.sfxBus, this.now() + 0.025, amount); } catch { /* optional */ }
+  }
+
+  syncSkills(players = [], { paused = false, active = true } = {}) {
+    if (paused || !active || !this.canPlay()) {
+      this.stopSkillLoops(!this.ready());
+      return;
+    }
+    const t = this.context.currentTime;
+    for (const [id, loop] of this.skillLoops) {
+      if (sustainedSkill(players.find(player => player.id === id)) !== loop.skill) this.stopSkillLoop(id, t);
+    }
+    for (const player of players) {
+      const skill = sustainedSkill(player);
+      if (!skill) continue;
+      try {
+        let loop = this.skillLoops.get(player.id);
+        if (!loop) {
+          loop = startSkillLoop(this.context, this.sfxBus, t, skill);
+          this.skillLoops.set(player.id, loop);
+        }
+        loop.update(player, t);
+      } catch { /* audio is optional */ }
+    }
+  }
+
+  stopSkillLoop(id, t, immediate = false) {
+    const loop = this.skillLoops.get(id);
+    this.skillLoops.delete(id);
+    try { loop.stop(t, immediate); } catch { /* the audio context may have closed */ }
+  }
+
+  stopSkillLoops(immediate = false) {
+    if (!this.skillLoops.size) return;
+    const t = this.context.currentTime;
+    for (const id of this.skillLoops.keys()) this.stopSkillLoop(id, t, immediate);
+  }
+
+  growth() {
+    if (!this.canPlay()) return;
+    try { growthSound(this.context, this.sfxBus, this.now()); } catch { /* optional */ }
   }
 
   /** Play the voice line for a skill: the dropped-in file if present, else the synth placeholder. */
@@ -349,6 +413,7 @@ export class GameAudio {
   }
 
   result(outcome) {
+    this.stopSkillLoops(!this.ready());
     if (!this.canPlay()) return;
     try {
       const length = resultSound(this.context, this.sfxBus, this.now(), outcome);

@@ -1,9 +1,10 @@
+import {modernSkill,protectedPlayer,stowed,updateAbility,finishAbilityTick,stepSoccer,applyPerfume,cancelAbility,stepBleeding,clearBleeding} from './arena-skills.js';
 // Upright bodies + two angular degrees of freedom per staff.
 // Contact impulses use the staff Jacobian: rotation and translation respond
-// together. No locomotion force is added by the input controller.
+// together. CR7's temporary active F phase is the explicit WASD exception.
 import {CHARACTERS} from './character-catalog.js';
 import {BEAGLE} from './beagle-profile.js';
-import {CAT} from './orange-tabby-profile.js';
+import {CAT,catPawScale,catPawColliders,transformCatPawPoint,CAT_PAW_SKILL_SCALE,CAT_PAW_TRANSITION} from './orange-tabby-profile.js';
 import {BEAGLE_COMMON_OFFSETS} from './character-attachments.js';
 import {BEAGLE_SKILL,beaglePointFrame,updateBeagleSkill,applyBeagleHover} from './beagle-skill.js';
 import {ROTOR_RESOURCE,staminaPower as animalPower} from './animal-settings.js';
@@ -11,6 +12,7 @@ import {normalizeLoadout,resolveLoadout} from './loadouts.js';
 import { obstacleContact } from './arena-obstacles.js';
 import { SKILLS, skillFor } from './skills.js';
 import { ARENA_PROFILE, arenaPlacement } from './arena-profile.js';
+import { GROWTH_START, GROWTH_END, growthAt, fighterScale, fighterDamageScale } from './match-growth.js';
 export const CONFIG = Object.freeze({
   step: 1 / 180,
   arenaRadius: ARENA_PROFILE.radius,
@@ -59,6 +61,7 @@ export const CLASH = Object.freeze({
   minRecoilSpeed: 1.8,
   maxRecoilSpeed: 3.2,
 });
+const CONTACT_AUDIO = Object.freeze({ minSpeed: 0.35, cooldown: 0.12, separation: 0.05 });
 // Every match uses the enlarged arena; bare physics worlds keep the measured 1x podium.
 export const MATCH_ARENA_SCALE = 3;
 
@@ -67,7 +70,8 @@ const weapon = ({ colliders, ...stats }) => Object.freeze({ ...stats, radius: co
 
 // Floating weapons in their local frame: +Y runs from the butt (at `offset`
 // from the body pivot) to the tip, +X is the leading side of a W swing. The
-// models in models/weapons.js are built on exactly these capsules.
+// Models share these local frames; the contact radii deliberately extend beyond
+// narrow shafts/blades for forgiving hits, blocks and ground support.
 export const WEAPONS = Object.freeze({
   'soccer-ball': weapon({ length: .92, offset: 1.45, inertia: 3.2, motorAcceleration: 32, brakeAcceleration: 40, maxAngularSpeed: 5.4,
     colliders: [capsule([0, .46, 0], [0, .46, 0], .455)] }),
@@ -85,28 +89,29 @@ export const WEAPONS = Object.freeze({
   'long-ears':BEAGLE,
   'cat-paws':CAT.weapon,
   'yellow-staff': weapon({ length: 1.8, offset: 1.25, inertia: 3.5, motorAcceleration: 28, brakeAcceleration: 36, maxAngularSpeed: 5,
-    colliders: [capsule([0, .115, 0], [0, 1.685, 0], .115)] }),
+    colliders: [capsule([0, .115, 0], [0, 1.685, 0], .18)] }),
   'takeout-box': weapon({ length: 0.85, offset: 1.5, inertia: 4.4, motorAcceleration: 24, brakeAcceleration: 30, maxAngularSpeed: 4.4,
     // The insulated box itself floats beside 肥嘟嘟 — no handle — as two
     // stacked rounded slabs across its width.
     colliders: [capsule([0, .25, -.1], [0, .25, .1], .3, 1.15), capsule([0, .55, -.1], [0, .55, .1], .3, 1.15)] }),
   sword: weapon({ length: 1.45, offset: 1.2, inertia: 2.8, motorAcceleration: 38, brakeAcceleration: 48, maxAngularSpeed: 6.1,
-    colliders: [capsule([0, 0, 0], [0, 1.45, 0], .09), capsule([-.105, .425, 0], [.115, .425, 0], .045)] }),
+    colliders: [capsule([0, 0, 0], [0, .45, 0], .09), capsule([0, .45, 0], [0, 1.45, 0], .26),
+      capsule([-.105, .425, 0], [.115, .425, 0], .045)] }),
   polearm: weapon({ length: 2.16, offset: CONFIG.staffOffset, inertia: CONFIG.inertia, motorAcceleration: CONFIG.motorAcceleration,
     brakeAcceleration: CONFIG.polarBrakeAcceleration, maxAngularSpeed: CONFIG.maxAngularSpeed,
     // Shaft, the broad crescent blade, its back-curving tip and the rear barb.
-    colliders: [capsule([0, 0, 0], [0, 1.42, 0], .065), capsule([.07, 1.42, 0], [.1, 1.8, 0], .12, 1.1),
-      capsule([.09, 1.8, 0], [-.01, 2.08, 0], .08, 1.1), capsule([-.04, 1.52, 0], [-.17, 1.62, 0], .045)] }),
+    colliders: [capsule([0, 0, 0], [0, 1.42, 0], .065), capsule([.07, 1.42, 0], [.1, 1.8, 0], .28, 1.1),
+      capsule([.09, 1.8, 0], [-.01, 2.08, 0], .20, 1.1), capsule([-.04, 1.52, 0], [-.17, 1.62, 0], .045)] }),
   hammer: weapon({ length: 1.9, offset: 1.3, inertia: 5.8, motorAcceleration: 18, brakeAcceleration: 22, maxAngularSpeed: 3.4,
     // Shaft, the cross-mounted head (flat face forward), rear pick and top spike.
-    colliders: [capsule([0, .08, 0], [0, 1.62, 0], .075), capsule([-.24, 1.52, 0], [.3, 1.52, 0], .17, 1.3),
+    colliders: [capsule([0, .08, 0], [0, 1.62, 0], .075), capsule([-.24, 1.52, 0], [.3, 1.52, 0], .23, 1.3),
       capsule([-.24, 1.52, 0], [-.5, 1.45, 0], .07, 1.3), capsule([0, 1.62, 0], [0, 1.85, 0], .05)] }),
   axe: weapon({ length: 1.8, offset: 1.25, inertia: 4.6, motorAcceleration: 22, brakeAcceleration: 28, maxAngularSpeed: 3.9,
     // Haft, the crescent blade on the leading side, its neck and the back spike.
-    colliders: [capsule([0, .05, 0], [0, 1.7, 0], .065), capsule([.31, 1.2, 0], [.33, 1.68, 0], .11, 1.25),
+    colliders: [capsule([0, .05, 0], [0, 1.7, 0], .065), capsule([.31, 1.2, 0], [.33, 1.68, 0], .27, 1.25),
       capsule([.05, 1.44, 0], [.26, 1.44, 0], .09, 1.1), capsule([-.04, 1.44, 0], [-.2, 1.44, 0], .06)] }),
   mace: weapon({ length: 1.84, offset: 1.25, inertia: 5.0, motorAcceleration: 20, brakeAcceleration: 26, maxAngularSpeed: 3.7,
-    colliders: [capsule([0, .05, 0], [0, 1.18, 0], .07), capsule([0, 1.4, 0], [0, 1.52, 0], .27, 1.2)] }),
+    colliders: [capsule([0, .05, 0], [0, 1.18, 0], .07), capsule([0, 1.4, 0], [0, 1.52, 0], .34, 1.2)] }),
   pan: weapon({ length: 1.52, offset: 1.15, inertia: 2.6, motorAcceleration: 36, brakeAcceleration: 46, maxAngularSpeed: 5.9,
     // Handle, then the round pan as a cross of two capsules in its own plane.
     colliders: [capsule([0, 0, 0], [0, .78, 0], .055), capsule([0, 1.12, -.17], [0, 1.12, .17], .24, .9), capsule([0, .96, 0], [0, 1.28, 0], .24, .9)] }),
@@ -127,7 +132,14 @@ const driveCommon = Object.fromEntries(['sword', 'polearm', 'hammer', 'axe', 'ma
 export const isEarLoadout=p=>p.characterId==='beagle'&&p.weapon==='long-ears';
 export const isPawLoadout=p=>p.characterId==='orange-tabby'&&p.weapon==='cat-paws';
 export const isAnatomical=p=>isEarLoadout(p)||isPawLoadout(p);
-export const weaponStats=p=>(p.characterId==='beagle'&&beagleCommon[p.weapon])
+const pawWeapons=new WeakMap();
+function pawWeapon(p){
+  const scale=catPawScale(p),cached=pawWeapons.get(p);
+  if(cached?.scale===scale)return cached.weapon;
+  const weapon={...CAT.weapon,radius:CAT.weapon.radius*scale,colliders:catPawColliders(scale)};
+  pawWeapons.set(p,{scale,weapon});return weapon;
+}
+export const weaponStats=p=>(isPawLoadout(p)&&pawWeapon(p))||(p.characterId==='beagle'&&beagleCommon[p.weapon])
   || (['cr7', 'mean-girl', 'maodie'].includes(p.characterId) && driveCommon[p.weapon]) || WEAPONS[p.weapon] || WEAPONS.polearm;
 
 export const v3 = (x = 0, y = 0, z = 0) => ({ x, y, z });
@@ -152,6 +164,9 @@ export function makePlayer(id, selection = 'polearm') {
     id,
     characterId,
     weapon,
+    scale: 1,
+    damageScale: 1,
+    pawScale: 1,
     p: v3(id === 0 ? -2.2 : 2.2, CHARACTERS[characterId].bodyFloor+(weapon==='cat-paws'?CAT.hoverHeight:0), 0),
     v: v3(),
     // The long polearm starts raised so two fighters can face each other
@@ -164,7 +179,8 @@ export function makePlayer(id, selection = 'polearm') {
     wt: 0,
     wp: 0,
     // F skill: skillTime counts down the active effect, skillCooldown the wait.
-    skill:resolveLoadout({characterId,weaponId:weapon}).skill?.id??null, skillActive: false, skillTime: 0, skillCooldown: 0,
+    skill:resolveLoadout({characterId,weaponId:weapon}).skill?.id??null, skillActive: false, skillTime: 0, skillCooldown: 0, abilityPhase:"idle",abilityTime:0,releaseGate:false,abilityAttackGate:false,launchPending:false,sprayYaw:0,
+    bleedActive:false,bleedTick:0,bleedOwner:null,
     driveT: 0,
     driveP: 0,
     maxHealth:CHARACTERS[characterId].maxHealth??CONFIG.maxHealth,
@@ -206,7 +222,7 @@ function recoilFromClash(player, speed) {
 // The invisible constraint still transmits contact impulses to the body pivot.
 export function staffFrame(player, distance = weaponStats(player).length,side='L') {
   if(isEarLoadout(player))return weaponPointFrame(player,v3(0,distance,0),BEAGLE.anchors[side]);
-  if(isPawLoadout(player))return weaponPointFrame(player,v3(-.9,distance*.65,side==='L'?-1.8:1.8));
+  if(isPawLoadout(player))return weaponPointFrame(player,v3(...transformCatPawPoint([-.9,distance*.65,side==='L'?-1.8:1.8],side,catPawScale(player))));
   return weaponPointFrame(player, v3(0, distance, 0));
 }
 
@@ -214,20 +230,21 @@ export function staffFrame(player, distance = weaponStats(player).length,side='L
 // same yaw × pitch rotation as the visible model, including at either pole.
 export function weaponPointFrame(player, local,anchor) {
   if(isEarLoadout(player))return beaglePointFrame(player,local,anchor??[0,(BEAGLE.anchors.L[1]+BEAGLE.anchors.R[1])/2,0]);
+  const scale = fighterScale(player);
   if(isPawLoadout(player)){
     const st=Math.sin(player.theta),ct=Math.cos(player.theta),sp=Math.sin(player.phi),cp=Math.cos(player.phi);
     const x=local.x*ct+local.y*st,z=local.z;
-    const r=v3(x*cp-z*sp,-CAT.bodyFloor-local.x*st+local.y*ct,x*sp+z*cp);
-    const dx=-local.x*st+local.y*ct,jt=v3(dx*cp,-local.x*ct-local.y*st,dx*sp),jp=v3(-r.z,0,r.x);
+    const r=mul(v3(x*cp-z*sp,-CAT.bodyFloor-local.x*st+local.y*ct,x*sp+z*cp),scale);
+    const dx=-local.x*st+local.y*ct,jt=mul(v3(dx*cp,-local.x*ct-local.y*st,dx*sp),scale),jp=v3(-r.z,0,r.x);
     return {r,jt,jp,point:add(player.p,r),velocity:add(player.v,add(mul(jt,player.wt),mul(jp,player.wp)))};
   }
   const y = weaponStats(player).offset + local.y;
   const st = Math.sin(player.theta), ct = Math.cos(player.theta);
   const sp = Math.sin(player.phi), cp = Math.cos(player.phi);
   const x = local.x * ct + y * st, z = local.z;
-  const r = v3(x * cp - z * sp, -local.x * st + y * ct, x * sp + z * cp);
+  const r = mul(v3(x * cp - z * sp, -local.x * st + y * ct, x * sp + z * cp), scale);
   const dx = -local.x * st + y * ct;
-  const jt = v3(dx * cp, -local.x * ct - y * st, dx * sp);
+  const jt = mul(v3(dx * cp, -local.x * ct - y * st, dx * sp), scale);
   const jp = v3(-r.z, 0, r.x);
   return {
     r, jt, jp,
@@ -241,34 +258,35 @@ function transformedWeaponSegments(player,visual=false) {
   const colliders = (visual?weapon.visualColliders:null)||weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
   return colliders.map(collider => {
     const localA = v3(...collider.a), localB = v3(...collider.b);
-    return { ...collider, localA, localB,
+    return { ...collider, radius: collider.radius * fighterScale(player), localA, localB,
       a: weaponPointFrame(player, localA,collider.anchor).point, b: weaponPointFrame(player, localB,collider.anchor).point };
   });
 }
 
-export const weaponSegments=p=>transformedWeaponSegments(p);
+export const weaponSegments=p=>stowed(p)?[]:transformedWeaponSegments(p);
 export const visualWeaponSegments=p=>transformedWeaponSegments(p,true);
 
 const segmentFrame = (player, segment, fraction) => weaponPointFrame(player,
   add(segment.localA, mul(sub(segment.localB, segment.localA), fraction)),segment.anchor);
 
-export function bodyRadius(player) { return characterStats(player).bodyRadius; }
+export function bodyRadius(player) { return characterStats(player).bodyRadius * fighterScale(player); }
+export function bodyFloor(player) { return characterStats(player).bodyFloor * fighterScale(player); }
 
 export function bodyPointFrame(player, local) {
   const heading=fighterHeading(player),cp=Math.cos(heading),sp=Math.sin(heading);
-  const r=v3(local.x*cp-local.z*sp,local.y,local.x*sp+local.z*cp);
+  const r=mul(v3(local.x*cp-local.z*sp,local.y,local.x*sp+local.z*cp),fighterScale(player));
   return {r,point:add(player.p,r),velocity:player.v,jt:v3(),jp:v3()};
 }
 
 export function hurtSegments(player) {
   const local = characterStats(player).hurtShapes;
-  return local.map(shape => ({ ...shape, localA: v3(...shape.a), localB: v3(...shape.b),
+  return local.map(shape => ({ ...shape, radius: shape.radius * fighterScale(player), localA: v3(...shape.a), localB: v3(...shape.b),
     a: bodyPointFrame(player,v3(...shape.a)).point, b: bodyPointFrame(player,v3(...shape.b)).point }));
 }
 
 // Solid capsule endpoints can support the fighter or meet the low arena rim.
 function surfacePoints(player) {
-  if (!weaponStats(player).colliders) return [{ local: v3(0, weaponStats(player).length, 0), radius: weaponStats(player).radius }];
+  if (!weaponStats(player).colliders) return [{ local: v3(0, weaponStats(player).length, 0), radius: weaponStats(player).radius * fighterScale(player) }];
   return weaponSegments(player).flatMap(segment => [
     { local: segment.localA, radius: segment.radius,anchor:segment.anchor },
     { local: segment.localB, radius: segment.radius,anchor:segment.anchor },
@@ -280,12 +298,13 @@ function surfacePoints(player) {
 // at its ends.
 function obstaclePoints(player) {
   const weapon = weaponStats(player);
+  const scale = fighterScale(player);
   const colliders = weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
   return colliders.flatMap(collider => {
     const a = v3(...collider.a), b = v3(...collider.b), span = length(sub(b, a));
-    const count = Math.max(1, Math.ceil(span / 0.2));
+    const count = Math.max(1, Math.ceil(span * scale / 0.2));
     return Array.from({ length: count + 1 }, (_, index) =>
-      ({ local: add(a, mul(sub(b, a), index / count)), radius: collider.radius,anchor:collider.anchor }));
+      ({ local: add(a, mul(sub(b, a), index / count)), radius: collider.radius * scale,anchor:collider.anchor }));
   });
 }
 
@@ -295,19 +314,23 @@ function phiInertia(p) {
 }
 
 function effectiveMass(p, frame, n) {
-  return invMass + dot(frame.jt, n) ** 2 / weaponStats(p).inertia + dot(frame.jp, n) ** 2 / phiInertia(p);
+  const scaleSquared = fighterScale(p) ** 2;
+  return invMass + dot(frame.jt, n) ** 2 / (weaponStats(p).inertia * scaleSquared) + dot(frame.jp, n) ** 2 / (phiInertia(p) * scaleSquared);
 }
 
 function impulse(p, frame, force, pose = p) {
+  const scaleSquared = fighterScale(pose) ** 2;
   p.v = add(p.v, mul(force, invMass));
-  p.wt += dot(frame.jt, force) / weaponStats(p).inertia;
-  p.wp += dot(frame.jp, force) / phiInertia(pose);
+  p.wt += dot(frame.jt, force) / (weaponStats(p).inertia * scaleSquared);
+  p.wp += dot(frame.jp, force) / (phiInertia(pose) * scaleSquared);
 }
 
 export const staminaPower = stamina => STAMINA.minPower + (1 - STAMINA.minPower) *
   clamp(stamina / STAMINA.lowThreshold, 0, 1);
 
 function updateStamina(p, turnInput, dt) {
+  if(modernSkill(p)&&p.skillActive)p.staminaRestTime=0;
+  if(stowed(p))return;
   const active=isEarLoadout(p)?p.skillStepTime||0:0;
   const cost=(Math.abs(p.polarInput)*STAMINA.swingDrain+Math.abs(turnInput)*STAMINA.turnDrain)*(1-active/dt)+active/dt*ROTOR_RESOURCE.drain;
   if (cost > 0 || p.skillBusy) {
@@ -380,21 +403,28 @@ export function closestSegments(a, b, c, d) {
 const headingDelta = (end, start) => Math.atan2(Math.sin(end - start), Math.cos(end - start));
 
 function contactMotion(player, start) {
-  const weapon = weaponStats(player);
+  // Shrinking sweeps must still cover the larger shape at the start of a tick.
+  const maxPawScale=Math.max(catPawScale(player),catPawScale(start));
+  const weapon = weaponStats(isPawLoadout(player)?{...player,pawScale:maxPawScale}:player);
   const shapes = weapon.colliders || [{ a: [0, 0, 0], b: [0, weapon.length, 0], radius: weapon.radius }];
   let reach = 0, radius = Infinity;
   for (const shape of shapes) {
     radius = Math.min(radius, shape.radius);
     for (const point of [shape.a, shape.b]) {
-      reach = Math.max(reach, Math.hypot(point[0], weapon.offset + point[1], point[2]) + shape.radius);
+      const anchorReach = shape.anchor ? Math.hypot(...shape.anchor) : isPawLoadout(player) ? CAT.bodyFloor : 0;
+      reach = Math.max(reach, Math.hypot(point[0], weapon.offset + point[1], point[2]) + anchorReach + shape.radius);
     }
   }
   const theta = player.theta - start.theta, phi = headingDelta(player.phi, start.phi);
   const body = headingDelta(player.bodyYaw, start.bodyYaw);
   const earSpread=(player.earSpread||0)-(start.earSpread||0),earLag=(player.earLag||0)-(start.earLag||0);
   const bodyReach = Math.max(...characterStats(player).hurtShapes.flatMap(shape => [shape.a, shape.b].map(point => Math.hypot(...point) + shape.radius)));
-  return { theta, phi, body,earSpread,earLag, radius,
-    travel: length(sub(player.p, start.p)) + reach * (Math.abs(theta) + Math.abs(phi)+Math.abs(earSpread)+Math.abs(earLag)) + bodyReach * Math.abs(body) };
+  const scale = fighterScale(player) - fighterScale(start);
+  const pawScale=catPawScale(player)-catPawScale(start);
+  const maxScale = Math.max(fighterScale(player), fighterScale(start));
+  const angularTravel = reach * (Math.abs(theta) + Math.abs(phi) + Math.abs(earSpread) + Math.abs(earLag)) + bodyReach * Math.abs(body);
+  return { theta, phi, body, earSpread, earLag, scale, pawScale, radius: radius * Math.min(fighterScale(player), fighterScale(start)) * Math.min(catPawScale(player),catPawScale(start))/maxPawScale,
+    travel: length(sub(player.p, start.p)) + maxScale * angularTravel + Math.max(reach, bodyReach) * Math.abs(scale) + maxScale * reach * Math.abs(pawScale) };
 }
 
 // Inspect intermediate rigid poses, including curved rotation and heading wrap.
@@ -411,6 +441,9 @@ function contactAlongMotion(a, b, previous, detect) {
     (Math.min(motionA.radius, motionB.radius) * CONFIG.contactTravelFraction)), 1, CONFIG.maxContactSubsteps);
   const at = (player, start, motion, t) => ({ ...player,
     p: add(start.p, mul(sub(player.p, start.p), t)),
+    scale: fighterScale(start) + motion.scale * t,
+    pawScale: catPawScale(start) + motion.pawScale * t,
+    damageScale: fighterDamageScale(start) + (fighterDamageScale(player) - fighterDamageScale(start)) * t,
     theta: start.theta + motion.theta * t, phi: start.phi + motion.phi * t, bodyYaw: start.bodyYaw + motion.body * t,earSpread:(start.earSpread||0)+motion.earSpread*t,earLag:(start.earLag||0)+motion.earLag*t });
   const inspect = t => {
     const poseA = at(a, startA, motionA, t), poseB = at(b, startB, motionB, t);
@@ -448,20 +481,25 @@ export class ArenaPhysics {
   // endless keeps a round running (no winner, health floor 1) for sandboxes.
   // obstacles: solid arena props (see arena-obstacles.js), world coordinates.
   // rimHeight: weapons meet the rim below this height (default: the scaled podium).
-  reset(firstWeapon = 'polearm', secondWeapon = 'polearm', { fighters = 2, endless = false, arenaScale = 1, obstacles = [], rimHeight } = {}) {
+  reset(firstWeapon = 'polearm', secondWeapon = 'polearm', { fighters = 2, endless = false, arenaScale = 1, obstacles = [], rimHeight, growthEnabled = false } = {}) {
     firstWeapon=normalizeLoadout(asLoadout(firstWeapon));
     secondWeapon=normalizeLoadout(asLoadout(secondWeapon));
     const solo = fighters === 1;
     this.players = solo ? [makePlayer(0, firstWeapon)] : [makePlayer(0, firstWeapon), makePlayer(1, secondWeapon)];
     // Two level swords would overlap at the original starting marks.
     if (!solo && firstWeapon.weaponId === 'sword' && secondWeapon.weaponId === 'sword') {
-      const reach=this.players.map(p=>{const w=weaponStats(p);return w.offset+w.length+w.radius;});
+      const reach = this.players.map(p => {
+        const sword = weaponStats(p);
+        return sword.offset + Math.max(...sword.colliders.map(shape => Math.max(shape.a[1], shape.b[1]) + shape.radius));
+      });
       const separation=Math.max(2.85,(reach[0]+reach[1]+.06)/2);
       this.players[0].p.x = -separation;
       this.players[1].p.x = separation;
     }
     if (solo) this.players[0].p.x = 0;
     this.time = 0;
+    this.roundTime = 0;
+    this.growthEnabled = growthEnabled && !solo && !endless;
     this.events = [];
     this.winner = null;
     this.endless = endless;
@@ -474,6 +512,9 @@ export class ArenaPhysics {
     this.lastClash = -1;
     this.clashArmed = true;
     this.clashSeparated = CLASH.separationDelay;
+    this.surfaceEpisodes = new Map();
+    this.surfaceContacts = new Map();
+    this.preSolvePlayers = null;
     this.lastHit = null;
   }
 
@@ -482,18 +523,50 @@ export class ArenaPhysics {
     if (this.winner === -1) { this.events.length = 0; return; }
     this.events.length = 0;
     this.time += dt;
+    this.surfaceContacts.clear();
+    const beforeGrowth = this.players.map(p => ({ scale: p.scale, damageScale: p.damageScale, y: p.p.y }));
+    if (!finished) {
+      const before = this.roundTime;
+      this.roundTime += dt;
+      for (const boundary of [GROWTH_START, GROWTH_END]) {
+        if (Math.abs(this.roundTime - boundary) < 1e-9) this.roundTime = boundary;
+      }
+      if (this.growthEnabled) {
+        if (before < GROWTH_START && this.roundTime >= GROWTH_START) this.events.push({ type: 'growth' });
+        const growth = growthAt(this.roundTime);
+        for (const p of this.players) {
+          p.p.y += characterStats(p).bodyFloor * (growth.scale - fighterScale(p));
+          Object.assign(p, growth);
+        }
+      }
+    }
     // Skills first: a teleport must not be swept as motion through the target.
-    const animalBefore=this.players.map(p=>({earSpread:p.earSpread,earLag:p.earLag}));
+    const animalBefore=this.players.map(p=>({earSpread:p.earSpread,earLag:p.earLag,pawScale:catPawScale(p)}));
+    const positionsBeforeSkills = this.players.map(p => p.p);
     for (const p of this.players) if (!finished || p.id === this.winner) this.updateSkill(p, !finished && inputs[p.id]?.skillTap, dt);
-    const previous = this.players.map(p => ({ p: { ...p.p }, theta: p.theta, phi: p.phi, bodyYaw: p.bodyYaw,...animalBefore[p.id] }));
+    for(const p of this.players)if(isPawLoadout(p)){
+      const target=!finished&&p.health>0&&p.skillActive&&p.skill==='big-paws'?CAT_PAW_SKILL_SCALE:1;
+      p.pawScale=catPawScale(p)+clamp(target-catPawScale(p),-(CAT_PAW_SKILL_SCALE-1)*dt/CAT_PAW_TRANSITION,(CAT_PAW_SKILL_SCALE-1)*dt/CAT_PAW_TRANSITION);
+    }
+    const previous = this.players.map(p => {
+      const before = beforeGrowth[p.id];
+      const teleported = p.p !== positionsBeforeSkills[p.id];
+      return { p: { ...p.p, y: teleported ? p.p.y : before.y }, theta: p.theta, phi: p.phi, bodyYaw: p.bodyYaw,
+        scale: teleported ? p.scale : before.scale, damageScale: teleported ? p.damageScale : before.damageScale, ...animalBefore[p.id] };
+    });
     for (const p of this.players) {
       if (finished && p.id !== this.winner) continue;
       const weapon = weaponStats(p);
-      const input = inputs[p.id] || { theta: 0, phi: 0 };
+      let input = inputs[p.id] || { theta: 0, phi: 0 };
+      if(p.skill==='ricochet'&&p.abilityPhase==='recovery'&&(input.heldMask||input.theta||input.phi))p.releaseGate=true;
+      if(p.releaseGate){if(!input.heldMask&&!input.theta&&!input.phi&&p.abilityPhase!=='active')p.releaseGate=false;else input={...input,theta:0,phi:0};}
+      if(stowed(p))input={...input,theta:0,phi:0};
+      if(p.abilityAttackGate&&!p.releaseGate&&!p.skillActive&&(input.theta||input.phi))p.abilityAttackGate=false;
       this.setPolarInput(p.id, input.theta || 0);
       if(bodyFollowsView(p))turnBody(p, input.faceYaw, dt);
       if(isEarLoadout(p)&&(p.skillActive||p.earSpread>.001))p.polarInput=0;
-      const turnInput = clamp(input.phi || 0, -1, 1);
+      const rotorMoving=isEarLoadout(p)&&p.skillActive;
+      const turnInput = rotorMoving?0:clamp(input.phi || 0, -1, 1);
       updateStamina(p, turnInput, dt);
       const power = isAnatomical(p)?animalPower(p.stamina):staminaPower(p.stamina);
       // Yaw keeps its existing reversal strength; pitch uses the stronger brake.
@@ -507,7 +580,7 @@ export class ArenaPhysics {
           p.wt+=clamp(target-p.wt,-BEAGLE_SKILL.pitchAcceleration*power*dt,BEAGLE_SKILL.pitchAcceleration*power*dt);
         }else drivePolarAngle(p,dt,power);
         if(p.skillActive){
-          const target=(turnInput||Math.sign(p.wp)||1)*BEAGLE_SKILL.spinSpeed*power;
+          const target=BEAGLE_SKILL.spinSpeed*power;
           const a=weapon.motorAcceleration*(target*p.wp<0?1:power);
           p.wp+=clamp(target-p.wp,-a*dt,a*dt);
         }else{
@@ -527,15 +600,21 @@ export class ArenaPhysics {
       p.driveT += ((p.wt - previousT) / dt - p.driveT) * smooth;
       p.driveP += ((p.wp - previousP) / dt - p.driveP) * smooth;
       if(isEarLoadout(p))applyBeagleHover(p,dt,CONFIG.gravity);
-      if(isPawLoadout(p))p.v.y+=clamp(CONFIG.gravity+CAT.hoverGain*(CAT.bodyFloor+CAT.hoverHeight-p.p.y)-CAT.hoverDamping*p.v.y,0,CONFIG.gravity+12)*dt;
+      if(isPawLoadout(p))p.v.y+=clamp(CONFIG.gravity+CAT.hoverGain*((CAT.bodyFloor+CAT.hoverHeight)*fighterScale(p)-p.p.y)-CAT.hoverDamping*p.v.y,0,CONFIG.gravity+12)*dt;
       p.v.y -= CONFIG.gravity * dt;
       const hovering=isPawLoadout(p)||(isEarLoadout(p)&&p.skillActive&&p.earSpread>Math.PI/2*.65);
-      const support=hovering?clamp(1-Math.max(0,p.p.y-characterStats(p).bodyFloor-.35)/.75,0,1):0;
+      const support=hovering?clamp(1-Math.max(0,p.p.y/fighterScale(p)-characterStats(p).bodyFloor-.35)/.75,0,1):0;
       const drag=.15+(1.5-.15)*support;
       p.v.x *= Math.exp(-drag * dt);
       p.v.z *= Math.exp(-drag * dt);
       // Azimuth retains free rotation and inertia independently of the up/down target.
       p.phi = (p.phi + p.wp * dt) % (Math.PI * 2);
+      if(protectedPlayer(p)||rotorMoving){
+        const raw=inputs[p.id]||{},m=raw.heldMask||0,f=Number(!!(m&1))-Number(!!(m&4)),side=Number(!!(m&8))-Number(!!(m&2)),n=Math.hypot(f,side)||1,yaw=raw.faceYaw??p.bodyYaw;
+        const moveSpeed=rotorMoving?BEAGLE_SKILL.moveSpeed:2.2;
+        p.v.x=(Math.cos(yaw)*f-Math.sin(yaw)*side)/n*moveSpeed;p.v.z=(Math.sin(yaw)*f+Math.cos(yaw)*side)/n*moveSpeed;
+        if(!rotorMoving)p.wt=p.wp=0;
+      }
       p.p = add(p.p, mul(p.v, dt));
       p.staffGrounded = false;
       p.hitFlash = Math.max(0, p.hitFlash - dt * 5);
@@ -544,6 +623,7 @@ export class ArenaPhysics {
 
     // Keep ground integration at its existing fixed timestep. Weapon/body and
     // weapon/weapon contact separately inspect the motion between these poses.
+    this.preSolvePlayers = finished ? null : this.players.map(p => ({ ...p, v: { ...p.v } }));
     for (let pass = 0; pass < 5; pass++) {
       for (const p of this.players) {
       if (finished && p.id !== this.winner) continue;
@@ -559,7 +639,11 @@ export class ArenaPhysics {
       this.solveAttack(this.players[0], this.players[1], dt, previous);
       this.solveAttack(this.players[1], this.players[0], dt, previous);
     }
+    this.flushSurfaceContacts();
+    this.preSolvePlayers = null;
     this.stepProjectiles(dt);
+    for(const p of this.players)stepBleeding(this,p,dt);
+    for(const p of this.players){applyPerfume(this,p,dt,hurtSegments);finishAbilityTick(this,p);}
     for (const p of this.players) {
       if (finished && p.id !== this.winner) continue;
       // Body separation can push a fighter slightly past the rim on the last
@@ -576,16 +660,26 @@ export class ArenaPhysics {
     }
     if (!finished && !this.endless && this.players.length > 1) {
       const dead = this.players.map(p => p.health <= 0);
-      if (dead[0] || dead[1]) this.winner = dead[0] && dead[1] ? -1 : dead[0] ? 1 : 0;
+      if (dead[0] || dead[1]) {
+        this.winner = dead[0] && dead[1] ? -1 : dead[0] ? 1 : 0;
+        for(const p of this.players){
+          clearBleeding(p);
+          if(modernSkill(p))cancelAbility(this,p);
+          if(p.skill==='big-paws'){p.skillActive=false;p.skillTime=0;p.pawScale=1;}
+          if(p.skill==='lifesteal'){p.skillActive=false;p.skillTime=0;}
+        }
+      }
     }
   }
 
   // Count down the active effect and the cooldown, start the character's skill
   // on a tap, and apply its continuous effect (laugh drain, heal) for this step.
   updateSkill(p, tap, dt) {
+    if(p.skill==='lifesteal'&&(p.health<=0||this.winner!==null)){p.skillActive=false;p.skillTime=0;return;}
+    if(modernSkill(p)){updateAbility(this,p,tap,dt);return;}
     if(isEarLoadout(p)){
       const before=p.skillActive;p.skillRequested=!!tap;
-      updateBeagleSkill(p,false,dt);p.skillTime=p.skillRemaining;p.skillCooldown=0;
+      updateBeagleSkill(p,false,dt);p.skillTime=p.skillRemaining;
       if(!before&&p.skillActive)this.events.push({type:'skill',skill:'rotor',player:p.id,characterId:p.characterId,point:{...p.p}});
       return;
     }
@@ -607,6 +701,7 @@ export class ArenaPhysics {
   }
 
   startSkill(p, skill) {
+    if(skill.id==='lifesteal'&&(p.health<=0||this.winner!==null))return;
     const other = this.players.find(q => q !== p);
     if (!other && (skill.id === 'laugh' || skill.id === 'twist')) return;
     p.skillCooldown = skill.cooldown;
@@ -621,11 +716,27 @@ export class ArenaPhysics {
   // Land behind the target, facing it, weapon raised for a chop.
   teleportBehind(p, target, behind) {
     const heading = fighterHeading(target);
-    let x = target.p.x - Math.cos(heading) * behind, z = target.p.z - Math.sin(heading) * behind;
-    const limit = this.arenaRadius - bodyRadius(p) - 0.4, r = Math.hypot(x, z);
-    if (r > limit) { x *= limit / r; z *= limit / r; }
-    p.p = v3(x, characterStats(p).bodyFloor + ARENA_PROFILE.floorHeight, z);
-    for (let pass = 0; pass < 4; pass++) this.solveBodyObstacles(p);
+    const start = p.p;
+    const clearance = bodyRadius(p) + bodyRadius(target);
+    const distance = Math.max(behind * fighterScale(p), clearance + 0.4);
+    const limit = this.arenaRadius - bodyRadius(p) - 0.4;
+    const floor = bodyFloor(p) + ARENA_PROFILE.floorHeight;
+    // The preferred point can be squeezed against the target by the rim or a
+    // prop. Search around it only when the normal landing has no clearance.
+    for (const turn of [0, -0.25, 0.25, -0.5, 0.5, -0.75, 0.75, 1]) {
+      const angle = heading + turn * Math.PI;
+      let x = target.p.x - Math.cos(angle) * distance, z = target.p.z - Math.sin(angle) * distance;
+      const r = Math.hypot(x, z);
+      if (r > limit) { x *= limit / r; z *= limit / r; }
+      p.p = v3(x, floor, z);
+      for (let pass = 0; pass < 4; pass++) {
+        this.solveBodyObstacles(p);
+        this.solveBodyWall(p);
+      }
+      const clear = this.obstacles.every(o => p.p.y - bodyFloor(p) >= o.height || !obstacleContact(o, p.p.x, p.p.z, bodyRadius(p)));
+      if (clear && Math.hypot(p.p.x - target.p.x, p.p.z - target.p.z) >= clearance) break;
+      p.p = start;
+    }
     p.v = v3();
     const face = Math.atan2(target.p.z - p.p.z, target.p.x - p.p.x);
     p.bodyYaw = p.phi = face;
@@ -636,8 +747,9 @@ export class ArenaPhysics {
 
   throwDelivery(p, skill) {
     const heading = fighterHeading(p), forward = v3(Math.cos(heading), 0, Math.sin(heading));
-    const start = add(p.p, add(mul(forward, bodyRadius(p) + skill.radius + 0.1), v3(0, 0.55, 0)));
-    this.projectiles.push({ id: ++this.projectileId, owner: p.id, p: start, radius: skill.radius, life: skill.life, spin: 0,
+    const scale = fighterScale(p), radius = skill.radius * scale;
+    const start = add(p.p, add(mul(forward, bodyRadius(p) + radius + 0.1), v3(0, 0.55 * scale, 0)));
+    this.projectiles.push({ id: ++this.projectileId, owner: p.id, p: start, radius, damage: skill.damage * fighterDamageScale(p), life: skill.life, spin: 0,
       v: add(mul(forward, skill.speed), v3(p.v.x * 0.5, skill.lift, p.v.z * 0.5)) });
   }
 
@@ -647,6 +759,7 @@ export class ArenaPhysics {
     const skill = SKILLS.delivery;
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const shot = this.projectiles[i], from = shot.p;
+      if(shot.type==='soccer'){if(!stepSoccer(this,shot,dt,hurtSegments))this.projectiles.splice(i,1);continue;}
       shot.v.y -= CONFIG.projectileGravity * dt;
       shot.p = add(shot.p, mul(shot.v, dt));
       shot.life -= dt;
@@ -658,8 +771,10 @@ export class ArenaPhysics {
         if (c.distance < body.radius + shot.radius) { hit = c; break; }
       }
       const travel = unit(v3(shot.v.x, 0, shot.v.z));
+      if(hit&&protectedPlayer(target)){this.projectiles.splice(i,1);continue;}
       if (hit) {
-        const damage = skill.damage;
+        if(modernSkill(target)&&target.abilityPhase==='windup')cancelAbility(this,target);
+        const damage = shot.damage ?? skill.damage;
         target.health = Math.max(this.endless ? 1 : 0, target.health - damage);
         target.hitFlash = 1;
         target.v = add(target.v, add(mul(travel, skill.knockback), v3(0, 2, 0)));
@@ -682,7 +797,7 @@ export class ArenaPhysics {
   }
 
   solveBodyGround(p, dt, friction) {
-    const floor=characterStats(p).bodyFloor + ARENA_PROFILE.floorHeight;
+    const floor=bodyFloor(p) + ARENA_PROFILE.floorHeight;
     p.grounded = p.p.y <= floor + 0.025;
     if (p.p.y < floor) {
       p.p.y = floor;
@@ -696,7 +811,41 @@ export class ArenaPhysics {
   }
 
   solveStaffGround(p, dt) {
+    if(stowed(p))return;
     for (const point of surfacePoints(p)) this.solveWeaponGroundPoint(p, point, dt);
+  }
+
+  queueSurfaceContact(player, surface, point, speed, weapons) {
+    if (!this.preSolvePlayers) return;
+    const key = surface === 'weapon' ? surface : `${player.id}:${surface}`;
+    const previous = this.surfaceContacts.get(key);
+    if (previous && previous.speed >= speed) return;
+    this.surfaceContacts.set(key, { player: player.id, weapon: player.weapon, surface, point, speed, weapons });
+  }
+
+  queueEnvironmentContact(p, surface, frame, radius, normal) {
+    const incoming = this.preSolvePlayers?.[p.id];
+    if (!incoming) return;
+    // Read motion before support impulses, so penetration correction and the
+    // gradual change of shape cannot sound like a weapon strike.
+    let speed = -dot(incoming.v, normal) - dot(frame.jt, normal) * incoming.wt - dot(frame.jp, normal) * incoming.wp;
+    if (frame.jb) speed -= dot(frame.jb, normal) * incoming.bodyRate + dot(frame.js, normal) * incoming.earSpreadRate + dot(frame.jl, normal) * incoming.earLagRate;
+    this.queueSurfaceContact(p, surface, sub(frame.point, mul(normal, radius)), speed);
+  }
+
+  flushSurfaceContacts() {
+    for (const [key, contact] of this.surfaceContacts) {
+      const episode = this.surfaceEpisodes.get(key) ?? { touchedAt: -Infinity, soundedAt: -Infinity };
+      if (this.time - episode.touchedAt >= CONTACT_AUDIO.separation - 1e-9 &&
+          this.time - episode.soundedAt >= CONTACT_AUDIO.cooldown - 1e-9 && contact.speed >= CONTACT_AUDIO.minSpeed) {
+        const { speed, weapons, ...event } = contact;
+        this.events.push({ type: 'weapon-contact', ...event, ...(weapons && { weapons }),
+          strength: clamp(speed / CLASH.fullSpeed, 0.05, 1), time: this.time });
+        episode.soundedAt = this.time;
+      }
+      episode.touchedAt = this.time;
+      this.surfaceEpisodes.set(key, episode);
+    }
   }
 
   solveWeaponGroundPoint(p, { local, radius,anchor }, dt) {
@@ -705,6 +854,7 @@ export class ArenaPhysics {
     if (penetration < -0.008) return;
     p.staffGrounded = true;
     const n = v3(0, 1, 0);
+    this.queueEnvironmentContact(p, 'ground', f, radius, n);
     const bias = Math.max(0, penetration - 0.002) * 0.2 / dt;
     const j = Math.max(0, (bias - f.velocity.y) / effectiveMass(p, f, n));
     impulse(p, f, mul(n, j));
@@ -731,6 +881,7 @@ export class ArenaPhysics {
   }
 
   solveWall(p, dt) {
+    if(stowed(p)){this.solveBodyWall(p);return;}
     this.solveBodyWall(p);
     // The prepared podium is a low boundary. Its height scales uniformly with
     // the full building; seating and upper arches remain decorative.
@@ -739,6 +890,7 @@ export class ArenaPhysics {
       const r = Math.hypot(f.point.x, f.point.z);
       if (f.point.y >= this.arenaRimHeight || r <= this.arenaRadius - radius) continue;
       const n = v3(-f.point.x / r, 0, -f.point.z / r);
+      this.queueEnvironmentContact(p, 'wall', f, radius, n);
       const bias = Math.min(4, (r - this.arenaRadius + radius) * 0.15 / dt);
       const j = Math.max(0, (bias - dot(f.velocity, n)) / effectiveMass(p, f, n));
       impulse(p, f, mul(n, j));
@@ -751,7 +903,7 @@ export class ArenaPhysics {
   solveBodyObstacles(p) {
     const radius = bodyRadius(p);
     for (const obstacle of this.obstacles) {
-      const feet = p.p.y - characterStats(p).bodyFloor;
+      const feet = p.p.y - bodyFloor(p);
       if (feet >= obstacle.height) continue;
       const contact = obstacleContact(obstacle, p.p.x, p.p.z, radius);
       if (!contact) continue;
@@ -770,9 +922,10 @@ export class ArenaPhysics {
   }
 
   solveObstacles(p, dt) {
+    if(stowed(p))return;
     if (!this.obstacles.length) return;
     this.solveBodyObstacles(p);
-    const reach = weaponStats(p).offset + weaponStats(p).length + 2.5;
+    const reach = (weaponStats(p).offset + weaponStats(p).length + 2.5) * fighterScale(p);
     const near = this.obstacles.filter(o => Math.hypot(o.x - p.p.x, o.z - p.p.z) < reach + o.extent);
     if (!near.length) return;
     for (const { local, radius,anchor } of obstaclePoints(p)) {
@@ -787,6 +940,7 @@ export class ArenaPhysics {
         // to both sides at once and wedged inside it.
         const top = below < contact.depth;
         const n = top ? v3(0, 1, 0) : v3(contact.nx, 0, contact.nz), depth = top ? below : contact.depth;
+        this.queueEnvironmentContact(p, 'obstacle', f, radius, n);
         const bias = Math.min(4, depth * 0.15 / dt);
         const j = Math.max(0, (bias - dot(f.velocity, n)) / effectiveMass(p, f, n));
         impulse(p, f, mul(n, j));
@@ -804,7 +958,7 @@ export class ArenaPhysics {
 
   solveBodies() {
     const [a, b] = this.players;
-    if (Math.abs(a.p.y - b.p.y) > 1.35) return;
+    if (Math.abs((a.p.y - bodyFloor(a)) - (b.p.y - bodyFloor(b))) > 1.35 * Math.max(fighterScale(a), fighterScale(b))) return;
     const delta = v3(b.p.x - a.p.x, 0, b.p.z - a.p.z);
     const dist = length(delta), penetration = bodyRadius(a) + bodyRadius(b) - dist;
     if (penetration <= 0) return;
@@ -843,19 +997,30 @@ export class ArenaPhysics {
     const j = Math.max(0, (closing * 1.35 + depth * 0.13 / dt) / (effectiveMass(poseA, fa, n) + effectiveMass(poseB, fb, n)));
     impulse(a, fa, mul(n, j), poseA);
     impulse(b, fb, mul(n, -j), poseB);
-    if (this.clashArmed && closing > CLASH.minSpeed && this.time - this.lastClash > CLASH.cooldown) {
+    const point = mul(add(c.a, c.b), 0.5), weapons = [a.weapon, b.weapon];
+    const clash = this.clashArmed && closing > CLASH.minSpeed && this.time - this.lastClash > CLASH.cooldown;
+    if (clash) {
       this.lastClash = this.time;
       this.clashArmed = false;
       const effort = clamp((closing - CLASH.minSpeed) / (CLASH.fullSpeed - CLASH.minSpeed), 0, 1);
       const recoilSpeed = CLASH.minRecoilSpeed + (CLASH.maxRecoilSpeed - CLASH.minRecoilSpeed) * effort;
       recoilFromClash(a, recoilSpeed);
       recoilFromClash(b, recoilSpeed);
-      this.events.push({ type: 'clash', point: mul(add(c.a, c.b), 0.5), weapons: [a.weapon, b.weapon],
+      this.events.push({ type: 'clash', point, weapons,
         strength: clamp(closing / CLASH.fullSpeed, 0.2, 1), recoilSpeed });
+    }
+    if (this.preSolvePlayers) {
+      const incomingA = this.preSolvePlayers[a.id], incomingB = this.preSolvePlayers[b.id];
+      const speedA = -dot(segmentFrame(incomingA, sa, c.s).velocity, n);
+      const speedB = dot(segmentFrame(incomingB, sb, c.t).velocity, n);
+      const speed = speedA + speedB;
+      this.queueSurfaceContact(speedA >= speedB ? a : b, 'weapon', point,
+        clash || speed > CLASH.minSpeed ? 0 : speed, weapons);
     }
   }
 
   solveAttack(attacker, target, dt, previous) {
+    if(stowed(attacker)||attacker.abilityAttackGate||protectedPlayer(target))return;
     const best = contactAlongMotion(attacker, target, previous, (poseA, poseB) => {
       let contact;
       for (const segment of weaponSegments(poseA)) {
@@ -876,17 +1041,22 @@ export class ArenaPhysics {
     const closing = -dot(relative, n);
     const driving = add(mul(f.jt, attacker.driveT), mul(f.jp, attacker.driveP));
     const swing = sub(f.velocity, attacker.v);
-    const acceleration = Math.max(0, dot(driving, unit(swing, v3())));
+    // Geometry increases rotational leverage. Evaluate damage in the unscaled
+    // weapon frame, then apply the scheduled damage bonus once.
+    const scale = fighterScale(poseA);
+    const acceleration = Math.max(0, dot(driving, unit(swing, v3()))) / scale;
+    const damageClosing = -dot(add(mul(swing, 1 / scale), sub(poseA.v, target.v)), n);
     // Attribute only motion closing into the target. Sideways motion that does
     // not cause the contact cannot reduce a vertical hit, and released keys do
     // not disguise a coasting horizontal strike. Body translation stays neutral.
-    const turnClosing = Math.max(0, -dot(mul(f.jp, attacker.wp), n));
-    const swingClosing = Math.max(0, -dot(mul(f.jt, attacker.wt), n));
+    const turnClosing = Math.max(0, -dot(mul(f.jp, attacker.wp), n)) / scale;
+    const swingClosing = Math.max(0, -dot(mul(f.jt, attacker.wt), n)) / scale;
     const bodyClosing = Math.max(0, -dot(sub(attacker.v, target.v), n));
     const totalClosing = turnClosing + swingClosing + bodyClosing;
     const turnShare = totalClosing > 1e-8 ? turnClosing / totalClosing : 0;
     const directionScale = 1 - (1 - CONFIG.turnDamageScale) * turnShare;
-    const damage = Math.round(damageForImpact(closing, acceleration) * (segment.damageScale || 1) * directionScale);
+    const baseDamage = Math.round(damageForImpact(damageClosing, acceleration) * (segment.damageScale || 1) * directionScale);
+    const damage = baseDamage * fighterDamageScale(poseA);
     const fresh = contact.separated > 0.045 && this.time - attacker.lastAttackAt > 0.28;
     contact.separated = 0;
     const j = Math.max(0, (closing * 1.12 + Math.max(0, depth - 0.008) * 0.12 / dt) /
@@ -894,6 +1064,8 @@ export class ArenaPhysics {
     impulse(attacker, f, mul(n, j), poseA);
     target.v = sub(target.v, mul(n, j * invMass));
     if (!fresh || damage === 0) return;
+    if(modernSkill(target)&&target.abilityPhase==='windup')cancelAbility(this,target);
+    const healthBefore=target.health;
     target.health = Math.max(this.endless ? 1 : 0, target.health - damage);
     target.hitFlash = 1;
     attacker.lastAttackAt = this.time;
@@ -905,5 +1077,13 @@ export class ArenaPhysics {
       target: target.id, damage, speed: closing, acceleration, turnShare,
       strength: clamp(damage / 30, 0.12, 1),
     });
+    const actualDamage=Math.max(0,healthBefore-target.health);
+    if(actualDamage>0&&attacker.skill==='lifesteal'&&attacker.skillActive&&attacker.skillTime>0&&attacker.health>0&&this.winner===null){
+      const amount=Math.min(attacker.maxHealth-attacker.health,actualDamage*SKILLS.lifesteal.healRatio);
+      if(amount>0){
+        attacker.health+=amount;
+        this.events.push({type:'heal',source:'lifesteal',player:attacker.id,amount,point:{...attacker.p}});
+      }
+    }
   }
 }

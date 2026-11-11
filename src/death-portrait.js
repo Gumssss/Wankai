@@ -1,11 +1,14 @@
 import { Mesh, PlaneGeometry, MeshBasicMaterial, TextureLoader, SRGBColorSpace, DoubleSide } from 'three';
 import { CHARACTERS } from './character-catalog.js';
+import { fighterScale } from './match-growth.js';
 import { characterPortrait } from './models/portraits.js';
 
 // A greyed portrait of the defeated fighter rises above them, facing the winner.
 export function updateDeathPortrait(mesh, defeated, victor, height, elapsed) {
   const rise = 1 - Math.exp(-elapsed * 2.5);
-  mesh.position.set(defeated.p.x, defeated.p.y + height * (0.7 + 0.65 * rise), defeated.p.z);
+  const scale = fighterScale(defeated);
+  mesh.position.set(defeated.p.x, defeated.p.y + height * scale * (0.7 + 0.65 * rise), defeated.p.z);
+  mesh.scale.setScalar(scale);
   mesh.rotation.set(0, Math.atan2(victor.p.x - defeated.p.x, victor.p.z - defeated.p.z), 0);
   mesh.material.opacity = 0.82 * Math.min(1, elapsed / 0.5);
 }

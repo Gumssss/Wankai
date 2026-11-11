@@ -1,0 +1,64 @@
+{
+  "file": "cr7-wasd-preview.mp4",
+  "duration": "78.000000",
+  "streams": [
+    {
+      "type": "video",
+      "codec": "h264",
+      "frames": "2340",
+      "fps": "30/1"
+    }
+  ],
+  "decode": "pass",
+  "sha256": "dfee4e95b8b108d83c05ba0363eb6f0e43b5b4607c7ad772df76c807d41db455",
+  "encodedSeekSamples": {
+    "lifecycle": [
+      0.6,
+      1.4,
+      2.8,
+      3.85,
+      3.95,
+      4.25,
+      5.5,
+      9,
+      18.95,
+      19.4,
+      20,
+      20.6
+    ],
+    "matrix": [
+      40,
+      45,
+      50,
+      55,
+      60,
+      65,
+      70,
+      75
+    ],
+    "edges": [
+      23.4,
+      23.9,
+      24.6,
+      25.5,
+      28.8,
+      34.6
+    ]
+  },
+  "sameEventCheck": {
+    "normalTime": 1.4,
+    "slowTime": 9,
+    "sceneCrop": [
+      335,
+      275,
+      1240,
+      630
+    ],
+    "pixelRmsRgb": [
+      1.8101495812494472,
+      1.531360752284663,
+      1.6433765021784341
+    ]
+  },
+  "productionTestsRun": false
+}

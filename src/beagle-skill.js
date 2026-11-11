@@ -1,9 +1,11 @@
 import {BEAGLE} from './beagle-profile.js';
 import {ROTOR_RESOURCE,staminaPower} from './animal-settings.js';
+import {fighterScale} from './match-growth.js';
+import {SKILLS} from './skills.js';
 
 export const BEAGLE_SKILL=Object.freeze({
- normalTurnSpeed:1.15, steeringGain:.7, spinSpeed:4.25,
- duration:5, hoverHeight:.35,
+ normalTurnSpeed:2.5, steeringGain:.7, spinSpeed:4.25,
+ duration:5, moveSpeed:2.2, hoverHeight:.35,
  spreadSpeed:2.8, pitchAcceleration:40, hoverGain:25, hoverDamping:9,
 });
 const v=(x=0,y=0,z=0)=>({x,y,z});
@@ -16,25 +18,30 @@ export const beagleEarYaw=(p,anchor)=>-(Math.sign(anchor[2])||1)*(p.earSpread||0
 // The same composed transform drives skinning, fallback and contact queries.
 // Splay and lag are finite actuators, with their rates included in hit velocity.
 export function beaglePointFrame(p,local,anchor){
+ const scale=fighterScale(p),scaled=q=>v(q.x*scale,q.y*scale,q.z*scale);
  const pivot=.85-BEAGLE.bodyFloor,beta=p.bodyPitch||0;
  const a=anchor?beagleEarYaw(p,anchor):0;
  const ear=anchor?yaw(turn(local,p.theta),a):v();
  const inner=anchor?v(anchor[0]+ear.x,anchor[1]-pivot+ear.y,anchor[2]+ear.z):v(local.x,local.y-pivot,local.z);
- const body=turn(inner,beta),r=yaw(v(body.x,body.y+pivot,body.z),p.phi);
- const world=q=>yaw(turn(q,beta),p.phi);
+ const body=turn(inner,beta),r=scaled(yaw(v(body.x,body.y+pivot,body.z),p.phi));
+ const world=q=>scaled(yaw(turn(q,beta),p.phi));
  const jt=anchor?world(yaw(dturn(turn(local,p.theta)),a)):v();
  const jl=anchor?world(dyaw(ear)):v(),sign=anchor?-(Math.sign(anchor[2])||1):0;
- const js=v(jl.x*sign,jl.y*sign,jl.z*sign),jp=dyaw(r),jb=yaw(dturn(body),p.phi);
+ const js=v(jl.x*sign,jl.y*sign,jl.z*sign),jp=dyaw(r),jb=scaled(yaw(dturn(body),p.phi));
  const velocity=v(...['x','y','z'].map(k=>p.v[k]+jt[k]*p.wt+jp[k]*p.wp+jb[k]*(p.bodyRate||0)+
    js[k]*(p.earSpreadRate||0)+jl[k]*(p.earLagRate||0)));
  return {r,jt,jp,jb,js,jl,point:v(p.p.x+r.x,p.p.y+r.y,p.p.z+r.z),velocity};
 }
 
 export function updateBeagleSkill(p,held,dt){
+ p.skillCooldown=Math.max(0,(p.skillCooldown||0)-dt);
+ if(p.skillCooldown<1e-9)p.skillCooldown=0;
  const wants=!!held;
  const trigger=p.skillRequested || (wants&&!p.skillWasHeld);
  p.skillRequested=false;p.skillWasHeld=wants;
- if(trigger&&!p.skillActive&&(p.earSpread||0)<.001&&p.stamina>=ROTOR_RESOURCE.activationMinimum){p.skillActive=true;p.skillRemaining=BEAGLE_SKILL.duration;}
+ if(trigger&&!p.skillActive&&p.skillCooldown===0&&(p.earSpread||0)<.001&&p.stamina>=ROTOR_RESOURCE.activationMinimum){
+  p.skillActive=true;p.skillRemaining=BEAGLE_SKILL.duration;p.skillCooldown=SKILLS.rotor.cooldown;
+ }
  p.skillStepTime=p.skillActive?Math.min(dt,p.skillRemaining,p.stamina/ROTOR_RESOURCE.drain):0;
  const wasActive=p.skillActive;
  if(p.skillActive){
@@ -56,7 +63,7 @@ export function applyBeagleHover(p,dt,gravity){
  if(!p.skillActive)return;
  const speed=Math.min(1,Math.abs(p.wp)/(3*staminaPower(p.stamina)));
  const ready=Math.max(0,(p.earSpread/(Math.PI/2)-.65)/.35)*speed;
- const target=BEAGLE.bodyFloor+BEAGLE_SKILL.hoverHeight;
+ const target=(BEAGLE.bodyFloor+BEAGLE_SKILL.hoverHeight)*fighterScale(p);
  const thrust=Math.max(0,Math.min(gravity+12,gravity+BEAGLE_SKILL.hoverGain*(target-p.p.y)-BEAGLE_SKILL.hoverDamping*p.v.y));
  p.v.y+=thrust*ready*dt;
 }

@@ -4,10 +4,11 @@ import { DEFAULT_LOADOUTS, PLAYABLE_LOADOUTS, normalizeLoadout } from './loadout
 import { ARENA_OBSTACLES } from './arena-obstacles.js';
 import { ARENA_SKINS, DEFAULT_ARENA_SKIN, isArenaSkin } from './arena-skins.js';
 import { createAi, AI_DIFFICULTIES } from './ai-opponent.js';
+import { fighterScale, growthAt } from './match-growth.js';
 import { SKILLS } from './skills.js';
 
 // Floating words for skills, shown above the fighter like damage numbers.
-const SKILL_WORDS = {rotor:'旋耳悬停', laugh: '哈哈哈哈!', twist: '绕后!', delivery: '你的胆子真的肥嘟嘟的!', happy: 'Happy Happy!' };
+const SKILL_WORDS = {'big-paws':'巨爪!',ricochet:'反弹足球!',perfume:'喷香水!',rotor:'旋耳悬停', lifesteal: '吸血!', laugh: '哈哈哈哈!', twist: '绕后!', delivery: '你的胆子真的肥嘟嘟的!', happy: 'Happy Happy!' };
 
 // One local fighter per machine. The opponent is the AI or, online, the other
 // player. Online, the host simulates (authority) and the guest only displays
@@ -74,7 +75,8 @@ export class GameSession {
   resetWorld() {
     // Each skin's visible rim sets how high weapons meet it.
     const rimHeight = ARENA_SKINS.find(skin => skin.id === this.arenaSkin)?.rimHeight;
-    this.world.reset(...this.loadouts, { arenaScale: MATCH_ARENA_SCALE, obstacles: ARENA_OBSTACLES, rimHeight });
+    this.world.reset(...this.loadouts, { arenaScale: MATCH_ARENA_SCALE, obstacles: ARENA_OBSTACLES, rimHeight, growthEnabled: true });
+    this.sound.syncSkills?.([], { active: false });
   }
 
   get opponentId() { return 1 - this.localPlayerId; }
@@ -88,11 +90,13 @@ export class GameSession {
       pressed: [...this.keys],
       // Healing is continuous; the HUD shows whole points.
       health: this.world.players.map(player => Math.ceil(player.health)),
+      bleeding: this.world.players.map(player => !!player.bleedActive),
       maxHealth:this.world.players.map(player=>player.maxHealth),
       stamina: this.world.players.map(player => player.stamina),
-      skills: this.world.players.map(player => ({ id: player.skill, active: player.skillActive,
+      skills: this.world.players.map(player => ({ id: player.skill, phase:player.abilityPhase, phaseTime:Math.max(0,Math.ceil(player.abilityTime*10)/10), releaseGate:player.releaseGate, active: player.skillActive,
         time: Math.ceil(player.skillTime * 10) / 10, cooldown: Math.ceil(player.skillCooldown * 10) / 10 })),
-      seconds: Math.floor(this.world.time),
+      seconds: Math.floor(this.world.roundTime ?? 0),
+      growth: growthAt(this.world.roundTime ?? 0, this.world.growthEnabled),
       winner: this.world.winner,
       countdownText: this.state === 'countdown' ? (this.countdownNumber > 0 ? String(this.countdownNumber) : '') :
         this.state === 'playing' && this.countdown < 0 ? '抡起来' : '',
@@ -125,7 +129,10 @@ export class GameSession {
       const player = this.world.players[this.localPlayerId];
       this.swingSign = player && Number.isFinite(this.localFaceYaw) && Math.cos(player.phi - this.localFaceYaw) < 0 ? -1 : 1;
     }
-    const input = { theta: swing * (this.swingSign || 1), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
+    const heldMask=['KeyW','KeyA','KeyS','KeyD'].reduce((m,k,i)=>m|(this.keys.has(k)?1<<i:0),0);
+    const input = { heldMask, theta: swing * (this.swingSign || 1), phi: Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) };
+    const localPlayer=this.world.players[this.localPlayerId];
+    if(localPlayer?.characterId!=='cr7'&&localPlayer?.skill!=='rotor')delete input.heldMask;
     if (this.skillTap) input.skillTap = true;
     if (Number.isFinite(this.localFaceYaw)) input.faceYaw = this.localFaceYaw;
     return input;
@@ -253,6 +260,7 @@ export class GameSession {
     if (this.mode === 'online') { this.menuOpen = true; this.publish(); return; }
     this.previousState = this.state;
     this.state = 'paused';
+    this.sound.syncSkills?.([], { active: false });
     this.accumulator = 0;
     this.publish();
   }
@@ -272,20 +280,42 @@ export class GameSession {
   }
 
   contextLost() {
+    this.sound.syncSkills?.([], { active: false });
     this.pause();
     this.error = '图形上下文已中断，请重新加载游戏。';
     this.publish();
   }
 
   impact(event) {
+    if (event.type === 'growth') { this.sound.growth?.(); return; }
     if (event.type === 'skill') { this.skillCue(event); return; }
-    this.sound.impact(event);
+    if(event.type==='skill-release'){this.sound.skill?.({...event,skill:event.skill+'-release'});return;}
+    if (event.type === 'heal') {
+      if (!Number.isFinite(event.amount) || event.amount <= 0) return;
+      this.sound.heal?.(event);
+      const heal = Math.round(event.amount * 10) / 10;
+      const player = this.world.players[event.player];
+      const point = event.point ?? player?.p;
+      if (heal > 0 && point) {
+        const scale = player ? fighterScale(player) : 1;
+        this.effects.push({ id: ++this.nextEffectId, point: { ...point, y: point.y + 1.1 * scale }, heal, life: 0.95, maxLife: 0.95 });
+        this.publish();
+      }
+      return;
+    }
+    this.sound.impact({ ...event, arenaSkin: this.arenaSkin });
     if (event.type !== 'hit') return;
-    this.freeze = Math.max(this.freeze, 0.028 + event.strength * 0.055);
-    this.effects.push({ id: ++this.nextEffectId, point: { ...event.point }, damage: event.damage, life: 0.95, maxLife: 0.95 });
-    this.readout = event.source === 'delivery' ? { label: '外卖送达', damage: event.damage, detail: '投掷命中 · 击退' } : {
+    const { source } = event;
+    if (source !== 'perfume' && source !== 'bleed') this.freeze = Math.max(this.freeze, 0.028 + event.strength * 0.055);
+    const damage = Math.round(event.damage * 10) / 10;
+    this.effects.push({ id: ++this.nextEffectId, point: { ...event.point }, damage, life: 0.95, maxLife: 0.95 });
+    if (source === 'bleed') this.readout = { label: '流血', damage, detail: `每 ${SKILLS.perfume.bleedInterval} 秒损失 1 点生命` };
+    else if (source === 'perfume') this.readout = { label: '香水命中', damage, detail: '命中造成流血' };
+    else if (source === 'soccer') this.readout = { label: '足球命中', damage, detail: '命中后继续反弹' };
+    else if (source === 'delivery') this.readout = { label: '外卖送达', damage, detail: '投掷命中 · 击退' };
+    else this.readout = {
       label: event.damage >= 22 ? '漂亮的一击' : '有效命中',
-      damage: event.damage,
+      damage,
       detail: `${event.speed.toFixed(1)} m/s · 发力加成 ${Math.round(30 * Math.min(event.acceleration / 48, 1))}%${event.turnShare > 0.01 ? ' · 横转伤害降低' : ''}`,
     };
     this.readoutTimer = 3;
@@ -312,6 +342,7 @@ export class GameSession {
 
   finishRound() {
     this.state = 'result';
+    this.sound.syncSkills?.([], { active: false });
     this.menuOpen = false;
     this.clearKeys();
     const winner = this.world.winner;
@@ -337,6 +368,7 @@ export class GameSession {
   }
 
   tick(rawDelta) {
+    if (this.mode === 'online' && this.net?.phase === 'closed') return [];
     const dt = Math.min(rawDelta, 0.06);
     let impacts = [];
     if (this.replica) impacts = this.net?.replicaTick(dt) ?? [];
@@ -379,6 +411,7 @@ export class GameSession {
       this.effects = this.effects.filter(effect => effect.life > 0);
       if (this.effects.length !== before) this.publish();
     }
+    this.sound.syncSkills?.(this.world.players, { paused: this.state === 'paused', active: this.state === 'playing' && !this.error && this.net?.phase !== 'closed' });
     return impacts;
   }
 }

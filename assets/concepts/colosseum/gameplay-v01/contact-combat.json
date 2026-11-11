@@ -1,0 +1,57 @@
+{
+  "fixture": "scripted real inputs / W then W+D then release",
+  "state": "playing",
+  "mode": "practice",
+  "environment": "ready",
+  "radius": 6.45,
+  "rimHeight": 0.84,
+  "uniformScale": [
+    1,
+    1,
+    1
+  ],
+  "textureDecoded": true,
+  "textureSize": [
+    2048,
+    2048
+  ],
+  "wallGroups": 8,
+  "occludedByCamera": [
+    []
+  ],
+  "players": [
+    {
+      "character": "basic-fighter",
+      "weapon": "sword",
+      "position": {
+        "x": -4.423277033230994,
+        "y": 0.59,
+        "z": -3.8915033153087055
+      },
+      "grounded": true,
+      "staffGrounded": true,
+      "health": 66,
+      "stamina": 200
+    },
+    {
+      "character": "basic-fighter",
+      "weapon": "polearm",
+      "position": {
+        "x": -0.3285303476478878,
+        "y": 0.59,
+        "z": -0.579699642930845
+      },
+      "grounded": true,
+      "staffGrounded": true,
+      "health": 100,
+      "stamina": 200
+    }
+  ],
+  "record": "complete",
+  "metrics": {
+    "hits": 1,
+    "maxHeight": 3.192240279888308,
+    "minimumStamina": 88.26666666666506,
+    "source": "actual App/GameSession/ArenaView and solver; fixture reset, real input commands; no scripted travel"
+  }
+}

@@ -1,6 +1,8 @@
 import { PerspectiveCamera, Vector3, MathUtils } from 'three';
 import { CHARACTERS } from './character-catalog.js';
-import { CONFIG, clamp, staffFrame, weaponStats, fighterHeading,isAnatomical,visualWeaponSegments } from './physics.js';
+import { bodyFloor, clamp, staffFrame, weaponStats, fighterHeading, isAnatomical, visualWeaponSegments } from './physics.js';
+import { fighterScale } from './match-growth.js';
+import { CAT, catPawScale } from './orange-tabby-profile.js';
 
 // Third-person follow camera for the local fighter: a close, tilted rear view
 // that the mouse orbits freely. The look direction also steers the body.
@@ -52,6 +54,7 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
   const { camera } = rig;
   const firstFrame = rig.yaw === null;
   const elapsed = Math.max(0, dt);
+  const scale = fighterScale(player), floor = bodyFloor(player);
   rig.victory = 0;
   const aim = staffFrame(player, weaponStats(player).length * 0.55).point;
   if (firstFrame) rig.yaw = fighterHeading(player) + rig.settings.yawOffset;
@@ -66,14 +69,14 @@ export function updateFreeCamera(rig, player, dt, shakeX = 0, shakeY = 0) {
     rig.focus.add(rig.desired);
   }
   rig.anchor.set(player.p.x, player.p.y, player.p.z);
-  const focusY = player.p.y + clamp((aim.y - player.p.y) * 0.4, 0.45 - CONFIG.bodyFloor, 2.6 - CONFIG.bodyFloor);
+  const focusY = player.p.y + clamp((aim.y - player.p.y) * 0.4, 0.45 * scale - floor, 2.6 * scale - floor);
   rig.desired.set(player.p.x * 0.75 + aim.x * 0.25, focusY, player.p.z * 0.75 + aim.z * 0.25);
   const blend = 1 - Math.exp(-5 * elapsed);
   if (firstFrame) rig.focus.copy(rig.desired);
   else rig.focus.lerp(rig.desired, blend);
   const horizontal = Math.cos(pitch) * rig.distance;
   rig.desired.set(player.p.x - Math.cos(yaw) * horizontal,
-    player.p.y + Math.sin(pitch) * rig.distance + 1.2,
+    player.p.y + Math.sin(pitch) * rig.distance + 1.2 * scale,
     player.p.z - Math.sin(yaw) * horizontal);
   if (firstFrame) rig.position.copy(rig.desired);
   else rig.position.lerp(rig.desired, blend);
@@ -92,20 +95,21 @@ export function updateVictoryCamera(rig, winner, dt, loser = null) {
   const { camera } = rig;
   const elapsed = Math.max(0, dt);
   const character = CHARACTERS[winner.characterId];
-  const height = character.bounds.max[1];
-  const distance = 1.2 + height * 0.9;
+  const scale = fighterScale(winner);
+  const height = character.bounds.max[1] * scale;
+  const distance = 1.2 * scale + height * 0.9;
   if (rig.victory === 0) {
     rig.position.copy(camera.position);
     rig.victoryAngle = victoryAngle(winner, loser, distance);
   }
   rig.victory += elapsed;
   const angle = rig.victoryAngle;
-  const floor = winner.p.y - character.bodyFloor;
+  const floor = winner.p.y - bodyFloor(winner);
   // Aim below the face so the winner sits in the upper half, clear of the result panel.
   rig.desired.set(winner.p.x, floor + height * 0.42, winner.p.z);
   const blend = 1 - Math.exp(-2.6 * elapsed);
   rig.focus.lerp(rig.desired, blend);
-  rig.desired.set(winner.p.x + Math.cos(angle) * distance, floor + height * 0.78 + 0.2, winner.p.z + Math.sin(angle) * distance);
+  rig.desired.set(winner.p.x + Math.cos(angle) * distance, floor + height * 0.78 + 0.2 * scale, winner.p.z + Math.sin(angle) * distance);
   rig.position.lerp(rig.desired, blend);
   camera.position.copy(rig.position);
   camera.lookAt(rig.focus);
@@ -129,11 +133,11 @@ function victoryAngle(winner, loser, distance) {
   const blockers = [];
   if (loser) {
     const dx = loser.p.x - winner.p.x, dz = loser.p.z - winner.p.z;
-    if (Math.hypot(dx, dz) < distance + 1.5) blockers.push({ bearing: Math.atan2(dz, dx), clearance: 1.0 });
+    if (Math.hypot(dx, dz) < distance + 1.5 * fighterScale(loser)) blockers.push({ bearing: Math.atan2(dz, dx), clearance: 1.0 });
   }
   const tip = staffFrame(winner, weaponStats(winner).length * 0.7).point;
   const wx = tip.x - winner.p.x, wz = tip.z - winner.p.z;
-  if (Math.hypot(wx, wz) > 0.3) blockers.push({ bearing: Math.atan2(wz, wx), clearance: 0.8 });
+  if (Math.hypot(wx, wz) > 0.3 * fighterScale(winner)) blockers.push({ bearing: Math.atan2(wz, wx), clearance: 0.8 });
   const gap = (a, b) => Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)));
   const margin = angle => Math.min(Infinity, ...blockers.map(b => gap(angle, b.bearing) - b.clearance));
   let best = heading + 0.4;
@@ -149,14 +153,29 @@ function fitFighter(rig, player, dt, firstFrame) {
   const { camera } = rig;
   const verticalSlope = Math.tan(MathUtils.degToRad(camera.fov / 2)) / camera.zoom;
   const horizontalSlope = verticalSlope * Math.max(camera.aspect, 1e-6);
+  const scale = fighterScale(player), floor = player.p.y - bodyFloor(player);
+  const { min, max } = CHARACTERS[player.characterId].bounds;
+  const heading = fighterHeading(player), c = Math.cos(heading), s = Math.sin(heading);
   let needed = 0;
   const points = [];
-  for (const x of [-0.5, 0.5]) for (const y of [-0.6, 1.65]) for (const z of [-0.5, 0.5]) {
-    points.push({ x: player.p.x + x, y: player.p.y + y, z: player.p.z + z });
+  // Keep room for the full character, plus the space above it for floating cues.
+  for (const x of [Math.min(-0.5, min[0]), Math.max(0.5, max[0])]) {
+    for (const y of [Math.min(-0.01, min[1]), Math.max(2.24, max[1])]) {
+      for (const z of [Math.min(-0.5, min[2]), Math.max(0.5, max[2])]) {
+        points.push({ x: player.p.x + (x * c - z * s) * scale, y: floor + y * scale, z: player.p.z + (x * s + z * c) * scale });
+      }
+    }
   }
-  if(isAnatomical(player))for(const shape of visualWeaponSegments(player))for(const end of [shape.a,shape.b]){
-    const r=shape.radius+(player.weapon==='cat-paws'?.182:0);
-    for(const x of [-r,r])for(const y of [-r,r])for(const z of [-r,r])points.push({x:end.x+x,y:end.y+y,z:end.z+z});
+  if (isAnatomical(player)) {
+    const padding = player.weapon === 'cat-paws' ? CAT.contactUndercoverage * catPawScale(player) * scale : 0;
+    for (const shape of visualWeaponSegments(player)) {
+      const r = shape.radius + padding;
+      for (const end of [shape.a, shape.b]) {
+        for (const x of [-r, r]) for (const y of [-r, r]) for (const z of [-r, r]) {
+          points.push({ x: end.x + x, y: end.y + y, z: end.z + z });
+        }
+      }
+    }
   }
   for (const p of points) {
     const point = rig.framePoint.set(p.x, p.y, p.z)

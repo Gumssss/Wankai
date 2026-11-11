@@ -1,3 +1,5 @@
+import { growthAt } from './match-growth.js';
+import { clearBleeding } from './arena-skills.js';
 import { isValidLoadout, normalizeLoadout } from './loadouts.js';
 import { isArenaSkin } from './arena-skins.js';
 
@@ -10,13 +12,13 @@ import { isArenaSkin } from './arena-skins.js';
 // The transport may drop or reorder plain snapshots and inputs (Steam sends
 // them unreliably); control messages, snapshots with events and skill taps
 // must arrive.
-export const PROTOCOL = 5;
+export const PROTOCOL = 11;
 const SNAPSHOT_INTERVAL = 1 / 60;
 const INPUT_HEARTBEAT = 1 / 30;
 const INTERPOLATION_DELAY = 0.05;
 const PING_INTERVAL = 1;
 const PLAYER_FIELDS = ['theta', 'phi', 'bodyYaw', 'hitFlash', 'staffGrounded', 'contactSpeed',
-  'health', 'stamina', 'skillActive', 'skillTime', 'skillCooldown', 'wt', 'wp'];
+  'health', 'stamina', 'skillActive', 'skillTime', 'skillCooldown', 'wt', 'wp', 'bleedActive'];
 const ANIMAL_FIELDS=['earSpread','earSpreadRate','earLag','earLagRate'];
 const ANGLES = new Set(['phi', 'bodyYaw']);
 const LERPED = new Set(['theta', 'phi', 'bodyYaw', 'hitFlash', 'contactSpeed', 'stamina', 'skillTime', 'skillCooldown','earSpread','earLag']);
@@ -31,6 +33,7 @@ const lerpAngle = (a, b, t) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) 
 // Only the fields the simulation reads, with every value bounded.
 export function sanitizeInput(message) {
   const input = { theta: Math.sign(finite(message?.theta)), phi: Math.max(-1, Math.min(1, finite(message?.phi))) };
+  if(Number.isInteger(message?.heldMask))input.heldMask=message.heldMask&15;
   if (message?.skillTap) input.skillTap = true;
   if (Number.isFinite(message?.faceYaw)) input.faceYaw = message.faceYaw;
   return input;
@@ -58,6 +61,7 @@ export class NetSession {
     this.clock = 0;
     this.buffer = [];
     this.lastSeq = 0;
+    this.roundSnapshotFloor = 0;
     this.inbox = [];
     this.inputTimer = 0;
     this.lastInput = '';
@@ -105,7 +109,7 @@ export class NetSession {
     if (!this.canStart()) return false;
     const loadouts = [this.local.loadout, this.peer.loadout];
     this.beginRound(loadouts);
-    this.send({ type: 'start', loadouts, arena: this.session.arenaSkin });
+    this.send({ type: 'start', loadouts, arena: this.session.arenaSkin, snapshotFloor: this.seq });
     return true;
   }
 
@@ -116,6 +120,8 @@ export class NetSession {
     session.startRound('online');
     this.local.rematch = this.peer.rematch = false;
     this.buffer = [];
+    this.inbox = [];
+    this.pendingEvents = [];
     this.publish();
   }
 
@@ -129,7 +135,7 @@ export class NetSession {
   rematch() {
     const loadouts = this.session.loadouts.map(p => ({ ...p }));
     this.beginRound(loadouts);
-    this.send({ type: 'start', loadouts, arena: this.session.arenaSkin });
+    this.send({ type: 'start', loadouts, arena: this.session.arenaSkin, snapshotFloor: this.seq });
   }
 
   leave(reason = '') {
@@ -142,6 +148,10 @@ export class NetSession {
     if (this.phase === 'closed') return;
     const wasConnected = this.phase === 'connected';
     this.phase = 'closed';
+    this.buffer.length=0;this.inbox.length=0;this.pendingEvents.length=0;
+    for(const p of this.session.world.players)clearBleeding(p);
+    for(const p of this.session.world.players)if(p.skill==='lifesteal'){p.skillActive=false;p.skillTime=0;}
+    this.session.sound.syncSkills?.([], { active: false });
     this.message = reason || (wasConnected ? '对方已断开连接。' : '');
     this.publish();
   }
@@ -194,6 +204,8 @@ export class NetSession {
 
   on_start(message) {
     if (this.role !== 'guest' || !Array.isArray(message.loadouts) || !message.loadouts.every(isValidLoadout)) return;
+    this.roundSnapshotFloor = Math.max(this.roundSnapshotFloor, finite(message.snapshotFloor));
+    this.lastSeq = Math.max(this.lastSeq, this.roundSnapshotFloor);
     if (isArenaSkin(message.arena)) this.session.setArenaSkin(message.arena);
     this.beginRound(message.loadouts);
   }
@@ -223,6 +235,7 @@ export class NetSession {
 
   on_snap(message) {
     if (this.role !== 'guest' || !Array.isArray(message.players)) return;
+    if (Number.isFinite(message.seq) && message.seq <= this.roundSnapshotFloor) return;
     // Events always play; a snapshot older than one already shown (it was
     // overtaken on the wire) would step the world back, so its state is dropped.
     if (Array.isArray(message.events)) this.inbox.push(...message.events);
@@ -252,17 +265,19 @@ export class NetSession {
     const { session } = this, world = session.world;
     this.send({
       type: 'snap', seq: ++this.seq, state: session.state, countdown: session.countdown, countdownNumber: session.countdownNumber,
-      time: world.time, winner: world.winner,
+      time: world.time, roundTime: world.roundTime, winner: world.winner,
       players: world.players.map(p => {
         const out = { p: { ...p.p }, v: { ...p.v } };
         for (const field of PLAYER_FIELDS) out[field] = p[field];
+        if(p.weapon==='cat-paws')out.pawScale=p.pawScale;
+        if(p.skill==='ricochet'||p.skill==='perfume')out.ability=[p.abilityPhase,Math.round(p.abilityTime*1000)/1000,p.releaseGate?1:0,Math.round(p.sprayYaw*1000)/1000];
         // Only the rigged Beagle needs extra pose data. Compact/quantized
         // visual angles preserve the unreliable packet budget; the host's
         // simulation and contacts retain their full precision.
         if(p.characterId==='beagle'&&p.weapon==='long-ears')out.ears=ANIMAL_FIELDS.map(f=>Math.round((p[f]||0)*1e5)/1e5);
         return out;
       }),
-      projectiles: world.projectiles.map(({ id, owner, p, v, spin, radius }) => ({ id, owner, p: { ...p }, v: { ...v }, spin, radius })),
+      projectiles: world.projectiles.map(({ id, owner, p, v, spin, radius, type, bounce }) => ({ id, owner, type, bounce, p: { ...p }, v: { ...v }, spin, radius })),
       events: this.pendingEvents.splice(0),
     });
   }
@@ -296,18 +311,26 @@ export class NetSession {
 
   applySnapshot(a, b, t) {
     const session = this.session, world = session.world;
+    const roundTime = finite(a.roundTime) + (finite(b.roundTime) - finite(a.roundTime)) * t;
+    const growth = growthAt(roundTime);
+    world.roundTime = roundTime;
     world.players.forEach((player, id) => {
+      player.scale = growth.scale;
+      player.damageScale = growth.damageScale;
       const from = a.players[id], to = b.players[id];
       if (!from || !to) return;
       const jump = Math.hypot(to.p.x - from.p.x, to.p.z - from.p.z) > SNAP_DISTANCE;
       const k = jump ? 1 : t;
       player.p = { x: from.p.x + (to.p.x - from.p.x) * k, y: from.p.y + (to.p.y - from.p.y) * k, z: from.p.z + (to.p.z - from.p.z) * k };
       player.v = { ...to.v };
+      const fromPaw=finite(from.pawScale,1),toPaw=finite(to.pawScale,1);
+      player.pawScale=fromPaw+(toPaw-fromPaw)*k;
       for (const field of PLAYER_FIELDS) {
         if (!LERPED.has(field)) player[field] = to[field];
         else if (ANGLES.has(field)) player[field] = lerpAngle(from[field], to[field], k);
         else player[field] = from[field] + (to[field] - from[field]) * k;
       }
+      if(to.ability){[player.abilityPhase,player.abilityTime,player.releaseGate,player.sprayYaw]=to.ability;player.releaseGate=!!player.releaseGate;}
       ANIMAL_FIELDS.forEach((field,index)=>{
         const x=from.ears?.[index]??0,y=to.ears?.[index]??0;
         player[field]=LERPED.has(field)?x+(y-x)*k:y;
@@ -316,7 +339,7 @@ export class NetSession {
     // Projectiles: interpolate the ones present in both snapshots.
     if (Array.isArray(b.projectiles)) world.projectiles = b.projectiles.map(shot => {
       const before = a.projectiles?.find(other => other.id === shot.id);
-      if (!before) return { ...shot, p: { ...shot.p } };
+      if (!before || before.bounce !== shot.bounce) return { ...shot, p: { ...shot.p } };
       return { ...shot, p: { x: before.p.x + (shot.p.x - before.p.x) * t, y: before.p.y + (shot.p.y - before.p.y) * t, z: before.p.z + (shot.p.z - before.p.z) * t } };
     });
     world.time = b.time;

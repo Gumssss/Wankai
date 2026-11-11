@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-21",
+  "status": "implemented-locally-after-creator-approval",
+  "gameUrl": "http://127.0.0.1:5173/",
+  "mode": "duel-fixed",
+  "camera": {
+    "projection": "perspective",
+    "position": [30.88677987096443, 24, 13.237191373270472],
+    "target": [0, 1.4, 0],
+    "fovDegrees": 55,
+    "near": 0.1,
+    "far": 120,
+    "fixedDuringPlayAndImpacts": true,
+    "matchesApprovedStudy": "v05 proposed anticlockwise 45-degree orbit",
+    "optionalForegroundOverrideApplied": false
+  },
+  "arena": {"uniformScale": 3, "playableRadius": 19.35, "weaponContactRimHeight": 2.52, "matchesSplitScreenSize": true},
+  "tests": {"command": "npm test", "passed": 152, "failed": 0, "log": "/tmp/colosseum-fixed-implementation-tests.log"},
+  "build": {"command": "npm run build", "passed": true, "existingChunkSizeAdvisory": true, "log": "/tmp/colosseum-fixed-implementation-build.log"},
+  "browserChecks": {
+    "Chrome": {"normalGame": true, "loadouts": ["beagle/long-ears", "orange-tabby/cat-paws"], "bothPlayerInputs": "verified", "rematch": "verified", "consoleErrors": []},
+    "inAppBrowser": {"normalGame": true, "loadouts": ["basic/sword", "basic/polearm"], "fixedModeOpen": true}
+  },
+  "actualGameImages": ["implemented-fixed.png", "implemented-fixed-iab.png"],
+  "limits": ["The accepted static framing retains a small extreme foreground weapon-tip margin.", "Narrow panes crop more scenery; projection samples cover desktop aspect ratios."],
+  "gitDelivery": "No commit, push, merge or release."
+}

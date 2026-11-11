@@ -1,5 +1,7 @@
 # Drive characters — 5 November 2026
 
+> 8 November 2026 更新：CR7 与 Mean Girl 已完成本地技能实现；下面保留历史设计/导入记录。当前状态见 [实现与验证](CR7_MEANGIRL_IMPLEMENTED.md)。
+
 Implemented on `feat/drive-characters`, based on integration commit `787b077`. Published to [the GitHub feature branch](https://github.com/Gumssss/Wankai/tree/feat/drive-characters) on 6 November 2026, with gameplay checkpoint `43e7f8e`. The user confirmed CR7 + soccer ball, Mean Girl + crowned heart, and a separate Maodie + cat paw. They selected existing weapon controls and no F skills. The original-model viewer was then requested and delivered. The original folder is [on Google Drive](https://drive.google.com/drive/folders/12CSIoKJHwHGyixSoFyqPES7oU29eX09k).
 
 ## Source and model records

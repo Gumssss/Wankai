@@ -1,0 +1,25 @@
+{
+  "kind": "Node Three.js raycast benchmark, existing 14-ray cutaway workload; not browser FPS",
+  "rounds": 6,
+  "viewsPerRound": 24,
+  "medianMsPerCutawayBefore": 40.763260416666675,
+  "medianMsPerCutawayAfter": 18.045758666666682,
+  "rawMsPerCutaway": [
+    [
+      39.46980208333334,
+      40.763260416666675,
+      40.310857666666685,
+      41.19826391666663,
+      43.09927429166669,
+      39.89317012500002
+    ],
+    [
+      17.873362833333335,
+      17.909552083333324,
+      18.037020833333333,
+      18.045758666666682,
+      18.24643229166668,
+      18.23726216666667
+    ]
+  ]
+}

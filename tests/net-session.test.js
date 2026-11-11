@@ -62,7 +62,7 @@ test('the Drive character loadouts synchronize and both players can control them
     assert.deepEqual(game.guestSession.loadouts, game.hostSession.loadouts);
     for (const p of game.hostSession.world.players) {
       assert.ok(Math.abs(p.wt) > .1);
-      assert.equal(p.skill, null);
+      assert.equal(p.skill,({cr7:'ricochet','mean-girl':'perfume',maodie:'lifesteal'})[p.characterId]??null);
     }
     assert.equal(game.guestSession.world.players[1].characterId, choices[(i + 1) % choices.length].characterId);
   }
@@ -73,7 +73,7 @@ test('a version mismatch is refused with a reason, and the host keeps waiting', 
   assert.equal(versions.guest.phase, 'closed');
   assert.match(versions.guest.message, /版本不一致/);
   assert.equal(versions.host.phase, 'waiting', 'the host keeps its room open');
-  assert.equal(PROTOCOL, 5);
+  assert.equal(PROTOCOL, 11);
 });
 
 test('the handshake carries both Steam names, cleaned for display', () => {
@@ -271,9 +271,27 @@ test('restored animal choices and rotor pose remain synchronized through the rea
  assert.ok(game.host.start());game.net.flush();game.tick(2.6);
  game.hostSession.keyDown('KeyF');game.guestSession.keyDown('KeyS');game.tick(1.2);
  const host=game.hostSession.world.players,guest=game.guestSession.world.players;
- assert.equal(guest[0].maxHealth,80);assert.equal(guest[1].maxHealth,150);assert.equal(guest[0].skillActive,true);
+ assert.equal(guest[0].maxHealth,100);assert.equal(guest[1].maxHealth,100);assert.equal(guest[0].skillActive,true);
  assert.ok(guest[0].earSpread>.2);assert.ok(Math.abs(host[0].earSpread-guest[0].earSpread)<.3);
  assert.ok(guest[0].stamina<200&&guest[1].stamina<200);
  assert.equal(game.guestSession.loadouts[1].characterId,'orange-tabby');
  game.tick(5);assert.equal(guest[0].skillActive,false);assert.ok(guest[0].earSpread<.01);
+});
+
+test('CR7 ability, input mask, stow and release gate replicate to guest',()=>{
+ const g=pair();ready(g,{characterId:'cr7',weaponId:'soccer-ball'},{characterId:'mean-girl',weaponId:'crowned-heart'});g.host.start();g.net.flush();g.tick(3);
+ g.hostSession.world.players[0].grounded=true;g.hostSession.keyDown('KeyF');g.hostSession.keyDown('KeyW');g.tick(.7);
+ assert.equal(g.hostSession.world.players[0].abilityPhase,'active');assert.equal(g.guestSession.world.players[0].abilityPhase,'active');assert.equal(g.guestSession.world.projectiles[0].type,'soccer');
+ g.tick(3.3);assert.equal(g.guestSession.world.players[0].releaseGate,true);g.hostSession.keyUp('KeyW');g.tick(.2);assert.equal(g.guestSession.world.players[0].releaseGate,false);
+});
+
+test('either peer can activate both skills, including mirror matches',()=>{
+ for(const characters of [['mean-girl','cr7'],['cr7','cr7'],['mean-girl','mean-girl']]){
+  const g=pair(),choices=characters.map(characterId=>({characterId,weaponId:characterId==='cr7'?'soccer-ball':'crowned-heart'}));ready(g,...choices);g.host.start();g.net.flush();g.tick(3);
+  for(const p of g.hostSession.world.players){p.grounded=true;p.p.x=p.id?8:-8;}
+  g.hostSession.keyDown('KeyF');g.guestSession.keyDown('KeyF');g.guestSession.keyDown('KeyD');g.tick(.8);
+  for(let id=0;id<2;id++){assert.equal(g.hostSession.world.players[id].abilityPhase,'active');assert.equal(g.guestSession.world.players[id].abilityPhase,'active');}
+  assert.equal(g.guestSession.world.projectiles.filter(s=>s.type==='soccer').length,characters.filter(c=>c==='cr7').length);
+  g.tick(3.5);assert.equal(g.guestSession.world.projectiles.length,0);assert(g.guestSession.world.players.every(p=>p.abilityPhase==='idle'));
+ }
 });

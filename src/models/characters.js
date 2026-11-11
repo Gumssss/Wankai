@@ -6,6 +6,7 @@ import { naiwa } from './characters/naiwa.js';
 import { dudu } from './characters/dudu.js';
 import { happyCat } from './characters/happy-cat.js';
 import {buildAnimal} from './restored-animals.js';
+import {buildCr7Rig} from './cr7-rig.js';
 import { resolveLoadout } from '../loadouts.js';
 export { preloadCharacterModels, characterModelsReady } from './character-assets.js';
 
@@ -96,9 +97,12 @@ export function buildCharacter(selection, id = 0) {
   else if (loadout.characterId === 'dudu') built = dudu(kit);
   else if (loadout.characterId === 'happy-cat') built = happyCat(kit);
   else if (CHARACTER_MODELS.includes(loadout.characterId)) {
-    const body = new THREE.Group();
-    importedMesh(kit, body, loadout.characterId);
-    built = { body, pose() {} };
+    built = loadout.characterId==='cr7'?buildCr7Rig(kit):null;
+    if(!built){
+      const body = new THREE.Group();
+      importedMesh(kit, body, loadout.characterId);
+      built = { body, pose() {} };
+    }
   }
   else built = stickman(kit, id);
   host.add(built.body);

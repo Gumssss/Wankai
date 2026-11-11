@@ -19,8 +19,12 @@ import { arenaPreview, loadArenaPreviews } from './models/arena-previews.js';
 function SkillCard({ characterId, weaponId }) {
   const skill = SKILLS[CHARACTERS[characterId]?.skill];
   if (!skill || (characterId === 'beagle' && weaponId !== 'long-ears')) return null;
+  const cooldown = `冷却 ${skill.cooldown}s`;
+  const details = skill.id === 'rotor'
+    ? `${cooldown} · ≥${skill.activationMinimum} 体力 · ${skill.drain}/秒`
+    : cooldown;
   return <div className="skill-card">
-    <div><b><kbd>F</kbd>{skill.name}<small>{skill.id === 'rotor' ? '40 体力 · 16/秒' : `冷却 ${skill.cooldown}s`}</small></b><p>{skill.description}</p></div>
+    <div><b><kbd>F</kbd>{skill.name}<small>{details}</small></b><p>{skill.description}</p></div>
   </div>;
 }
 

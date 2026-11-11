@@ -185,7 +185,14 @@ kbd {
 .right .fighter-name strong { margin-left: 0; margin-right: auto; }
 .fighter-tag { display: inline-grid; place-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: var(--red); color: #fffaf0; font-size: 12px; font-weight: 800; }
 .player-1 .fighter-tag { background: var(--blue); }
+.health-row { display: flex; align-items: center; gap: 8px; }
+.right .health-row { flex-direction: row-reverse; }
 .health-track { position: relative; height: 13px; overflow: hidden; border-radius: 7px; background: #dcd6c2; box-shadow: inset 0 1px 0 #30372e1a; }
+.health-row .health-track { flex: 1; min-width: 0; }
+.bleed-status {
+  flex: none; padding: 1px 6px; border-radius: 999px; background: #f8ddd6; color: #8b3029;
+  font-size: 11px; font-weight: 750; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
 .health-fill, .health-ghost { position: absolute; inset: 0; transform-origin: left; transition: transform .12s; border-radius: 7px; }
 .right .health-fill, .right .health-ghost, .right .stamina-fill { transform-origin: right; }
 .health-ghost { background: #f5c791; transition: transform .5s .2s; }
@@ -299,10 +306,12 @@ kbd {
 .hit-readout > span { font-size: 12px; font-weight: 700; letter-spacing: 3px; color: var(--ink-soft); }
 .hit-readout strong { font-size: 44px; font-style: italic; color: var(--red); line-height: 1.1; }
 .hit-readout small { font-size: 11px; color: var(--ink-soft); }
-.damage-number {
-  position: absolute; left: 0; top: 0; pointer-events: none; font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--red);
+.damage-number, .heal-number {
+  position: absolute; left: 0; top: 0; pointer-events: none; font-size: 32px; font-weight: 800; letter-spacing: -1px;
   -webkit-text-stroke: 3px #fff5df; paint-order: stroke fill; text-shadow: 0 2px 8px #3332;
 }
+.damage-number { color: var(--red); }
+.heal-number { color: #287a46; }
 .impact-word { display: block; font-size: 12px; font-weight: 750; letter-spacing: 2px; color: #4f5b3f; -webkit-text-stroke: 2px #fff5df; }
 .skill-word {
   position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap; font-family: var(--display); font-size: 30px;
@@ -310,6 +319,7 @@ kbd {
 }
 .skill-word.kind-laugh { color: #c99a12; font-size: 36px; animation: shake .18s linear infinite alternate; }
 .skill-word.kind-happy { color: #d2557a; }
+.skill-word.kind-lifesteal { color: var(--red); }
 .skill-word.kind-delivery { color: #b8860b; font-size: 24px; }
 .skill-word.kind-twist { color: var(--blue); }
 @keyframes shake { from { rotate: -4deg; } to { rotate: 4deg; } }
@@ -649,3 +659,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px #a
 
 /* Keep native form controls and semantic monospace elements in the game font. */
 input, select, textarea, option, code, pre, samp { font-family: var(--display); }
+
+/* Shared late-round growth cue; never intercept gameplay input. */
+.match-clock .growth-status { color: var(--ink); font-size: 10px; letter-spacing: 0; }
+.growth-announcement { position: absolute; top: 27%; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 16px; background: #fff7dfed; color: #63502d; font-weight: 800; font-size: clamp(16px, 2vw, 24px); pointer-events: none; z-index: 8; white-space: nowrap; }

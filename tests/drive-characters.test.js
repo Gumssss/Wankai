@@ -16,16 +16,17 @@ const choices = [
 ];
 const common = ['sword', 'polearm', 'hammer', 'axe', 'mace', 'pan'];
 
-test('three distinct Drive characters equip their signatures and common weapons without F skills', () => {
+test('three distinct Drive characters equip their signatures and common weapons with character-owned F skills', () => {
   assert.equal(PLAYABLE_LOADOUTS.length, 56);
   for (const choice of choices) {
     for (const weaponId of [choice.weaponId, ...common]) {
       const loadout = { ...choice, weaponId };
-      assert.equal(resolveLoadout(loadout).skill, null);
+      assert.equal(resolveLoadout(loadout).skill?.id??null,({cr7:'ricochet','mean-girl':'perfume',maodie:'lifesteal'})[choice.characterId]??null);
       const world = new ArenaPhysics();
       world.reset(loadout, { characterId: 'stickman', weaponId: 'sword' });
+      world.players[0].grounded=true;
       world.step([{ skillTap: true }, {}]);
-      assert.equal(world.players[0].skillActive, false);
+      assert.equal(world.players[0].skillActive, true);
       assert.equal(world.players[0].maxHealth, 100);
     }
     for (const other of choices.filter(other => other !== choice)) assert.equal(canEquip(other.characterId, choice.weaponId), false);

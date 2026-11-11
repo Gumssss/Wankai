@@ -1,0 +1,62 @@
+[
+  {
+    "file": "orange-tabby.mp4",
+    "sha256": "0ad330a5bca05e66767b763ef28823adc8c6a26cade601b18ebc8c7df6827683",
+    "duration": "44.000000",
+    "streams": [
+      {
+        "type": "video",
+        "codec": "h264",
+        "frames": "1320",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "decode": "pass"
+  },
+  {
+    "file": "cr7.mp4",
+    "sha256": "044b07e4441c6dca5ec323d46dc48044d099d7c81ee41e9b845f3ad698025a0f",
+    "duration": "44.000000",
+    "streams": [
+      {
+        "type": "video",
+        "codec": "h264",
+        "frames": "1320",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "decode": "pass"
+  },
+  {
+    "file": "mean-girl.mp4",
+    "sha256": "b408ce29e8623c5483ed8ee789cfd0c934fa212836e6093a61128007adc6a174",
+    "duration": "44.000000",
+    "streams": [
+      {
+        "type": "video",
+        "codec": "h264",
+        "frames": "1320",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "decode": "pass"
+  },
+  {
+    "file": "maodie.mp4",
+    "sha256": "1f27f18d0cce7cf959fd95d1e09c718188737f1cc49a42dd2670635eac315ff2",
+    "duration": "44.000000",
+    "streams": [
+      {
+        "type": "video",
+        "codec": "h264",
+        "frames": "1320",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "decode": "pass"
+  }
+]

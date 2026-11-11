@@ -1,6 +1,6 @@
 # Restored animals — 2 November 2026
 
-5 November 2026 adds three independent imported characters and signature weapons. The roster has nine characters and 56 loadouts. CR7, Mean Girl and Maodie use the current floating-weapon controller with fitted attachment offsets and no F skill. Their bodies are rigid imported models. The shared loader now supports both UV textures and linear vertex colours. Network protocol is **5**. [Source, model and runtime handoff](characters/drive-packet-2026-11-05.md).
+5 November 2026 adds three independent imported characters and signature weapons. The roster has nine characters and 56 loadouts. CR7 and Mean Girl now have F skills; their ordinary weapon controls retain the fitted attachment offsets. CR7 has a dedicated skinned loader with independent skeletons and rotation-only leg clips. Mean Girl and Maodie retain their static body meshes; Maodie now has the lifesteal F skill. The shared loader now supports both UV textures and linear vertex colours. Network protocol is **11**. [Source, model and runtime handoff](characters/drive-packet-2026-11-05.md).
 
 See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB characters, paired anatomical contacts, Beagle resource skill, character-specific health, preview/portrait behavior and protocol-4 pose state. Earlier statements below about every weapon floating, every body following the view and all models being procedural apply to the original four-character implementation; Beagle long ears and orange-cat paws use the documented anatomical exceptions. Existing fighters retain their current behavior.
 
@@ -35,6 +35,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
 
 - 角色可有一个 F 技能，`skill: null` 的配置忽略 F。`skillTap` 只被一个物理步消费；`updateSkill` 在每步开头处理冷却与持续效果（大笑抽体力、Happy Happy 回血），在采样扫掠之前完成瞬移，避免瞬移被当成一次横扫命中。
 - 外卖投掷生成 `world.projectiles`，按抛物线飞行，命中对手受击形状造成伤害，落地 / 撞墙 / 撞障碍物时产生 `splat` 事件。
+- 橘猫「巨爪」将成对猫爪从原版 1× 放大到之前的 1.3× 尺寸，持续 8 秒，冷却 30 秒。模型与接触形状一起变化，爪部倍率叠乘全局体型成长。技能本身仅改变尺寸。
 - 技能触发产生 `{ type: 'skill', skill, player, point, to? }` 事件，供音效、特效和联机转发使用。
 
 ## 对局（`game-session.js`）
@@ -54,7 +55,7 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
   - 邀请好友：建 FriendsOnly 大厅并 `overlay.activateInviteDialog`。接受邀请时 Steam 触发 `GameLobbyJoinRequested`，游戏未运行时 Steam 以 `+connect_lobby <id>` 启动；两种情况都转给窗口，打开联机面板加入。
 - 消息：每条一个 JSON 对象（≤ 64 KB），发往对方 Steam ID。不带事件的快照和不带技能点击的输入用 UnreliableNoDelay（超过 1150 字节自动改为可靠）；握手、准备、竞技场、开局、再战、ping、离开、带事件的快照和带 `skillTap` 的输入用 Reliable。链路每 2 秒发一个不转给页面的 `keepalive`，15 秒收不到对方任何包、对方离开大厅或 P2P 连接失败都报告 `disconnected`。主进程在玩家处于大厅时以 4 ms 间隔读包，Steam 回调由 steamworks.js 每 33 ms 处理。
 - 页面状态（`net:status`）：`connecting`、`searching`、`joining`、`waiting { mode }`、`connected { role, peer }`、`disconnected { message }`、`error { message }`。`online.js` 在 `connected` 时创建 `NetSession`（房主为 host），关窗或取消时离开大厅。
-- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 5）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
+- 握手：加入者发送 `hello { protocol, version, name }`，房主校验协议号（当前 11）与版本，回 `welcome { name }`；双方昵称显示在准备页对手卡片上。快照按 `seq` 丢弃过期包（不可靠通道可能乱序），但其中的事件照常播放。
 - 主机（红方，id 0）运行物理；加入者（蓝方，id 1）只发送输入（变化即发 + 30 Hz 心跳），接收 60 Hz 快照（含技能冷却与投掷物），以约 50 ms 延迟插值显示；位移超过 1.5 的帧（瞬移）直接跳转。所有事件随快照转发用于音效、特效和伤害数字。
 - 竞技场由房主选择，通过 `arena` 消息和 `start` 消息同步给加入者。
 - 对局中 Esc 只打开本地菜单，不暂停；任一方离开或断线，另一方收到提示并回到主菜单。
@@ -65,3 +66,34 @@ See [RESTORED_ANIMALS.md](RESTORED_ANIMALS.md) for the two additional GLB charac
 - electron-builder：Windows 出 `dir` + `nsis`，macOS 出 arm64 / x64 的 `dmg` + `zip`（ad-hoc 签名）。各平台的 `files` 会替换顶层列表，所以每个平台都完整列出，并去掉其他平台的 Steam 二进制。
 - 打包后 `main.cjs` 按 `app.isPackaged` 加载 `dist/index.html`；`steamworks.js` 通过 `asarUnpack` 解包；Windows / Linux 打包版没有菜单栏，macOS 有标准应用菜单（Cmd+Q / W / C / V、全屏）。
 - 图标由 `tools/make-icon.mjs` 生成：`tools/icon-render.html` 用真实模型离屏渲染奶蛙与奶木昆（整身 + 头部特写两张），`tools/make-icon.py` 合成圆角奶油色底板、墨色描边，48 px 以下用头部特写。`tests/packaging.test.js` 检查这些配置。
+
+## CR7 / Mean Girl (8 November 2026)
+
+`arena-skills.js` owns windup / active / recovery, skill damage, soccer sweeps and perfume exposure. The 180 Hz host remains authoritative. Windup completion is deferred until after damage so a last-tick hit interrupts release. Perfume tests the existing hurt capsules against a finite 70-degree sector (3.4 m, nozzle height +/- .55 m), then checks analytic obstacle occlusion. Soccer sweeps a sphere against hurt capsules, the circular arena and expanded obstacle shapes; it retains velocity magnitude on reflection. Expanded box corners are conservative.
+
+An accepted perfume hit starts bleeding for the rest of the round. The effect persists after the target leaves the spray and after the skill ends. Further perfume hits leave the original damage schedule intact. The host applies 1 HP of damage every 2 seconds and emits `hit` events with `source: 'bleed'` for actual HP loss. Bleed ticks bypass hitstop. Protocol 11 replicates `bleedActive` for the health bar status. Knockout, round end, exit, rematch and disconnect clear the effect.
+
+CR7's active phase removes ordinary weapon contact shapes, permits camera-relative normalized WASD movement at 2.2 m/s, and rejects HP damage / attack knockback while preserving gravity and body separation. Expiry removes the ball and immunity together. Recovery accepts key release; a press during recovery does not arm a restored weapon. A separate attack gate prevents passive weapon contact from scoring before fresh input.
+
+Protocol 6 adds validated raw WASD bits (W=1, A=2, S=4, D=8), a compact ability tuple `[phase, remaining, releaseGate, sprayYaw]`, projectile type and bounce sequence. Bounce discontinuities snap instead of interpolating across walls. HP and damage remain host-owned; particles, rigs and audio are local presentation. `skill` and `skill-release` events distinguish activation from actual release.
+
+`models/cr7-rig.js` preloads the original mesh's rigged derivative, uses SkeletonUtils clones and one mixer/material set per fighter, and samples clips from skill time for deterministic pause/replay. Geometry and textures are shared and retained across instance disposal. Browser preload failure is surfaced; synchronous Node geometry-only callers can still inspect the original static mesh.
+
+[Contract, model source, verification and limitations](characters/CR7_MEANGIRL_IMPLEMENTED.md).
+
+
+## Combat growth and contact audio — 11 November 2026
+
+Production GameSession worlds enable match growth; bare physics helpers default to growth disabled. `match-growth.js` centralizes the 30–60 second linear curve, 3× size cap (`MAX_FIGHTER_SCALE`) and 1.25 damage cap. The host owns `roundTime`; countdown, offline pause and result simulation do not advance it. Snapshots have carried this clock since protocol 7, and guests interpolate growth with their buffered poses. Rematches reset it. No timeout or pressure-zone system is enabled.
+
+Body/weapon presentation and contact transforms use the same fighter scale. The generous contact pass sets sword blade radius to .26, polearm blade/tip to .28/.20, axe blade to .27, hammer head to .23, mace head to .34 and yellow staff to .18. These shapes extend beyond the visible models and apply to hits, blocks, floor, walls and obstacles. Other weapons retain their contact profiles. Damage uses baseline-equivalent rotational motion before the explicit growth multiplier, while physical contacts use the enlarged shapes. Projectiles keep their launch size/damage, and ongoing spray follows caster growth. Protocol 8 includes Orange Tabby's temporary paw growth on top of the shared fighter scale. Paw scale ramps in/out over .2 seconds, is interpolated in contact sweeps and network snapshots, and resets on knockout/rematch; the 30-second cooldown starts at activation.
+
+Physical contact events are coalesced on the host before networking. Sound-only contact, bounce and growth events must not trigger hit/clash particles or hitstop. Procedural material cues use the existing SFX bus and recordings; state-driven rotor/spray audio stops on pause, skill end, death or exit. No external sound downloads were added.
+
+Implementation verification is limited to static syntax/import/diff inspection at the user's request. No gameplay tests, builds, audio listening tests or native Steam checks were performed for this update; gameplay feel and mix balance remain unverified.
+
+## Lifesteal and Beagle Rotor — 11 November 2026
+
+Maodie uses `lifesteal` with an 8-second active window, a 40-second cooldown from activation, and `healRatio: 2`. Only accepted melee HP loss in `solveAttack` grants healing; compute the target health delta after the health floor, then cap restoration at the living attacker’s maximum HP. No damage multiplier or stamina cost is added. Knockout, exit and rematch clear the effect; offline pause freezes it. Protocol 9 forwards `heal {player, amount, point, source}` events for presentation while HP remains host-owned. Healing creates no hitstop or damage readout.
+
+The Beagle's long ears target 2.5 rad/s for ordinary A/D steering. Rotor requires at least 40 stamina and drains 16 per second for up to 5 seconds. Its 30-second cooldown starts at activation. The motor spins in a fixed positive direction with a full-stamina target of 4.25 rad/s. Protocol 10 uses the existing raw WASD mask and camera yaw for Beagle's normalized horizontal movement at 2.2 m/s during Rotor. The host simulates movement and cooldown and replicates the existing skill state fields to guests.

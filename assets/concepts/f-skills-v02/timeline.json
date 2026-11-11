@@ -1,0 +1,48 @@
+{
+  "entries": [
+    {
+      "id": "mean-girl",
+      "name": "喷香水"
+    },
+    {
+      "id": "cr7",
+      "name": "反弹足球 + 无敌"
+    }
+  ],
+  "duration": 24,
+  "fps": 15,
+  "chapters": [
+    {
+      "start": 0,
+      "end": 6,
+      "label": "完整动作 / 1x",
+      "mode": "normal"
+    },
+    {
+      "start": 6,
+      "end": 12,
+      "label": "同一事件慢放 / 0.25x",
+      "mode": "replay"
+    },
+    {
+      "start": 12,
+      "end": 18,
+      "label": "对手离开范围 / 1x",
+      "mode": "miss"
+    },
+    {
+      "start": 18,
+      "end": 24,
+      "label": "F + W + D / 输入与恢复 / 1x",
+      "mode": "combo"
+    }
+  ],
+  "replay": {
+    "sourceStart": 1.1,
+    "sourceEnd": 2.6,
+    "outputStart": 6,
+    "outputEnd": 12,
+    "speed": 0.25
+  },
+  "type": "authored concept, compressed ball lane; not game solver"
+}

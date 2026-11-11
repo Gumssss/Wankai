@@ -1,6 +1,6 @@
 # 木昆竞技场
 
-一款用武器「撑地走路」的 3D 物理对战小游戏：角色没有走路键，只能挥动武器、触地借力来移动和攻击，角色可有 F 技能。React + react-three-fiber + Electron。角色采用导入的 GLB，火柴人使用平涂描边模型；比格犬与橘猫保留原有骨架和成对接触控制。5 November 2026 新增 Drive 提供的 CR7、Mean Girl、Maodie，当前共 9 个角色、56 种有效配置。[新角色来源、操作与验证](docs/characters/drive-packet-2026-11-05.md)。
+一款用武器「撑地走路」的 3D 物理对战小游戏：常规移动靠挥动武器、触地借力；CR7 的反弹足球和比格犬的旋耳悬停生效时可用 WASD 直接移动。React + react-three-fiber + Electron。角色采用导入的 GLB，火柴人使用平涂描边模型；比格犬与橘猫保留原有骨架和成对接触控制。5 November 2026 新增 Drive 提供的 CR7、Mean Girl、Maodie，当前共 9 个角色、56 种有效配置。[新角色来源、操作与验证](docs/characters/drive-packet-2026-11-05.md)。
 
 ## 运行
 
@@ -101,14 +101,14 @@ npm run dist:mac   # release/ 下生成 arm64 与 x64 的 .dmg 和 .zip
 | 角色 | 武器 | 技能（F） |
 | --- | --- | --- |
 | 奶蛙 | 奶木昆（专属）+ 通用武器 | **大笑**：0.5 秒内清空对手体力，再压制恢复 2 秒。冷却 35 秒 |
-| 火柴人 | 通用武器 | **绕后**：烟雾中瞬移到对手身后并转身面对对手。冷却 28 秒 |
-| 胆子肥嘟嘟 | 美团外卖盒（专属，无柄）+ 通用武器 | **外卖投掷**：向面前扔出一整个大外卖箱，命中 14 伤害并击退。冷却 22 秒 |
+| 火柴人 | 通用武器 | **绕后**：烟雾中瞬移到对手身后并转身面对对手。冷却 35 秒 |
+| 胆子肥嘟嘟 | 美团外卖盒（专属，无柄）+ 通用武器 | **外卖投掷**：向面前扔出一整个大外卖箱，命中 14 伤害并击退。冷却 10 秒 |
 | 开心小猫 | 开心猫爪（专属）+ 通用武器 | **Happy Happy**：蹦跳 1.6 秒，共恢复 10 生命。冷却 40 秒 |
-| 比格犬 | 长耳（专属）+ 通用武器 | 长耳限定 **旋耳悬停**：至少 40 体力，最多 5 秒，每秒消耗 16；通用武器使用正常短耳外观 |
-| 橘猫 | 成对猫爪（专属，保留 1.3× 尺寸） | 无额外 F 技能；W/S 挥爪撑地，A/D 连同身体转向 |
-| CR7 | 足球（专属）+ 通用武器 | 现有 W/S 挥动、A/D 转向；暂不配置 F 技能 |
-| Mean Girl | 皇冠爱心（专属）+ 通用武器 | 现有 W/S 挥动、A/D 转向；暂不配置 F 技能 |
-| Maodie | Maodie 猫爪（专属）+ 通用武器 | 独立新角色，使用一只原版猫爪；暂不配置 F 技能 |
+| 比格犬 | 长耳（专属）+ 通用武器 | 长耳限定 **旋耳悬停**：自动旋转，WASD 随视角移动。至少 40 体力发动，每秒消耗 16，最多 5 秒，从发动起冷却 30 秒 |
+| 橘猫 | 成对猫爪（专属，常态 1×） | **巨爪**：双爪变为常态的 1.3×，持续 8 秒，冷却 30 秒。W/S 挥爪撑地，A/D 连同身体转向 |
+| CR7 | 足球（专属）+ 通用武器 | F 踢出反弹球；3 秒无敌并 WASD 移动，结束松开重按恢复武器。40 体力 / 30 秒冷却 |
+| Mean Girl | 皇冠爱心（专属）+ 通用武器 | F 身前扇形喷香水 2.5 秒。命中使对手流血，离开喷雾后仍每 2 秒损失 1 点生命，直到本局结束；不叠加。35 体力 / 30 秒冷却 |
+| Maodie | Maodie 猫爪（专属）+ 通用武器 | F 吸血：8 秒内恢复实际武器伤害的 200%，冷却 40 秒 |
 
 通用近战武器：短剑、长柄刀（偃月刀）、铁战锤、战斧、狼牙棒、平底锅。挥动残影使用武器自身的颜色。
 
@@ -118,7 +118,11 @@ npm run dist:mac   # release/ 下生成 arm64 与 x64 的 .dmg 和 .zip
 
 ## 规则要点
 
-- 比格犬 80、橘猫 150、其他角色 100 生命，先归零者负。竖挥命中按碰撞速度与发力计伤；纯横转命中伤害减半。
+- **后期成长**：双方在有效对局时间 30 秒后同步成长，60 秒达到 3× 体型和 1.25× 伤害后封顶；仍以击倒结束，不强制超时结算。身体、装备和技能范围一起变大，生命、体力、技能持续时间与冷却不变。暂停冻结成长，联机菜单不暂停；再战重置。
+- **武器接触容错**：短剑、长柄刀、战斧、铁锤、狼牙棒与奶木昆采用更宽的不可见接触形状，让命中更容易；适用于命中、格挡、地面和障碍物，模型外形不变。1× 体型时短剑刃部接触直径为 0.52，长柄刀主刃为 0.56，战斧刃部为 0.54。
+- **音效**：根据武器材质与地面/墙柱播放不同的合成碰撞音；静止支撑不重复发声。九种 F 技能都有启动音效，橘猫双爪变大时会发出充气和弹跳声。
+
+- 所有角色统一 100 生命，先归零者负。竖挥命中按碰撞速度与发力计伤；纯横转命中伤害减半。
 - 200 体力：挥动 12/秒，转动 5/秒，停手 0.5 秒后每秒恢复 60；体力低时动作变慢。
 - 武器之间可以格挡，有力相撞双方沿各自武器朝向反方向后退。
 - 场上 4 根柱子和 4 段矮墙挡住身体，也能被武器击打、借力撑开；挡住视线时自动变淡。
@@ -136,7 +140,7 @@ electron/   launch.cjs（启动器）、main.cjs（窗口、菜单与 IPC）、s
 build/      应用图标（png / ico / icns）与 macOS 权限文件，electron-builder 使用
 src/
   physics.js            固定步长 180 Hz 物理：武器、撑地、碰撞、伤害、体力、技能、投掷物、障碍物
-  skills.js             四个角色技能的数值
+  skills.js             角色技能的数值
   game-session.js       对局状态机、输入、AI 接入、联机钩子
   ai-opponent.js        AI：接近 / 原地劈砍 / 休息 / 格挡 / 绕障 / 脱困 / 技能
   net-session.js        主机权威联机：握手、准备与竞技场同步、输入、60 Hz 快照与插值、再战
@@ -157,4 +161,10 @@ docs/ARCHITECTURE.md    架构与约定
 
 ## 2 November 2026 — Beagle / orange-cat restoration
 
-The two-animal restoration is recorded in [RESTORED_ANIMALS.md](docs/RESTORED_ANIMALS.md). The current roster also includes CR7, Mean Girl and Maodie, with 56 valid loadouts. Protocol 5 covers the expanded catalogue and retains compact Beagle ear pose data. Both peers need this build. [Current character handoff and evidence](docs/characters/drive-packet-2026-11-05.md).
+The two-animal restoration is recorded in [RESTORED_ANIMALS.md](docs/RESTORED_ANIMALS.md). The current roster also includes CR7, Mean Girl and Maodie, with 56 valid loadouts. Protocol 11 adds Mean Girl's persistent perfume bleed. Protocol 10 added Beagle Rotor's camera-relative WASD controls and 30-second cooldown. Protocol 9 added Maodie's lifesteal healing events. Protocol 8 added Orange Tabby's Big Paws skill. Protocol 7 added shared round growth. Protocol 6 added CR7 and Mean Girl phase and input state and typed ricochet projectiles. Both peers need this build. [Current character handoff and evidence](docs/characters/drive-packet-2026-11-05.md).
+
+8 November 2026: [CR7 / Mean Girl implementation and runtime evidence](docs/characters/CR7_MEANGIRL_IMPLEMENTED.md). Both skills are locally playable; the original CR7 mesh now has independent leg rigs and clips.
+
+Maodie 的 F 技能「吸血」持续 8 秒，从发动起冷却 40 秒。每次有效武器命中按对手实际损失生命的 200% 恢复自身生命，最多恢复到最大生命；过量伤害、格挡与环境接触不产生额外治疗，不能复活。
+
+比格犬长耳的常态 A/D 转向目标为 2.5 rad/s。旋耳悬停生效时按 WASD 随视角以 2.2 m/s 水平移动，长耳以固定方向自动旋转，满体力转速目标为 4.25 rad/s。

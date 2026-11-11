@@ -1,0 +1,218 @@
+[
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 25.11,
+    "expectedLabel": "ORANGE CAT / W / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 27.64,
+    "expectedLabel": "ORANGE CAT / S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 30.16,
+    "expectedLabel": "ORANGE CAT / A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 32.66,
+    "expectedLabel": "ORANGE CAT / D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 35.19,
+    "expectedLabel": "ORANGE CAT / W + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 37.71,
+    "expectedLabel": "ORANGE CAT / W + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 40.23,
+    "expectedLabel": "ORANGE CAT / S + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 42.77,
+    "expectedLabel": "ORANGE CAT / S + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "restored-animals-v01/movement-review.mp4",
+    "seek": 45.29,
+    "expectedLabel": "ORANGE CAT / W \u2192 release \u2192 S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 1.7,
+    "expectedLabel": "CR7 / W / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 3.89,
+    "expectedLabel": "CR7 / S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 5.91,
+    "expectedLabel": "CR7 / A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 7.98,
+    "expectedLabel": "CR7 / D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 10.02,
+    "expectedLabel": "CR7 / W + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 12.04,
+    "expectedLabel": "CR7 / W + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 14.06,
+    "expectedLabel": "CR7 / S + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 16.08,
+    "expectedLabel": "CR7 / S + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 18.1,
+    "expectedLabel": "CR7 / W \u2192 release \u2192 S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 22.13,
+    "expectedLabel": "MEAN GIRL / W / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 24.09,
+    "expectedLabel": "MEAN GIRL / S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 26.11,
+    "expectedLabel": "MEAN GIRL / A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 28.14,
+    "expectedLabel": "MEAN GIRL / D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 30.16,
+    "expectedLabel": "MEAN GIRL / W + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 32.19,
+    "expectedLabel": "MEAN GIRL / W + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 34.21,
+    "expectedLabel": "MEAN GIRL / S + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 36.23,
+    "expectedLabel": "MEAN GIRL / S + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 38.26,
+    "expectedLabel": "MEAN GIRL / W \u2192 release \u2192 S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 42.27,
+    "expectedLabel": "MAODIE / W / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 44.29,
+    "expectedLabel": "MAODIE / S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 46.31,
+    "expectedLabel": "MAODIE / A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 48.34,
+    "expectedLabel": "MAODIE / D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 50.37,
+    "expectedLabel": "MAODIE / W + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 52.4,
+    "expectedLabel": "MAODIE / W + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 54.43,
+    "expectedLabel": "MAODIE / S + A / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 56.45,
+    "expectedLabel": "MAODIE / S + D / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  },
+  {
+    "source": "drive-characters-v01/movement-review.mp4",
+    "seek": 58.48,
+    "expectedLabel": "MAODIE / W \u2192 release \u2192 S / 1x",
+    "visualLabelAndHeldKeysChecked": true
+  }
+]

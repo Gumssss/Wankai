@@ -1,0 +1,57 @@
+{
+  "fixture": "near rim / real cameras",
+  "state": "playing",
+  "mode": "duel",
+  "environment": "ready",
+  "radius": 19.35,
+  "rimHeight": 2.52,
+  "uniformScale": [
+    3,
+    3,
+    3
+  ],
+  "textureDecoded": true,
+  "textureSize": [
+    2048,
+    2048
+  ],
+  "wallGroups": 8,
+  "occludedByCamera": [
+    [
+      "SM_Arena_Shell_07"
+    ],
+    [
+      "SM_Arena_Shell_03"
+    ]
+  ],
+  "players": [
+    {
+      "character": "basic-fighter",
+      "weapon": "sword",
+      "position": {
+        "x": 18.87,
+        "y": 0.59,
+        "z": 0
+      },
+      "grounded": true,
+      "staffGrounded": false,
+      "health": 100,
+      "stamina": 200
+    },
+    {
+      "character": "basic-fighter",
+      "weapon": "polearm",
+      "position": {
+        "x": -18.87,
+        "y": 0.59,
+        "z": 0
+      },
+      "grounded": true,
+      "staffGrounded": false,
+      "health": 100,
+      "stamina": 200
+    }
+  ],
+  "record": null,
+  "metrics": {}
+}

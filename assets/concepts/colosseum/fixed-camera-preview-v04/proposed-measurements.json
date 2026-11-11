@@ -1,0 +1,29 @@
+{
+  "environment": "ready",
+  "mode": "duel-fixed",
+  "radius": 19.35,
+  "visualScale": 3,
+  "splitScreenRadius": 19.35,
+  "rimHeight": 2.52,
+  "cameras": 1,
+  "fixed": true,
+  "choice": "closer",
+  "position": [
+    12.48014371187149,
+    24,
+    31.20035927967872
+  ],
+  "target": [
+    0,
+    1.4,
+    0
+  ],
+  "fov": 55,
+  "eyeToTargetDistance": 40.49662215852082,
+  "previousEyeToTargetDistance": 46.28185389545238,
+  "distanceRatio": 0.875,
+  "projection": "perspective",
+  "openForeground": false,
+  "worldTime": 10.938888888889322,
+  "cutaway": []
+}

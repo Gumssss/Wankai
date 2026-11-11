@@ -19,7 +19,7 @@ const icons = {
   pan: '<path d="M10 50 22 30" stroke="#a4733f" stroke-width="6" stroke-linecap="round"/><path d="m22 30 4-6" stroke="#3a3f42" stroke-width="4"/><circle cx="32" cy="15" r="13" fill="#3a3f42" stroke="#30372e" stroke-width="1.5"/><circle cx="32" cy="15" r="9.5" fill="#24282a"/><path d="M26 10q3-3 7-2" stroke="#7d8588" stroke-width="2" fill="none" stroke-linecap="round"/>',
 };
 
-const SKILL_GLYPHS = { rotor:'🌀', laugh: '😆', twist: '🌀', delivery: '🥡', happy: '💖' };
+const SKILL_GLYPHS = { 'big-paws':'🐾', lifesteal:'🩸', ricochet:'⚽', perfume:'✦', rotor:'🌀', laugh: '😆', twist: '🌀', delivery: '🥡', happy: '💖' };
 export function SkillIcon({ id }) {
   return <span className={`skill-icon skill-${id}`} aria-hidden="true">{SKILL_GLYPHS[id] ?? '★'}</span>;
 }

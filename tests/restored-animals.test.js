@@ -23,14 +23,14 @@ test('both accepted animals extend the current roster without replacing happy ca
  for(const c of ['naiwa','dudu','stickman','happy-cat','orange-tabby'])assert.equal(canEquip(c,'long-ears'),false);
  assert.ok(canEquip('orange-tabby','cat-paws'));assert.equal(canEquip('happy-cat','cat-paws'),false);
  assert.equal(resolveLoadout({characterId:'beagle',weaponId:'sword'}).skill,null);
- assert.equal(resolveLoadout(dog).skill.id,'rotor');assert.equal(resolveLoadout(cat).skill,null);
+ assert.equal(resolveLoadout(dog).skill.id,'rotor');assert.equal(resolveLoadout(cat).skill.id,'big-paws');
  assert.ok(Object.values(animalAssetStatus()).every(s=>s==='ready'));
 });
 
-test('restored health, paw size and distal ear solids are retained',()=>{
- assert.equal(makePlayer(0,dog).maxHealth,80);assert.equal(makePlayer(0,cat).maxHealth,150);
- assert.equal(makePlayer(0,{characterId:'beagle',weaponId:'sword'}).health,80);
- assert.equal(CAT_PAW_SCALE,1.3);
+test('equal character health, original paw size and distal ear solids are retained',()=>{
+ assert.equal(makePlayer(0,dog).maxHealth,100);assert.equal(makePlayer(0,cat).maxHealth,100);
+ assert.equal(makePlayer(0,{characterId:'beagle',weaponId:'sword'}).health,100);
+ assert.equal(CAT_PAW_SCALE,1);
  const p=makePlayer(0,dog);assert.equal(weaponSegments(p).length,12);assert.equal(visualWeaponSegments(p).length,18);
  for(const s of BEAGLE.colliders){assert.ok(s.a[1]-s.radius>=1.8-1e-6);assert.ok(s.b[1]+s.radius<=3.6+1e-6);}
  assert.equal(weaponSegments(makePlayer(0,cat)).length,48);
@@ -95,7 +95,7 @@ test('rotor spends stamina, does not retrigger/regen, expires, retracts and land
  tick(w,{},4);assert.equal(p.skillActive,false);tick(w,{},5);assert.ok(p.earSpread<.001);assert.ok(p.p.y<BEAGLE.bodyFloor+.1);
  w.reset(dog,'polearm',{fighters:1});
  const tired=w.players[0];tired.stamina=39;w.step([{skillTap:true}]);assert.equal(tired.skillActive,false);
- for(const l of [cat,{characterId:'beagle',weaponId:'sword'}]){const other=sandbox(new ArenaPhysics(),l);other.step([{skillTap:true}]);assert.equal(other.players[0].skillActive,false);}
+ const other=sandbox(new ArenaPhysics(),{characterId:'beagle',weaponId:'sword'});other.step([{skillTap:true}]);assert.equal(other.players[0].skillActive,false);
 });
 
 test('anatomical steering turns body and attachments together while common weapons retain mouse-facing bodies',()=>{
@@ -113,7 +113,7 @@ test('follow cameras fit both complete appendages, including cosmetic inner ears
 test('session reset and pause preserve restored loadouts and clear skill state',()=>{
  const s=quietSession();assert.ok(s.setLoadouts([dog,cat]));s.startRound('ai');for(let i=0;i<200;i++)s.tick(1/60);
  s.keyDown('KeyF');s.tick(1/60);assert.ok(s.world.players[0].skillActive);s.pause();const t=s.world.time;s.tick(1);assert.equal(s.world.time,t);
- s.startRound('ai');assert.deepEqual(s.loadouts,[dog,cat]);assert.equal(s.world.players[0].health,80);assert.equal(s.world.players[1].health,150);assert.equal(s.world.players[0].earSpread,0);
+ s.startRound('ai');assert.deepEqual(s.loadouts,[dog,cat]);assert.equal(s.world.players[0].health,100);assert.equal(s.world.players[1].health,100);assert.equal(s.world.players[0].earSpread,0);
 });
 
 test('restored paired motors fatigue together and share one ordinary resource budget',()=>{

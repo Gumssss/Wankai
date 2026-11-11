@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-21",
+  "status": "implemented-and-verified-locally",
+  "userAuthorization": "implement the plan",
+  "runtimeTexture": "public/textures/colosseum-roman-floor-v01.jpg",
+  "textureDimensions": [
+    2048,
+    2048
+  ],
+  "nativeGeneratedDimensions": [
+    1254,
+    1254
+  ],
+  "sourceTool": "built-in imagegen",
+  "sourcePrompt": "prompt.txt",
+  "geometryReport": "actual-geometry-verification.json",
+  "matchedPoseComparison": {
+    "cameraAndPlayersUnchanged": true,
+    "images": [
+      "original-fixed.png",
+      "patterned-fixed.png"
+    ]
+  },
+  "modesVisuallyChecked": [
+    "duel-fixed",
+    "duel",
+    "solo",
+    "practice"
+  ],
+  "floorTextureReadyInAllModes": true,
+  "modeTransitionMemory": "mode-transition-memory.json",
+  "boundedMemoryCounts": {
+    "geometries": 146,
+    "textures": 13
+  },
+  "normalGame": {
+    "url": "http://127.0.0.1:5173/",
+    "loadouts": [
+      "beagle / long-ears",
+      "orange-tabby / cat-paws"
+    ],
+    "bothPlayerInputs": "W and ArrowDown verified",
+    "hitFeedback": "23 damage visible",
+    "rematch": "verified",
+    "consoleErrors": [],
+    "images": [
+      "implemented-fixed.png",
+      "implemented-action.png"
+    ]
+  },
+  "tests": {
+    "passed": 158,
+    "failed": 0,
+    "log": "/tmp/colosseum-floor-v02-tests.log",
+    "focusedChecks": 17,
+    "focusedLog": "/tmp/colosseum-floor-v02-focused.log"
+  },
+  "build": {
+    "status": "passed",
+    "advisory": "Existing chunk-size advisory",
+    "log": "/tmp/colosseum-floor-v02-build.log"
+  },
+  "unchangedSHA256Files": [
+    "public/models/colosseum-prepared-v01.glb",
+    "src/fixed-camera.js",
+    "src/physics.js",
+    "src/game-session.js"
+  ],
+  "limits": [
+    "Roman-inspired decorative game art, not a historical arena-floor reconstruction.",
+    "Current fixed-camera edge cropping is unchanged.",
+    "Generated raster is normalized from1254 to2048; enlargement adds no new native detail.",
+    "Memory observation covers a warm mode-change round trip, not an exhaustive benchmark."
+  ],
+  "gitDelivery": "No commit, push, merge or release.",
+  "inAppGame": {
+    "mode": "duel-fixed",
+    "loadouts": [
+      "beagle / long-ears",
+      "orange-tabby / cat-paws"
+    ],
+    "consoleErrors": [],
+    "image": "implemented-fixed-iab.png",
+    "status": "ready to play"
+  }
+}

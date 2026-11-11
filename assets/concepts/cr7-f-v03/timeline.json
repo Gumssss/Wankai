@@ -1,0 +1,112 @@
+{
+  "entries": [
+    {
+      "id": "cr7-wasd-preview",
+      "name": "CR7 出球后 WASD 移动"
+    }
+  ],
+  "duration": 78,
+  "fps": 30,
+  "chapters": [
+    {
+      "start": 0,
+      "end": 7,
+      "mode": "main",
+      "label": "出球后自由走位 · 1x"
+    },
+    {
+      "start": 7,
+      "end": 15,
+      "mode": "replay",
+      "label": "同一事件慢放 · 0.25x"
+    },
+    {
+      "start": 15,
+      "end": 22,
+      "mode": "gate",
+      "label": "结束仍按住 W：不误挥 · 1x"
+    },
+    {
+      "start": 22,
+      "end": 28,
+      "mode": "reverse",
+      "label": "松开 / 反向 / 对向键抵消 · 1x"
+    },
+    {
+      "start": 28,
+      "end": 33,
+      "mode": "interrupt",
+      "label": "前摇被打断：没有无敌 · 1x"
+    },
+    {
+      "start": 33,
+      "end": 38,
+      "mode": "miss",
+      "label": "对手躲开球路 · 1x"
+    },
+    {
+      "start": 38,
+      "end": 43,
+      "mode": "matrix",
+      "keys": "W",
+      "label": "技能移动 W · 1x"
+    },
+    {
+      "start": 43,
+      "end": 48,
+      "mode": "matrix",
+      "keys": "S",
+      "label": "技能移动 S · 1x"
+    },
+    {
+      "start": 48,
+      "end": 53,
+      "mode": "matrix",
+      "keys": "A",
+      "label": "技能移动 A · 1x"
+    },
+    {
+      "start": 53,
+      "end": 58,
+      "mode": "matrix",
+      "keys": "D",
+      "label": "技能移动 D · 1x"
+    },
+    {
+      "start": 58,
+      "end": 63,
+      "mode": "matrix",
+      "keys": "W+A",
+      "label": "技能移动 W+A · 1x"
+    },
+    {
+      "start": 63,
+      "end": 68,
+      "mode": "matrix",
+      "keys": "W+D",
+      "label": "技能移动 W+D · 1x"
+    },
+    {
+      "start": 68,
+      "end": 73,
+      "mode": "matrix",
+      "keys": "S+A",
+      "label": "技能移动 S+A · 1x"
+    },
+    {
+      "start": 73,
+      "end": 78,
+      "mode": "matrix",
+      "keys": "S+D",
+      "label": "技能移动 S+D · 1x"
+    }
+  ],
+  "replay": {
+    "sourceStart": 0.9,
+    "sourceEnd": 2.9,
+    "outputStart": 7,
+    "outputEnd": 15,
+    "speed": 0.25
+  },
+  "type": "preview-only planar movement; scripted compressed ball lane; rigid body without leg animation"
+}

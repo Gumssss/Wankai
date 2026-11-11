@@ -1,0 +1,28 @@
+{
+  "records": [
+    {
+      "character": "cr7",
+      "hud": "F反弹足球WASD 移动 · 无敌 2.6s",
+      "active": "active",
+      "projectiles": 1,
+      "renderer": {
+        "geometries": 109,
+        "textures": 12,
+        "calls": 157
+      }
+    },
+    {
+      "character": "mean-girl",
+      "hud": "F喷香水生效中 2.1s",
+      "active": "active",
+      "projectiles": 0,
+      "renderer": {
+        "geometries": 160,
+        "textures": 15,
+        "calls": 220
+      }
+    }
+  ],
+  "errors": [],
+  "note": "Scripted real App keyboard/HUD check, not manual play"
+}
